@@ -1689,9 +1689,16 @@ const SpriteEditor = {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
+        input.style.display = 'none';
+        // DOMに追加して参照を維持（iOS等でのガベージコレクション対策）
+        document.body.appendChild(input);
+
         input.onchange = (e) => {
             const file = e.target.files[0];
-            if (!file) return;
+            if (!file) {
+                document.body.removeChild(input);
+                return;
+            }
 
             const img = new Image();
             img.onload = () => {
@@ -1727,6 +1734,15 @@ const SpriteEditor = {
                 this.guideAdjustMode = true;
                 this.updateGuideButtonState();
                 this.render();
+
+                // ObjectURLを解放
+                URL.revokeObjectURL(img.src);
+                // input要素を削除
+                document.body.removeChild(input);
+            };
+            img.onerror = () => {
+                console.error('Guide image load failed');
+                document.body.removeChild(input);
             };
             img.src = URL.createObjectURL(file);
         };

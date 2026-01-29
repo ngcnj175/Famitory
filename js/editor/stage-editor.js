@@ -374,13 +374,9 @@ const StageEditor = {
                         <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>ブーメラン</option>
                         <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>ピンポン</option>
                     </select>
+                    ${type === 'player' ? this.renderToggleInline('はじめから使える', 'weaponFromStart', config.weaponFromStart ?? true) : ''}
                 </div>
             `;
-
-            // プレイヤー専用: はじめから武器を使えるトグル
-            if (type === 'player') {
-                html += this.renderToggle('はじめから武器を使える', 'weaponFromStart', config.weaponFromStart ?? true);
-            }
 
             // プレイヤー専用SE設定
             if (type === 'player') {
