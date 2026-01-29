@@ -2633,11 +2633,13 @@ body {
 
 .time-control input[type="number"] {
     width: 60px;
-    padding: 6px 8px;
+    padding: 10px 8px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 0;
     font-size: 13px;
     text-align: center;
+    height: 40px;
+    box-sizing: border-box;
 }
 
 .time-control span {
