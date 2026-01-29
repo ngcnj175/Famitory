@@ -2611,9 +2611,6 @@ const GameEngine = {
 
     // ========== スコア管理 ==========
     addScore(points) {
-        // デフォルトはON
-        if (App.projectData.stage.showScore === false) return;
-
         this.score += points;
 
         // ハイスコア更新
