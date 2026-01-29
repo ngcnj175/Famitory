@@ -377,9 +377,18 @@ const StageEditor = {
                 </div>
             `;
 
-            // プレイヤー専用: はじめから使えるトグル（別行で配置）
+            // プレイヤー専用: はじめから使えるトグル（別行で配置、攻撃タイプ選択枠と位置を揃える）
             if (type === 'player') {
-                html += this.renderToggle('はじめから使える', 'weaponFromStart', config.weaponFromStart ?? true);
+                html += `
+                    <div class="param-row param-row-toggle">
+                        <span class="param-label"></span>
+                        <label class="toggle-switch toggle-inline" style="margin-left: 0;">
+                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">はじめから使える</span>
+                            <input type="checkbox" data-key="weaponFromStart" ${config.weaponFromStart ?? true ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `;
             }
 
             // プレイヤー専用SE設定
