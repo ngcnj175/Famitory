@@ -394,7 +394,7 @@ const GameEngine = {
                 const template = templates[ent.templateId];
                 if (template && template.type === 'item') {
                     const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                    const itemType = template.config?.itemType || 'star';
+                    const itemType = template.config?.itemType || 'coin';
 
                     // 座標をキーとして記録
                     const posKey = `${Math.floor(ent.x)},${Math.floor(ent.y)}`;
@@ -434,7 +434,7 @@ const GameEngine = {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
                         if (template && template.type === 'item') {
                             const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                            const itemType = template.config?.itemType || 'star';
+                            const itemType = template.config?.itemType || 'coin';
                             this.items.push({
                                 x: x,
                                 y: y,
