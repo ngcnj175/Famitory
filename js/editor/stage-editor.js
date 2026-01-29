@@ -241,7 +241,7 @@ const StageEditor = {
             case 'material':
                 return { collision: true, life: -1 };
             case 'item':
-                return { itemType: 'star' };
+                return { itemType: 'coin' };
             default:
                 return {};
         }
@@ -421,6 +421,7 @@ const StageEditor = {
                         <span class="param-label">ドロップ</span>
                         <select class="param-select" data-key="dropItem">
                             <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>なし</option>
+                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>コイン</option>
                             <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
                             <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                             <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
