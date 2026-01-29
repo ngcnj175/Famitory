@@ -430,6 +430,10 @@ class Player {
                 // SE再生
                 this.playSE('itemGet');
                 break;
+            case 'coin':
+                // コイン取得（スコアはgame-engine.js側で加算）
+                this.playSE('itemGet');
+                break;
             case 'lifeup':
                 if (this.lives < this.maxLives) {
                     this.lives++;

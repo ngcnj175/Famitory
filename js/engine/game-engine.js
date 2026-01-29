@@ -1491,8 +1491,9 @@ const GameEngine = {
                     }
                 }
 
-                // スコア加算（アイテムタイプに応じて変えることも可能）
+                // スコア加算（アイテムタイプに応じて変える）
                 let pts = 100;
+                if (item.itemType === 'coin') pts = 50;  // コイン
                 if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                 if (item.itemType === 'weapon') pts = 200;
                 if (item.itemType === 'clear') pts = 1000;

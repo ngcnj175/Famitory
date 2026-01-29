@@ -449,6 +449,7 @@ const StageEditor = {
                 <div class="param-row">
                     <span class="param-label">種類</span>
                     <select class="param-select" data-key="itemType">
+                        <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>コイン</option>
                         <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>むてき</option>
                         <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                         <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>

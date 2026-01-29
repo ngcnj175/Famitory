@@ -274,22 +274,23 @@
                         <label>ステージタイトル</label>
                         <input type="text" id="stage-name-input" placeholder="NEW GAME">
                     </div>
-                    <!-- ステージサイズ（2行表示） -->
-                    <div class="setting-row setting-row-vertical">
+                    <!-- ステージサイズ（縦横2行レイアウト） -->
+                    <div class="setting-row setting-row-size">
                         <label>ステージサイズ</label>
-                        <div class="size-control-vertical">
-                            <div class="size-row">
-                                <span class="size-label">縦</span>
-                                <button id="area-h-minus" class="size-btn">－</button>
-                                <span id="area-h-value">1</span>
-                                <button id="area-h-plus" class="size-btn">＋</button>
-                            </div>
-                            <div class="size-row">
-                                <span class="size-label">横</span>
-                                <button id="area-w-minus" class="size-btn">－</button>
-                                <span id="area-w-value">1</span>
-                                <button id="area-w-plus" class="size-btn">＋</button>
-                            </div>
+                        <div class="size-row">
+                            <span class="size-label">縦</span>
+                            <button id="area-h-minus" class="size-btn">－</button>
+                            <span id="area-h-value">1</span>
+                            <button id="area-h-plus" class="size-btn">＋</button>
+                        </div>
+                    </div>
+                    <div class="setting-row setting-row-size-sub">
+                        <label></label>
+                        <div class="size-row">
+                            <span class="size-label">横</span>
+                            <button id="area-w-minus" class="size-btn">－</button>
+                            <span id="area-w-value">1</span>
+                            <button id="area-w-plus" class="size-btn">＋</button>
                         </div>
                     </div>
                     <!-- 背景色 -->

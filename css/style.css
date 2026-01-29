@@ -2535,8 +2535,13 @@ body {
 
 /* BGM字下げ */
 .bgm-indented {
-    padding-left: 0;
+    padding-left: 20px;
     margin-left: 0;
+}
+
+/* ステージサイズ横行（間隔調整） */
+.setting-row-size-sub {
+    margin-top: -6px;
 }
 
 /* 繧ｵ繧､繧ｺ蛻ｶ蠕｡ */
@@ -2672,12 +2677,12 @@ body {
 .bgm-label {
     font-size: 11px;
     color: var(--color-medium);
-    min-width: 70px;
+    width: 70px;
     flex-shrink: 0;
 }
 
 .bgm-select {
-    width: 50%;
+    width: calc(50% + 35px);
     flex: none;
     padding: 4px 8px;
     border: 1px solid var(--border-color);
