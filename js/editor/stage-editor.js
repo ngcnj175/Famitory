@@ -377,6 +377,11 @@ const StageEditor = {
                 </div>
             `;
 
+            // プレイヤー専用: はじめから武器を使えるトグル
+            if (type === 'player') {
+                html += this.renderToggle('はじめから武器を使える', 'weaponFromStart', config.weaponFromStart ?? true);
+            }
+
             // プレイヤー専用SE設定
             if (type === 'player') {
                 html += '<div class="param-section-label">効果音</div>';
@@ -410,6 +415,7 @@ const StageEditor = {
                             <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
                             <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                             <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
+                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
                             <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                         </select>
                     </div>
@@ -437,6 +443,7 @@ const StageEditor = {
                         <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>むてき</option>
                         <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                         <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>
+                        <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>武器</option>
                         <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                     </select>
                 </div>

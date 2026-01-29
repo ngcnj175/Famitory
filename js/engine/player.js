@@ -66,6 +66,9 @@ class Player {
         this.canDoubleJump = false;
         this.hasDoubleJumped = false;
 
+        // 武器使用可能フラグ（weaponFromStart設定に基づく）
+        this.hasWeapon = template?.config?.weaponFromStart ?? true;
+
         // SE設定（-1はOFF）
         this.seJump = template?.config?.seJump ?? 0;
         this.seAttack = template?.config?.seAttack ?? 5;
@@ -273,6 +276,9 @@ class Player {
     }
 
     attack(engine) {
+        // 武器を持っていない場合は攻撃不可
+        if (!this.hasWeapon) return;
+
         this.isAttacking = true;
         this.attackTimer = 15;
         this.attackCooldown = 30;
@@ -433,6 +439,11 @@ class Player {
                 break;
             case 'clear':
                 // クリアアイテム取得（カウントはgame-engine.js側で行う）
+                this.playSE('itemGet');
+                break;
+            case 'weapon':
+                // 武器アイテム取得 → 武器使用可能に
+                this.hasWeapon = true;
                 this.playSE('itemGet');
                 break;
         }
