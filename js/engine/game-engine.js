@@ -1215,6 +1215,14 @@ const GameEngine = {
                     if (item.itemType === 'clear') {
                         this.collectedClearItems = (this.collectedClearItems || 0) + 1;
                     }
+
+                    // スコア加算
+                    let pts = 100;
+                    if (item.itemType === 'coin') pts = 50;
+                    if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
+                    if (item.itemType === 'weapon') pts = 200;
+                    if (item.itemType === 'clear') pts = 1000;
+                    this.addScore(pts);
                 }
             }
         });
@@ -1340,6 +1348,9 @@ const GameEngine = {
                         if (!enemy.isDying && this.projectileHits(proj, enemy)) {
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
+                            if (enemy.lives <= 0) {
+                                this.addScore(100);
+                            }
                             if (shotType !== 'pinball' && shotType !== 'boomerang') {
                                 return false;
                             }
