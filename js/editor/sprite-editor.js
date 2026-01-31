@@ -398,7 +398,6 @@ const SpriteEditor = {
                     <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">編集中</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
@@ -1670,6 +1669,12 @@ const SpriteEditor = {
         this.selectionMode = false;
         this.selectionStart = null;
         this.selectionEnd = null;
+
+        // 選択ツールが選択されている場合は、ボタンのアクティブ状態を維持する
+        if (this.currentTool === 'select') {
+            const selectBtn = document.querySelector('#paint-tools button[data-tool="select"]');
+            if (selectBtn) selectBtn.classList.add('active');
+        }
         this.isMovingSelection = false;
         this.selectionMoveStart = null;
         this.render();

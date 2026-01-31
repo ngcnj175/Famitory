@@ -287,11 +287,11 @@ const StageEditor = {
 
     // 螻樊ｧ繝ｩ繝吶Ν陦ｨ遉ｺ逕ｨ縺ｮ繝槭ャ繝斐Φ繧ｰ
     typeLabels: {
-        player: '繝励Ξ繧､繝､繝ｼ',
-        enemy: '縺ｦ縺・,
-        material: '繝悶Ο繝・け繝ｻ閭梧勹',
-        item: '繧｢繧､繝・Β',
-        goal: '繧ｴ繝ｼ繝ｫ'
+        player: 'プレイヤー',
+        enemy: 'てき',
+        material: 'ブロック・背景',
+        item: 'アイテム',
+        goal: 'ゴール'
     },
 
     openConfigPanel() {
@@ -355,8 +355,8 @@ const StageEditor = {
 
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
         const labels = {
-            idle: '遶九■', walk: '豁ｩ縺・, jump: '繧ｸ繝｣繝ｳ繝・,
-            attack: '謾ｻ謦・, shot: '鬟帙・驕灘・', life: '繝ｩ繧､繝・, main: '隕九◆逶ｮ'
+            idle: '立ち', walk: '歩き', jump: 'ジャンプ',
+            attack: '攻撃', shot: '飛び道具', life: 'ライフ', main: '見た目'
         };
 
         return `
@@ -378,26 +378,26 @@ const StageEditor = {
         let html = '';
 
         if (type === 'player' || type === 'enemy') {
-            html += this.renderSlider('繝ｩ繧､繝墓焚', 'life', config.life ?? 3, 1, 10);
-            html += this.renderSlider('雜ｳ縺ｮ騾溘＆', 'speed', config.speed ?? 5, 1, 10);
-            // 繝励Ξ繧､繝､繝ｼ縺ｮ縺ｿ2谿ｵ繧ｸ繝｣繝ｳ繝励ｒ陦ｨ遉ｺ
+            html += this.renderSlider('ライフ数', 'life', config.life ?? 3, 1, 10);
+            html += this.renderSlider('足の速さ', 'speed', config.speed ?? 5, 1, 10);
+            // プレイヤーのみ2段ジャンプを表示
             if (type === 'player') {
-                html += this.renderSliderWithCheck('繧ｸ繝｣繝ｳ繝怜鴨', 'jumpPower', config.jumpPower ?? 10, 1, 20, '2谿ｵ繧ｸ繝｣繝ｳ繝・, 'wJump', config.wJump);
+                html += this.renderSliderWithCheck('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20, '2段ジャンプ', 'wJump', config.wJump);
             } else {
-                html += this.renderSlider('繧ｸ繝｣繝ｳ繝怜鴨', 'jumpPower', config.jumpPower ?? 10, 1, 20);
+                html += this.renderSlider('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20);
             }
-            html += this.renderSlider('蟆・ｨ玖ｷ晞屬', 'shotMaxRange', config.shotMaxRange ?? 16, 0, 16);
+            html += this.renderSlider('射程距離', 'shotMaxRange', config.shotMaxRange ?? 16, 0, 16);
             html += `
                 <div class="param-row">
-                    <span class="param-label">謾ｻ謦・ち繧､繝・/span>
+                    <span class="param-label">攻撃タイプ</span>
                     <select class="param-select" data-key="shotType">
-                        <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>霑第磁</option>
-                        <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>繧ｹ繝医Ξ繝ｼ繝・/option>
-                        <option value="arc" ${config.shotType === 'arc' ? 'selected' : ''}>繧・∪縺ｪ繧・/option>
-                        <option value="drop" ${config.shotType === 'drop' ? 'selected' : ''}>魑･縺ｮ繝輔Φ</option>
-                        <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>諡｡謨｣</option>
-                        <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>繝悶・繝｡繝ｩ繝ｳ</option>
-                        <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>繝斐Φ繝昴Φ</option>
+                        <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>近接</option>
+                        <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>ストレート</option>
+                        <option value="arc" ${config.shotType === 'arc' ? 'selected' : ''}>山なり</option>
+                        <option value="drop" ${config.shotType === 'drop' ? 'selected' : ''}>真下に落下</option>
+                        <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>拡散</option>
+                        <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>ブーメラン</option>
+                        <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>ピンボール</option>
                     </select>
                 </div>
             `;
@@ -408,7 +408,7 @@ const StageEditor = {
                     <div class="param-row param-row-toggle">
                         <span class="param-label"></span>
                         <label class="toggle-switch toggle-inline" style="margin-left: 0;">
-                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">縺ｯ縺倥ａ縺九ｉ菴ｿ縺医ｋ</span>
+                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">はじめから使える</span>
                             <input type="checkbox" data-key="weaponFromStart" ${config.weaponFromStart ?? true ? 'checked' : ''}>
                             <span class="toggle-slider"></span>
                         </label>
@@ -416,82 +416,82 @@ const StageEditor = {
                 `;
             }
 
-            // 繝励Ξ繧､繝､繝ｼ蟆ら畑SE險ｭ螳・
+            // プレイヤー専用SE設定
             if (type === 'player') {
-                html += '<div class="param-section-label">蜉ｹ譫憺浹</div>';
-                html += this.renderSeSelect('繧ｸ繝｣繝ｳ繝鈴浹', 'seJump', config.seJump ?? 0);
-                html += this.renderSeSelect('謾ｻ謦・浹', 'seAttack', config.seAttack ?? 5);
-                html += this.renderSeSelect('繝繝｡繝ｼ繧ｸ髻ｳ', 'seDamage', config.seDamage ?? 10);
-                html += this.renderSeSelect('繧ｲ繝・ヨ髻ｳ', 'seItemGet', config.seItemGet ?? 15);
+                html += '<div class="param-section-label">効果音</div>';
+                html += this.renderSeSelect('ジャンプ音', 'seJump', config.seJump ?? 0);
+                html += this.renderSeSelect('攻撃音', 'seAttack', config.seAttack ?? 5);
+                html += this.renderSeSelect('ダメージ音', 'seDamage', config.seDamage ?? 10);
+                html += this.renderSeSelect('ゲット音', 'seItemGet', config.seItemGet ?? 15);
             }
 
             if (type === 'enemy') {
                 html += `
                     <div class="param-row">
-                        <span class="param-label">縺ｦ縺阪・蜍輔″</span>
+                        <span class="param-label">てきの動き</span>
                         <select class="param-select" data-key="move">
-                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>蜍輔°縺ｪ縺・/option>
-                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>縺・ｍ縺・ｍ</option>
-                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>縺ｴ繧・ｓ縺ｴ繧・ｓ</option>
-                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>縺・ｍ縺ｴ繧・ｓ</option>
-                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>霑ｽ縺・°縺代※縺上ｋ</option>
-                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>縺ｨ縺｣縺励ｓ</option>
+                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>動かない</option>
+                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
+                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>ぴょんぴょん</option>
+                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>うろぴょん</option>
+                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>追いかけてくる</option>
+                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>とっしん</option>
                         </select>
                     </div>
                 `;
-                html += this.renderToggle('遨ｺ荳ｭ', 'isAerial', config.isAerial);
-                html += this.renderToggle('繝懊せ縺ｦ縺・, 'isBoss', config.isBoss);
+                html += this.renderToggle('空中', 'isAerial', config.isAerial);
+                html += this.renderToggle('ボスてき', 'isBoss', config.isBoss);
                 html += `
                     <div class="param-row">
-                        <span class="param-label">繝峨Ο繝・・</span>
+                        <span class="param-label">ドロップ</span>
                         <select class="param-select" data-key="dropItem">
-                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>縺ｪ縺・/option>
-                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>繧ｳ繧､繝ｳ</option>
-                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>繧縺ｦ縺・/option>
-                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>繝ｩ繧､繝輔い繝・・</option>
-                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>繧ｯ繝ｪ繧｢</option>
-                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>豁ｦ蝎ｨ</option>
-                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>繧､繝ｼ繧ｹ繧ｿ繝ｼ繧ｨ繝・げ</option>
+                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>なし</option>
+                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>コイン</option>
+                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
+                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
+                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
+                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
+                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                         </select>
                     </div>
                 `;
             }
         } else if (type === 'material') {
-            html += this.renderToggle('蠖薙◆繧雁愛螳・, 'collision', config.collision !== false);
-            html += this.renderSlider('閠蝉ｹ・ｧ', 'life', config.life ?? -1, -1, 10);
+            html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
+            html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
             html += `
                 <div class="param-row">
-                    <span class="param-label">繧ｮ繝溘ャ繧ｯ</span>
+                    <span class="param-label">ギミック</span>
                     <select class="param-select" data-key="gimmick">
-                        <option value="none" ${!config.gimmick || config.gimmick === 'none' ? 'selected' : ''}>縺ｪ縺・/option>
-                        <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>讓ｪ遘ｻ蜍・/option>
-                        <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>邵ｦ遘ｻ蜍・/option>
-                        <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>關ｽ荳・/option>
+                        <option value="none" ${!config.gimmick || config.gimmick === 'none' ? 'selected' : ''}>なし</option>
+                        <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>横移動</option>
+                        <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>縦移動</option>
+                        <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>落下</option>
                     </select>
                 </div>
             `;
         } else if (type === 'item') {
             html += `
                 <div class="param-row">
-                    <span class="param-label">遞ｮ鬘・/span>
+                    <span class="param-label">種類</span>
                     <select class="param-select" data-key="itemType">
-                        <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>繧ｳ繧､繝ｳ</option>
-                        <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>繧縺ｦ縺・/option>
-                        <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>繝ｩ繧､繝輔い繝・・</option>
-                        <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>繧ｯ繝ｪ繧｢</option>
-                        <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>豁ｦ蝎ｨ</option>
-                        <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>繧､繝ｼ繧ｹ繧ｿ繝ｼ繧ｨ繝・げ</option>
+                        <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>コイン</option>
+                        <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>むてき</option>
+                        <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
+                        <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>
+                        <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>武器</option>
+                        <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                     </select>
                 </div>
             `;
-            // 繧､繝ｼ繧ｹ繧ｿ繝ｼ繧ｨ繝・げ縺ｮ蝣ｴ蜷医・繝｡繝・そ繝ｼ繧ｸ蜈･蜉帶ｬ・ｒ陦ｨ遉ｺ
+            // イースターエッグの場合のみメッセージ入力欄を表示
             if (config.itemType === 'easter') {
                 html += `
                     <div class="param-row">
-                        <span class="param-label">繝｡繝・そ繝ｼ繧ｸ</span>
+                        <span class="param-label">メッセージ</span>
                         <input type="text" class="param-input" data-key="easterMessage" 
                                value="${config.easterMessage || ''}" 
-                               maxlength="20" placeholder="譛螟ｧ20譁・ｭ・>
+                               maxlength="20" placeholder="最大20文字">
                     </div>
                 `;
             }
@@ -501,20 +501,20 @@ const StageEditor = {
     },
 
     renderSlider(label, key, value, min, max) {
-        // 繝悶Ο繝・け繧ｲ繝ｼ繧ｸ縺ｫ螟画峩・・蛟句崋螳壹√ち繝・・蠖｢蠑擾ｼ・
+        // ブロックゲージに統合。スライダーは非推奨
         return this.renderBlockGauge(label, key, value, min, max);
     },
 
     renderBlockGauge(label, key, value, min, max) {
-        // 蛟､繧・-5縺ｮ遽・峇縺ｫ繝槭ャ繝斐Φ繧ｰ
+        // 値を1-5の範囲にマッピング
         let mappedValue = value;
 
-        // 迚ｹ谿翫こ繝ｼ繧ｹ: life縺ｧ-1縺ｯ辟｡髯・
+        // 特殊ケース: lifeで-1は無限
         if (key === 'life' && min === -1) {
-            if (value === -1) mappedValue = 0; // 辟｡髯・0逡ｪ逶ｮ
+            if (value === -1) mappedValue = 0; // 無限は0番目
             else mappedValue = Math.min(value, 5);
         } else {
-            // 騾壼ｸｸ縺ｮ繝槭ャ繝斐Φ繧ｰ: min-max 繧・1-5 縺ｫ繝槭ャ繝斐Φ繧ｰ
+            // 通常のマッピング: min-max を 1-5 にマッピング
             const range = max - min;
             mappedValue = Math.round(((value - min) / range) * 4) + 1;
             mappedValue = Math.max(1, Math.min(5, mappedValue));
@@ -537,7 +537,7 @@ const StageEditor = {
     },
 
     renderSliderWithCheck(label, sliderKey, sliderValue, min, max, checkLabel, checkKey, checkValue) {
-        // 繝悶Ο繝・け繧ｲ繝ｼ繧ｸ + 繝医げ繝ｫ繧ｹ繧､繝・メ縺ｫ螟画峩
+        // ブロックゲージ + トグルスイッチに統合
         return `
             <div class="param-row param-row-gauge">
                 <span class="param-label">${label}</span>
@@ -585,49 +585,49 @@ const StageEditor = {
     },
 
     renderSeSelect(label, key, selectedValue) {
-        // sounds驟榊・縺後↑縺・ｴ蜷医・繝・ヵ繧ｩ繝ｫ繝医・繝ｪ繧ｻ繝・ヨ繧剃ｽｿ逕ｨ
+        // soundsがなければデフォルトのSEリストを適用
         let sounds = App.projectData?.sounds;
         if (!sounds || sounds.length === 0) {
             sounds = [
-                // 繧ｸ繝｣繝ｳ繝礼ｳｻ
-                { id: 0, name: '繧ｸ繝｣繝ｳ繝誉01', type: 'jump_01' },
-                { id: 1, name: '繧ｸ繝｣繝ｳ繝誉02', type: 'jump_02' },
-                { id: 2, name: '繧ｸ繝｣繝ｳ繝誉03', type: 'jump_03' },
-                { id: 3, name: '繧ｸ繝｣繝ｳ繝誉04', type: 'jump_04' },
-                { id: 4, name: '繧ｸ繝｣繝ｳ繝誉05', type: 'jump_05' },
-                // 謾ｻ謦・ｳｻ
-                { id: 5, name: '謾ｻ謦ダ01', type: 'attack_01' },
-                { id: 6, name: '謾ｻ謦ダ02', type: 'attack_02' },
-                { id: 7, name: '謾ｻ謦ダ03', type: 'attack_03' },
-                { id: 8, name: '謾ｻ謦ダ04', type: 'attack_04' },
-                { id: 9, name: '謾ｻ謦ダ05', type: 'attack_05' },
-                // 繝繝｡繝ｼ繧ｸ邉ｻ
-                { id: 10, name: '繝繝｡繝ｼ繧ｸ_01', type: 'damage_01' },
-                { id: 11, name: '繝繝｡繝ｼ繧ｸ_02', type: 'damage_02' },
-                { id: 12, name: '繝繝｡繝ｼ繧ｸ_03', type: 'damage_03' },
-                { id: 13, name: '繝繝｡繝ｼ繧ｸ_04', type: 'damage_04' },
-                { id: 14, name: '繝繝｡繝ｼ繧ｸ_05', type: 'damage_05' },
-                // 繧ｲ繝・ヨ邉ｻ
-                { id: 15, name: '繧ｲ繝・ヨ_01', type: 'itemGet_01' },
-                { id: 16, name: '繧ｲ繝・ヨ_02', type: 'itemGet_02' },
-                { id: 17, name: '繧ｲ繝・ヨ_03', type: 'itemGet_03' },
-                { id: 18, name: '繧ｲ繝・ヨ_04', type: 'itemGet_04' },
-                { id: 19, name: '繧ｲ繝・ヨ_05', type: 'itemGet_05' },
-                // 縺昴・莉・
-                { id: 20, name: '縺昴・莉棒01(豎ｺ螳・', type: 'other_01' },
-                { id: 21, name: '縺昴・莉棒02(繧ｭ繝｣繝ｳ繧ｻ繝ｫ)', type: 'other_02' },
-                { id: 22, name: '縺昴・莉棒03(繧ｫ繝ｼ繧ｽ繝ｫ)', type: 'other_03' },
-                { id: 23, name: '縺昴・莉棒04(繝昴・繧ｺ)', type: 'other_04' },
-                { id: 24, name: '縺昴・莉棒05(辷・匱)', type: 'other_05' }
+                // ジャンプ系
+                { id: 0, name: 'ジャンプ01', type: 'jump_01' },
+                { id: 1, name: 'ジャンプ02', type: 'jump_02' },
+                { id: 2, name: 'ジャンプ03', type: 'jump_03' },
+                { id: 3, name: 'ジャンプ04', type: 'jump_04' },
+                { id: 4, name: 'ジャンプ05', type: 'jump_05' },
+                // 攻撃系
+                { id: 5, name: '攻撃01', type: 'attack_01' },
+                { id: 6, name: '攻撃02', type: 'attack_02' },
+                { id: 7, name: '攻撃03', type: 'attack_03' },
+                { id: 8, name: '攻撃04', type: 'attack_04' },
+                { id: 9, name: '攻撃05', type: 'attack_05' },
+                // ダメージ系
+                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
+                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
+                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
+                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
+                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
+                // ゲット系
+                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
+                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
+                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
+                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
+                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
+                // その他
+                { id: 20, name: 'その他01(決定)', type: 'other_01' },
+                { id: 21, name: 'その他02(キャンセル)', type: 'other_02' },
+                { id: 22, name: 'その他03(カーソル)', type: 'other_03' },
+                { id: 23, name: 'その他04(ポーズ)', type: 'other_04' },
+                { id: 24, name: 'その他05(爆発)', type: 'other_05' }
             ];
-            // 繝励Ο繧ｸ繧ｧ繧ｯ繝医ョ繝ｼ繧ｿ縺ｫ霑ｽ蜉
+            // プロジェクトデータに登録
             if (App.projectData) {
                 App.projectData.sounds = sounds;
             }
         }
 
         // 驕ｸ謚樔ｸｭ縺ｮSE蜷阪ｒ蜿門ｾ・
-        let selectedName = '縺ｪ縺・;
+        let selectedName = 'なし';
         if (selectedValue >= 0 && selectedValue < sounds.length) {
             selectedName = sounds[selectedValue].name;
         }
@@ -710,7 +710,7 @@ const StageEditor = {
                     // 蛟､陦ｨ遉ｺ繧呈峩譁ｰ
                     const valueEl = document.querySelector(`.param-value[data-key="${key}"]`);
                     if (valueEl) {
-                        valueEl.textContent = value === -1 ? '竏・ : value;
+                        valueEl.textContent = value === -1 ? '∞' : value;
                     }
                 }
             });
@@ -963,18 +963,16 @@ const StageEditor = {
         let sounds = App.projectData?.sounds;
         if (!sounds || sounds.length === 0) {
             sounds = [
-                {
-                    id: 0, name: '繧ｸ繝｣繝ｳ繝・, type: 'jump' },
-                {
-                        id: 1, name: '謾ｻ謦・, type: 'attack' },
-                { id: 2, name: '繝繝｡繝ｼ繧ｸ', type: 'damage' },
-                { id: 3, name: '繧ｲ繝・ヨ', type: 'itemGet' }
+                { id: 0, name: 'ジャンプ', type: 'jump' },
+                { id: 1, name: '攻撃', type: 'attack' },
+                { id: 2, name: 'ダメージ', type: 'damage' },
+                { id: 3, name: 'ゲット', type: 'itemGet' }
             ];
         }
 
         let html = `
             <div class="se-select-item ${this.selectedSeIndex === -1 ? 'current' : ''}" data-se-index="-1">
-                <span class="se-name">縺ｪ縺・/span>
+                <span class="se-name">なし</span>
             </div>
         `;
         sounds.forEach((se, idx) => {
@@ -1220,11 +1218,11 @@ const StageEditor = {
         this.templates = App.projectData.templates;
 
         const typeIcons = {
-            player: '式',
-            enemy: '太',
-            material: 'ｧｱ',
-            item: '箝・,
-            goal: '圸'
+            player: '👤',
+            enemy: '👾',
+            material: '🧱',
+            item: '💎',
+            goal: '🏁'
         };
 
         this.templates.forEach((template, index) => {
@@ -1332,1425 +1330,1431 @@ const StageEditor = {
 
     // 繧ｿ繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ蜑企勁
     deleteTemplate(index, needConfirm = true) {
-        if (needConfirm && !confirm('縺薙・繧ｿ繧､繝ｫ繧貞炎髯､縺励∪縺吶°・・)) {
+        if (needConfirm && !confirm('このタイルを削除しますか？')) {
             return;
-    }
+        }
         // 繧ｭ繝｣繝ｳ繝舌せ縺九ｉ隧ｲ蠖薙ち繧､繝ｫ繧偵け繝ｪ繧｢
         this.clearTileFromCanvas(index);
 
-    // 繝・Φ繝励Ξ繝ｼ繝医ｒ蜑企勁
-    App.projectData.templates.splice(index, 1);
+        // 繝・Φ繝励Ξ繝ｼ繝医ｒ蜑企勁
+        App.projectData.templates.splice(index, 1);
 
-    // 蜑企勁蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
-    this.updateCanvasTileIndices(index);
+        // 蜑企勁蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
+        this.updateCanvasTileIndices(index);
 
-    if(this.selectedTemplate === index) {
-        this.selectedTemplate = null;
-this.closeConfigPanel();
+        if (this.selectedTemplate === index) {
+            this.selectedTemplate = null;
+            this.closeConfigPanel();
         } else if (this.selectedTemplate > index) {
-    this.selectedTemplate--;
-}
-this.initTemplateList();
-this.render();
+            this.selectedTemplate--;
+        }
+        this.initTemplateList();
+        this.render();
+        this.render();
     },
 
-// 繧ｿ繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ隍・｣ｽ
-duplicateTemplate(index) {
-    const src = App.projectData.templates[index];
-    const newTmpl = JSON.parse(JSON.stringify(src));
+    // 繧ｿ繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ隍・｣ｽ
+    duplicateTemplate(index) {
+        const src = App.projectData.templates[index];
+        const newTmpl = JSON.parse(JSON.stringify(src));
 
-    // 隧ｲ蠖薙ち繧､繝ｫ縺ｮ蠕後ｍ縺ｫ霑ｽ蜉
-    App.projectData.templates.splice(index + 1, 0, newTmpl);
+        // 隧ｲ蠖薙ち繧､繝ｫ縺ｮ蠕後ｍ縺ｫ霑ｽ蜉
+        App.projectData.templates.splice(index + 1, 0, newTmpl);
 
-    // 驕ｸ謚樒憾諷九・隱ｿ謨ｴ
-    if (this.selectedTemplate !== null) {
-        if (this.selectedTemplate > index) {
-            this.selectedTemplate++;
-        } else if (this.selectedTemplate === index) {
-            this.selectedTemplate = index + 1; // 隍・｣ｽ繧帝∈謚・
-        }
-    }
-
-    this.initTemplateList();
-    this.render();
-},
-
-// 繧ｭ繝｣繝ｳ繝舌せ縺九ｉ謖・ｮ壹う繝ｳ繝・ャ繧ｯ繧ｹ縺ｮ繧ｿ繧､繝ｫ繧偵☆縺ｹ縺ｦ繧ｯ繝ｪ繧｢
-clearTileFromCanvas(templateIndex) {
-    const stage = App.projectData.stage;
-    if (!stage || !stage.layers) return;
-
-    const layer = stage.layers.fg;
-    if (!layer) return;
-
-    // 繧ｿ繧､繝ｫ縺ｮ譛蛻昴・繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧貞叙蠕・
-    const template = App.projectData.templates[templateIndex];
-    if (!template) return;
-
-    const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-    if (spriteIdx === undefined) return;
-
-    // 繧ｭ繝｣繝ｳ繝舌せ荳翫・隧ｲ蠖薙ち繧､繝ｫ繧・1縺ｫ鄂ｮ謠・
-    for (let y = 0; y < stage.height; y++) {
-        for (let x = 0; x < stage.width; x++) {
-            if (layer[y][x] === spriteIdx) {
-                layer[y][x] = -1;
+        // 驕ｸ謚樒憾諷九・隱ｿ謨ｴ
+        if (this.selectedTemplate !== null) {
+            if (this.selectedTemplate > index) {
+                this.selectedTemplate++;
+            } else if (this.selectedTemplate === index) {
+                this.selectedTemplate = index + 1; // 隍・｣ｽ繧帝∈謚・
             }
         }
-    }
-},
 
-// 繝・Φ繝励Ξ繝ｼ繝亥炎髯､蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
-// 蜑企勁縺輔ｌ縺溘う繝ｳ繝・ャ繧ｯ繧ｹ繧医ｊ螟ｧ縺阪＞繧ｹ繝励Λ繧､繝亥盾辣ｧ繧呈戟縺､繧ｿ繧､繝ｫ縺ｯ隱ｿ謨ｴ荳崎ｦ・
-// ・医ち繧､繝ｫ驟咲ｽｮ縺ｯ繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ・・
-updateCanvasTileIndices(deletedIndex) {
-    // 豕ｨ諢・ 迴ｾ蝨ｨ縺ｮ螳溯｣・〒縺ｯ繧ｿ繧､繝ｫ驟咲ｽｮ譎ゅ↓繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ
-    // 繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ縺ｮ隱ｿ謨ｴ縺ｯ荳崎ｦ・
-    // 蟆・擂逧・↓繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺吶ｋ蝣ｴ蜷医・縺薙％縺ｧ隱ｿ謨ｴ
-},
+        this.initTemplateList();
+        this.render();
+    },
 
-// ========== 繧ｭ繝｣繝ｳ繝舌せ ==========
-initCanvasEvents() {
-    if (!this.canvas) return;
+    // 繧ｭ繝｣繝ｳ繝舌せ縺九ｉ謖・ｮ壹う繝ｳ繝・ャ繧ｯ繧ｹ縺ｮ繧ｿ繧､繝ｫ繧偵☆縺ｹ縺ｦ繧ｯ繝ｪ繧｢
+    clearTileFromCanvas(templateIndex) {
+        const stage = App.projectData.stage;
+        if (!stage || !stage.layers) return;
 
-    // 驥崎､・Μ繧ｹ繝翫・髦ｲ豁｢
-    if (this.canvasEventsInitialized) return;
-    this.canvasEventsInitialized = true;
+        const layer = stage.layers.fg;
+        if (!layer) return;
 
-    let isDrawing = false;
+        // 繧ｿ繧､繝ｫ縺ｮ譛蛻昴・繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧貞叙蠕・
+        const template = App.projectData.templates[templateIndex];
+        if (!template) return;
 
-    // 2譛ｬ謖・ヱ繝ｳ逕ｨ縺ｮ迥ｶ諷・
-    this.canvasScrollX = 0;
-    this.canvasScrollY = 0;
-    let isPanning = false;
-    let panStartX = 0;
-    let panStartY = 0;
-    let lastScrollX = 0;
-    let lastScrollY = 0;
+        const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+        if (spriteIdx === undefined) return;
 
-    const handleStart = (e) => {
-        if (isDrawing) return;
-        hasMoved = false;
-
-        // 繧ｿ繝・メ蛻､螳夲ｼ・譛ｬ謖・ヱ繝ｳ蟇ｾ蠢懶ｼ・
-        if (e.touches && e.touches.length >= 2) {
-            isPanning = true;
-            panStartX = e.touches[0].clientX;
-            panStartY = e.touches[0].clientY;
-            lastScrollX = this.canvasScrollX;
-            lastScrollY = this.canvasScrollY;
-            isDrawing = false;
-            return;
-        }
-
-        const { x, y } = this.getTileFromEvent(e);
-
-        // 遽・峇驕ｸ謚槭Δ繝ｼ繝・
-        if (this.currentTool === 'select') {
-            isDrawing = true;
-            if (this.selectionStart && this.selectionEnd && this.isPointInSelection(x, y)) {
-                if (!this.isFloating) {
-                    this.saveHistory();
-                    this.floatSelection();
+        // 繧ｭ繝｣繝ｳ繝舌せ荳翫・隧ｲ蠖薙ち繧､繝ｫ繧・1縺ｫ鄂ｮ謠・
+        for (let y = 0; y < stage.height; y++) {
+            for (let x = 0; x < stage.width; x++) {
+                if (layer[y][x] === spriteIdx) {
+                    layer[y][x] = -1;
                 }
-                this.selectionMoveStart = { x, y };
-                this.isMovingSelection = true;
-            } else {
-                if (this.isFloating) {
-                    this.commitFloatingData();
-                }
-                this.selectionStart = { x, y };
-                this.selectionEnd = { x, y };
-                this.isMovingSelection = false;
-                this.isSelecting = true;
             }
-            this.render();
-            return;
         }
+    },
 
-        // 繝壹・繧ｹ繝医Δ繝ｼ繝・
-        if (this.currentTool === 'paste' && this.pasteMode) {
+    // 繝・Φ繝励Ξ繝ｼ繝亥炎髯､蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
+    // 蜑企勁縺輔ｌ縺溘う繝ｳ繝・ャ繧ｯ繧ｹ繧医ｊ螟ｧ縺阪＞繧ｹ繝励Λ繧､繝亥盾辣ｧ繧呈戟縺､繧ｿ繧､繝ｫ縺ｯ隱ｿ謨ｴ荳崎ｦ・
+    // ・医ち繧､繝ｫ驟咲ｽｮ縺ｯ繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ・・
+    updateCanvasTileIndices(deletedIndex) {
+        // 豕ｨ諢・ 迴ｾ蝨ｨ縺ｮ螳溯｣・〒縺ｯ繧ｿ繧､繝ｫ驟咲ｽｮ譎ゅ↓繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ
+        // 繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ縺ｮ隱ｿ謨ｴ縺ｯ荳崎ｦ・
+        // 蟆・擂逧・↓繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺吶ｋ蝣ｴ蜷医・縺薙％縺ｧ隱ｿ謨ｴ
+    },
+
+    // ========== 繧ｭ繝｣繝ｳ繝舌せ ==========
+    initCanvasEvents() {
+        if (!this.canvas) return;
+
+        // 驥崎､・Μ繧ｹ繝翫・髦ｲ豁｢
+        if (this.canvasEventsInitialized) return;
+        this.canvasEventsInitialized = true;
+
+        let isDrawing = false;
+
+        // 2譛ｬ謖・ヱ繝ｳ逕ｨ縺ｮ迥ｶ諷・
+        this.canvasScrollX = 0;
+        this.canvasScrollY = 0;
+        let isPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+        let lastScrollX = 0;
+        let lastScrollY = 0;
+
+        const handleStart = (e) => {
+            if (isDrawing) return;
+            hasMoved = false;
+
+            // 繧ｿ繝・メ蛻､螳夲ｼ・譛ｬ謖・ヱ繝ｳ蟇ｾ蠢懶ｼ・
+            if (e.touches && e.touches.length >= 2) {
+                isPanning = true;
+                panStartX = e.touches[0].clientX;
+                panStartY = e.touches[0].clientY;
+                lastScrollX = this.canvasScrollX;
+                lastScrollY = this.canvasScrollY;
+                isDrawing = false;
+                return;
+            }
+
+            const { x, y } = this.getTileFromEvent(e);
+
+            // 矩形選択モード
+            if (this.currentTool === 'select') {
+                try {
+                    if (this.selectionStart && this.selectionEnd && this.isPointInSelection(x, y)) {
+                        if (!this.isFloating) {
+                            this.saveHistory();
+                            this.floatSelection();
+                        }
+                        this.selectionMoveStart = { x, y };
+                        this.isMovingSelection = true;
+                    } else {
+                        if (this.isFloating) {
+                            this.commitFloatingData();
+                        }
+                        this.selectionStart = { x, y };
+                        this.selectionEnd = { x, y };
+                        this.isMovingSelection = false;
+                        this.isSelecting = true;
+                    }
+                    isDrawing = true; // 処理成功時のみ描画フラグを立てる
+                    this.render();
+                } catch (e) {
+                    console.error('Selection Logic Error:', e);
+                    isDrawing = false; // エラー時はリセット
+                }
+                return;
+            }
+
+            // 繝壹・繧ｹ繝医Δ繝ｼ繝・
+            if (this.currentTool === 'paste' && this.pasteMode) {
+                isDrawing = true;
+                this.selectionMoveStart = { x, y }; // 繝峨Λ繝・げ髢句ｧ狗せ縺ｨ縺励※蛻ｩ逕ｨ
+                return;
+            }
+
+            // 縺昴・莉悶・繝峨Ο繝ｼ繧､繝ｳ繧ｰ繝・・繝ｫ
+            if (this.currentTool === 'pen' || this.currentTool === 'eraser' || this.currentTool === 'fill') {
+                this.saveToHistory();
+            }
+
             isDrawing = true;
-            this.selectionMoveStart = { x, y }; // 繝峨Λ繝・げ髢句ｧ狗せ縺ｨ縺励※蛻ｩ逕ｨ
-            return;
-        }
+            this.processPixel(e);
+        };
 
-        // 縺昴・莉悶・繝峨Ο繝ｼ繧､繝ｳ繧ｰ繝・・繝ｫ
-        if (this.currentTool === 'pen' || this.currentTool === 'eraser' || this.currentTool === 'fill') {
-            this.saveToHistory();
-        }
+        const handleMove = (e) => {
+            if (isPanning && e.touches && e.touches.length >= 2) {
+                // 2譛ｬ謖・ヱ繝ｳ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
+                const dx = e.touches[0].clientX - panStartX;
+                const dy = e.touches[0].clientY - panStartY;
+                const parent = this.canvas.parentElement;
+                parent.scrollLeft = -lastScrollX - dx;
+                parent.scrollTop = -lastScrollY - dy;
+                return;
+            }
 
-        isDrawing = true;
-        this.processPixel(e);
-    };
+            if (!isDrawing) return;
+            hasMoved = true;
 
-    const handleMove = (e) => {
-        if (isPanning && e.touches && e.touches.length >= 2) {
-            // 2譛ｬ謖・ヱ繝ｳ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
-            const dx = e.touches[0].clientX - panStartX;
-            const dy = e.touches[0].clientY - panStartY;
-            const parent = this.canvas.parentElement;
-            parent.scrollLeft = -lastScrollX - dx;
-            parent.scrollTop = -lastScrollY - dy;
-            return;
-        }
+            const { x, y } = this.getTileFromEvent(e);
 
-        if (!isDrawing) return;
-        hasMoved = true;
+            // 遽・峇驕ｸ謚槭Δ繝ｼ繝・
+            if (this.currentTool === 'select') {
+                if (this.isMovingSelection && this.selectionMoveStart) {
+                    const dx = x - this.selectionMoveStart.x;
+                    const dy = y - this.selectionMoveStart.y;
+                    if (dx !== 0 || dy !== 0) {
+                        this.selectionStart.x += dx;
+                        this.selectionStart.y += dy;
+                        this.selectionEnd.x += dx;
+                        this.selectionEnd.y += dy;
 
-        const { x, y } = this.getTileFromEvent(e);
+                        if (this.isFloating) {
+                            this.floatingPos.x += dx;
+                            this.floatingPos.y += dy;
+                        }
 
-        // 遽・峇驕ｸ謚槭Δ繝ｼ繝・
-        if (this.currentTool === 'select') {
-            if (this.isMovingSelection && this.selectionMoveStart) {
+                        this.selectionMoveStart = { x, y };
+                    }
+                } else {
+                    this.selectionEnd = { x, y };
+                }
+                this.render();
+                return;
+            }
+
+            // 繝壹・繧ｹ繝医Δ繝ｼ繝会ｼ育ｧｻ蜍包ｼ・
+            if (this.currentTool === 'paste' && this.pasteMode && this.selectionMoveStart) {
                 const dx = x - this.selectionMoveStart.x;
                 const dy = y - this.selectionMoveStart.y;
-                if (dx !== 0 || dy !== 0) {
-                    this.selectionStart.x += dx;
-                    this.selectionStart.y += dy;
-                    this.selectionEnd.x += dx;
-                    this.selectionEnd.y += dy;
-
-                    if (this.isFloating) {
-                        this.floatingPos.x += dx;
-                        this.floatingPos.y += dy;
-                    }
-
-                    this.selectionMoveStart = { x, y };
-                }
-            } else {
-                this.selectionEnd = { x, y };
+                this.pasteOffset.x += dx;
+                this.pasteOffset.y += dy;
+                this.selectionMoveStart = { x, y };
+                this.render();
+                return;
             }
-            this.render();
-            return;
-        }
 
-        // 繝壹・繧ｹ繝医Δ繝ｼ繝会ｼ育ｧｻ蜍包ｼ・
-        if (this.currentTool === 'paste' && this.pasteMode && this.selectionMoveStart) {
-            const dx = x - this.selectionMoveStart.x;
-            const dy = y - this.selectionMoveStart.y;
-            this.pasteOffset.x += dx;
-            this.pasteOffset.y += dy;
-            this.selectionMoveStart = { x, y };
-            this.render();
-            return;
-        }
+            this.processPixel(e);
+        };
 
-        this.processPixel(e);
-    };
-
-    const handleEnd = () => {
-        if (isPanning) {
-            isPanning = false;
-            return;
-        }
-        if (!isDrawing) return;
-
-        isDrawing = false;
-
-        // 遽・峇驕ｸ謚槭・繝壹・繧ｹ繝育ｧｻ蜍慕ｵゆｺ・凾縺ｮ蜃ｦ逅・
-        if (this.currentTool === 'select') {
-            this.isSelecting = false;
-
-            if (!hasMoved && !this.isMovingSelection) {
-                this.cancelSelectionMode();
+        const handleEnd = () => {
+            if (isPanning) {
+                isPanning = false;
+                return;
             }
-            this.isMovingSelection = false;
-            this.selectionMoveStart = null;
-            this.render();
-            return;
-        }
-        if (this.currentTool === 'paste') {
-            this.selectionMoveStart = null;
-            this.confirmPaste();
-            return;
-        }
-    };
+            if (!isDrawing) return;
 
-    this.canvas.addEventListener('mousedown', handleStart);
-    this.canvas.addEventListener('mousemove', handleMove);
-    this.canvas.addEventListener('mouseup', handleEnd);
-    this.canvas.addEventListener('mouseleave', handleEnd);
-
-    // 2譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢逕ｨ
-    let pendingDrawTimer = null;
-    let pendingDrawData = null;
-    let hasMoved = false;
-
-    // 繧ｿ繝・メ繧､繝吶Φ繝茨ｼ・譛ｬ謖・ｼ壹ち繧､繝ｫ謫堺ｽ懊・譛ｬ謖・ｼ壹ヱ繝ｳ・・
-    this.canvas.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-            // 2譛ｬ謖・ｼ壹ヱ繝ｳ髢句ｧ・- 菫晉蕗荳ｭ縺ｮ蜈･蜉帙′縺ゅｌ縺ｰ繧ｭ繝｣繝ｳ繧ｻ繝ｫ
-            if (pendingDrawTimer) {
-                clearTimeout(pendingDrawTimer);
-                pendingDrawTimer = null;
-                pendingDrawData = null;
-            }
-            isPanning = true;
             isDrawing = false;
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            panStartX = (touch1.clientX + touch2.clientX) / 2;
-            panStartY = (touch1.clientY + touch2.clientY) / 2;
-            lastScrollX = this.canvasScrollX;
-            lastScrollY = this.canvasScrollY;
-            e.preventDefault();
-        } else if (e.touches.length === 1 && !isPanning) {
-            // 1譛ｬ謖・ｼ夐≦蟒ｶ縺励※繧ｿ繧､繝ｫ謫堺ｽ懶ｼ・譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢・・
-            e.preventDefault();
-            pendingDrawData = e.touches[0];
-            pendingDrawTimer = setTimeout(() => {
-                if (pendingDrawData && !isPanning) {
-                    handleStart(pendingDrawData);
+
+            // 遽・峇驕ｸ謚槭・繝壹・繧ｹ繝育ｧｻ蜍慕ｵゆｺ・凾縺ｮ蜃ｦ逅・
+            if (this.currentTool === 'select') {
+                this.isSelecting = false;
+
+                if (!hasMoved && !this.isMovingSelection) {
+                    this.cancelSelectionMode();
                 }
-                pendingDrawTimer = null;
-                pendingDrawData = null;
-            }, 50);
+                this.isMovingSelection = false;
+                this.selectionMoveStart = null;
+                this.render();
+                return;
+            }
+            if (this.currentTool === 'paste') {
+                this.selectionMoveStart = null;
+                this.confirmPaste();
+                return;
+            }
+        };
+
+        this.canvas.addEventListener('mousedown', handleStart);
+        this.canvas.addEventListener('mousemove', handleMove);
+        this.canvas.addEventListener('mouseup', handleEnd);
+        this.canvas.addEventListener('mouseleave', handleEnd);
+
+        // 2譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢逕ｨ
+        let pendingDrawTimer = null;
+        let pendingDrawData = null;
+        let hasMoved = false;
+
+        // 繧ｿ繝・メ繧､繝吶Φ繝茨ｼ・譛ｬ謖・ｼ壹ち繧､繝ｫ謫堺ｽ懊・譛ｬ謖・ｼ壹ヱ繝ｳ・・
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                // 2譛ｬ謖・ｼ壹ヱ繝ｳ髢句ｧ・- 菫晉蕗荳ｭ縺ｮ蜈･蜉帙′縺ゅｌ縺ｰ繧ｭ繝｣繝ｳ繧ｻ繝ｫ
+                if (pendingDrawTimer) {
+                    clearTimeout(pendingDrawTimer);
+                    pendingDrawTimer = null;
+                    pendingDrawData = null;
+                }
+                isPanning = true;
+                isDrawing = false;
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                panStartX = (touch1.clientX + touch2.clientX) / 2;
+                panStartY = (touch1.clientY + touch2.clientY) / 2;
+                lastScrollX = this.canvasScrollX;
+                lastScrollY = this.canvasScrollY;
+                e.preventDefault();
+            } else if (e.touches.length === 1 && !isPanning) {
+                // 1譛ｬ謖・ｼ夐≦蟒ｶ縺励※繧ｿ繧､繝ｫ謫堺ｽ懶ｼ・譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢・・
+                e.preventDefault();
+                pendingDrawData = e.touches[0];
+                pendingDrawTimer = setTimeout(() => {
+                    if (pendingDrawData && !isPanning) {
+                        handleStart(pendingDrawData);
+                    }
+                    pendingDrawTimer = null;
+                    pendingDrawData = null;
+                }, 50);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && isPanning) {
+                // 2譛ｬ謖・ｼ壹ヱ繝ｳ荳ｭ
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentX = (touch1.clientX + touch2.clientX) / 2;
+                const currentY = (touch1.clientY + touch2.clientY) / 2;
+
+                this.canvasScrollX = lastScrollX + (currentX - panStartX);
+                this.canvasScrollY = lastScrollY + (currentY - panStartY);
+
+                // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ遽・峇繧貞宛髯・
+                const maxScrollX = Math.max(0, (App.projectData.stage.width - 16) * this.tileSize);
+                const maxScrollY = Math.max(0, (App.projectData.stage.height - 16) * this.tileSize);
+                this.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.canvasScrollX));
+                this.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.canvasScrollY));
+
+                this.render();
+                e.preventDefault();
+            } else if (e.touches.length === 1 && !isPanning) {
+                e.preventDefault();
+                handleMove(e.touches[0]);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                isPanning = false;
+            }
+            if (e.touches.length === 0) {
+                handleEnd();
+            }
+        });
+    },
+
+
+
+    getTileFromEvent(e) {
+        const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+        const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+        if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 }; // 繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ
+
+        const rect = this.canvas.getBoundingClientRect();
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+
+        const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
+        const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
+        return { x, y };
+    },
+
+    isPointInSelection(x, y) {
+        if (!this.selectionStart || !this.selectionEnd) return false;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    },
+
+    startSelectionMode() {
+        this.selectionMode = true;
+        this.pasteMode = false;
+
+        if (!this.selectionStart) {
+            this.selectionStart = null;
+            this.selectionEnd = null;
         }
-    }, { passive: false });
 
-    this.canvas.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2 && isPanning) {
-            // 2譛ｬ謖・ｼ壹ヱ繝ｳ荳ｭ
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            const currentX = (touch1.clientX + touch2.clientX) / 2;
-            const currentY = (touch1.clientY + touch2.clientY) / 2;
+        this.currentTool = 'select';
+        document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select');
+        });
+        this.render();
+    },
 
-            this.canvasScrollX = lastScrollX + (currentX - panStartX);
-            this.canvasScrollY = lastScrollY + (currentY - panStartY);
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
 
-            // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ遽・峇繧貞宛髯・
-            const maxScrollX = Math.max(0, (App.projectData.stage.width - 16) * this.tileSize);
-            const maxScrollY = Math.max(0, (App.projectData.stage.height - 16) * this.tileSize);
-            this.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.canvasScrollX));
-            this.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.canvasScrollY));
-
-            this.render();
-            e.preventDefault();
-        } else if (e.touches.length === 1 && !isPanning) {
-            e.preventDefault();
-            handleMove(e.touches[0]);
+        if (this.isFloating) {
+            this.commitFloatingData();
         }
-    }, { passive: false });
 
-    this.canvas.addEventListener('touchend', (e) => {
-        if (e.touches.length < 2) {
-            isPanning = false;
-        }
-        if (e.touches.length === 0) {
-            handleEnd();
-        }
-    });
-},
-
-
-
-getTileFromEvent(e) {
-    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
-    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
-
-    if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 }; // 繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ
-
-    const rect = this.canvas.getBoundingClientRect();
-    const scrollX = this.canvasScrollX || 0;
-    const scrollY = this.canvasScrollY || 0;
-
-    const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
-    const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
-    return { x, y };
-},
-
-isPointInSelection(x, y) {
-    if (!this.selectionStart || !this.selectionEnd) return false;
-    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-    return x >= x1 && x <= x2 && y >= y1 && y <= y2;
-},
-
-startSelectionMode() {
-    this.selectionMode = true;
-    this.pasteMode = false;
-
-    if (!this.selectionStart) {
+        this.isSelecting = false;
+        this.selectionMode = false;
         this.selectionStart = null;
         this.selectionEnd = null;
-    }
+        this.isMovingSelection = false;
+        this.selectionMoveStart = null;
+        this.render();
+    },
 
-    this.currentTool = 'select';
-    document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.tool === 'select');
-    });
-    this.render();
-},
-
-cancelSelectionMode() {
-    if (!this.selectionMode) return;
-
-    if (this.isFloating) {
-        this.commitFloatingData();
-    }
-
-    this.isSelecting = false;
-    this.selectionMode = false;
-    this.selectionStart = null;
-    this.selectionEnd = null;
-    this.isMovingSelection = false;
-    this.selectionMoveStart = null;
-    this.render();
-},
-
-copySelection() {
-    if (!this.selectionStart || !this.selectionEnd) {
-        // alert('繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
-        return;
-    }
-
-    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-
-    const stage = App.projectData.stage;
-    const layer = stage.layers.fg;
-    const data = [];
-
-    // 遽・峇蜀・・繧ｿ繧､繝ｫ繝・・繧ｿ繧偵さ繝斐・
-    for (let y = y1; y <= y2; y++) {
-        const row = [];
-        for (let x = x1; x <= x2; x++) {
-            if (x >= 0 && x < stage.width && y >= 0 && y < stage.height) {
-                row.push(layer[y][x]);
-                // 繧ｨ繝ｳ繝・ぅ繝・ぅ繧ゅさ繝斐・蟇ｾ雎｡縺ｫ蜷ｫ繧√ｋ縺ｹ縺阪□縺後∵ｧ矩縺瑚､・尅縺ｫ縺ｪ繧九◆繧∽ｻ雁屓縺ｯ繝槭ャ繝励メ繝・・縺ｮ縺ｿ
-                // 蠢・ｦ√↑繧峨お繝ｳ繝・ぅ繝・ぅ繧ゅ％縺薙〒蜿朱寔
-            } else {
-                row.push(-1);
-            }
+    copySelection() {
+        if (!this.selectionStart || !this.selectionEnd) {
+            // alert('繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
+            return;
         }
-        data.push(row);
-    }
-    this.rangeClipboard = data;
-    alert('驕ｸ謚樒ｯ・峇繧偵さ繝斐・縺励∪縺励◆');
-    this.render();
-},
 
-pasteTiles() {
-    if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
-        alert('蜈医↓繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
-        return;
-    }
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
 
-    this.pasteMode = true;
-    this.selectionMode = false;
-    this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+        const data = [];
 
-    // 逕ｻ髱｢荳ｭ螟ｮ莉倩ｿ代↓驟咲ｽｮ
-    const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
-    const scrollY = Math.floor(-(this.canvasScrollY || 0) / this.tileSize);
+        // 遽・峇蜀・・繧ｿ繧､繝ｫ繝・・繧ｿ繧偵さ繝斐・
+        for (let y = y1; y <= y2; y++) {
+            const row = [];
+            for (let x = x1; x <= x2; x++) {
+                if (x >= 0 && x < stage.width && y >= 0 && y < stage.height) {
+                    row.push(layer[y][x]);
+                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ繧ゅさ繝斐・蟇ｾ雎｡縺ｫ蜷ｫ繧√ｋ縺ｹ縺阪□縺後∵ｧ矩縺瑚､・尅縺ｫ縺ｪ繧九◆繧∽ｻ雁屓縺ｯ繝槭ャ繝励メ繝・・縺ｮ縺ｿ
+                    // 蠢・ｦ√↑繧峨お繝ｳ繝・ぅ繝・ぅ繧ゅ％縺薙〒蜿朱寔
+                } else {
+                    row.push(-1);
+                }
+            }
+            data.push(row);
+        }
+        this.rangeClipboard = data;
+        alert('驕ｸ謚樒ｯ・峇繧偵さ繝斐・縺励∪縺励◆');
+        this.render();
+    },
 
-    this.pasteOffset = {
-        x: scrollX + 2,
-        y: scrollY + 2
-    };
+    pasteTiles() {
+        if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
+            alert('蜈医↓繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
+            return;
+        }
 
-    this.currentTool = 'paste';
-    document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.tool === 'paste');
-    });
-    this.render();
-},
+        this.pasteMode = true;
+        this.selectionMode = false;
+        this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
 
-confirmPaste() {
-    if (!this.pasteData) return;
+        // 逕ｻ髱｢荳ｭ螟ｮ莉倩ｿ代↓驟咲ｽｮ
+        const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
+        const scrollY = Math.floor(-(this.canvasScrollY || 0) / this.tileSize);
 
-    this.saveToHistory();
-    const stage = App.projectData.stage;
-    const layer = stage.layers.fg;
+        this.pasteOffset = {
+            x: scrollX + 2,
+            y: scrollY + 2
+        };
 
-    const h = this.pasteData.length;
-    const w = this.pasteData[0].length;
+        this.currentTool = 'paste';
+        document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'paste');
+        });
+        this.render();
+    },
 
-    for (let dy = 0; dy < h; dy++) {
-        for (let dx = 0; dx < w; dx++) {
-            const tx = this.pasteOffset.x + dx;
-            const ty = this.pasteOffset.y + dy;
-            const tile = this.pasteData[dy][dx];
+    confirmPaste() {
+        if (!this.pasteData) return;
 
-            if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                // -1 (騾乗・) 縺ｯ繝壹・繧ｹ繝医＠縺ｪ縺・ｴ蜷医′螟壹＞縺後∽ｻ雁屓縺ｯ縺昴・縺ｾ縺ｾ荳頑嶌縺阪☆繧・
-                if (tile !== -1) {
-                    layer[ty][tx] = tile;
+        this.saveToHistory();
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+
+        const h = this.pasteData.length;
+        const w = this.pasteData[0].length;
+
+        for (let dy = 0; dy < h; dy++) {
+            for (let dx = 0; dx < w; dx++) {
+                const tx = this.pasteOffset.x + dx;
+                const ty = this.pasteOffset.y + dy;
+                const tile = this.pasteData[dy][dx];
+
+                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
+                    // -1 (騾乗・) 縺ｯ繝壹・繧ｹ繝医＠縺ｪ縺・ｴ蜷医′螟壹＞縺後∽ｻ雁屓縺ｯ縺昴・縺ｾ縺ｾ荳頑嶌縺阪☆繧・
+                    if (tile !== -1) {
+                        layer[ty][tx] = tile;
+                    }
                 }
             }
         }
-    }
 
-    this.pasteMode = false;
-    this.pasteData = null;
-    this.currentTool = 'select'; // 繝壹・繧ｹ繝亥ｾ後・驕ｸ謚槭Δ繝ｼ繝峨↓謌ｻ繧九・縺瑚・辟ｶ
-    this.startSelectionMode();
-},
-
-flipVertical() {
-    // 螳溯｣・・蠕悟屓縺励∪縺溘・迴ｾ蝨ｨ縺ｮ驕ｸ謚樒ｯ・峇縺ｫ蟇ｾ縺励※陦後≧
-    // 縺薙％縺ｧ縺ｯ驕ｸ謚樒ｯ・峇縺ｮ蜿崎ｻ｢繝ｭ繧ｸ繝・け縺悟ｿ・ｦ・
-    alert('繧ｹ繝・・繧ｸ繧ｨ繝・ぅ繧ｿ縺ｮ蜿崎ｻ｢讖溯・縺ｯ譛ｪ螳溯｣・〒縺・);
+        this.pasteMode = false;
+        this.pasteData = null;
+        this.currentTool = 'select'; // 繝壹・繧ｹ繝亥ｾ後・驕ｸ謚槭Δ繝ｼ繝峨↓謌ｻ繧九・縺瑚・辟ｶ
+        this.startSelectionMode();
     },
 
-flipHorizontal() {
-    alert('繧ｹ繝・・繧ｸ繧ｨ繝・ぅ繧ｿ縺ｮ蜿崎ｻ｢讖溯・縺ｯ譛ｪ螳溯｣・〒縺・);
+    flipVertical() {
+        // 螳溯｣・・蠕悟屓縺励∪縺溘・迴ｾ蝨ｨ縺ｮ驕ｸ謚樒ｯ・峇縺ｫ蟇ｾ縺励※陦後≧
+        // 縺薙％縺ｧ縺ｯ驕ｸ謚樒ｯ・峇縺ｮ蜿崎ｻ｢繝ｭ繧ｸ繝・け縺悟ｿ・ｦ・
+        alert('ステージエディタの反転機能は未実装です');
     },
 
-processPixel(e) {
-    if (App.currentScreen !== 'stage') return;
+    flipHorizontal() {
+        alert('ステージエディタの反転機能は未実装です');
+    },
 
-    // 繧､繝吶Φ繝医°繧峨け繝ｩ繧､繧｢繝ｳ繝亥ｺｧ讓吶ｒ蜿門ｾ暦ｼ・ndefined蟇ｾ遲厄ｼ・
-    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
-    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
-    if (clientX === undefined || clientY === undefined) return;
+    processPixel(e) {
+        if (App.currentScreen !== 'stage') return;
 
-    const rect = this.canvas.getBoundingClientRect();
+        // 繧､繝吶Φ繝医°繧峨け繝ｩ繧､繧｢繝ｳ繝亥ｺｧ讓吶ｒ蜿門ｾ暦ｼ・ndefined蟇ｾ遲厄ｼ・
+        const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+        const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+        if (clientX === undefined || clientY === undefined) return;
 
-    // 繧ｭ繝｣繝ｳ繝舌せ螟悶・繧ｿ繝・メ縺ｯ辟｡隕厄ｼ医せ繝・・繧ｸ險ｭ螳壹ヱ繝阪Ν縺ｪ縺ｩ莉剖I隕∫ｴ縺ｮ繧ｿ繝・・蟇ｾ遲厄ｼ・
-    if (clientX < rect.left || clientX > rect.right ||
-        clientY < rect.top || clientY > rect.bottom) {
-        return;
-    }
+        const rect = this.canvas.getBoundingClientRect();
 
-    const scrollX = this.canvasScrollX || 0;
-    const scrollY = this.canvasScrollY || 0;
-    const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
-    const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
+        // 繧ｭ繝｣繝ｳ繝舌せ螟悶・繧ｿ繝・メ縺ｯ辟｡隕厄ｼ医せ繝・・繧ｸ險ｭ螳壹ヱ繝阪Ν縺ｪ縺ｩ莉剖I隕∫ｴ縺ｮ繧ｿ繝・・蟇ｾ遲厄ｼ・
+        if (clientX < rect.left || clientX > rect.right ||
+            clientY < rect.top || clientY > rect.bottom) {
+            return;
+        }
 
-    // 蠎ｧ讓吶′NaN縺ｮ蝣ｴ蜷医・蜃ｦ逅・＠縺ｪ縺・
-    if (isNaN(x) || isNaN(y)) return;
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+        const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
+        const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
 
-    const stage = App.projectData.stage;
-    if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) return;
+        // 蠎ｧ讓吶′NaN縺ｮ蝣ｴ蜷医・蜃ｦ逅・＠縺ｪ縺・
+        if (isNaN(x) || isNaN(y)) return;
 
-    const layer = stage.layers[this.currentLayer];
+        const stage = App.projectData.stage;
+        if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) return;
 
-    // 驕ｸ謚樔ｸｭ縺ｮ繝・Φ繝励Ξ繝ｼ繝医・繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞叙蠕・
-    // 繧ｨ繝ｳ繝・ぅ繝・ぅ驟榊・縺ｮ遒ｺ菫・
-    if (!stage.entities) stage.entities = [];
+        const layer = stage.layers[this.currentLayer];
 
-    // 繝・Φ繝励Ξ繝ｼ繝亥叙蠕励・繝ｫ繝代・
-    const getTemplate = (idx) => {
-        return (App.projectData.templates && App.projectData.templates[idx]) || null;
-    };
+        // 驕ｸ謚樔ｸｭ縺ｮ繝・Φ繝励Ξ繝ｼ繝医・繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞叙蠕・
+        // 繧ｨ繝ｳ繝・ぅ繝・ぅ驟榊・縺ｮ遒ｺ菫・
+        if (!stage.entities) stage.entities = [];
 
-    // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ蜿門ｾ励・繝ｫ繝代・
-    const getTemplateSize = (templateIdx) => {
-        const tmpl = getTemplate(templateIdx);
-        if (!tmpl) return 1;
-        const spriteIdx = tmpl.sprites?.idle?.frames?.[0] ?? tmpl.sprites?.main?.frames?.[0];
-        const sprite = App.projectData.sprites[spriteIdx];
-        return sprite?.size || 1;
-    };
+        // 繝・Φ繝励Ξ繝ｼ繝亥叙蠕励・繝ｫ繝代・
+        const getTemplate = (idx) => {
+            return (App.projectData.templates && App.projectData.templates[idx]) || null;
+        };
 
-    switch (this.currentTool) {
-        case 'pen':
-            if (this.selectedTemplate !== null) {
-                const tmpl = getTemplate(this.selectedTemplate);
-                const spriteSize = getTemplateSize(this.selectedTemplate);
+        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ蜿門ｾ励・繝ｫ繝代・
+        const getTemplateSize = (templateIdx) => {
+            const tmpl = getTemplate(templateIdx);
+            if (!tmpl) return 1;
+            const spriteIdx = tmpl.sprites?.idle?.frames?.[0] ?? tmpl.sprites?.main?.frames?.[0];
+            const sprite = App.projectData.sprites[spriteIdx];
+            return sprite?.size || 1;
+        };
 
-                // 繧ｨ繝ｳ繝・ぅ繝・ぅ繧ｿ繧､繝励・蝣ｴ蜷茨ｼ・ntities驟榊・縺ｸ霑ｽ蜉・・
-                if (tmpl && ['player', 'enemy', 'item'].includes(tmpl.type)) {
-                    // 譌｢蟄倥・蜷悟ｺｧ讓吶お繝ｳ繝・ぅ繝・ぅ繧貞炎髯､・井ｸ頑嶌縺搾ｼ・
-                    // 32x32縺ｮ蝣ｴ蜷医・2x2鬆伜沺縺ｮ驥崎､・ｒ閠・・縺吶∋縺阪□縺後√す繝ｳ繝励Ν縺ｫ蜴溽せ荳閾ｴ縺ｧ蛻､螳・
-                    // 縺ｾ縺溘・縲後◎縺ｮ蠎ｧ讓吶↓縺ゅｋ繧ゅ・縲阪ｒ豸医☆
-                    const removeIdx = stage.entities.findIndex(e => {
-                        // 蜷後§蠎ｧ讓吶↓縺ゅｋ繧ｨ繝ｳ繝・ぅ繝・ぅ繧呈爾縺・
-                        // 蜴ｳ蟇・↓縺ｯ遏ｩ蠖｢蛻､螳壹☆縺ｹ縺阪□縺後√お繝・ぅ繧ｿ謫堺ｽ懊→縺励※縺ｯ蜴溽せ繧ｯ繝ｪ繝・け縺ｧ荳頑嶌縺阪′閾ｪ辟ｶ
-                        return e.x === x && e.y === y;
-                    });
-                    if (removeIdx >= 0) {
-                        stage.entities.splice(removeIdx, 1);
-                    }
+        switch (this.currentTool) {
+            case 'pen':
+                if (this.selectedTemplate !== null) {
+                    const tmpl = getTemplate(this.selectedTemplate);
+                    const spriteSize = getTemplateSize(this.selectedTemplate);
 
-                    // 譁ｰ隕剰ｿｽ蜉
-                    stage.entities.push({
-                        x: x,
-                        y: y,
-                        templateId: this.selectedTemplate
-                    });
+                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ繧ｿ繧､繝励・蝣ｴ蜷茨ｼ・ntities驟榊・縺ｸ霑ｽ蜉・・
+                    if (tmpl && ['player', 'enemy', 'item'].includes(tmpl.type)) {
+                        // 譌｢蟄倥・蜷悟ｺｧ讓吶お繝ｳ繝・ぅ繝・ぅ繧貞炎髯､・井ｸ頑嶌縺搾ｼ・
+                        // 32x32縺ｮ蝣ｴ蜷医・2x2鬆伜沺縺ｮ驥崎､・ｒ閠・・縺吶∋縺阪□縺後√す繝ｳ繝励Ν縺ｫ蜴溽せ荳閾ｴ縺ｧ蛻､螳・
+                        // 縺ｾ縺溘・縲後◎縺ｮ蠎ｧ讓吶↓縺ゅｋ繧ゅ・縲阪ｒ豸医☆
+                        const removeIdx = stage.entities.findIndex(e => {
+                            // 蜷後§蠎ｧ讓吶↓縺ゅｋ繧ｨ繝ｳ繝・ぅ繝・ぅ繧呈爾縺・
+                            // 蜴ｳ蟇・↓縺ｯ遏ｩ蠖｢蛻､螳壹☆縺ｹ縺阪□縺後√お繝・ぅ繧ｿ謫堺ｽ懊→縺励※縺ｯ蜴溽せ繧ｯ繝ｪ繝・け縺ｧ荳頑嶌縺阪′閾ｪ辟ｶ
+                            return e.x === x && e.y === y;
+                        });
+                        if (removeIdx >= 0) {
+                            stage.entities.splice(removeIdx, 1);
+                        }
 
-                    // 繝槭ャ繝励ち繧､繝ｫ縺ｮ譖ｸ縺崎ｾｼ縺ｿ縺ｯ繧ｹ繧ｭ繝・・・郁レ譎ｯ邯ｭ謖・ｼ・
-                } else {
-                    // 騾壼ｸｸ繧ｿ繧､繝ｫ・・ap驟榊・縺ｸ譖ｸ縺崎ｾｼ縺ｿ・・
-                    const tileValue = this.selectedTemplate + 100;
+                        // 譁ｰ隕剰ｿｽ蜉
+                        stage.entities.push({
+                            x: x,
+                            y: y,
+                            templateId: this.selectedTemplate
+                        });
 
-                    if (spriteSize === 2) {
-                        // 32x32繧ｹ繝励Λ繧､繝・
-                        const snapX = Math.floor(x / 2) * 2;
-                        const snapY = Math.floor(y / 2) * 2;
+                        // 繝槭ャ繝励ち繧､繝ｫ縺ｮ譖ｸ縺崎ｾｼ縺ｿ縺ｯ繧ｹ繧ｭ繝・・・郁レ譎ｯ邯ｭ謖・ｼ・
+                    } else {
+                        // 騾壼ｸｸ繧ｿ繧､繝ｫ・・ap驟榊・縺ｸ譖ｸ縺崎ｾｼ縺ｿ・・
+                        const tileValue = this.selectedTemplate + 100;
 
-                        for (let dy = 0; dy < 2; dy++) {
-                            for (let dx = 0; dx < 2; dx++) {
-                                const tx = snapX + dx;
-                                const ty = snapY + dy;
-                                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                                    if (dx === 0 && dy === 0) {
-                                        layer[ty][tx] = tileValue;
-                                    } else {
-                                        layer[ty][tx] = -1000 - (dy * 2 + dx);
+                        if (spriteSize === 2) {
+                            // 32x32繧ｹ繝励Λ繧､繝・
+                            const snapX = Math.floor(x / 2) * 2;
+                            const snapY = Math.floor(y / 2) * 2;
+
+                            for (let dy = 0; dy < 2; dy++) {
+                                for (let dx = 0; dx < 2; dx++) {
+                                    const tx = snapX + dx;
+                                    const ty = snapY + dy;
+                                    if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
+                                        if (dx === 0 && dy === 0) {
+                                            layer[ty][tx] = tileValue;
+                                        } else {
+                                            layer[ty][tx] = -1000 - (dy * 2 + dx);
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        // 16x16繧ｹ繝励Λ繧､繝・
-                        layer[y][x] = tileValue;
-                    }
-                }
-            }
-            break;
-
-        case 'eraser':
-            // 縺ｾ縺壹お繝ｳ繝・ぅ繝・ぅ繧貞炎髯､
-            let entityDeleted = false;
-            for (let i = stage.entities.length - 1; i >= 0; i--) {
-                const e = stage.entities[i];
-                // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺ｮ蜊譛蛾伜沺繧定ｨ育ｮ・
-                const tmpl = getTemplate(e.templateId);
-                const size = getTemplateSize(e.templateId);
-                const w = (size === 2) ? 2 : 1;
-                const h = (size === 2) ? 2 : 1;
-
-                // 繧ｯ繝ｪ繝・け蠎ｧ讓吶′繧ｨ繝ｳ繝・ぅ繝・ぅ蜀・↓縺ゅｋ縺・
-                if (x >= e.x && x < e.x + w && y >= e.y && y < e.y + h) {
-                    stage.entities.splice(i, 1);
-                    entityDeleted = true;
-                    // 驥阪↑縺｣縺ｦ縺・ｋ蝣ｴ蜷医☆縺ｹ縺ｦ豸医☆縺九∽ｸ逡ｪ荳翫□縺第ｶ医☆縺九ゅ％縺薙〒縺ｯ蜈ｨ縺ｦ豸医☆縲・
-                }
-            }
-
-            // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺悟炎髯､縺輔ｌ縺溷ｴ蜷医√・繝・・繧ｿ繧､繝ｫ縺ｯ豸医＆縺ｪ縺・ｼ郁ｪ､謫堺ｽ憺亟豁｢・・
-            // 縺溘□縺励√Θ繝ｼ繧ｶ繝ｼ縺梧・遉ｺ逧・↓閭梧勹繧よｶ医＠縺溘＞蝣ｴ蜷医・蜀阪け繝ｪ繝・け縺悟ｿ・ｦ・
-            if (entityDeleted) break;
-
-            // 繝槭ャ繝励ち繧､繝ｫ縺ｮ蜑企勁蜃ｦ逅・ｼ域里蟄倥Ο繧ｸ繝・け・・
-            const currentTile = layer[y][x];
-            if (currentTile <= -1000) {
-                const offset = -(currentTile + 1000);
-                const dx = offset % 2;
-                const dy = Math.floor(offset / 2);
-                const originX = x - dx;
-                const originY = y - dy;
-                for (let iy = 0; iy < 2; iy++) {
-                    for (let ix = 0; ix < 2; ix++) {
-                        const tx = originX + ix;
-                        const ty = originY + iy;
-                        if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                            layer[ty][tx] = -1;
+                        } else {
+                            // 16x16繧ｹ繝励Λ繧､繝・
+                            layer[y][x] = tileValue;
                         }
                     }
                 }
-            } else if (currentTile >= 100) {
-                const templateIdx = currentTile - 100;
-                const spriteSize = getTemplateSize(templateIdx);
-                if (spriteSize === 2) {
+                break;
+
+            case 'eraser':
+                // 縺ｾ縺壹お繝ｳ繝・ぅ繝・ぅ繧貞炎髯､
+                let entityDeleted = false;
+                for (let i = stage.entities.length - 1; i >= 0; i--) {
+                    const e = stage.entities[i];
+                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺ｮ蜊譛蛾伜沺繧定ｨ育ｮ・
+                    const tmpl = getTemplate(e.templateId);
+                    const size = getTemplateSize(e.templateId);
+                    const w = (size === 2) ? 2 : 1;
+                    const h = (size === 2) ? 2 : 1;
+
+                    // 繧ｯ繝ｪ繝・け蠎ｧ讓吶′繧ｨ繝ｳ繝・ぅ繝・ぅ蜀・↓縺ゅｋ縺・
+                    if (x >= e.x && x < e.x + w && y >= e.y && y < e.y + h) {
+                        stage.entities.splice(i, 1);
+                        entityDeleted = true;
+                        // 驥阪↑縺｣縺ｦ縺・ｋ蝣ｴ蜷医☆縺ｹ縺ｦ豸医☆縺九∽ｸ逡ｪ荳翫□縺第ｶ医☆縺九ゅ％縺薙〒縺ｯ蜈ｨ縺ｦ豸医☆縲・
+                    }
+                }
+
+                // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺悟炎髯､縺輔ｌ縺溷ｴ蜷医√・繝・・繧ｿ繧､繝ｫ縺ｯ豸医＆縺ｪ縺・ｼ郁ｪ､謫堺ｽ憺亟豁｢・・
+                // 縺溘□縺励√Θ繝ｼ繧ｶ繝ｼ縺梧・遉ｺ逧・↓閭梧勹繧よｶ医＠縺溘＞蝣ｴ蜷医・蜀阪け繝ｪ繝・け縺悟ｿ・ｦ・
+                if (entityDeleted) break;
+
+                // 繝槭ャ繝励ち繧､繝ｫ縺ｮ蜑企勁蜃ｦ逅・ｼ域里蟄倥Ο繧ｸ繝・け・・
+                const currentTile = layer[y][x];
+                if (currentTile <= -1000) {
+                    const offset = -(currentTile + 1000);
+                    const dx = offset % 2;
+                    const dy = Math.floor(offset / 2);
+                    const originX = x - dx;
+                    const originY = y - dy;
                     for (let iy = 0; iy < 2; iy++) {
                         for (let ix = 0; ix < 2; ix++) {
-                            const tx = x + ix;
-                            const ty = y + iy;
+                            const tx = originX + ix;
+                            const ty = originY + iy;
                             if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
                                 layer[ty][tx] = -1;
                             }
                         }
                     }
+                } else if (currentTile >= 100) {
+                    const templateIdx = currentTile - 100;
+                    const spriteSize = getTemplateSize(templateIdx);
+                    if (spriteSize === 2) {
+                        for (let iy = 0; iy < 2; iy++) {
+                            for (let ix = 0; ix < 2; ix++) {
+                                const tx = x + ix;
+                                const ty = y + iy;
+                                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
+                                    layer[ty][tx] = -1;
+                                }
+                            }
+                        }
+                    } else {
+                        layer[y][x] = -1;
+                    }
                 } else {
                     layer[y][x] = -1;
                 }
-            } else {
-                layer[y][x] = -1;
-            }
-            break;
+                break;
 
-        case 'fill':
-            if (this.selectedTemplate !== null) {
-                const tmpl = getTemplate(this.selectedTemplate);
-                // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺ｮ蝪励ｊ縺､縺ｶ縺励・繧ｵ繝昴・繝医＠縺ｪ縺・ｼ医・繝・・縺ｮ縺ｿ・・
-                if (tmpl && ['player', 'enemy', 'item'].includes(tmpl.type)) {
-                    alert('繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧・い繧､繝・Β縺ｧ蝪励ｊ縺､縺ｶ縺励・縺ｧ縺阪∪縺帙ｓ');
-                    return;
-                }
-
-                const newValue = this.selectedTemplate + 100;
-                this.floodFill(x, y, layer[y][x], newValue);
-            }
-            break;
-
-        case 'eyedropper':
-            // 譛蜑埼擇・医お繝ｳ繝・ぅ繝・ぅ・峨ｒ蜆ｪ蜈亥叙蠕・
-            let foundEntity = null;
-            for (const e of stage.entities) {
-                const tmpl = getTemplate(e.templateId);
-                const size = getTemplateSize(e.templateId);
-                const w = (size === 2) ? 2 : 1;
-                const h = (size === 2) ? 2 : 1;
-                if (x >= e.x && x < e.x + w && y >= e.y && y < e.y + h) {
-                    foundEntity = e;
-                    break; // 譛蛻昴↓隕九▽縺九▲縺溘ｂ縺ｮ繧呈治逕ｨ
-                }
-            }
-
-            if (foundEntity) {
-                this.selectedTemplate = foundEntity.templateId;
-                this.initTemplateList();
-                // 繝・・繝ｫ繧偵・繝ｳ縺ｫ謌ｻ縺・
-                this.currentTool = 'pen';
-                // 繝・・繝ｫ繝舌・縺ｮ隕九◆逶ｮ譖ｴ譁ｰ縺ｯ逵∫払・亥・謠冗判縺ｧ蜿肴丐縺輔ｌ繧九°隕∫｢ｺ隱搾ｼ・
-            } else {
-                // 繝槭ャ繝励ち繧､繝ｫ縺九ｉ蜿門ｾ・
-                const tileId = layer[y][x];
-                if (tileId >= 100) {
-                    const templateIdx = tileId - 100;
-                    if (templateIdx >= 0 && templateIdx < this.templates.length) {
-                        this.selectedTemplate = templateIdx;
-                        this.initTemplateList();
-                        this.currentTool = 'pen';
+            case 'fill':
+                if (this.selectedTemplate !== null) {
+                    const tmpl = getTemplate(this.selectedTemplate);
+                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺ｮ蝪励ｊ縺､縺ｶ縺励・繧ｵ繝昴・繝医＠縺ｪ縺・ｼ医・繝・・縺ｮ縺ｿ・・
+                    if (tmpl && ['player', 'enemy', 'item'].includes(tmpl.type)) {
+                        alert('繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧・い繧､繝・Β縺ｧ蝪励ｊ縺､縺ｶ縺励・縺ｧ縺阪∪縺帙ｓ');
+                        return;
                     }
-                } else if (tileId >= 0) {
-                    const idx = this.templates.findIndex(t =>
-                        (t.sprites?.idle?.frames?.[0] === tileId) || (t.sprites?.main?.frames?.[0] === tileId)
-                    );
-                    if (idx >= 0) {
-                        this.selectedTemplate = idx;
-                        this.initTemplateList();
-                        this.currentTool = 'pen';
+
+                    const newValue = this.selectedTemplate + 100;
+                    this.floodFill(x, y, layer[y][x], newValue);
+                }
+                break;
+
+            case 'eyedropper':
+                // 譛蜑埼擇・医お繝ｳ繝・ぅ繝・ぅ・峨ｒ蜆ｪ蜈亥叙蠕・
+                let foundEntity = null;
+                for (const e of stage.entities) {
+                    const tmpl = getTemplate(e.templateId);
+                    const size = getTemplateSize(e.templateId);
+                    const w = (size === 2) ? 2 : 1;
+                    const h = (size === 2) ? 2 : 1;
+                    if (x >= e.x && x < e.x + w && y >= e.y && y < e.y + h) {
+                        foundEntity = e;
+                        break; // 譛蛻昴↓隕九▽縺九▲縺溘ｂ縺ｮ繧呈治逕ｨ
                     }
                 }
-            }
-            break;
-    }
 
-    this.render();
-},
-
-floodFill(startX, startY, targetValue, newValue) {
-    if (targetValue === newValue) return;
-
-    const stage = App.projectData.stage;
-    const layer = stage.layers[this.currentLayer];
-    const stack = [[startX, startY]];
-
-    while (stack.length > 0) {
-        const [x, y] = stack.pop();
-        if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) continue;
-        if (layer[y][x] !== targetValue) continue;
-
-        layer[y][x] = newValue;
-        stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
-    }
-},
-
-resize() {
-    const container = document.getElementById('stage-canvas-area');
-    if (!container || !this.canvas) return;
-
-    // 繧ｭ繝｣繝ｳ繝舌せ縺ｯ蟶ｸ縺ｫ16x16繧ｿ繧､繝ｫ・・20px・牙崋螳・
-    // 繧ｹ繝・・繧ｸ繧ｵ繧､繧ｺ縺悟､ｧ縺阪＞蝣ｴ蜷医・2譛ｬ謖・ヱ繝ｳ縺ｧ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
-    this.tileSize = 20;
-    const canvasSize = 320;
-
-    this.canvas.width = canvasSize;
-    this.canvas.height = canvasSize;
-    this.canvas.style.width = canvasSize + 'px';
-    this.canvas.style.height = canvasSize + 'px';
-
-    this.render();
-},
-
-render() {
-    if (!this.canvas || !this.ctx) return;
-    if (App.currentScreen !== 'stage') return;
-
-    // 閭梧勹濶ｲ・・ixel逕ｻ髱｢縺ｮ閭梧勹濶ｲ繧剃ｽｿ逕ｨ・・
-    this.ctx.fillStyle = this.getBackgroundColor();
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // FG繝ｬ繧､繝､繝ｼ縺ｮ縺ｿ謠冗判
-    this.renderLayer('fg', 1);
-
-    // 繧ｨ繝ｳ繝・ぅ繝・ぅ謠冗判・域眠隕剰ｿｽ蜉・・
-    this.renderEntities();
-
-    this.renderGrid();
-    this.renderSelection();
-},
-
-renderEntities() {
-    const stage = App.projectData.stage;
-    if (!stage.entities) return;
-
-    const templates = App.projectData.templates || [];
-    const sprites = App.projectData.sprites;
-    const palette = App.nesPalette;
-
-    stage.entities.forEach(entity => {
-        const template = templates[entity.templateId];
-        if (!template) return;
-
-        const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-        const sprite = sprites[spriteIdx];
-        if (sprite) {
-            // 謨ｵ縺ｯ蟾ｦ蜷代″縺ｫ蜿崎ｻ｢縺励※謠冗判
-            const flipX = template.type === 'enemy';
-            this.renderSprite(sprite, entity.x, entity.y, palette, flipX);
+                if (foundEntity) {
+                    this.selectedTemplate = foundEntity.templateId;
+                    this.initTemplateList();
+                    // 繝・・繝ｫ繧偵・繝ｳ縺ｫ謌ｻ縺・
+                    this.currentTool = 'pen';
+                    // 繝・・繝ｫ繝舌・縺ｮ隕九◆逶ｮ譖ｴ譁ｰ縺ｯ逵∫払・亥・謠冗判縺ｧ蜿肴丐縺輔ｌ繧九°隕∫｢ｺ隱搾ｼ・
+                } else {
+                    // 繝槭ャ繝励ち繧､繝ｫ縺九ｉ蜿門ｾ・
+                    const tileId = layer[y][x];
+                    if (tileId >= 100) {
+                        const templateIdx = tileId - 100;
+                        if (templateIdx >= 0 && templateIdx < this.templates.length) {
+                            this.selectedTemplate = templateIdx;
+                            this.initTemplateList();
+                            this.currentTool = 'pen';
+                        }
+                    } else if (tileId >= 0) {
+                        const idx = this.templates.findIndex(t =>
+                            (t.sprites?.idle?.frames?.[0] === tileId) || (t.sprites?.main?.frames?.[0] === tileId)
+                        );
+                        if (idx >= 0) {
+                            this.selectedTemplate = idx;
+                            this.initTemplateList();
+                            this.currentTool = 'pen';
+                        }
+                    }
+                }
+                break;
         }
-    });
-},
 
-renderLayer(layerName, alpha) {
-    const stage = App.projectData.stage;
-    const layer = stage.layers[layerName];
-    const sprites = App.projectData.sprites;
-    const templates = App.projectData.templates || [];
-    const palette = App.nesPalette;
-
-    this.ctx.globalAlpha = alpha;
-
-    for (let y = 0; y < stage.height; y++) {
-        for (let x = 0; x < stage.width; x++) {
-            const tileId = layer[y][x];
-
-            // 2x2繝槭・繧ｫ繝ｼ繧ｿ繧､繝ｫ縺ｯ繧ｹ繧ｭ繝・・・亥ｷｦ荳翫ち繧､繝ｫ縺ｮ縺ｿ謠冗判・・
-            if (tileId <= -1000) continue;
-
-            let sprite;
-            if (tileId >= 100) {
-                // 繝・Φ繝励Ξ繝ｼ繝・D繝吶・繧ｹ・域眠蠖｢蠑擾ｼ・
-                const template = templates[tileId - 100];
-                const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                sprite = sprites[spriteIdx];
-            } else if (tileId >= 0 && tileId < sprites.length) {
-                // 繧ｹ繝励Λ繧､繝・D繝吶・繧ｹ・域立蠖｢蠑擾ｼ・ 莠呈鋤諤ｧ
-                sprite = sprites[tileId];
-            }
-            if (sprite) {
-                this.renderSprite(sprite, x, y, palette);
-            }
-        }
-    }
-
-    this.ctx.globalAlpha = 1;
-},
-
-renderSprite(sprite, tileX, tileY, palette, flipX = false) {
-    const scrollX = this.canvasScrollX || 0;
-    const scrollY = this.canvasScrollY || 0;
-
-    // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
-    const spriteSize = sprite.size || 1;
-    const dimension = spriteSize === 2 ? 32 : 16;
-    const tileCount = spriteSize === 2 ? 2 : 1;  // 蜊譛峨☆繧九ち繧､繝ｫ謨ｰ
-    const pixelSize = (this.tileSize * tileCount) / dimension;
-
-    for (let y = 0; y < dimension; y++) {
-        for (let x = 0; x < dimension; x++) {
-            const colorIndex = sprite.data[y]?.[x];
-            if (colorIndex >= 0) {
-                this.ctx.fillStyle = palette[colorIndex];
-                // flipX縺ｮ蝣ｴ蜷医・X蠎ｧ讓吶ｒ蜿崎ｻ｢
-                const drawX = flipX
-                    ? tileX * this.tileSize + (dimension - 1 - x) * pixelSize + scrollX
-                    : tileX * this.tileSize + x * pixelSize + scrollX;
-                this.ctx.fillRect(
-                    drawX,
-                    tileY * this.tileSize + y * pixelSize + scrollY,
-                    pixelSize + 0.5,
-                    pixelSize + 0.5
-                );
-            }
-        }
-    }
-},
-
-renderSpriteToMiniCanvas(sprite, canvas, bgColor = '#3CBCFC') {
-    const ctx = canvas.getContext('2d');
-    const palette = App.nesPalette;
-
-    // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
-    const spriteSize = sprite.size || 1;
-    const dimension = spriteSize === 2 ? 32 : 16;
-
-    // 繧ｭ繝｣繝ｳ繝舌せ繧ｵ繧､繧ｺ繧偵せ繝励Λ繧､繝医し繧､繧ｺ縺ｫ蜷医ｏ縺帙ｋ
-    canvas.width = dimension;
-    canvas.height = dimension;
-
-    // 閭梧勹濶ｲ繧呈緒逕ｻ・亥虚逧・↓險ｭ螳壼庄閭ｽ・・
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, dimension, dimension);
-
-    // 繧ｹ繧ｱ繝ｼ繝ｫ菫よ焚・・:1縺ｧ謠冗判・・
-    const scale = 1;
-
-    for (let y = 0; y < dimension; y++) {
-        for (let x = 0; x < dimension; x++) {
-            const colorIndex = sprite.data[y]?.[x];
-            if (colorIndex >= 0) {
-                ctx.fillStyle = palette[colorIndex];
-                ctx.fillRect(
-                    x * scale,
-                    y * scale,
-                    scale + 0.1,
-                    scale + 0.1
-                );
-            }
-        }
-    }
-},
-
-renderGrid() {
-    const stage = App.projectData.stage;
-    const scrollX = this.canvasScrollX || 0;
-    const scrollY = this.canvasScrollY || 0;
-
-    // 騾壼ｸｸ縺ｮ繧ｰ繝ｪ繝・ラ邱夲ｼ郁埋繧・ｼ・
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    this.ctx.lineWidth = 0.5;
-
-    for (let x = 0; x <= stage.width; x++) {
-        const px = x * this.tileSize + scrollX;
-        if (px >= 0 && px <= this.canvas.width) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(px, 0);
-            this.ctx.lineTo(px, this.canvas.height);
-            this.ctx.stroke();
-        }
-    }
-
-    for (let y = 0; y <= stage.height; y++) {
-        const py = y * this.tileSize + scrollY;
-        if (py >= 0 && py <= this.canvas.height) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, py);
-            this.ctx.lineTo(this.canvas.width, py);
-            this.ctx.stroke();
-        }
-    }
-
-    // 16繧ｿ繧､繝ｫ豈弱・繧ｬ繧､繝臥ｷ夲ｼ郁ｦ九ｄ縺吶＞襍､邱夲ｼ・
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-    this.ctx.lineWidth = 2;
-
-    for (let x = 16; x < stage.width; x += 16) {
-        const px = x * this.tileSize + scrollX;
-        if (px >= 0 && px <= this.canvas.width) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(px, 0);
-            this.ctx.lineTo(px, this.canvas.height);
-            this.ctx.stroke();
-        }
-    }
-
-    for (let y = 16; y < stage.height; y += 16) {
-        const py = y * this.tileSize + scrollY;
-        if (py >= 0 && py <= this.canvas.height) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, py);
-            this.ctx.lineTo(this.canvas.width, py);
-            this.ctx.stroke();
-        }
-    }
-},
-
-// ========== UNDO讖溯・ ==========
-saveToHistory() {
-    // 繝・ヰ繧ｦ繝ｳ繧ｹ・・00ms莉･蜀・・騾｣邯壼他縺ｳ蜃ｺ縺励ｒ辟｡隕厄ｼ・
-    const now = Date.now();
-    if (this.lastSaveTime && now - this.lastSaveTime < 100) {
-        return;
-    }
-    this.lastSaveTime = now;
-
-    const stage = App.projectData.stage;
-    // FG繝ｬ繧､繝､繝ｼ縺ｮ迴ｾ蝨ｨ縺ｮ迥ｶ諷九ｒ繝・ぅ繝ｼ繝励さ繝斐・
-    const snapshot = stage.layers.fg.map(row => [...row]);
-
-    this.undoHistory.push(snapshot);
-
-    // 螻･豁ｴ縺悟､壹☆縺弱ｋ蝣ｴ蜷医・蜿､縺・ｂ縺ｮ繧貞炎髯､
-    if (this.undoHistory.length > this.maxUndoHistory) {
-        this.undoHistory.shift();
-    }
-},
-
-undo() {
-    if (this.undoHistory.length === 0) {
-        console.log('No undo history');
-        return;
-    }
-
-    const snapshot = this.undoHistory.pop();
-    const stage = App.projectData.stage;
-
-    // 繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ繧貞ｾｩ蜈・
-    stage.layers.fg = snapshot;
-
-    this.render();
-    console.log('Undo applied');
-},
-
-clearAllTiles() {
-    if (!confirm('縺吶∋縺ｦ縺ｮ繧ｿ繧､繝ｫ繧貞炎髯､縺励∪縺吶°・・)) {
-            return;
-}
-
-this.saveToHistory();
-
-const stage = App.projectData.stage;
-for (let y = 0; y < stage.height; y++) {
-    for (let x = 0; x < stage.width; x++) {
-        stage.layers.fg[y][x] = -1;
-    }
-}
-
-this.render();
-console.log('All tiles cleared');
+        this.render();
     },
 
-// ========== 繧ｹ繝・・繧ｸ險ｭ螳壹ヱ繝阪Ν ==========
-initStageSettings() {
-    const panel = document.getElementById('stage-settings-panel');
-    const header = document.getElementById('stage-settings-header');
-    if (!panel || !header) return;
+    floodFill(startX, startY, targetValue, newValue) {
+        if (targetValue === newValue) return;
 
-    // 繝代ロ繝ｫ蜀・・繧ｯ繝ｪ繝・け/繧ｿ繝・メ繧､繝吶Φ繝医′繧ｭ繝｣繝ｳ繝舌せ縺ｫ莨晄眺縺励↑縺・ｈ縺・↓
-    panel.addEventListener('click', (e) => e.stopPropagation());
-    panel.addEventListener('touchstart', (e) => e.stopPropagation());
-    panel.addEventListener('touchend', (e) => e.stopPropagation());
+        const stage = App.projectData.stage;
+        const layer = stage.layers[this.currentLayer];
+        const stack = [[startX, startY]];
 
-    // 謚倥ｊ縺溘◆縺ｿ・亥・譛溽憾諷九・髢九＞縺ｦ縺・ｋ・・
-    header.addEventListener('click', () => {
-        const wasCollapsed = panel.classList.contains('collapsed');
-        panel.classList.toggle('collapsed');
+        while (stack.length > 0) {
+            const [x, y] = stack.pop();
+            if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) continue;
+            if (layer[y][x] !== targetValue) continue;
 
-        // 繝代ロ繝ｫ繧帝幕縺乗凾縺ｫpendingArea蛟､繧堤樟蝨ｨ縺ｮ繧ｹ繝・・繧ｸ繧ｵ繧､繧ｺ縺九ｉ蜀榊・譛溷喧
-        if (wasCollapsed) {
-            this.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
-            this.pendingAreaH = Math.floor(App.projectData.stage.height / 16);
-            this.updateStageSettingsUI();
+            layer[y][x] = newValue;
+            stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
         }
-    });
+    },
 
-    // 荳譎ら噪縺ｪ繧ｵ繧､繧ｺ蛟､・井ｿ晏ｭ倥・繧ｿ繝ｳ謚ｼ荳九∪縺ｧ蜿肴丐縺励↑縺・ｼ・
-    this.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
-    this.pendingAreaH = Math.floor(App.projectData.stage.height / 16);
+    resize() {
+        const container = document.getElementById('stage-canvas-area');
+        if (!container || !this.canvas) return;
 
-    // UI隕∫ｴ蜿門ｾ・
-    const areaWValue = document.getElementById('area-w-value');
-    const areaHValue = document.getElementById('area-h-value');
-    const areaWMinus = document.getElementById('area-w-minus');
-    const areaWPlus = document.getElementById('area-w-plus');
-    const areaHMinus = document.getElementById('area-h-minus');
-    const areaHPlus = document.getElementById('area-h-plus');
-    const bgColorSwatch = document.getElementById('stage-bg-color');
-    const saveBtn = document.getElementById('stage-settings-save');
+        // 繧ｭ繝｣繝ｳ繝舌せ縺ｯ蟶ｸ縺ｫ16x16繧ｿ繧､繝ｫ・・20px・牙崋螳・
+        // 繧ｹ繝・・繧ｸ繧ｵ繧､繧ｺ縺悟､ｧ縺阪＞蝣ｴ蜷医・2譛ｬ謖・ヱ繝ｳ縺ｧ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
+        this.tileSize = 20;
+        const canvasSize = 320;
 
-    // 迴ｾ蝨ｨ縺ｮ蛟､繧貞渚譏
-    this.updateStageSettingsUI();
+        this.canvas.width = canvasSize;
+        this.canvas.height = canvasSize;
+        this.canvas.style.width = canvasSize + 'px';
+        this.canvas.style.height = canvasSize + 'px';
 
-    // 蜷榊燕縺ｯ菫晏ｭ倥・繧ｿ繝ｳ謚ｼ荳区凾縺ｮ縺ｿ蜿肴丐・医Μ繧｢繝ｫ繧ｿ繧､繝菫晏ｭ倥＠縺ｪ縺・ｼ・
-    // 繧､繝吶Φ繝医Μ繧ｹ繝翫・縺ｯ荳崎ｦ・
+        this.render();
+    },
 
-    // 繧ｨ繝ｪ繧｢繧ｵ繧､繧ｺ螟画峩・・I陦ｨ遉ｺ縺ｮ縺ｿ縲∽ｿ晏ｭ倥・繧ｿ繝ｳ縺ｧ蜿肴丐・・
-    if (areaWMinus) {
-        areaWMinus.addEventListener('click', () => {
-            if (this.pendingAreaW > 1) {
-                this.pendingAreaW--;
-                if (areaWValue) areaWValue.textContent = this.pendingAreaW;
+    render() {
+        if (!this.canvas || !this.ctx) return;
+        if (App.currentScreen !== 'stage') return;
+
+        // 閭梧勹濶ｲ・・ixel逕ｻ髱｢縺ｮ閭梧勹濶ｲ繧剃ｽｿ逕ｨ・・
+        this.ctx.fillStyle = this.getBackgroundColor();
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // FG繝ｬ繧､繝､繝ｼ縺ｮ縺ｿ謠冗判
+        this.renderLayer('fg', 1);
+
+        // 繧ｨ繝ｳ繝・ぅ繝・ぅ謠冗判・域眠隕剰ｿｽ蜉・・
+        this.renderEntities();
+
+        this.renderGrid();
+        this.renderSelection();
+    },
+
+    renderEntities() {
+        const stage = App.projectData.stage;
+        if (!stage.entities) return;
+
+        const templates = App.projectData.templates || [];
+        const sprites = App.projectData.sprites;
+        const palette = App.nesPalette;
+
+        stage.entities.forEach(entity => {
+            const template = templates[entity.templateId];
+            if (!template) return;
+
+            const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+            const sprite = sprites[spriteIdx];
+            if (sprite) {
+                // 謨ｵ縺ｯ蟾ｦ蜷代″縺ｫ蜿崎ｻ｢縺励※謠冗判
+                const flipX = template.type === 'enemy';
+                this.renderSprite(sprite, entity.x, entity.y, palette, flipX);
             }
         });
-    }
-    if (areaWPlus) {
-        areaWPlus.addEventListener('click', () => {
-            if (this.pendingAreaW < 10) {
-                this.pendingAreaW++;
-                if (areaWValue) areaWValue.textContent = this.pendingAreaW;
-            }
-        });
-    }
-    if (areaHMinus) {
-        areaHMinus.addEventListener('click', () => {
-            if (this.pendingAreaH > 1) {
-                this.pendingAreaH--;
-                if (areaHValue) areaHValue.textContent = this.pendingAreaH;
-            }
-        });
-    }
-    if (areaHPlus) {
-        areaHPlus.addEventListener('click', () => {
-            if (this.pendingAreaH < 10) {
-                this.pendingAreaH++;
-                if (areaHValue) areaHValue.textContent = this.pendingAreaH;
-            }
-        });
-    }
+    },
 
-    // 閭梧勹濶ｲ・医せ繝励Λ繧､繝医お繝・ぅ繧ｿ縺ｮ繧ｫ繝ｩ繝ｼ繝斐ャ繧ｫ繝ｼ繧剃ｽｿ逕ｨ・・
-    if (bgColorSwatch) {
-        bgColorSwatch.addEventListener('click', () => {
-            this.openBgColorPicker();
-        });
-    }
+    renderLayer(layerName, alpha) {
+        const stage = App.projectData.stage;
+        const layer = stage.layers[layerName];
+        const sprites = App.projectData.sprites;
+        const templates = App.projectData.templates || [];
+        const palette = App.nesPalette;
 
-    // 騾乗・濶ｲ
-    const transparentSelect = document.getElementById('stage-transparent-index');
-    if (transparentSelect) {
-        transparentSelect.addEventListener('change', () => {
-            App.projectData.stage.transparentIndex = parseInt(transparentSelect.value);
-        });
-    }
+        this.ctx.globalAlpha = alpha;
 
-    // BGM繧ｵ繝夜・岼
-    const bgmStage = document.getElementById('bgm-stage');
-    const bgmInvincible = document.getElementById('bgm-invincible');
-    const bgmClear = document.getElementById('bgm-clear');
-    const bgmGameover = document.getElementById('bgm-gameover');
+        for (let y = 0; y < stage.height; y++) {
+            for (let x = 0; x < stage.width; x++) {
+                const tileId = layer[y][x];
 
-    if (bgmStage) {
-        bgmStage.addEventListener('change', () => {
-            if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-            App.projectData.stage.bgm.stage = bgmStage.value;
-        });
-    }
-    if (bgmInvincible) {
-        bgmInvincible.addEventListener('change', () => {
-            if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-            App.projectData.stage.bgm.invincible = bgmInvincible.value;
-        });
-    }
-    if (bgmClear) {
-        bgmClear.addEventListener('change', () => {
-            if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-            App.projectData.stage.bgm.clear = bgmClear.value;
-        });
-    }
-    if (bgmGameover) {
-        bgmGameover.addEventListener('change', () => {
-            if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-            App.projectData.stage.bgm.gameover = bgmGameover.value;
-        });
-    }
+                // 2x2繝槭・繧ｫ繝ｼ繧ｿ繧､繝ｫ縺ｯ繧ｹ繧ｭ繝・・・亥ｷｦ荳翫ち繧､繝ｫ縺ｮ縺ｿ謠冗判・・
+                if (tileId <= -1000) continue;
 
-    // 繝懊せBGM
-    const bgmBoss = document.getElementById('bgm-boss');
-    if (bgmBoss) {
-        bgmBoss.addEventListener('change', () => {
-            if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-            App.projectData.stage.bgm.boss = bgmBoss.value;
-        });
-    }
-
-    // 繧ｯ繝ｪ繧｢譚｡莉ｶ
-    const clearCondition = document.getElementById('stage-clear-condition');
-    const timeLimitRow = document.getElementById('time-limit-row');
-    const timeLimitLabel = document.getElementById('time-limit-label');
-
-    const updateTimeLimitLabel = () => {
-        const condition = clearCondition?.value || 'none';
-        if (condition === 'survival') {
-            if (timeLimitLabel) timeLimitLabel.textContent = '繧ｵ繝舌う繝舌Ν譎る俣';
-            if (timeLimitRow) timeLimitRow.style.display = '';
-        } else {
-            if (timeLimitLabel) timeLimitLabel.textContent = '蛻ｶ髯先凾髢・;
-            // 莉悶・譚｡莉ｶ縺ｧ繧ょ宛髯先凾髢薙・陦ｨ遉ｺ縺吶ｋ・・縺ｪ繧臥┌蛻ｶ髯撰ｼ・
-            if (timeLimitRow) timeLimitRow.style.display = '';
-        }
-    };
-
-    if (clearCondition) {
-        clearCondition.addEventListener('change', () => {
-            App.projectData.stage.clearCondition = clearCondition.value;
-            updateTimeLimitLabel();
-        });
-    }
-
-    // 蛻ｶ髯先凾髢難ｼ亥・遘貞ｽ｢蠑擾ｼ・
-    const timeMin = document.getElementById('stage-time-min');
-    const timeSec = document.getElementById('stage-time-sec');
-
-    // 蜈･蜉帙ヵ繧｣繝ｼ繝ｫ繝峨・繧､繝吶Φ繝井ｼ晄眺繧呈ｭ｢繧√ｋ
-    [timeMin, timeSec].forEach(input => {
-        if (input) {
-            input.addEventListener('click', (e) => e.stopPropagation());
-            input.addEventListener('touchstart', (e) => e.stopPropagation());
-            input.addEventListener('touchend', (e) => e.stopPropagation());
-            input.addEventListener('focus', (e) => e.stopPropagation());
-        }
-    });
-
-    if (timeMin) {
-        timeMin.addEventListener('change', (e) => {
-            e.stopPropagation();
-            const min = parseInt(timeMin.value) || 0;
-            const sec = parseInt(timeSec?.value) || 0;
-            App.projectData.stage.timeLimit = min * 60 + sec;
-        });
-    }
-    if (timeSec) {
-        timeSec.addEventListener('change', (e) => {
-            e.stopPropagation();
-            const min = parseInt(timeMin?.value) || 0;
-            const sec = parseInt(timeSec.value) || 0;
-            App.projectData.stage.timeLimit = min * 60 + sec;
-        });
-    }
-
-    // 菫晏ｭ倥・繧ｿ繝ｳ
-    if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            // 繧ｿ繧､繝医Ν菫晏ｭ・
-            const nameInput = document.getElementById('stage-name-input');
-            if (nameInput) {
-                App.projectData.stage.name = nameInput.value;
-                // 繧ｲ繝ｼ繝逕ｻ髱｢繧ｿ繧､繝医Ν縺ｨ騾｣蜍・
-                if (App.projectData.meta) {
-                    App.projectData.meta.name = nameInput.value || 'NEW GAME';
+                let sprite;
+                if (tileId >= 100) {
+                    // 繝・Φ繝励Ξ繝ｼ繝・D繝吶・繧ｹ・域眠蠖｢蠑擾ｼ・
+                    const template = templates[tileId - 100];
+                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                    sprite = sprites[spriteIdx];
+                } else if (tileId >= 0 && tileId < sprites.length) {
+                    // 繧ｹ繝励Λ繧､繝・D繝吶・繧ｹ・域立蠖｢蠑擾ｼ・ 莠呈鋤諤ｧ
+                    sprite = sprites[tileId];
+                }
+                if (sprite) {
+                    this.renderSprite(sprite, x, y, palette);
                 }
             }
+        }
 
-            // 繧ｵ繧､繧ｺ螟画峩
-            const newWidth = this.pendingAreaW * 16;
-            const newHeight = this.pendingAreaH * 16;
-            if (newWidth !== App.projectData.stage.width || newHeight !== App.projectData.stage.height) {
-                this.resizeStage(newWidth, newHeight);
+        this.ctx.globalAlpha = 1;
+    },
+
+    renderSprite(sprite, tileX, tileY, palette, flipX = false) {
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+
+        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
+        const spriteSize = sprite.size || 1;
+        const dimension = spriteSize === 2 ? 32 : 16;
+        const tileCount = spriteSize === 2 ? 2 : 1;  // 蜊譛峨☆繧九ち繧､繝ｫ謨ｰ
+        const pixelSize = (this.tileSize * tileCount) / dimension;
+
+        for (let y = 0; y < dimension; y++) {
+            for (let x = 0; x < dimension; x++) {
+                const colorIndex = sprite.data[y]?.[x];
+                if (colorIndex >= 0) {
+                    this.ctx.fillStyle = palette[colorIndex];
+                    // flipX縺ｮ蝣ｴ蜷医・X蠎ｧ讓吶ｒ蜿崎ｻ｢
+                    const drawX = flipX
+                        ? tileX * this.tileSize + (dimension - 1 - x) * pixelSize + scrollX
+                        : tileX * this.tileSize + x * pixelSize + scrollX;
+                    this.ctx.fillRect(
+                        drawX,
+                        tileY * this.tileSize + y * pixelSize + scrollY,
+                        pixelSize + 0.5,
+                        pixelSize + 0.5
+                    );
+                }
             }
+        }
+    },
 
-            // 繧ｹ繧ｳ繧｢陦ｨ遉ｺ險ｭ螳・
-            const showScoreCheck = document.getElementById('stage-show-score');
-            if (showScoreCheck) {
-                App.projectData.stage.showScore = showScoreCheck.checked;
+    renderSpriteToMiniCanvas(sprite, canvas, bgColor = '#3CBCFC') {
+        const ctx = canvas.getContext('2d');
+        const palette = App.nesPalette;
+
+        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
+        const spriteSize = sprite.size || 1;
+        const dimension = spriteSize === 2 ? 32 : 16;
+
+        // 繧ｭ繝｣繝ｳ繝舌せ繧ｵ繧､繧ｺ繧偵せ繝励Λ繧､繝医し繧､繧ｺ縺ｫ蜷医ｏ縺帙ｋ
+        canvas.width = dimension;
+        canvas.height = dimension;
+
+        // 閭梧勹濶ｲ繧呈緒逕ｻ・亥虚逧・↓險ｭ螳壼庄閭ｽ・・
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, dimension, dimension);
+
+        // 繧ｹ繧ｱ繝ｼ繝ｫ菫よ焚・・:1縺ｧ謠冗判・・
+        const scale = 1;
+
+        for (let y = 0; y < dimension; y++) {
+            for (let x = 0; x < dimension; x++) {
+                const colorIndex = sprite.data[y]?.[x];
+                if (colorIndex >= 0) {
+                    ctx.fillStyle = palette[colorIndex];
+                    ctx.fillRect(
+                        x * scale,
+                        y * scale,
+                        scale + 0.1,
+                        scale + 0.1
+                    );
+                }
             }
+        }
+    },
 
-            // 險ｭ螳壹ヱ繝阪Ν繧帝哩縺倥ｋ
-            panel.classList.add('collapsed');
+    renderGrid() {
+        const stage = App.projectData.stage;
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+
+        // 騾壼ｸｸ縺ｮ繧ｰ繝ｪ繝・ラ邱夲ｼ郁埋繧・ｼ・
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.lineWidth = 0.5;
+
+        for (let x = 0; x <= stage.width; x++) {
+            const px = x * this.tileSize + scrollX;
+            if (px >= 0 && px <= this.canvas.width) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(px, 0);
+                this.ctx.lineTo(px, this.canvas.height);
+                this.ctx.stroke();
+            }
+        }
+
+        for (let y = 0; y <= stage.height; y++) {
+            const py = y * this.tileSize + scrollY;
+            if (py >= 0 && py <= this.canvas.height) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, py);
+                this.ctx.lineTo(this.canvas.width, py);
+                this.ctx.stroke();
+            }
+        }
+
+        // 16繧ｿ繧､繝ｫ豈弱・繧ｬ繧､繝臥ｷ夲ｼ郁ｦ九ｄ縺吶＞襍､邱夲ｼ・
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        this.ctx.lineWidth = 2;
+
+        for (let x = 16; x < stage.width; x += 16) {
+            const px = x * this.tileSize + scrollX;
+            if (px >= 0 && px <= this.canvas.width) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(px, 0);
+                this.ctx.lineTo(px, this.canvas.height);
+                this.ctx.stroke();
+            }
+        }
+
+        for (let y = 16; y < stage.height; y += 16) {
+            const py = y * this.tileSize + scrollY;
+            if (py >= 0 && py <= this.canvas.height) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, py);
+                this.ctx.lineTo(this.canvas.width, py);
+                this.ctx.stroke();
+            }
+        }
+    },
+
+    // ========== UNDO讖溯・ ==========
+    saveToHistory() {
+        // 繝・ヰ繧ｦ繝ｳ繧ｹ・・00ms莉･蜀・・騾｣邯壼他縺ｳ蜃ｺ縺励ｒ辟｡隕厄ｼ・
+        const now = Date.now();
+        if (this.lastSaveTime && now - this.lastSaveTime < 100) {
+            return;
+        }
+        this.lastSaveTime = now;
+
+        const stage = App.projectData.stage;
+        // FG繝ｬ繧､繝､繝ｼ縺ｮ迴ｾ蝨ｨ縺ｮ迥ｶ諷九ｒ繝・ぅ繝ｼ繝励さ繝斐・
+        const snapshot = stage.layers.fg.map(row => [...row]);
+
+        this.undoHistory.push(snapshot);
+
+        // 螻･豁ｴ縺悟､壹☆縺弱ｋ蝣ｴ蜷医・蜿､縺・ｂ縺ｮ繧貞炎髯､
+        if (this.undoHistory.length > this.maxUndoHistory) {
+            this.undoHistory.shift();
+        }
+    },
+
+    undo() {
+        if (this.undoHistory.length === 0) {
+            console.log('No undo history');
+            return;
+        }
+
+        const snapshot = this.undoHistory.pop();
+        const stage = App.projectData.stage;
+
+        // 繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ繧貞ｾｩ蜈・
+        stage.layers.fg = snapshot;
+
+        this.render();
+        console.log('Undo applied');
+    },
+
+    clearAllTiles() {
+        if (!confirm('すべてのタイルを削除しますか？')) {
+            return;
+        }
+
+        this.saveToHistory();
+
+        const stage = App.projectData.stage;
+        for (let y = 0; y < stage.height; y++) {
+            for (let x = 0; x < stage.width; x++) {
+                stage.layers.fg[y][x] = -1;
+            }
+        }
+
+        this.render();
+        console.log('All tiles cleared');
+    },
+
+    // ========== 繧ｹ繝・・繧ｸ險ｭ螳壹ヱ繝阪Ν ==========
+    initStageSettings() {
+        const panel = document.getElementById('stage-settings-panel');
+        const header = document.getElementById('stage-settings-header');
+        if (!panel || !header) return;
+
+        // 繝代ロ繝ｫ蜀・・繧ｯ繝ｪ繝・け/繧ｿ繝・メ繧､繝吶Φ繝医′繧ｭ繝｣繝ｳ繝舌せ縺ｫ莨晄眺縺励↑縺・ｈ縺・↓
+        panel.addEventListener('click', (e) => e.stopPropagation());
+        panel.addEventListener('touchstart', (e) => e.stopPropagation());
+        panel.addEventListener('touchend', (e) => e.stopPropagation());
+
+        // 謚倥ｊ縺溘◆縺ｿ・亥・譛溽憾諷九・髢九＞縺ｦ縺・ｋ・・
+        header.addEventListener('click', () => {
+            const wasCollapsed = panel.classList.contains('collapsed');
+            panel.classList.toggle('collapsed');
+
+            // 繝代ロ繝ｫ繧帝幕縺乗凾縺ｫpendingArea蛟､繧堤樟蝨ｨ縺ｮ繧ｹ繝・・繧ｸ繧ｵ繧､繧ｺ縺九ｉ蜀榊・譛溷喧
+            if (wasCollapsed) {
+                this.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
+                this.pendingAreaH = Math.floor(App.projectData.stage.height / 16);
+                this.updateStageSettingsUI();
+            }
         });
-    }
-},
 
-updateStageSettingsUI() {
-    const stage = App.projectData.stage;
+        // 荳譎ら噪縺ｪ繧ｵ繧､繧ｺ蛟､・井ｿ晏ｭ倥・繧ｿ繝ｳ謚ｼ荳九∪縺ｧ蜿肴丐縺励↑縺・ｼ・
+        this.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
+        this.pendingAreaH = Math.floor(App.projectData.stage.height / 16);
 
-    const nameInput = document.getElementById('stage-name-input');
-    const areaWValue = document.getElementById('area-w-value');
-    const areaHValue = document.getElementById('area-h-value');
-    const bgColorSwatch = document.getElementById('stage-bg-color');
-    const transparentSelect = document.getElementById('stage-transparent-index');
-    const timeMin = document.getElementById('stage-time-min');
-    const timeSec = document.getElementById('stage-time-sec');
-    const bgmStage = document.getElementById('bgm-stage');
-    const bgmInvincible = document.getElementById('bgm-invincible');
-    const bgmClear = document.getElementById('bgm-clear');
-    const bgmGameover = document.getElementById('bgm-gameover');
-    const bgmBoss = document.getElementById('bgm-boss');
+        // UI隕∫ｴ蜿門ｾ・
+        const areaWValue = document.getElementById('area-w-value');
+        const areaHValue = document.getElementById('area-h-value');
+        const areaWMinus = document.getElementById('area-w-minus');
+        const areaWPlus = document.getElementById('area-w-plus');
+        const areaHMinus = document.getElementById('area-h-minus');
+        const areaHPlus = document.getElementById('area-h-plus');
+        const bgColorSwatch = document.getElementById('stage-bg-color');
+        const saveBtn = document.getElementById('stage-settings-save');
 
-    // 蜷榊燕・医せ繝・・繧ｸ蜷阪∪縺溘・繝励Ο繧ｸ繧ｧ繧ｯ繝亥錐・・
-    if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
+        // 迴ｾ蝨ｨ縺ｮ蛟､繧貞渚譏
+        this.updateStageSettingsUI();
 
-    // 繧ｵ繧､繧ｺ
-    this.pendingAreaW = Math.floor(stage.width / 16);
-    this.pendingAreaH = Math.floor(stage.height / 16);
-    if (areaWValue) areaWValue.textContent = this.pendingAreaW;
-    if (areaHValue) areaHValue.textContent = this.pendingAreaH;
+        // 蜷榊燕縺ｯ菫晏ｭ倥・繧ｿ繝ｳ謚ｼ荳区凾縺ｮ縺ｿ蜿肴丐・医Μ繧｢繝ｫ繧ｿ繧､繝菫晏ｭ倥＠縺ｪ縺・ｼ・
+        // 繧､繝吶Φ繝医Μ繧ｹ繝翫・縺ｯ荳崎ｦ・
 
-    // 閭梧勹濶ｲ
-    if (bgColorSwatch) bgColorSwatch.style.backgroundColor = stage.bgColor || '#3CBCFC';
-
-    // 騾乗・濶ｲ
-    if (transparentSelect) transparentSelect.value = stage.transparentIndex || 0;
-
-    // 繧ｯ繝ｪ繧｢譚｡莉ｶ
-    const clearConditionEl = document.getElementById('stage-clear-condition');
-    const timeLimitLabel = document.getElementById('time-limit-label');
-    if (clearConditionEl) {
-        clearConditionEl.value = stage.clearCondition || 'none';
-        // 繝ｩ繝吶Ν譖ｴ譁ｰ
-        if (stage.clearCondition === 'survival') {
-            if (timeLimitLabel) timeLimitLabel.textContent = '繧ｵ繝舌う繝舌Ν譎る俣';
-        } else {
-            if (timeLimitLabel) timeLimitLabel.textContent = '蛻ｶ髯先凾髢・;
+        // 繧ｨ繝ｪ繧｢繧ｵ繧､繧ｺ螟画峩・・I陦ｨ遉ｺ縺ｮ縺ｿ縲∽ｿ晏ｭ倥・繧ｿ繝ｳ縺ｧ蜿肴丐・・
+        if (areaWMinus) {
+            areaWMinus.addEventListener('click', () => {
+                if (this.pendingAreaW > 1) {
+                    this.pendingAreaW--;
+                    if (areaWValue) areaWValue.textContent = this.pendingAreaW;
+                }
+            });
         }
-    }
+        if (areaWPlus) {
+            areaWPlus.addEventListener('click', () => {
+                if (this.pendingAreaW < 10) {
+                    this.pendingAreaW++;
+                    if (areaWValue) areaWValue.textContent = this.pendingAreaW;
+                }
+            });
+        }
+        if (areaHMinus) {
+            areaHMinus.addEventListener('click', () => {
+                if (this.pendingAreaH > 1) {
+                    this.pendingAreaH--;
+                    if (areaHValue) areaHValue.textContent = this.pendingAreaH;
+                }
+            });
+        }
+        if (areaHPlus) {
+            areaHPlus.addEventListener('click', () => {
+                if (this.pendingAreaH < 10) {
+                    this.pendingAreaH++;
+                    if (areaHValue) areaHValue.textContent = this.pendingAreaH;
+                }
+            });
+        }
 
-    // 繧ｹ繧ｳ繧｢陦ｨ遉ｺ險ｭ螳・
-    const showScoreCheck = document.getElementById('stage-show-score');
-    if (showScoreCheck) {
-        // 繝・ヵ繧ｩ繝ｫ繝医・true・・ndefined縺ｮ蝣ｴ蜷医ｂtrue・・
-        showScoreCheck.checked = stage.showScore !== false;
-    }
+        // 閭梧勹濶ｲ・医せ繝励Λ繧､繝医お繝・ぅ繧ｿ縺ｮ繧ｫ繝ｩ繝ｼ繝斐ャ繧ｫ繝ｼ繧剃ｽｿ逕ｨ・・
+        if (bgColorSwatch) {
+            bgColorSwatch.addEventListener('click', () => {
+                this.openBgColorPicker();
+            });
+        }
 
-    // 蛻ｶ髯先凾髢難ｼ亥・遘抵ｼ・
-    const totalSec = stage.timeLimit || 0;
-    if (timeSec) timeSec.value = totalSec % 60;
+        // 騾乗・濶ｲ
+        const transparentSelect = document.getElementById('stage-transparent-index');
+        if (transparentSelect) {
+            transparentSelect.addEventListener('change', () => {
+                App.projectData.stage.transparentIndex = parseInt(transparentSelect.value);
+            });
+        }
 
-    // BGM驕ｸ謚櫁い繧貞虚逧・函謌・
-    this.updateBgmSelects();
+        // BGM繧ｵ繝夜・岼
+        const bgmStage = document.getElementById('bgm-stage');
+        const bgmInvincible = document.getElementById('bgm-invincible');
+        const bgmClear = document.getElementById('bgm-clear');
+        const bgmGameover = document.getElementById('bgm-gameover');
 
-    // BGM
-    const bgm = stage.bgm || {};
-    if (bgmStage) bgmStage.value = bgm.stage || '';
-    if (bgmInvincible) bgmInvincible.value = bgm.invincible || '';
-    if (bgmClear) bgmClear.value = bgm.clear || '';
-    if (bgmGameover) bgmGameover.value = bgm.gameover || '';
-    if (bgmBoss) bgmBoss.value = bgm.boss || '';
-},
+        if (bgmStage) {
+            bgmStage.addEventListener('change', () => {
+                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+                App.projectData.stage.bgm.stage = bgmStage.value;
+            });
+        }
+        if (bgmInvincible) {
+            bgmInvincible.addEventListener('change', () => {
+                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+                App.projectData.stage.bgm.invincible = bgmInvincible.value;
+            });
+        }
+        if (bgmClear) {
+            bgmClear.addEventListener('change', () => {
+                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+                App.projectData.stage.bgm.clear = bgmClear.value;
+            });
+        }
+        if (bgmGameover) {
+            bgmGameover.addEventListener('change', () => {
+                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+                App.projectData.stage.bgm.gameover = bgmGameover.value;
+            });
+        }
 
-updateBgmSelects() {
-    const selects = [
-        document.getElementById('bgm-stage'),
-        document.getElementById('bgm-invincible'),
-        document.getElementById('bgm-clear'),
-        document.getElementById('bgm-gameover'),
-        document.getElementById('bgm-boss')
-    ];
+        // 繝懊せBGM
+        const bgmBoss = document.getElementById('bgm-boss');
+        if (bgmBoss) {
+            bgmBoss.addEventListener('change', () => {
+                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+                App.projectData.stage.bgm.boss = bgmBoss.value;
+            });
+        }
 
-    const songs = App.projectData.songs || [];
+        // 繧ｯ繝ｪ繧｢譚｡莉ｶ
+        const clearCondition = document.getElementById('stage-clear-condition');
+        const timeLimitRow = document.getElementById('time-limit-row');
+        const timeLimitLabel = document.getElementById('time-limit-label');
 
-    selects.forEach(select => {
-        if (!select) return;
-        const currentValue = select.value;
+        const updateTimeLimitLabel = () => {
+            const condition = clearCondition?.value || 'none';
+            if (condition === 'survival') {
+                if (timeLimitLabel) timeLimitLabel.textContent = 'サバイバル時間';
+                if (timeLimitRow) timeLimitRow.style.display = '';
+            } else {
+                if (timeLimitLabel) timeLimitLabel.textContent = '制限時間';
+                // 他の条件でも制限時間を表示する（なしなら無制限）
+                if (timeLimitRow) timeLimitRow.style.display = '';
+            }
+        };
 
-        // 驕ｸ謚櫁い繧偵け繝ｪ繧｢縺励※蜀肴ｧ狗ｯ・
-        select.innerHTML = '<option value="">縺ｪ縺・/option>';
+        if (clearCondition) {
+            clearCondition.addEventListener('change', () => {
+                App.projectData.stage.clearCondition = clearCondition.value;
+                updateTimeLimitLabel();
+            });
+        }
 
-        songs.forEach((song, idx) => {
-            const option = document.createElement('option');
-            option.value = idx.toString();
-            option.textContent = song.name || `SONG ${idx + 1}`;
-            select.appendChild(option);
+        // 蛻ｶ髯先凾髢難ｼ亥・遘貞ｽ｢蠑擾ｼ・
+        const timeMin = document.getElementById('stage-time-min');
+        const timeSec = document.getElementById('stage-time-sec');
+
+        // 蜈･蜉帙ヵ繧｣繝ｼ繝ｫ繝峨・繧､繝吶Φ繝井ｼ晄眺繧呈ｭ｢繧√ｋ
+        [timeMin, timeSec].forEach(input => {
+            if (input) {
+                input.addEventListener('click', (e) => e.stopPropagation());
+                input.addEventListener('touchstart', (e) => e.stopPropagation());
+                input.addEventListener('touchend', (e) => e.stopPropagation());
+                input.addEventListener('focus', (e) => e.stopPropagation());
+            }
         });
 
-        // 蜈・・驕ｸ謚槭ｒ蠕ｩ蜈・
-        select.value = currentValue;
-    });
-},
+        if (timeMin) {
+            timeMin.addEventListener('change', (e) => {
+                e.stopPropagation();
+                const min = parseInt(timeMin.value) || 0;
+                const sec = parseInt(timeSec?.value) || 0;
+                App.projectData.stage.timeLimit = min * 60 + sec;
+            });
+        }
+        if (timeSec) {
+            timeSec.addEventListener('change', (e) => {
+                e.stopPropagation();
+                const min = parseInt(timeMin?.value) || 0;
+                const sec = parseInt(timeSec.value) || 0;
+                App.projectData.stage.timeLimit = min * 60 + sec;
+            });
+        }
 
-resizeStage(newWidth, newHeight) {
-    const stage = App.projectData.stage;
-    const oldWidth = stage.width;
-    const oldHeight = stage.height;
+        // 菫晏ｭ倥・繧ｿ繝ｳ
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                // 繧ｿ繧､繝医Ν菫晏ｭ・
+                const nameInput = document.getElementById('stage-name-input');
+                if (nameInput) {
+                    App.projectData.stage.name = nameInput.value;
+                    // 繧ｲ繝ｼ繝逕ｻ髱｢繧ｿ繧､繝医Ν縺ｨ騾｣蜍・
+                    if (App.projectData.meta) {
+                        App.projectData.meta.name = nameInput.value || 'NEW GAME';
+                    }
+                }
 
-    // 譁ｰ縺励＞繝ｬ繧､繝､繝ｼ驟榊・繧剃ｽ懈・
-    const newFg = App.create2DArray(newWidth, newHeight, -1);
-    const newBg = App.create2DArray(newWidth, newHeight, -1);
-    const newCollision = App.create2DArray(newWidth, newHeight, 0);
+                // 繧ｵ繧､繧ｺ螟画峩
+                const newWidth = this.pendingAreaW * 16;
+                const newHeight = this.pendingAreaH * 16;
+                if (newWidth !== App.projectData.stage.width || newHeight !== App.projectData.stage.height) {
+                    this.resizeStage(newWidth, newHeight);
+                }
 
-    // 邵ｦ・・縺ｯ荳翫↓霑ｽ蜉・域里蟄倥ョ繝ｼ繧ｿ縺ｯ荳九↓繧ｷ繝輔ヨ・峨・縺ｯ荳翫°繧牙炎髯､
-    // 讓ｪ・・縺ｯ蜿ｳ縺ｫ霑ｽ蜉縲・縺ｯ蜿ｳ縺九ｉ蜑企勁
-    const heightDiff = newHeight - oldHeight;
-    const yOffset = heightDiff > 0 ? heightDiff : 0; // 諡｡螟ｧ譎ゅ・邵ｦ繧ｪ繝輔そ繝・ヨ
-    const srcYStart = heightDiff < 0 ? -heightDiff : 0; // 邵ｮ蟆乗凾縺ｮ繧ｽ繝ｼ繧ｹ髢句ｧ玖｡・
+                // 繧ｹ繧ｳ繧｢陦ｨ遉ｺ險ｭ螳・
+                const showScoreCheck = document.getElementById('stage-show-score');
+                if (showScoreCheck) {
+                    App.projectData.stage.showScore = showScoreCheck.checked;
+                }
 
-    // 譌｢蟄倥ョ繝ｼ繧ｿ繧偵さ繝斐・・井ｸ翫↓霑ｽ蜉/荳翫°繧牙炎髯､蟇ｾ蠢懶ｼ・
-    for (let srcY = srcYStart; srcY < oldHeight; srcY++) {
-        const dstY = srcY - srcYStart + yOffset;
-        if (dstY >= newHeight) break;
+                // 險ｭ螳壹ヱ繝阪Ν繧帝哩縺倥ｋ
+                panel.classList.add('collapsed');
+            });
+        }
+    },
 
-        for (let x = 0; x < Math.min(oldWidth, newWidth); x++) {
-            if (stage.layers.fg[srcY] && stage.layers.fg[srcY][x] !== undefined) {
-                newFg[dstY][x] = stage.layers.fg[srcY][x];
-            }
-            if (stage.layers.bg[srcY] && stage.layers.bg[srcY][x] !== undefined) {
-                newBg[dstY][x] = stage.layers.bg[srcY][x];
-            }
-            if (stage.layers.collision[srcY] && stage.layers.collision[srcY][x] !== undefined) {
-                newCollision[dstY][x] = stage.layers.collision[srcY][x];
+    updateStageSettingsUI() {
+        const stage = App.projectData.stage;
+
+        const nameInput = document.getElementById('stage-name-input');
+        const areaWValue = document.getElementById('area-w-value');
+        const areaHValue = document.getElementById('area-h-value');
+        const bgColorSwatch = document.getElementById('stage-bg-color');
+        const transparentSelect = document.getElementById('stage-transparent-index');
+        const timeMin = document.getElementById('stage-time-min');
+        const timeSec = document.getElementById('stage-time-sec');
+        const bgmStage = document.getElementById('bgm-stage');
+        const bgmInvincible = document.getElementById('bgm-invincible');
+        const bgmClear = document.getElementById('bgm-clear');
+        const bgmGameover = document.getElementById('bgm-gameover');
+        const bgmBoss = document.getElementById('bgm-boss');
+
+        // 蜷榊燕・医せ繝・・繧ｸ蜷阪∪縺溘・繝励Ο繧ｸ繧ｧ繧ｯ繝亥錐・・
+        if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
+
+        // 繧ｵ繧､繧ｺ
+        this.pendingAreaW = Math.floor(stage.width / 16);
+        this.pendingAreaH = Math.floor(stage.height / 16);
+        if (areaWValue) areaWValue.textContent = this.pendingAreaW;
+        if (areaHValue) areaHValue.textContent = this.pendingAreaH;
+
+        // 閭梧勹濶ｲ
+        if (bgColorSwatch) bgColorSwatch.style.backgroundColor = stage.bgColor || '#3CBCFC';
+
+        // 騾乗・濶ｲ
+        if (transparentSelect) transparentSelect.value = stage.transparentIndex || 0;
+
+        // 繧ｯ繝ｪ繧｢譚｡莉ｶ
+        const clearConditionEl = document.getElementById('stage-clear-condition');
+        const timeLimitLabel = document.getElementById('time-limit-label');
+        if (clearConditionEl) {
+            clearConditionEl.value = stage.clearCondition || 'none';
+            // 繝ｩ繝吶Ν譖ｴ譁ｰ
+            if (stage.clearCondition === 'survival') {
+                if (timeLimitLabel) timeLimitLabel.textContent = 'サバイバル時間';
+            } else {
+                if (timeLimitLabel) timeLimitLabel.textContent = '制限時間';
             }
         }
-    }
 
-    stage.width = newWidth;
-    stage.height = newHeight;
-    stage.layers.fg = newFg;
-    stage.layers.bg = newBg;
-    stage.layers.collision = newCollision;
-
-    // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ菴咲ｽｮ繧貞ｷｦ荳九°繧芽｡ｨ遉ｺ縺吶ｋ繧医≧縺ｫ險ｭ螳・
-    // 邵ｦ・・・会ｼ壹せ繝・・繧ｸ縺ｮ荳狗ｫｯ縺後く繝｣繝ｳ繝舌せ荳狗ｫｯ縺ｫ譚･繧九ｈ縺・↓
-    this.canvasScrollX = 0;
-    const canvasHeight = 320; // 繧ｭ繝｣繝ｳ繝舌せ縺ｮ鬮倥＆・亥崋螳夲ｼ・
-    const stagePixelHeight = newHeight * this.tileSize;
-    this.canvasScrollY = stagePixelHeight > canvasHeight ? -(stagePixelHeight - canvasHeight) : 0;
-
-    this.resize();
-    this.render();
-},
-
-openBgColorPicker() {
-    // SpriteEditor縺ｨ蜷後§繝輔Ν繧ｫ繝ｩ繝ｼ繝斐ャ繧ｫ繝ｼ繧貞ｮ溯｣・
-    const currentColor = App.projectData.stage.bgColor || '#3CBCFC';
-
-    // 繧医￥菴ｿ縺・牡繝励Μ繧ｻ繝・ヨ
-    const recentColors = [
-        '#3CBCFC', '#000000', '#ffffff', '#ff0000',
-        '#00ff00', '#0000ff', '#ffff00', '#ff00ff',
-        '#00ffff', '#ff6b6b', '#4ecdc4', '#96ceb4'
-    ];
-
-    // 迥ｶ諷・
-    let hue = 0, saturation = 100, brightness = 100;
-    let r = 255, g = 0, b = 0;
-
-    // 繧ｫ繝ｩ繝ｼ螟画鋤髢｢謨ｰ
-    const hsvToRgb = (h, s, v) => {
-        s /= 100; v /= 100;
-        const c = v * s;
-        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-        const m = v - c;
-        let r1, g1, b1;
-        if (h < 60) { r1 = c; g1 = x; b1 = 0; }
-        else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
-        else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
-        else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
-        else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
-        else { r1 = c; g1 = 0; b1 = x; }
-        return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
-    };
-
-    const rgbToHsv = (r, g, b) => {
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        const d = max - min;
-        let h = 0;
-        if (d !== 0) {
-            if (max === r) h = ((g - b) / d) % 6;
-            else if (max === g) h = (b - r) / d + 2;
-            else h = (r - g) / d + 4;
-            h *= 60; if (h < 0) h += 360;
+        // 繧ｹ繧ｳ繧｢陦ｨ遉ｺ險ｭ螳・
+        const showScoreCheck = document.getElementById('stage-show-score');
+        if (showScoreCheck) {
+            // 繝・ヵ繧ｩ繝ｫ繝医・true・・ndefined縺ｮ蝣ｴ蜷医ｂtrue・・
+            showScoreCheck.checked = stage.showScore !== false;
         }
-        return { h, s: max === 0 ? 0 : (d / max) * 100, v: max * 100 };
-    };
 
-    const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase();
+        // 蛻ｶ髯先凾髢難ｼ亥・遘抵ｼ・
+        const totalSec = stage.timeLimit || 0;
+        if (timeSec) timeSec.value = totalSec % 60;
 
-    const hexToRgb = (hex) => {
-        hex = hex.replace('#', '');
-        return { r: parseInt(hex.substr(0, 2), 16), g: parseInt(hex.substr(2, 2), 16), b: parseInt(hex.substr(4, 2), 16) };
-    };
+        // BGM驕ｸ謚櫁い繧貞虚逧・函謌・
+        this.updateBgmSelects();
 
-    // 蛻晄悄蛟､繧団urrentColor縺九ｉ險ｭ螳・
-    const initRgb = hexToRgb(currentColor);
-    r = initRgb.r; g = initRgb.g; b = initRgb.b;
-    const initHsv = rgbToHsv(r, g, b);
-    hue = initHsv.h; saturation = initHsv.s; brightness = initHsv.v;
+        // BGM
+        const bgm = stage.bgm || {};
+        if (bgmStage) bgmStage.value = bgm.stage || '';
+        if (bgmInvincible) bgmInvincible.value = bgm.invincible || '';
+        if (bgmClear) bgmClear.value = bgm.clear || '';
+        if (bgmGameover) bgmGameover.value = bgm.gameover || '';
+        if (bgmBoss) bgmBoss.value = bgm.boss || '';
+    },
 
-    // body繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ辟｡蜉ｹ蛹・
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    updateBgmSelects() {
+        const selects = [
+            document.getElementById('bgm-stage'),
+            document.getElementById('bgm-invincible'),
+            document.getElementById('bgm-clear'),
+            document.getElementById('bgm-gameover'),
+            document.getElementById('bgm-boss')
+        ];
 
-    // 繝｢繝ｼ繝繝ｫ繧ｪ繝ｼ繝舌・繝ｬ繧､
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;touch-action:none;';
+        const songs = App.projectData.songs || [];
 
-    const modal = document.createElement('div');
-    modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
+        selects.forEach(select => {
+            if (!select) return;
+            const currentValue = select.value;
 
-    modal.innerHTML = `
+            // 驕ｸ謚櫁い繧偵け繝ｪ繧｢縺励※蜀肴ｧ狗ｯ・
+            select.innerHTML = '<option value="">縺ｪ縺・/option>';
+
+            songs.forEach((song, idx) => {
+                const option = document.createElement('option');
+                option.value = idx.toString();
+                option.textContent = song.name || `SONG ${idx + 1}`;
+                select.appendChild(option);
+            });
+
+            // 蜈・・驕ｸ謚槭ｒ蠕ｩ蜈・
+            select.value = currentValue;
+        });
+    },
+
+    resizeStage(newWidth, newHeight) {
+        const stage = App.projectData.stage;
+        const oldWidth = stage.width;
+        const oldHeight = stage.height;
+
+        // 譁ｰ縺励＞繝ｬ繧､繝､繝ｼ驟榊・繧剃ｽ懈・
+        const newFg = App.create2DArray(newWidth, newHeight, -1);
+        const newBg = App.create2DArray(newWidth, newHeight, -1);
+        const newCollision = App.create2DArray(newWidth, newHeight, 0);
+
+        // 邵ｦ・・縺ｯ荳翫↓霑ｽ蜉・域里蟄倥ョ繝ｼ繧ｿ縺ｯ荳九↓繧ｷ繝輔ヨ・峨・縺ｯ荳翫°繧牙炎髯､
+        // 讓ｪ・・縺ｯ蜿ｳ縺ｫ霑ｽ蜉縲・縺ｯ蜿ｳ縺九ｉ蜑企勁
+        const heightDiff = newHeight - oldHeight;
+        const yOffset = heightDiff > 0 ? heightDiff : 0; // 諡｡螟ｧ譎ゅ・邵ｦ繧ｪ繝輔そ繝・ヨ
+        const srcYStart = heightDiff < 0 ? -heightDiff : 0; // 邵ｮ蟆乗凾縺ｮ繧ｽ繝ｼ繧ｹ髢句ｧ玖｡・
+
+        // 譌｢蟄倥ョ繝ｼ繧ｿ繧偵さ繝斐・・井ｸ翫↓霑ｽ蜉/荳翫°繧牙炎髯､蟇ｾ蠢懶ｼ・
+        for (let srcY = srcYStart; srcY < oldHeight; srcY++) {
+            const dstY = srcY - srcYStart + yOffset;
+            if (dstY >= newHeight) break;
+
+            for (let x = 0; x < Math.min(oldWidth, newWidth); x++) {
+                if (stage.layers.fg[srcY] && stage.layers.fg[srcY][x] !== undefined) {
+                    newFg[dstY][x] = stage.layers.fg[srcY][x];
+                }
+                if (stage.layers.bg[srcY] && stage.layers.bg[srcY][x] !== undefined) {
+                    newBg[dstY][x] = stage.layers.bg[srcY][x];
+                }
+                if (stage.layers.collision[srcY] && stage.layers.collision[srcY][x] !== undefined) {
+                    newCollision[dstY][x] = stage.layers.collision[srcY][x];
+                }
+            }
+        }
+
+        stage.width = newWidth;
+        stage.height = newHeight;
+        stage.layers.fg = newFg;
+        stage.layers.bg = newBg;
+        stage.layers.collision = newCollision;
+
+        // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ菴咲ｽｮ繧貞ｷｦ荳九°繧芽｡ｨ遉ｺ縺吶ｋ繧医≧縺ｫ險ｭ螳・
+        // 邵ｦ・・・会ｼ壹せ繝・・繧ｸ縺ｮ荳狗ｫｯ縺後く繝｣繝ｳ繝舌せ荳狗ｫｯ縺ｫ譚･繧九ｈ縺・↓
+        this.canvasScrollX = 0;
+        const canvasHeight = 320; // 繧ｭ繝｣繝ｳ繝舌せ縺ｮ鬮倥＆・亥崋螳夲ｼ・
+        const stagePixelHeight = newHeight * this.tileSize;
+        this.canvasScrollY = stagePixelHeight > canvasHeight ? -(stagePixelHeight - canvasHeight) : 0;
+
+        this.resize();
+        this.render();
+    },
+
+    openBgColorPicker() {
+        // SpriteEditor縺ｨ蜷後§繝輔Ν繧ｫ繝ｩ繝ｼ繝斐ャ繧ｫ繝ｼ繧貞ｮ溯｣・
+        const currentColor = App.projectData.stage.bgColor || '#3CBCFC';
+
+        // 繧医￥菴ｿ縺・牡繝励Μ繧ｻ繝・ヨ
+        const recentColors = [
+            '#3CBCFC', '#000000', '#ffffff', '#ff0000',
+            '#00ff00', '#0000ff', '#ffff00', '#ff00ff',
+            '#00ffff', '#ff6b6b', '#4ecdc4', '#96ceb4'
+        ];
+
+        // 迥ｶ諷・
+        let hue = 0, saturation = 100, brightness = 100;
+        let r = 255, g = 0, b = 0;
+
+        // 繧ｫ繝ｩ繝ｼ螟画鋤髢｢謨ｰ
+        const hsvToRgb = (h, s, v) => {
+            s /= 100; v /= 100;
+            const c = v * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = v - c;
+            let r1, g1, b1;
+            if (h < 60) { r1 = c; g1 = x; b1 = 0; }
+            else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+            else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+            else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+            else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+            else { r1 = c; g1 = 0; b1 = x; }
+            return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
+        };
+
+        const rgbToHsv = (r, g, b) => {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            const d = max - min;
+            let h = 0;
+            if (d !== 0) {
+                if (max === r) h = ((g - b) / d) % 6;
+                else if (max === g) h = (b - r) / d + 2;
+                else h = (r - g) / d + 4;
+                h *= 60; if (h < 0) h += 360;
+            }
+            return { h, s: max === 0 ? 0 : (d / max) * 100, v: max * 100 };
+        };
+
+        const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase();
+
+        const hexToRgb = (hex) => {
+            hex = hex.replace('#', '');
+            return { r: parseInt(hex.substr(0, 2), 16), g: parseInt(hex.substr(2, 2), 16), b: parseInt(hex.substr(4, 2), 16) };
+        };
+
+        // 蛻晄悄蛟､繧団urrentColor縺九ｉ險ｭ螳・
+        const initRgb = hexToRgb(currentColor);
+        r = initRgb.r; g = initRgb.g; b = initRgb.b;
+        const initHsv = rgbToHsv(r, g, b);
+        hue = initHsv.h; saturation = initHsv.s; brightness = initHsv.v;
+
+        // body繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ辟｡蜉ｹ蛹・
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        // 繝｢繝ｼ繝繝ｫ繧ｪ繝ｼ繝舌・繝ｬ繧､
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;touch-action:none;';
+
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
+
+        modal.innerHTML = `
             <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;">閭梧勹濶ｲ</div>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;">
@@ -2788,240 +2792,240 @@ openBgColorPicker() {
             </div>
         `;
 
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
 
-    // DOM隕∫ｴ蜿門ｾ・
-    const newColorEl = modal.querySelector('#cp-new');
-    const sbBox = modal.querySelector('#cp-sb-box');
-    const sbCursor = modal.querySelector('#cp-sb-cursor');
-    const hueSlider = modal.querySelector('#cp-hue-slider');
-    const hueCursor = modal.querySelector('#cp-hue-cursor');
-    const hexInput = modal.querySelector('#cp-hex');
-    const recentColorsEl = modal.querySelector('#cp-recent');
+        // DOM隕∫ｴ蜿門ｾ・
+        const newColorEl = modal.querySelector('#cp-new');
+        const sbBox = modal.querySelector('#cp-sb-box');
+        const sbCursor = modal.querySelector('#cp-sb-cursor');
+        const hueSlider = modal.querySelector('#cp-hue-slider');
+        const hueCursor = modal.querySelector('#cp-hue-cursor');
+        const hexInput = modal.querySelector('#cp-hex');
+        const recentColorsEl = modal.querySelector('#cp-recent');
 
-    // UI譖ｴ譁ｰ
-    const updateUI = () => {
-        const rgb = hsvToRgb(hue, saturation, brightness);
-        r = rgb.r; g = rgb.g; b = rgb.b;
-        const hex = rgbToHex(r, g, b);
-        newColorEl.style.backgroundColor = hex;
-        hexInput.value = hex;
-        sbBox.style.backgroundColor = rgbToHex(...Object.values(hsvToRgb(hue, 100, 100)));
-        sbCursor.style.left = `${saturation}%`;
-        sbCursor.style.top = `${100 - brightness}%`;
-        hueCursor.style.left = `${(hue / 360) * 100}%`;
-    };
-
-    // SB繝懊ャ繧ｯ繧ｹ謫堺ｽ・
-    let sbDrag = false;
-    const updateSB = (e) => {
-        const rect = sbBox.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        let x = (touch.clientX - rect.left) / rect.width * 100;
-        let y = (touch.clientY - rect.top) / rect.height * 100;
-        x = Math.max(0, Math.min(100, x));
-        y = Math.max(0, Math.min(100, y));
-        saturation = x;
-        brightness = 100 - y;
-        updateUI();
-    };
-    sbBox.addEventListener('mousedown', (e) => { sbDrag = true; updateSB(e); });
-    sbBox.addEventListener('touchstart', (e) => { sbDrag = true; updateSB(e); e.preventDefault(); }, { passive: false });
-    document.addEventListener('mousemove', (e) => { if (sbDrag) updateSB(e); });
-    document.addEventListener('touchmove', (e) => { if (sbDrag) { updateSB(e); e.preventDefault(); } }, { passive: false });
-    document.addEventListener('mouseup', () => sbDrag = false);
-    document.addEventListener('touchend', () => sbDrag = false);
-
-    // Hue繧ｹ繝ｩ繧､繝繝ｼ謫堺ｽ・
-    let hueDrag = false;
-    const updateHue = (e) => {
-        const rect = hueSlider.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        let x = (touch.clientX - rect.left) / rect.width;
-        x = Math.max(0, Math.min(1, x));
-        hue = x * 360;
-        updateUI();
-    };
-    hueSlider.addEventListener('mousedown', (e) => { hueDrag = true; updateHue(e); });
-    hueSlider.addEventListener('touchstart', (e) => { hueDrag = true; updateHue(e); e.preventDefault(); }, { passive: false });
-    document.addEventListener('mousemove', (e) => { if (hueDrag) updateHue(e); });
-    document.addEventListener('touchmove', (e) => { if (hueDrag) { updateHue(e); e.preventDefault(); } }, { passive: false });
-    document.addEventListener('mouseup', () => hueDrag = false);
-    document.addEventListener('touchend', () => hueDrag = false);
-
-    // HEX蜈･蜉・
-    hexInput.addEventListener('change', () => {
-        const val = hexInput.value.trim();
-        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-            const rgb = hexToRgb(val);
+        // UI譖ｴ譁ｰ
+        const updateUI = () => {
+            const rgb = hsvToRgb(hue, saturation, brightness);
             r = rgb.r; g = rgb.g; b = rgb.b;
-            const hsv = rgbToHsv(r, g, b);
-            hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
-            updateUI();
-        }
-    });
+            const hex = rgbToHex(r, g, b);
+            newColorEl.style.backgroundColor = hex;
+            hexInput.value = hex;
+            sbBox.style.backgroundColor = rgbToHex(...Object.values(hsvToRgb(hue, 100, 100)));
+            sbCursor.style.left = `${saturation}%`;
+            sbCursor.style.top = `${100 - brightness}%`;
+            hueCursor.style.left = `${(hue / 360) * 100}%`;
+        };
 
-    // 繧医￥菴ｿ縺・牡
-    recentColors.forEach(c => {
-        const swatch = document.createElement('div');
-        swatch.style.cssText = `width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid #444466;background:${c};`;
-        swatch.addEventListener('click', () => {
-            const rgb = hexToRgb(c);
-            r = rgb.r; g = rgb.g; b = rgb.b;
-            const hsv = rgbToHsv(r, g, b);
-            hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
+        // SB繝懊ャ繧ｯ繧ｹ謫堺ｽ・
+        let sbDrag = false;
+        const updateSB = (e) => {
+            const rect = sbBox.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            let x = (touch.clientX - rect.left) / rect.width * 100;
+            let y = (touch.clientY - rect.top) / rect.height * 100;
+            x = Math.max(0, Math.min(100, x));
+            y = Math.max(0, Math.min(100, y));
+            saturation = x;
+            brightness = 100 - y;
             updateUI();
+        };
+        sbBox.addEventListener('mousedown', (e) => { sbDrag = true; updateSB(e); });
+        sbBox.addEventListener('touchstart', (e) => { sbDrag = true; updateSB(e); e.preventDefault(); }, { passive: false });
+        document.addEventListener('mousemove', (e) => { if (sbDrag) updateSB(e); });
+        document.addEventListener('touchmove', (e) => { if (sbDrag) { updateSB(e); e.preventDefault(); } }, { passive: false });
+        document.addEventListener('mouseup', () => sbDrag = false);
+        document.addEventListener('touchend', () => sbDrag = false);
+
+        // Hue繧ｹ繝ｩ繧､繝繝ｼ謫堺ｽ・
+        let hueDrag = false;
+        const updateHue = (e) => {
+            const rect = hueSlider.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            let x = (touch.clientX - rect.left) / rect.width;
+            x = Math.max(0, Math.min(1, x));
+            hue = x * 360;
+            updateUI();
+        };
+        hueSlider.addEventListener('mousedown', (e) => { hueDrag = true; updateHue(e); });
+        hueSlider.addEventListener('touchstart', (e) => { hueDrag = true; updateHue(e); e.preventDefault(); }, { passive: false });
+        document.addEventListener('mousemove', (e) => { if (hueDrag) updateHue(e); });
+        document.addEventListener('touchmove', (e) => { if (hueDrag) { updateHue(e); e.preventDefault(); } }, { passive: false });
+        document.addEventListener('mouseup', () => hueDrag = false);
+        document.addEventListener('touchend', () => hueDrag = false);
+
+        // HEX蜈･蜉・
+        hexInput.addEventListener('change', () => {
+            const val = hexInput.value.trim();
+            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                const rgb = hexToRgb(val);
+                r = rgb.r; g = rgb.g; b = rgb.b;
+                const hsv = rgbToHsv(r, g, b);
+                hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
+                updateUI();
+            }
         });
-        recentColorsEl.appendChild(swatch);
-    });
 
-    updateUI();
+        // 繧医￥菴ｿ縺・牡
+        recentColors.forEach(c => {
+            const swatch = document.createElement('div');
+            swatch.style.cssText = `width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid #444466;background:${c};`;
+            swatch.addEventListener('click', () => {
+                const rgb = hexToRgb(c);
+                r = rgb.r; g = rgb.g; b = rgb.b;
+                const hsv = rgbToHsv(r, g, b);
+                hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
+                updateUI();
+            });
+            recentColorsEl.appendChild(swatch);
+        });
 
-    const close = () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.removeChild(overlay);
-    };
+        updateUI();
 
-    modal.querySelector('#cp-ok').addEventListener('click', () => {
-        App.projectData.stage.bgColor = hexInput.value;
-        this.updateStageSettingsUI();
-        this.initTemplateList(); // 繧ｿ繧､繝ｫ繝代Ξ繝・ヨ繧ｵ繝繝阪う繝ｫ譖ｴ譁ｰ
-        this.initSpriteGallery(); // 繧ｹ繝励Λ繧､繝医ぐ繝｣繝ｩ繝ｪ繝ｼ譖ｴ譁ｰ
+        const close = () => {
+            document.body.style.overflow = originalOverflow;
+            document.body.removeChild(overlay);
+        };
+
+        modal.querySelector('#cp-ok').addEventListener('click', () => {
+            App.projectData.stage.bgColor = hexInput.value;
+            this.updateStageSettingsUI();
+            this.initTemplateList(); // 繧ｿ繧､繝ｫ繝代Ξ繝・ヨ繧ｵ繝繝阪う繝ｫ譖ｴ譁ｰ
+            this.initSpriteGallery(); // 繧ｹ繝励Λ繧､繝医ぐ繝｣繝ｩ繝ｪ繝ｼ譖ｴ譁ｰ
+            this.render();
+            close();
+        });
+
+        modal.querySelector('#cp-cancel').addEventListener('click', close);
+        overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+    },
+
+    // SE繝励Ξ繝薙Η繝ｼ蜀咲函
+    playSePreview(seIndex) {
+        const sounds = App.projectData?.sounds || [];
+        if (seIndex < 0 || seIndex >= sounds.length) return;
+
+        const se = sounds[seIndex];
+
+        // 繧ｰ繝ｭ繝ｼ繝舌Ν繧ｪ繝ｼ繝・ぅ繧ｪ繧ｨ繝ｳ繧ｸ繝ｳ繧剃ｽｿ逕ｨ
+        const audio = window.NesAudio || window.AudioManager;
+        if (audio) {
+            console.log('Previewing SE:', se.name, se.type);
+            audio.playSE(se.type);
+        } else {
+            console.error('Audio engine (NesAudio/AudioManager) not found.');
+        }
+    },
+
+    renderSelection() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+
+        // 浮動レイヤー
+        if (this.isFloating && this.floatingData) {
+            this.ctx.globalAlpha = 0.5; // 半透明
+            const palette = App.nesPalette;
+            const sprites = App.projectData.sprites;
+            const templates = App.projectData.templates || [];
+
+            for (let y = 0; y < this.floatingData.length; y++) {
+                for (let x = 0; x < this.floatingData[0].length; x++) {
+                    const tileId = this.floatingData[y][x];
+                    if (tileId <= -1000) continue;
+
+                    let sprite;
+                    if (tileId >= 100) {
+                        const template = templates[tileId - 100];
+                        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                        sprite = sprites[spriteIdx];
+                    } else if (tileId >= 0 && tileId < sprites.length) {
+                        sprite = sprites[tileId];
+                    }
+
+                    if (sprite) {
+                        const tx = this.floatingPos.x + x;
+                        const ty = this.floatingPos.y + y;
+                        this.renderSprite(sprite, tx, ty, palette);
+                    }
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+
+        // 選択枠
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+
+        const rectX = x1 * this.tileSize + scrollX;
+        const rectY = y1 * this.tileSize + scrollY;
+        const rectW = (x2 - x1 + 1) * this.tileSize;
+        const rectH = (y2 - y1 + 1) * this.tileSize;
+
+        this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
+        this.ctx.lineWidth = 2;
+        this.ctx.setLineDash([4, 4]);
+        this.ctx.strokeRect(rectX, rectY, rectW, rectH);
+        this.ctx.setLineDash([]);
+    },
+
+    floatSelection() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+
+        const layer = App.projectData.stage.layers.fg;
+        const floatingData = [];
+
+        for (let y = 0; y < h; y++) {
+            const row = [];
+            for (let x = 0; x < w; x++) {
+                const ty = y + y1;
+                const tx = x + x1;
+                if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
+                    row.push(layer[ty][tx]);
+                    layer[ty][tx] = -1; // Clear
+                } else {
+                    row.push(-1);
+                }
+            }
+            floatingData.push(row);
+        }
+
+        this.floatingData = floatingData;
+        this.floatingPos = { x: x1, y: y1 };
+        this.isFloating = true;
+    },
+
+    commitFloatingData() {
+        if (!this.isFloating || !this.floatingData) return;
+        const layer = App.projectData.stage.layers.fg;
+        const h = this.floatingData.length;
+        const w = this.floatingData[0].length;
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const val = this.floatingData[y][x];
+
+                const ty = this.floatingPos.y + y;
+                const tx = this.floatingPos.x + x;
+
+                if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
+                    layer[ty][tx] = val;
+                }
+            }
+        }
+        this.isFloating = false;
+        this.floatingData = null;
         this.render();
-        close();
-    });
-
-    modal.querySelector('#cp-cancel').addEventListener('click', close);
-    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-},
-
-// SE繝励Ξ繝薙Η繝ｼ蜀咲函
-playSePreview(seIndex) {
-    const sounds = App.projectData?.sounds || [];
-    if (seIndex < 0 || seIndex >= sounds.length) return;
-
-    const se = sounds[seIndex];
-
-    // 繧ｰ繝ｭ繝ｼ繝舌Ν繧ｪ繝ｼ繝・ぅ繧ｪ繧ｨ繝ｳ繧ｸ繝ｳ繧剃ｽｿ逕ｨ
-    const audio = window.NesAudio || window.AudioManager;
-    if (audio) {
-        console.log('Previewing SE:', se.name, se.type);
-        audio.playSE(se.type);
-    } else {
-        console.error('Audio engine (NesAudio/AudioManager) not found.');
     }
-},
-
-renderSelection() {
-    if (!this.selectionStart || !this.selectionEnd) return;
-
-    const scrollX = this.canvasScrollX || 0;
-    const scrollY = this.canvasScrollY || 0;
-
-    // 浮動レイヤー
-    if (this.isFloating && this.floatingData) {
-        this.ctx.globalAlpha = 0.5; // 半透明
-        const palette = App.nesPalette;
-        const sprites = App.projectData.sprites;
-        const templates = App.projectData.templates || [];
-
-        for (let y = 0; y < this.floatingData.length; y++) {
-            for (let x = 0; x < this.floatingData[0].length; x++) {
-                const tileId = this.floatingData[y][x];
-                if (tileId <= -1000) continue;
-
-                let sprite;
-                if (tileId >= 100) {
-                    const template = templates[tileId - 100];
-                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                    sprite = sprites[spriteIdx];
-                } else if (tileId >= 0 && tileId < sprites.length) {
-                    sprite = sprites[tileId];
-                }
-
-                if (sprite) {
-                    const tx = this.floatingPos.x + x;
-                    const ty = this.floatingPos.y + y;
-                    this.renderSprite(sprite, tx, ty, palette);
-                }
-            }
-        }
-        this.ctx.globalAlpha = 1.0;
-    }
-
-    // 選択枠
-    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-
-    const rectX = x1 * this.tileSize + scrollX;
-    const rectY = y1 * this.tileSize + scrollY;
-    const rectW = (x2 - x1 + 1) * this.tileSize;
-    const rectH = (y2 - y1 + 1) * this.tileSize;
-
-    this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
-    this.ctx.lineWidth = 2;
-    this.ctx.setLineDash([4, 4]);
-    this.ctx.strokeRect(rectX, rectY, rectW, rectH);
-    this.ctx.setLineDash([]);
-},
-
-floatSelection() {
-    if (!this.selectionStart || !this.selectionEnd) return;
-    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-    const w = x2 - x1 + 1;
-    const h = y2 - y1 + 1;
-
-    const layer = App.projectData.stage.layers.fg;
-    const floatingData = [];
-
-    for (let y = 0; y < h; y++) {
-        const row = [];
-        for (let x = 0; x < w; x++) {
-            const ty = y + y1;
-            const tx = x + x1;
-            if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
-                row.push(layer[ty][tx]);
-                layer[ty][tx] = -1; // Clear
-            } else {
-                row.push(-1);
-            }
-        }
-        floatingData.push(row);
-    }
-
-    this.floatingData = floatingData;
-    this.floatingPos = { x: x1, y: y1 };
-    this.isFloating = true;
-},
-
-commitFloatingData() {
-    if (!this.isFloating || !this.floatingData) return;
-    const layer = App.projectData.stage.layers.fg;
-    const h = this.floatingData.length;
-    const w = this.floatingData[0].length;
-
-    for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-            const val = this.floatingData[y][x];
-
-            const ty = this.floatingPos.y + y;
-            const tx = this.floatingPos.x + x;
-
-            if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
-                layer[ty][tx] = val;
-            }
-        }
-    }
-    this.isFloating = false;
-    this.floatingData = null;
-    this.render();
-}
 };
 
 
