@@ -1011,6 +1011,7 @@ const SoundEditor = {
 
         // ドラッグスクロール機能
         let isDragging = false;
+        let hasMoved = false; // ドラッグ移動発生フラグ
         let startX = 0;
         let scrollLeft = 0;
 
@@ -1954,6 +1955,7 @@ const SoundEditor = {
                 const { step, pitch } = getStepPitch(pos);
 
                 isDragging = true;
+                hasMoved = false;
                 startX = pos.x;
                 startY = pos.y;
 
@@ -2022,6 +2024,7 @@ const SoundEditor = {
             const { step, pitch } = getStepPitch(pos);
 
             isDragging = true;
+            hasMoved = false;
             startX = pos.x;
             startY = pos.y;
 
@@ -2101,6 +2104,9 @@ const SoundEditor = {
                 if (moved && !isLongPress && !isCreatingNote) {
                     clearTimeout(longPressTimer);
                 }
+                if (moved) hasMoved = true;
+                if (moved) hasMoved = true;
+                if (moved) hasMoved = true;
 
                 // 選択モード
                 if (this.currentTool === 'select') {
@@ -2153,6 +2159,8 @@ const SoundEditor = {
                 if (moved && !isLongPress && !isCreatingNote) {
                     clearTimeout(longPressTimer);
                 }
+                if (moved) hasMoved = true;
+                if (moved) hasMoved = true;
 
                 // 選択モード
                 if (this.currentTool === 'select') {
@@ -2214,9 +2222,16 @@ const SoundEditor = {
 
                 // 選択モード
                 if (this.currentTool === 'select') {
+                    // 移動なし（タップ）なら選択解除
+                    if (!hasMoved && !this.isMovingSelection) {
+                        this.selectionStart = null;
+                        this.selectionEnd = null;
+                        this.render();
+                    }
                     this.isMovingSelection = false;
                     this.selectionMoveStart = null;
                     isDragging = false;
+                    hasMoved = false;
                     return;
                 }
 
@@ -2257,9 +2272,16 @@ const SoundEditor = {
         this.canvas.addEventListener('mouseup', (e) => {
             // 選択モード
             if (this.currentTool === 'select') {
+                // 移動なし（タップ）なら選択解除
+                if (!hasMoved && !this.isMovingSelection) {
+                    this.selectionStart = null;
+                    this.selectionEnd = null;
+                    this.render();
+                }
                 this.isMovingSelection = false;
                 this.selectionMoveStart = null;
                 isDragging = false;
+                hasMoved = false;
                 return;
             }
 
@@ -2333,7 +2355,7 @@ const SoundEditor = {
     // 範囲コピー
     copySelection() {
         if (!this.selectionStart || !this.selectionEnd) {
-            alert('コピーする範囲を選択してください');
+            // alert('コピーする範囲を選択してください');
             return;
         }
 
@@ -2359,7 +2381,7 @@ const SoundEditor = {
             notes: notes
         };
 
-        alert(`${notes.length} 個のノートをコピーしました`);
+        // alert(`${notes.length} 個のノートをコピーしました`);
         this.render();
     },
 

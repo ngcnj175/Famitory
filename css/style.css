@@ -3248,10 +3248,17 @@ body {
     padding: 4px;
     width: 48px;
     min-width: 48px;
+    align-self: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 320px;
+    max-height: 320px;
+    /*
     overflow: visible;
     /* 隕句�繧碁亟豁｢ */
     align-self: flex-end;
     /* 荳区純縺� */
+    */
 }
 
 .sound-ctrl-btn {

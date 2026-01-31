@@ -71,7 +71,7 @@ const StageEditor = {
     // ========== ツールバー ==========
     initTools() {
         // 重複リスナー防止
-        if (this.toolsInitialized) return;
+        // if (this.toolsInitialized) return;
         this.toolsInitialized = true;
 
         // ステージ画面専用のツールボタンを選択
@@ -1428,6 +1428,7 @@ const StageEditor = {
 
         const handleStart = (e) => {
             if (isDrawing) return;
+            hasMoved = false;
 
             // タッチ判定（2本指パン対応）
             if (e.touches && e.touches.length >= 2) {
@@ -1485,6 +1486,7 @@ const StageEditor = {
             }
 
             if (!isDrawing) return;
+            hasMoved = true;
 
             const { x, y } = this.getTileFromEvent(e);
 
@@ -1532,6 +1534,9 @@ const StageEditor = {
 
             // 範囲選択・ペースト移動終了時の処理
             if (this.currentTool === 'select') {
+                if (!hasMoved && !this.isMovingSelection) {
+                    this.cancelSelectionMode();
+                }
                 this.isMovingSelection = false;
                 this.selectionMoveStart = null;
                 return;
@@ -1551,6 +1556,7 @@ const StageEditor = {
         // 2本指パン誤入力防止用
         let pendingDrawTimer = null;
         let pendingDrawData = null;
+        let hasMoved = false;
 
         // タッチイベント（1本指：タイル操作、2本指：パン）
         this.canvas.addEventListener('touchstart', (e) => {
@@ -1673,7 +1679,7 @@ const StageEditor = {
 
     copySelection() {
         if (!this.selectionStart || !this.selectionEnd) {
-            alert('コピーする範囲を選択してください');
+            // alert('コピーする範囲を選択してください');
             return;
         }
 

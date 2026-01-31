@@ -1359,6 +1359,7 @@ const SpriteEditor = {
 
     onPointerDown(e) {
         if (App.currentScreen !== 'paint') return;
+        this.hasMoved = false;
 
         const pixel = this.getPixelFromEvent(e);
         const dimension = this.getCurrentSpriteDimension();
@@ -1431,6 +1432,7 @@ const SpriteEditor = {
 
     onPointerMove(e) {
         if (!this.isDrawing || App.currentScreen !== 'paint') return;
+        this.hasMoved = true;
 
         const pixel = this.getPixelFromEvent(e);
 
@@ -1485,6 +1487,9 @@ const SpriteEditor = {
 
         // 範囲選択モード（ドラッグ終了のみ、確定はボタンで行う）
         if (this.selectionMode) {
+            if (!this.hasMoved && !this.isMovingSelection) {
+                this.cancelSelectionMode();
+            }
             this.isMovingSelection = false;
             this.selectionMoveStart = null;
             return;
@@ -1665,7 +1670,8 @@ const SpriteEditor = {
         this.rangeClipboard = data;
 
         // ユーザーにお知らせ
-        alert('選択範囲をコピーしました');
+        // ユーザーにお知らせ
+        // alert('選択範囲をコピーしました');
 
         // 選択モードは維持する
         this.render();
