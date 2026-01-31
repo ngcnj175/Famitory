@@ -3250,6 +3250,7 @@ body {
     min-width: 48px;
     align-self: flex-start;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
     height: 320px;
     max-height: 320px;

@@ -2037,6 +2037,7 @@ const SoundEditor = {
                     this.isMovingSelection = false;
                     this.selectionStart = { step, pitch };
                     this.selectionEnd = { step, pitch };
+                    this.isSelecting = true;
                 }
                 this.render();
                 return;
@@ -2278,6 +2279,7 @@ const SoundEditor = {
                     this.selectionEnd = null;
                     this.render();
                 }
+                this.isSelecting = false;
                 this.isMovingSelection = false;
                 this.selectionMoveStart = null;
                 isDragging = false;
@@ -2709,7 +2711,7 @@ const SoundEditor = {
             const h = (pitch2 - pitch1 + 1) * this.cellSize;
 
             this.ctx.setLineDash([4, 4]); // 点線
-            this.ctx.strokeStyle = '#90EE90'; // LightGreen
+            this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
             this.ctx.lineWidth = 2;
             this.ctx.strokeRect(x, y, w, h);
             this.ctx.fillStyle = 'rgba(144, 238, 144, 0.2)'; // Semi-transparent LightGreen

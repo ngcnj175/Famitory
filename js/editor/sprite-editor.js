@@ -963,6 +963,27 @@ const SpriteEditor = {
             }
         }
 
+        // 浮動選択範囲描画
+        if (this.isFloating && this.floatingData) {
+            const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
+            const offsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
+            const palette = App.nesPalette;
+
+            this.ctx.globalAlpha = 0.5; // 半透明
+            for (let y = 0; y < this.floatingData.length; y++) {
+                for (let x = 0; x < this.floatingData[0].length; x++) {
+                    const colorIndex = this.floatingData[y][x];
+                    if (colorIndex >= 0) {
+                        const drawX = (this.floatingPos.x + x - offsetX) * this.pixelSize;
+                        const drawY = (this.floatingPos.y + y - offsetY) * this.pixelSize;
+                        this.ctx.fillStyle = palette[colorIndex];
+                        this.ctx.fillRect(drawX, drawY, this.pixelSize, this.pixelSize);
+                    }
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+
         // 範囲選択表示（点線）
         if (this.selectionMode && this.selectionStart && this.selectionEnd) {
             const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
@@ -975,7 +996,7 @@ const SpriteEditor = {
 
             // ビューポート内に表示される部分のみ描画
             if (x2 >= 0 && x1 < 16 && y2 >= 0 && y1 < 16) {
-                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
                 this.ctx.lineWidth = 2;
                 this.ctx.setLineDash([4, 4]);
                 this.ctx.strokeRect(
@@ -1374,10 +1395,21 @@ const SpriteEditor = {
 
             // 既存の選択範囲内をクリックした場合は移動モード
             if (this.selectionStart && this.selectionEnd && this.isPointInSelection(pixel.x, pixel.y)) {
+
+                // まだ浮動化していないなら、ここで浮動化（Cut）
+                if (!this.isFloating) {
+                    this.saveHistory(); // 移動開始前の状態を保存
+                    this.floatSelection();
+                }
+
                 this.selectionMoveStart = { x: pixel.x, y: pixel.y };
                 this.isMovingSelection = true;
             } else {
                 // 新規選択
+                if (this.isFloating) {
+                    this.commitFloatingData(); // 以前の選択を確定
+                }
+                this.isSelecting = true; // 新規選択フラグ（色制御用）
                 this.selectionStart = { x: pixel.x, y: pixel.y };
                 this.selectionEnd = { x: pixel.x, y: pixel.y };
                 this.isMovingSelection = false;
@@ -1450,6 +1482,12 @@ const SpriteEditor = {
                     this.selectionStart.y += dy;
                     this.selectionEnd.x += dx;
                     this.selectionEnd.y += dy;
+
+                    if (this.isFloating) {
+                        this.floatingPos.x += dx;
+                        this.floatingPos.y += dy;
+                    }
+
                     this.selectionMoveStart = { x: pixel.x, y: pixel.y };
                 }
             } else {
@@ -1485,13 +1523,16 @@ const SpriteEditor = {
         this.isDrawing = false;
         this.lastPixel = { x: -1, y: -1 };
 
-        // 範囲選択モード（ドラッグ終了のみ、確定はボタンで行う）
+        // 範囲選択モード（ドラッグ終了のみ、確定はボタンで行う→指を離すとライトグリーンになる）
         if (this.selectionMode) {
+            this.isSelecting = false; // 新規選択完了（色はライトグリーンへ）
+
             if (!this.hasMoved && !this.isMovingSelection) {
                 this.cancelSelectionMode();
             }
             this.isMovingSelection = false;
             this.selectionMoveStart = null;
+            this.render(); // 色更新のため再描画
             return;
         }
 
@@ -1603,6 +1644,14 @@ const SpriteEditor = {
             this.selectionEnd = null;
         }
         this.currentTool = 'select';
+        this.isSelecting = false;
+
+        // 以前の浮動データがあれば確定
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
+        this.isFloating = false;
+        this.floatingData = null;
 
         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.tool === 'select');
@@ -1613,6 +1662,10 @@ const SpriteEditor = {
     // 選択モードキャンセル
     cancelSelectionMode() {
         if (!this.selectionMode) return;
+
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
 
         this.selectionMode = false;
         this.selectionStart = null;
@@ -1836,5 +1889,76 @@ const SpriteEditor = {
             btn.classList.toggle('guide-active', this.guideImage && this.guideImageVisible);
             btn.classList.toggle('guide-loaded', this.guideImage !== null);
         }
+    },
+
+    floatSelection() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+
+        const floatingData = [];
+        const sprite = App.projectData.sprites[this.currentSprite];
+
+        // データを抽出して元データを消去
+        for (let y = 0; y < h; y++) {
+            const row = [];
+            for (let x = 0; x < w; x++) {
+                // 配列境界チェック
+                if (sprite.data[y + y1] && typeof sprite.data[y + y1][x + x1] !== 'undefined') {
+                    const val = sprite.data[y + y1][x + x1];
+                    row.push(val);
+                    sprite.data[y + y1][x + x1] = -1;
+                } else {
+                    row.push(-1);
+                }
+            }
+            floatingData.push(row);
+        }
+
+        this.floatingData = floatingData;
+        this.floatingPos = { x: x1, y: y1 };
+        this.isFloating = true;
+    },
+
+    commitFloatingData() {
+        if (!this.isFloating || !this.floatingData) return;
+
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const dim = this.getCurrentSpriteDimension();
+
+        // 浮動データをキャンバスに書き戻す
+        for (let y = 0; y < this.floatingData.length; y++) {
+            for (let x = 0; x < this.floatingData[0].length; x++) {
+                const val = this.floatingData[y][x];
+                // 浮動データの透明（-1）も書き込むか？
+                // 通常Moveツールは「切り取り＆移動」なので、移動先の絵を上書きする。透明部分は透けるべきだが...
+                // ここでは単純なペースト同様、透明部分(-1)は書き込まないことにする（合成）
+                // いや、もし「移動」なら、元の矩形がそのまま移動すべきなので、透明も書き込む（上書き）
+                // ただし、もしユーザーが「透明部分は下の絵を残したい」と思うなら別だが。
+                // pixel art editor の挙動としては上書きが自然。
+                // でも -1 は透明なので、下の色が見えるべき？ 
+                // data 上では -1 が入ると「透明」になる。
+                // つまり -1 を書き込めばそこは透明になる（消しゴム効果）。
+
+                const tx = this.floatingPos.x + x;
+                const ty = this.floatingPos.y + y;
+
+                if (tx >= 0 && tx < dim && ty >= 0 && ty < dim) {
+                    // 境界チェックの上で書き込み
+                    if (sprite.data[ty]) {
+                        sprite.data[ty][tx] = val;
+                    }
+                }
+            }
+        }
+
+        this.isFloating = false;
+        this.floatingData = null;
+        this.render();
     }
+
 };
