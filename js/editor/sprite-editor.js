@@ -628,8 +628,11 @@ const SpriteEditor = {
                     case 'undo':
                         this.undo();
                         break;
+                    case 'select':
+                        this.startSelectionMode();
+                        break;
                     case 'copy':
-                        this.copySprite();
+                        this.copySelection();
                         break;
                     case 'paste':
                         this.pasteSprite();
@@ -646,6 +649,8 @@ const SpriteEditor = {
                         this.handleGuideButtonClick();
                         break;
                     default:
+                        // 選択モードをキャンセル
+                        this.cancelSelectionMode();
                         this.currentTool = tool;
                         // PIXEL画面のツールのみアクティブ切替
                         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
@@ -1365,8 +1370,17 @@ const SpriteEditor = {
         // 範囲選択モード
         if (this.selectionMode) {
             this.isDrawing = true;
-            this.selectionStart = { x: pixel.x, y: pixel.y };
-            this.selectionEnd = { x: pixel.x, y: pixel.y };
+
+            // 既存の選択範囲内をクリックした場合は移動モード
+            if (this.selectionStart && this.selectionEnd && this.isPointInSelection(pixel.x, pixel.y)) {
+                this.selectionMoveStart = { x: pixel.x, y: pixel.y };
+                this.isMovingSelection = true;
+            } else {
+                // 新規選択
+                this.selectionStart = { x: pixel.x, y: pixel.y };
+                this.selectionEnd = { x: pixel.x, y: pixel.y };
+                this.isMovingSelection = false;
+            }
             this.render();
             return;
         }
@@ -1423,10 +1437,26 @@ const SpriteEditor = {
         // 範囲選択モード
         if (this.selectionMode) {
             const dimension = this.getCurrentSpriteDimension();
-            this.selectionEnd = {
-                x: Math.max(0, Math.min(dimension - 1, pixel.x)),
-                y: Math.max(0, Math.min(dimension - 1, pixel.y))
-            };
+
+            if (this.isMovingSelection && this.selectionMoveStart) {
+                // 選択範囲の移動
+                const dx = pixel.x - this.selectionMoveStart.x;
+                const dy = pixel.y - this.selectionMoveStart.y;
+
+                if (dx !== 0 || dy !== 0) {
+                    this.selectionStart.x += dx;
+                    this.selectionStart.y += dy;
+                    this.selectionEnd.x += dx;
+                    this.selectionEnd.y += dy;
+                    this.selectionMoveStart = { x: pixel.x, y: pixel.y };
+                }
+            } else {
+                // 範囲選択中
+                this.selectionEnd = {
+                    x: Math.max(0, Math.min(dimension - 1, pixel.x)),
+                    y: Math.max(0, Math.min(dimension - 1, pixel.y))
+                };
+            }
             this.render();
             return;
         }
@@ -1453,9 +1483,10 @@ const SpriteEditor = {
         this.isDrawing = false;
         this.lastPixel = { x: -1, y: -1 };
 
-        // 範囲選択モード確定
-        if (this.selectionMode && this.selectionStart && this.selectionEnd) {
-            this.confirmRangeCopy();
+        // 範囲選択モード（ドラッグ終了のみ、確定はボタンで行う）
+        if (this.selectionMode) {
+            this.isMovingSelection = false;
+            this.selectionMoveStart = null;
             return;
         }
 
@@ -1548,18 +1579,45 @@ const SpriteEditor = {
         this.initSpriteGallery();
     },
 
+    isPointInSelection(x, y) {
+        if (!this.selectionStart || !this.selectionEnd) return false;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    },
+
     // 範囲選択モード開始
-    copySprite() {
+    startSelectionMode() {
         this.selectionMode = true;
         this.pasteMode = false;
+        // 既存の選択がない場合は初期化（維持することでツール切り替えに対応）
+        if (!this.selectionStart) {
+            this.selectionStart = null;
+            this.selectionEnd = null;
+        }
+        this.currentTool = 'select';
+
+        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select');
+        });
+        this.render();
+    },
+
+    // 選択モードキャンセル
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
+
+        this.selectionMode = false;
         this.selectionStart = null;
         this.selectionEnd = null;
-        this.currentTool = 'copy';
-        // ツールボタンのアクティブ状態を更新
-        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === 'copy');
-        });
+        this.isMovingSelection = false;
+        this.selectionMoveStart = null;
+        this.render();
     },
+
+
 
     // ペーストモード開始
     pasteSprite() {
@@ -1582,9 +1640,12 @@ const SpriteEditor = {
         this.render();
     },
 
-    // 範囲コピー確定
-    confirmRangeCopy() {
-        if (!this.selectionStart || !this.selectionEnd) return;
+    // 選択範囲をコピー
+    copySelection() {
+        if (!this.selectionStart || !this.selectionEnd) {
+            alert('コピーする範囲を選択してください');
+            return;
+        }
 
         const sprite = App.projectData.sprites[this.currentSprite];
         const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
@@ -1603,14 +1664,10 @@ const SpriteEditor = {
         }
         this.rangeClipboard = data;
 
-        // 選択モード終了
-        this.selectionMode = false;
-        this.selectionStart = null;
-        this.selectionEnd = null;
-        this.currentTool = 'pen';
-        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === 'pen');
-        });
+        // ユーザーにお知らせ
+        alert('選択範囲をコピーしました');
+
+        // 選択モードは維持する
         this.render();
     },
 

@@ -29,7 +29,18 @@ const SoundEditor = {
     highlightPitch: -1, // ハイライト中の音階
 
     // 編集ツール
-    currentTool: 'pencil', // pencil, eraser, copy
+    currentTool: 'pencil', // pencil, eraser, select, copy, paste
+
+    // 範囲選択
+    selectionMode: false,
+    selectionStart: null, // {step, noteIdx}
+    selectionEnd: null,   // {step, noteIdx}
+    rangeClipboard: null,
+    pasteMode: false,
+    pasteData: null,
+    pasteOffset: { step: 0, note: 0 },
+    isMovingSelection: false,
+    selectionMoveStart: null,
 
     // 入力位置
     currentStep: 0,
@@ -885,16 +896,24 @@ const SoundEditor = {
             });
         }
 
-        // COPY（現在トラックのノートをコピー）
-        const copyBtn = document.getElementById('sound-copy-btn');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => this.copyTrack());
+        // SELECT
+        const selectBtn = document.getElementById('sound-select-btn');
+        if (selectBtn) {
+            selectBtn.addEventListener('click', () => {
+                this.startSelectionMode();
+            });
         }
 
-        // PASTE（コピーしたノートをペースト）
+        // COPY（選択範囲をコピー）
+        const copyBtn = document.getElementById('sound-copy-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => this.copySelection());
+        }
+
+        // PASTE（コピーした範囲をペースト）
         const pasteBtn = document.getElementById('sound-paste-btn');
         if (pasteBtn) {
-            pasteBtn.addEventListener('click', () => this.pasteTrack());
+            pasteBtn.addEventListener('click', () => this.startPasteMode());
         }
 
         // REST（ステップを進める、休符入力）
@@ -1938,24 +1957,23 @@ const SoundEditor = {
                 startX = pos.x;
                 startY = pos.y;
 
-                // 選択モード中（縦は全選択、横のみドラッグ）
-                if (this.selectionMode) {
-                    if (!this.selectionStart) {
-                        // 音程は全選択（0～71、6オクターブ全て）
-                        this.selectionStart = { step, pitch: 0 };
-                        this.selectionEnd = { step, pitch: 71 };
+                // 選択モード
+                if (this.currentTool === 'select') {
+                    if (this.isStepInSelection(step, pitch)) {
+                        this.isMovingSelection = true;
+                        this.selectionMoveStart = { step, pitch };
                     } else {
-                        // stepのみ更新、pitchは全選択維持
-                        this.selectionEnd = { step, pitch: 71 };
+                        this.isMovingSelection = false;
+                        this.selectionStart = { step, pitch };
+                        this.selectionEnd = { step, pitch };
                     }
                     this.render();
                     return;
                 }
 
-                // ペーストモード中（横のみ移動可能）
-                if (this.pasteMode) {
-                    // stepのみ更新、pitchは0に固定
-                    this.pasteOffset = { step, pitch: 0 };
+                // ペーストモード
+                if (this.currentTool === 'paste') {
+                    this.pasteOffset = { step, pitch };
                     this.render();
                     return;
                 }
@@ -2007,24 +2025,23 @@ const SoundEditor = {
             startX = pos.x;
             startY = pos.y;
 
-            // 選択モード中（縦は全選択、横のみドラッグ）
-            if (this.selectionMode) {
-                if (!this.selectionStart) {
-                    // 音程は全選択（0～71、6オクターブ全て）
-                    this.selectionStart = { step, pitch: 0 };
-                    this.selectionEnd = { step, pitch: 71 };
+            // 選択モード
+            if (this.currentTool === 'select') {
+                if (this.isStepInSelection(step, pitch)) {
+                    this.isMovingSelection = true;
+                    this.selectionMoveStart = { step, pitch };
                 } else {
-                    // stepのみ更新、pitchは全選択維持
-                    this.selectionEnd = { step, pitch: 71 };
+                    this.isMovingSelection = false;
+                    this.selectionStart = { step, pitch };
+                    this.selectionEnd = { step, pitch };
                 }
                 this.render();
                 return;
             }
 
-            // ペーストモード中（横のみ移動可能）
-            if (this.pasteMode) {
-                // stepのみ更新、pitchは0に固定
-                this.pasteOffset = { step, pitch: 0 };
+            // ペーストモード
+            if (this.currentTool === 'paste') {
+                this.pasteOffset = { step, pitch };
                 this.render();
                 return;
             }
@@ -2042,6 +2059,9 @@ const SoundEditor = {
                 }, 300);
             } else {
                 // 空セル: 新規ノート作成（ドラッグで長さ設定）
+                // 鉛筆ツール以外では作成しない
+                if (this.currentTool !== 'pencil') return;
+
                 const newNote = { step, pitch, length: 1 };
                 const song = this.getCurrentSong();
                 song.tracks[this.currentTrack].notes.push(newNote);
@@ -2082,18 +2102,27 @@ const SoundEditor = {
                     clearTimeout(longPressTimer);
                 }
 
-                // 選択モード中のドラッグ（縦全選択、横のみ）
-                if (this.selectionMode && this.selectionStart) {
-                    const { step } = getStepPitch(pos);
-                    this.selectionEnd = { step, pitch: 71 };
+                // 選択モード
+                if (this.currentTool === 'select') {
+                    const { step, pitch } = getStepPitch(pos);
+
+                    if (this.isMovingSelection && this.selectionMoveStart) {
+                        const deltaStep = step - this.selectionMoveStart.step;
+                        if (this.selectionStart) this.selectionStart.step += deltaStep;
+                        if (this.selectionEnd) this.selectionEnd.step += deltaStep;
+                        this.selectionMoveStart = { step, pitch };
+                    } else {
+                        // 範囲変更
+                        this.selectionEnd = { step, pitch };
+                    }
                     this.render();
                     return;
                 }
 
-                // ペーストモード中のドラッグ（横のみ移動）
-                if (this.pasteMode) {
-                    const { step } = getStepPitch(pos);
-                    this.pasteOffset = { step, pitch: 0 };
+                // ペーストモード
+                if (this.currentTool === 'paste') {
+                    const { step, pitch } = getStepPitch(pos);
+                    this.pasteOffset = { step, pitch };
                     this.render();
                     return;
                 }
@@ -2125,18 +2154,27 @@ const SoundEditor = {
                     clearTimeout(longPressTimer);
                 }
 
-                // 選択モード中のドラッグ（縦全選択、横のみ）
-                if (this.selectionMode && this.selectionStart) {
-                    const { step } = getStepPitch(pos);
-                    this.selectionEnd = { step, pitch: 60 };
+                // 選択モード
+                if (this.currentTool === 'select') {
+                    const { step, pitch } = getStepPitch(pos);
+
+                    if (this.isMovingSelection && this.selectionMoveStart) {
+                        const deltaStep = step - this.selectionMoveStart.step;
+                        if (this.selectionStart) this.selectionStart.step += deltaStep;
+                        if (this.selectionEnd) this.selectionEnd.step += deltaStep;
+                        this.selectionMoveStart = { step, pitch };
+                    } else {
+                        // 範囲変更
+                        this.selectionEnd = { step, pitch };
+                    }
                     this.render();
                     return;
                 }
 
-                // ペーストモード中のドラッグ（横のみ移動）
-                if (this.pasteMode) {
-                    const { step } = getStepPitch(pos);
-                    this.pasteOffset = { step, pitch: 0 };
+                // ペーストモード
+                if (this.currentTool === 'paste') {
+                    const { step, pitch } = getStepPitch(pos);
+                    this.pasteOffset = { step, pitch };
                     this.render();
                     return;
                 }
@@ -2174,15 +2212,16 @@ const SoundEditor = {
                     return;
                 }
 
-                // 選択モード中：範囲コピー確定
-                if (this.selectionMode && this.selectionStart && this.selectionEnd) {
-                    this.confirmRangeCopy();
+                // 選択モード
+                if (this.currentTool === 'select') {
+                    this.isMovingSelection = false;
+                    this.selectionMoveStart = null;
                     isDragging = false;
                     return;
                 }
 
-                // ペーストモード中：ペースト確定
-                if (this.pasteMode) {
+                // ペーストモード：ペースト確定
+                if (this.currentTool === 'paste') {
                     this.confirmPaste();
                     isDragging = false;
                     return;
@@ -2216,15 +2255,16 @@ const SoundEditor = {
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
-            // 選択モード中：範囲コピー確定
-            if (this.selectionMode && this.selectionStart && this.selectionEnd) {
-                this.confirmRangeCopy();
+            // 選択モード
+            if (this.currentTool === 'select') {
+                this.isMovingSelection = false;
+                this.selectionMoveStart = null;
                 isDragging = false;
                 return;
             }
 
-            // ペーストモード中：ペースト確定
-            if (this.pasteMode) {
+            // ペーストモード：ペースト確定
+            if (this.currentTool === 'paste') {
                 this.confirmPaste();
                 isDragging = false;
                 return;
@@ -2262,6 +2302,145 @@ const SoundEditor = {
             draggingNote = null;
             clearTimeout(longPressTimer);
         });
+    },
+
+    // 範囲選択モード開始
+    startSelectionMode() {
+        this.selectionMode = true;
+        this.pasteMode = false;
+
+        // 既存の選択を維持するか、新規でクリアするか
+        if (!this.selectionStart) {
+            this.selectionStart = null;
+            this.selectionEnd = null;
+        }
+
+        this.currentTool = 'select';
+        document.querySelectorAll('#sound-controls .sound-ctrl-btn').forEach(b => {
+            // sound-select-btn に active を付けたいが、HTML構造的にボタンIDを直接指定する
+            if (b.id === 'sound-select-btn') b.classList.add('active');
+            else b.classList.remove('active');
+        });
+
+        // sound-tool-btn クラスも考慮（もしあれば）
+        document.querySelectorAll('.sound-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select');
+        });
+
+        this.render();
+    },
+
+    // 範囲コピー
+    copySelection() {
+        if (!this.selectionStart || !this.selectionEnd) {
+            alert('コピーする範囲を選択してください');
+            return;
+        }
+
+        const song = this.getCurrentSong();
+        const track = song.tracks[this.currentTrack];
+
+        // 正規化
+        const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+        const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+        const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+        const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+
+        // 範囲内のノートを収集
+        const notes = track.notes.filter(n => {
+            // ノートの一部でも範囲内に入っていればコピー対象とするか、開始位置が含まれるか
+            // ここでは開始位置が含まれるものを対象
+            return n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch;
+        }).map(n => ({ ...n, step: n.step - sStep, pitch: n.pitch - sPitch })); // 相対位置
+
+        this.rangeClipboard = {
+            width: eStep - sStep + 1,
+            height: ePitch - sPitch + 1,
+            notes: notes
+        };
+
+        alert(`${notes.length} 個のノートをコピーしました`);
+        this.render();
+    },
+
+    startPasteMode() {
+        if (!this.rangeClipboard) {
+            alert('クリップボードが空です');
+            return;
+        }
+
+        this.pasteMode = true;
+        this.selectionMode = false;
+        this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
+
+        // 画面中央付近に配置（現在のスクロール位置基準）
+        const scrollStep = Math.floor(this.scrollX / this.cellSize);
+        // 音程はC4付近または画面中央
+        // スクロールYは下方向正だが、ピッチは上方向正 (0-71)
+        // scrollY=0 のとき、下端は見えている。
+        // ピッチの表示は下から上に 0..71。
+        // cellSize=20。canvasHeight=320。
+        // 表示範囲の下端ピッチ = scrollY / cellSize
+        const bottomPitch = Math.floor(this.scrollY / this.cellSize);
+        const centerPitch = bottomPitch + 8; // 画面の真ん中あたり
+
+        this.pasteOffset = {
+            step: Math.max(0, scrollStep + 2),
+            pitch: Math.max(0, Math.min(71, centerPitch))
+        };
+
+        this.currentTool = 'paste';
+        document.querySelectorAll('#sound-controls .sound-ctrl-btn').forEach(b => {
+            if (b.id === 'sound-paste-btn') b.classList.add('active');
+            else b.classList.remove('active');
+        });
+
+        this.render();
+    },
+
+    confirmPaste() {
+        if (!this.pasteData) return;
+
+        const song = this.getCurrentSong();
+        const track = song.tracks[this.currentTrack];
+
+        // ペーストデータを現在のトラックに追加
+        this.pasteData.notes.forEach(note => {
+            const newStep = this.pasteOffset.step + note.step;
+            const newPitch = this.pasteOffset.pitch + note.pitch; // ノートのピッチオフセットを加算
+
+            // 範囲チェック
+            if (newStep >= 0 && newStep < song.bars * 16 && newPitch >= 0 && newPitch <= 71) {
+                // 重なるノートを削除するかどうかだが、PixelGameKitの仕様としては重ねてOKまたは上書き
+                // 単音トラックなら上書きすべきだが、データ構造的には重複許容
+                // ここでは既存の同じ位置・ピッチのノートがあれば削除して上書き
+                const existingIdx = track.notes.findIndex(n => n.step === newStep && n.pitch === newPitch);
+                if (existingIdx >= 0) {
+                    track.notes.splice(existingIdx, 1);
+                }
+                track.notes.push({
+                    step: newStep,
+                    pitch: newPitch,
+                    length: note.length
+                });
+            }
+        });
+
+        this.pasteMode = false;
+        this.pasteData = null;
+
+        // ツールを選択モードに戻す
+        this.startSelectionMode();
+    },
+
+    // 選択範囲内判定
+    isStepInSelection(step, pitch) {
+        if (!this.selectionStart || !this.selectionEnd) return false;
+        const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+        const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+        const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+        const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+        return step >= sStep && step <= eStep && pitch >= sPitch && pitch <= ePitch;
     },
 
     handleTap(step, pitch) {
@@ -2495,6 +2674,7 @@ const SoundEditor = {
         });
 
         // 選択範囲の描画
+        // 選択範囲の描画
         if (this.selectionMode && this.selectionStart && this.selectionEnd) {
             const step1 = Math.min(this.selectionStart.step, this.selectionEnd.step);
             const step2 = Math.max(this.selectionStart.step, this.selectionEnd.step);
@@ -2506,27 +2686,46 @@ const SoundEditor = {
             const w = (step2 - step1 + 1) * this.cellSize;
             const h = (pitch2 - pitch1 + 1) * this.cellSize;
 
-            this.ctx.strokeStyle = '#FFFF00';
+            this.ctx.setLineDash([4, 4]); // 点線
+            this.ctx.strokeStyle = '#90EE90'; // LightGreen
             this.ctx.lineWidth = 2;
             this.ctx.strokeRect(x, y, w, h);
-            this.ctx.fillStyle = 'rgba(255, 255, 0, 0.2)';
+            this.ctx.fillStyle = 'rgba(144, 238, 144, 0.2)'; // Semi-transparent LightGreen
             this.ctx.fillRect(x, y, w, h);
+            this.ctx.setLineDash([]);
         }
 
         // ペーストプレビューの描画
-        if (this.pasteMode && this.noteClipboard) {
-            this.ctx.fillStyle = 'rgba(0, 255, 0, 0.4)';
-            this.noteClipboard.notes.forEach(copyNote => {
-                const newStep = this.pasteOffset.step + copyNote.relStep;
-                const newPitch = this.pasteOffset.pitch + copyNote.relPitch;
+        if (this.pasteMode && this.pasteData) {
+            this.ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+            this.pasteData.notes.forEach(note => {
+                const newStep = this.pasteOffset.step + note.step;
+                const newPitch = this.pasteOffset.pitch + note.pitch;
                 const x = newStep * this.cellSize - this.scrollX;
                 const y = (maxPitch - newPitch) * this.cellSize - scrollY;
-                const w = copyNote.length * this.cellSize - 2;
+                const w = note.length * this.cellSize - 2;
 
                 if (x + w >= 0 && x <= this.canvas.width && y + this.cellSize >= 0 && y < this.canvas.height) {
                     this.ctx.fillRect(x + 1, y + 1, w, this.cellSize - 2);
                 }
             });
+
+            // ペースト枠も表示
+            if (this.pasteData.width && this.pasteData.height) {
+                const width = this.pasteData.width;
+                const height = this.pasteData.height;
+
+                const x = this.pasteOffset.step * this.cellSize - this.scrollX;
+                const y = (maxPitch - (this.pasteOffset.pitch + height - 1)) * this.cellSize - scrollY;
+                const w = width * this.cellSize;
+                const h = height * this.cellSize;
+
+                this.ctx.setLineDash([4, 4]);
+                this.ctx.strokeStyle = '#FFFFFF';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(x, y, w, h);
+                this.ctx.setLineDash([]);
+            }
         }
 
         // 現在位置（再生中のみ表示、ビビッドグリーン）

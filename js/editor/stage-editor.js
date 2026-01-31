@@ -26,6 +26,17 @@ const StageEditor = {
     undoHistory: [],
     maxUndoHistory: 20,
 
+    // 範囲選択・ペーストモード
+    selectionMode: false,
+    selectionStart: null,
+    selectionEnd: null,
+    rangeClipboard: null,
+    pasteMode: false,
+    pasteData: null,
+    pasteOffset: { x: 0, y: 0 },
+    isMovingSelection: false,
+    selectionMoveStart: null,
+
     init() {
         this.canvas = document.getElementById('stage-canvas');
         if (this.canvas) {
@@ -95,24 +106,38 @@ const StageEditor = {
             btn.addEventListener('click', () => {
                 const tool = btn.dataset.tool;
 
-                // UNDOツール
-                if (tool === 'undo') {
-                    this.undo();
-                    return;
+                switch (tool) {
+                    case 'undo':
+                        this.undo();
+                        return;
+                    case 'select':
+                        this.startSelectionMode();
+                        break;
+                    case 'copy':
+                        this.copySelection();
+                        return;
+                    case 'paste':
+                        this.pasteTiles();
+                        return;
+                    case 'flip-v':
+                        this.flipVertical();
+                        return;
+                    case 'flip-h':
+                        this.flipHorizontal();
+                        return;
+                    default:
+                        // 選択モードキャンセル
+                        this.cancelSelectionMode();
+                        break;
                 }
 
-                // 特殊ツール（copy, paste等）はスキップ
-                if (['copy', 'paste', 'flip-v', 'flip-h'].includes(tool)) {
-                    return;
+                // 描画ツールの場合、カレントツールを更新
+                if (['pen', 'eraser', 'fill', 'eyedropper', 'select'].includes(tool)) {
+                    this.currentTool = tool;
+                    document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.tool === tool);
+                    });
                 }
-
-                this.currentTool = tool;
-                document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
-                    // 描画ツールのみアクティブ切替
-                    if (['pen', 'eraser', 'fill', 'eyedropper'].includes(b.dataset.tool)) {
-                        b.classList.toggle('active', b === btn);
-                    }
-                });
             });
         });
     },
@@ -1402,18 +1427,120 @@ const StageEditor = {
         let lastScrollY = 0;
 
         const handleStart = (e) => {
-            if (isDrawing) return; // 重複呼び出し防止
-            this.saveToHistory();
+            if (isDrawing) return;
+
+            // タッチ判定（2本指パン対応）
+            if (e.touches && e.touches.length >= 2) {
+                isPanning = true;
+                panStartX = e.touches[0].clientX;
+                panStartY = e.touches[0].clientY;
+                lastScrollX = this.canvasScrollX;
+                lastScrollY = this.canvasScrollY;
+                isDrawing = false;
+                return;
+            }
+
+            const { x, y } = this.getTileFromEvent(e);
+
+            // 範囲選択モード
+            if (this.currentTool === 'select') {
+                isDrawing = true;
+                if (this.selectionStart && this.selectionEnd && this.isPointInSelection(x, y)) {
+                    this.selectionMoveStart = { x, y };
+                    this.isMovingSelection = true;
+                } else {
+                    this.selectionStart = { x, y };
+                    this.selectionEnd = { x, y };
+                    this.isMovingSelection = false;
+                }
+                this.render();
+                return;
+            }
+
+            // ペーストモード
+            if (this.currentTool === 'paste' && this.pasteMode) {
+                isDrawing = true;
+                this.selectionMoveStart = { x, y }; // ドラッグ開始点として利用
+                return;
+            }
+
+            // その他のドローイングツール
+            if (this.currentTool === 'pen' || this.currentTool === 'eraser' || this.currentTool === 'fill') {
+                this.saveToHistory();
+            }
+
             isDrawing = true;
             this.processPixel(e);
         };
 
         const handleMove = (e) => {
-            if (isDrawing) this.processPixel(e);
+            if (isPanning && e.touches && e.touches.length >= 2) {
+                // 2本指パンスクロール
+                const dx = e.touches[0].clientX - panStartX;
+                const dy = e.touches[0].clientY - panStartY;
+                const parent = this.canvas.parentElement;
+                parent.scrollLeft = -lastScrollX - dx;
+                parent.scrollTop = -lastScrollY - dy;
+                return;
+            }
+
+            if (!isDrawing) return;
+
+            const { x, y } = this.getTileFromEvent(e);
+
+            // 範囲選択モード
+            if (this.currentTool === 'select') {
+                if (this.isMovingSelection && this.selectionMoveStart) {
+                    const dx = x - this.selectionMoveStart.x;
+                    const dy = y - this.selectionMoveStart.y;
+                    if (dx !== 0 || dy !== 0) {
+                        this.selectionStart.x += dx;
+                        this.selectionStart.y += dy;
+                        this.selectionEnd.x += dx;
+                        this.selectionEnd.y += dy;
+                        this.selectionMoveStart = { x, y };
+                    }
+                } else {
+                    this.selectionEnd = { x, y };
+                }
+                this.render();
+                return;
+            }
+
+            // ペーストモード（移動）
+            if (this.currentTool === 'paste' && this.pasteMode && this.selectionMoveStart) {
+                const dx = x - this.selectionMoveStart.x;
+                const dy = y - this.selectionMoveStart.y;
+                this.pasteOffset.x += dx;
+                this.pasteOffset.y += dy;
+                this.selectionMoveStart = { x, y };
+                this.render();
+                return;
+            }
+
+            this.processPixel(e);
         };
 
         const handleEnd = () => {
+            if (isPanning) {
+                isPanning = false;
+                return;
+            }
+            if (!isDrawing) return;
+
             isDrawing = false;
+
+            // 範囲選択・ペースト移動終了時の処理
+            if (this.currentTool === 'select') {
+                this.isMovingSelection = false;
+                this.selectionMoveStart = null;
+                return;
+            }
+            if (this.currentTool === 'paste') {
+                this.selectionMoveStart = null;
+                this.confirmPaste();
+                return;
+            }
         };
 
         this.canvas.addEventListener('mousedown', handleStart);
@@ -1490,6 +1617,159 @@ const StageEditor = {
                 handleEnd();
             }
         });
+    },
+
+
+
+    getTileFromEvent(e) {
+        const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+        const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+        if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 }; // フォールバック
+
+        const rect = this.canvas.getBoundingClientRect();
+        const scrollX = this.canvasScrollX || 0;
+        const scrollY = this.canvasScrollY || 0;
+
+        const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
+        const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
+        return { x, y };
+    },
+
+    isPointInSelection(x, y) {
+        if (!this.selectionStart || !this.selectionEnd) return false;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    },
+
+    startSelectionMode() {
+        this.selectionMode = true;
+        this.pasteMode = false;
+
+        if (!this.selectionStart) {
+            this.selectionStart = null;
+            this.selectionEnd = null;
+        }
+
+        this.currentTool = 'select';
+        document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select');
+        });
+        this.render();
+    },
+
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
+        this.selectionMode = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
+        this.isMovingSelection = false;
+        this.selectionMoveStart = null;
+        this.render();
+    },
+
+    copySelection() {
+        if (!this.selectionStart || !this.selectionEnd) {
+            alert('コピーする範囲を選択してください');
+            return;
+        }
+
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+        const data = [];
+
+        // 範囲内のタイルデータをコピー
+        for (let y = y1; y <= y2; y++) {
+            const row = [];
+            for (let x = x1; x <= x2; x++) {
+                if (x >= 0 && x < stage.width && y >= 0 && y < stage.height) {
+                    row.push(layer[y][x]);
+                    // エンティティもコピー対象に含めるべきだが、構造が複雑になるため今回はマップチップのみ
+                    // 必要ならエンティティもここで収集
+                } else {
+                    row.push(-1);
+                }
+            }
+            data.push(row);
+        }
+        this.rangeClipboard = data;
+        alert('選択範囲をコピーしました');
+        this.render();
+    },
+
+    pasteTiles() {
+        if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
+            alert('先にコピーする範囲を選択してください');
+            return;
+        }
+
+        this.pasteMode = true;
+        this.selectionMode = false;
+        this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
+
+        // 画面中央付近に配置
+        const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
+        const scrollY = Math.floor(-(this.canvasScrollY || 0) / this.tileSize);
+
+        this.pasteOffset = {
+            x: scrollX + 2,
+            y: scrollY + 2
+        };
+
+        this.currentTool = 'paste';
+        document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'paste');
+        });
+        this.render();
+    },
+
+    confirmPaste() {
+        if (!this.pasteData) return;
+
+        this.saveToHistory();
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+
+        const h = this.pasteData.length;
+        const w = this.pasteData[0].length;
+
+        for (let dy = 0; dy < h; dy++) {
+            for (let dx = 0; dx < w; dx++) {
+                const tx = this.pasteOffset.x + dx;
+                const ty = this.pasteOffset.y + dy;
+                const tile = this.pasteData[dy][dx];
+
+                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
+                    // -1 (透明) はペーストしない場合が多いが、今回はそのまま上書きする
+                    if (tile !== -1) {
+                        layer[ty][tx] = tile;
+                    }
+                }
+            }
+        }
+
+        this.pasteMode = false;
+        this.pasteData = null;
+        this.currentTool = 'select'; // ペースト後は選択モードに戻るのが自然
+        this.startSelectionMode();
+    },
+
+    flipVertical() {
+        // 実装は後回しまたは現在の選択範囲に対して行う
+        // ここでは選択範囲の反転ロジックが必要
+        alert('ステージエディタの反転機能は未実装です');
+    },
+
+    flipHorizontal() {
+        alert('ステージエディタの反転機能は未実装です');
     },
 
     processPixel(e) {
