@@ -38,6 +38,7 @@ const StageEditor = {
     selectionMoveStart: null,
     isFloating: false,
     floatingData: null,
+    floatingEntities: null, // Added for entities
     floatingPos: { x: 0, y: 0 },
     isSelecting: false,
 
@@ -1712,7 +1713,6 @@ const StageEditor = {
 
     copySelection() {
         if (!this.selectionStart || !this.selectionEnd) {
-            // alert('繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
             return;
         }
 
@@ -1723,35 +1723,63 @@ const StageEditor = {
 
         const stage = App.projectData.stage;
         const layer = stage.layers.fg;
-        const data = [];
+        const tiles = [];
 
-        // 遽・峇蜀・・繧ｿ繧､繝ｫ繝・・繧ｿ繧偵さ繝斐・
+        // Tiles Copy
         for (let y = y1; y <= y2; y++) {
             const row = [];
             for (let x = x1; x <= x2; x++) {
                 if (x >= 0 && x < stage.width && y >= 0 && y < stage.height) {
                     row.push(layer[y][x]);
-                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ繧ゅさ繝斐・蟇ｾ雎｡縺ｫ蜷ｫ繧√ｋ縺ｹ縺阪□縺後∵ｧ矩縺瑚､・尅縺ｫ縺ｪ繧九◆繧∽ｻ雁屓縺ｯ繝槭ャ繝励メ繝・・縺ｮ縺ｿ
-                    // 蠢・ｦ√↑繧峨お繝ｳ繝・ぅ繝・ぅ繧ゅ％縺薙〒蜿朱寔
                 } else {
                     row.push(-1);
                 }
             }
-            data.push(row);
+            tiles.push(row);
         }
-        this.rangeClipboard = data;
+
+        // Entities Copy
+        const entities = [];
+        if (stage.entities) {
+            stage.entities.forEach(e => {
+                if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
+                    entities.push({
+                        ...e,
+                        relX: e.x - x1,
+                        relY: e.y - y1
+                    });
+                }
+            });
+        }
+
+        this.rangeClipboard = { tiles, entities };
         // alert removed
         this.render();
     },
 
     pasteTiles() {
-        if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
+        if (!this.rangeClipboard) return;
+
+        // Verify clipboard format
+        let tiles = [];
+        let entities = [];
+
+        if (Array.isArray(this.rangeClipboard)) {
+            // Old format (just tiles)
+            tiles = this.rangeClipboard;
+        } else if (this.rangeClipboard.tiles) {
+            // New format
+            tiles = this.rangeClipboard.tiles;
+            entities = this.rangeClipboard.entities || [];
+        } else {
             return;
         }
 
+        if (tiles.length === 0 && entities.length === 0) return;
+
         this.pasteMode = true;
         this.selectionMode = false;
-        this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
+        this.pasteData = { tiles, entities: JSON.parse(JSON.stringify(entities)) };
 
         // 逕ｻ髱｢荳ｭ螟ｮ莉倩ｿ代↓驟咲ｽｮ
         const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
@@ -1770,23 +1798,24 @@ const StageEditor = {
     },
 
     confirmPaste() {
-        if (!this.pasteData) return;
+        if (!this.pasteData || !this.pasteData.tiles) return;
 
         this.saveToHistory();
         const stage = App.projectData.stage;
         const layer = stage.layers.fg;
 
-        const h = this.pasteData.length;
-        const w = this.pasteData[0].length;
+        const tiles = this.pasteData.tiles;
+        const h = tiles.length;
+        const w = tiles[0].length;
 
+        // Paste Tiles
         for (let dy = 0; dy < h; dy++) {
             for (let dx = 0; dx < w; dx++) {
                 const tx = this.pasteOffset.x + dx;
                 const ty = this.pasteOffset.y + dy;
-                const tile = this.pasteData[dy][dx];
+                const tile = tiles[dy][dx];
 
                 if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                    // -1 (騾乗・) 縺ｯ繝壹・繧ｹ繝医＠縺ｪ縺・ｴ蜷医′螟壹＞縺後∽ｻ雁屓縺ｯ縺昴・縺ｾ縺ｾ荳頑嶌縺阪☆繧・
                     if (tile !== -1) {
                         layer[ty][tx] = tile;
                     }
@@ -1794,9 +1823,23 @@ const StageEditor = {
             }
         }
 
+        // Paste Entities
+        if (this.pasteData.entities) {
+            if (!stage.entities) stage.entities = [];
+            this.pasteData.entities.forEach(e => {
+                const newX = this.pasteOffset.x + e.relX;
+                const newY = this.pasteOffset.y + e.relY;
+                stage.entities.push({
+                    x: newX,
+                    y: newY,
+                    templateId: e.templateId
+                });
+            });
+        }
+
         this.pasteMode = false;
         this.pasteData = null;
-        this.currentTool = 'select'; // 繝壹・繧ｹ繝亥ｾ後・驕ｸ謚槭Δ繝ｼ繝峨↓謌ｻ繧九・縺瑚・辟ｶ
+        this.currentTool = 'select';
         this.startSelectionMode();
     },
 
@@ -2765,7 +2808,6 @@ const StageEditor = {
                     <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">邱ｨ髮・ｸｭ</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
@@ -2927,36 +2969,61 @@ const StageEditor = {
         const sprites = App.projectData.sprites;
         const templates = App.projectData.templates || [];
 
-        // ペーストプレビュー
-        if (this.pasteMode && this.pasteData) {
-            this.ctx.globalAlpha = 0.7;
-            const h = this.pasteData.length;
-            const w = this.pasteData[0].length;
+        // Helper to render an entity/sprite at pos
+        const renderSpriteAt = (tileIdOrTemplateId, tx, ty, opacity = 1.0, isEntity = false) => {
+            if (tileIdOrTemplateId <= -1000 || tileIdOrTemplateId === -1) return;
 
-            for (let dy = 0; dy < h; dy++) {
-                for (let dx = 0; dx < w; dx++) {
-                    const tileId = this.pasteData[dy][dx];
-                    if (tileId <= -1000 || tileId === -1) continue;
+            this.ctx.globalAlpha = opacity;
+            let sprite;
+            let flipX = false;
 
-                    let sprite;
-                    if (tileId >= 100) {
-                        const template = templates[tileId - 100];
-                        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                        sprite = sprites[spriteIdx];
-                    } else if (tileId >= 0 && tileId < sprites.length) {
-                        sprite = sprites[tileId];
-                    }
-
-                    if (sprite) {
-                        const tx = this.pasteOffset.x + dx;
-                        const ty = this.pasteOffset.y + dy;
-                        this.renderSprite(sprite, tx, ty, palette);
-                    }
+            if (isEntity) {
+                const template = templates[tileIdOrTemplateId];
+                if (template) {
+                    const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+                    sprite = sprites[spriteIdx];
+                    flipX = template.type === 'enemy';
+                }
+            } else {
+                // Tile logic
+                if (tileIdOrTemplateId >= 100) {
+                    const template = templates[tileIdOrTemplateId - 100];
+                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                    sprite = sprites[spriteIdx];
+                } else if (tileIdOrTemplateId >= 0 && tileIdOrTemplateId < sprites.length) {
+                    sprite = sprites[tileIdOrTemplateId];
                 }
             }
+
+            if (sprite) {
+                this.renderSprite(sprite, tx, ty, palette, flipX);
+            }
             this.ctx.globalAlpha = 1.0;
+        };
+
+        // ペーストプレビュー
+        if (this.pasteMode && this.pasteData && this.pasteData.tiles) {
+            const h = this.pasteData.tiles.length;
+            const w = this.pasteData.tiles[0].length;
+
+            // Tiles
+            for (let dy = 0; dy < h; dy++) {
+                for (let dx = 0; dx < w; dx++) {
+                    const tileId = this.pasteData.tiles[dy][dx];
+                    const tx = this.pasteOffset.x + dx;
+                    const ty = this.pasteOffset.y + dy;
+                    renderSpriteAt(tileId, tx, ty, 0.7);
+                }
+            }
+            // Entities
+            if (this.pasteData.entities) {
+                this.pasteData.entities.forEach(e => {
+                    renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, 0.7, true);
+                });
+            }
 
             // 枠線
+            // ... (keep existing rect logic logic)
             const rectX = this.pasteOffset.x * this.tileSize + scrollX;
             const rectY = this.pasteOffset.y * this.tileSize + scrollY;
             const rectW = w * this.tileSize;
@@ -2972,30 +3039,23 @@ const StageEditor = {
 
         // 浮動レイヤー
         if (this.isFloating && this.floatingData) {
-            this.ctx.globalAlpha = 0.5; // 半透明
 
+            // Tiles
             for (let y = 0; y < this.floatingData.length; y++) {
                 for (let x = 0; x < this.floatingData[0].length; x++) {
                     const tileId = this.floatingData[y][x];
-                    if (tileId <= -1000 || tileId === -1) continue;
-
-                    let sprite;
-                    if (tileId >= 100) {
-                        const template = templates[tileId - 100];
-                        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                        sprite = sprites[spriteIdx];
-                    } else if (tileId >= 0 && tileId < sprites.length) {
-                        sprite = sprites[tileId];
-                    }
-
-                    if (sprite) {
-                        const tx = this.floatingPos.x + x;
-                        const ty = this.floatingPos.y + y;
-                        this.renderSprite(sprite, tx, ty, palette);
-                    }
+                    const tx = this.floatingPos.x + x;
+                    const ty = this.floatingPos.y + y;
+                    renderSpriteAt(tileId, tx, ty, 0.5);
                 }
             }
-            this.ctx.globalAlpha = 1.0;
+
+            // Entities
+            if (this.floatingEntities) {
+                this.floatingEntities.forEach(e => {
+                    renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, 0.5, true);
+                });
+            }
         }
 
         // 選択枠
@@ -3025,7 +3085,11 @@ const StageEditor = {
         const w = x2 - x1 + 1;
         const h = y2 - y1 + 1;
 
-        const layer = App.projectData.stage.layers.fg;
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+        if (!stage.entities) stage.entities = [];
+
+        // 1. Tiles processing
         const floatingData = [];
 
         for (let y = 0; y < h; y++) {
@@ -3043,33 +3107,68 @@ const StageEditor = {
             floatingData.push(row);
         }
 
+        // 2. Entities processing
+        const floatingEntities = [];
+        const entitiesToRemove = [];
+
+        stage.entities.forEach((e, index) => {
+            if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
+                floatingEntities.push({
+                    ...e,
+                    relX: e.x - x1,
+                    relY: e.y - y1
+                });
+                entitiesToRemove.push(index);
+            }
+        });
+
+        // Remove from stage (sort descending)
+        entitiesToRemove.sort((a, b) => b - a).forEach(idx => stage.entities.splice(idx, 1));
+
         this.floatingData = floatingData;
+        this.floatingEntities = floatingEntities;
         this.floatingPos = { x: x1, y: y1 };
         this.isFloating = true;
     },
 
     commitFloatingData() {
         if (!this.isFloating || !this.floatingData) return;
-        const layer = App.projectData.stage.layers.fg;
+        const stage = App.projectData.stage;
+        const layer = stage.layers.fg;
+
+        // 1. Tiles commit
         const h = this.floatingData.length;
         const w = this.floatingData[0].length;
 
         for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {
                 const val = this.floatingData[y][x];
-
                 const ty = this.floatingPos.y + y;
                 const tx = this.floatingPos.x + x;
 
-                if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
+                if (ty >= 0 && ty < stage.height && tx >= 0 && tx < stage.width) {
                     layer[ty][tx] = val;
                 }
             }
         }
+
+        // 2. Entities commit
+        if (this.floatingEntities) {
+            if (!stage.entities) stage.entities = [];
+            this.floatingEntities.forEach(fe => {
+                const newX = this.floatingPos.x + fe.relX;
+                const newY = this.floatingPos.y + fe.relY;
+                stage.entities.push({
+                    x: newX,
+                    y: newY,
+                    templateId: fe.templateId
+                });
+            });
+        }
+
         this.isFloating = false;
         this.floatingData = null;
+        this.floatingEntities = null;
         this.render();
     }
 };
-
-
