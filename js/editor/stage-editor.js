@@ -1165,7 +1165,7 @@ const StageEditor = {
         const hasMainSprite = idleFrames.length > 0 || mainFrames.length > 0;
 
         if (!hasMainSprite) {
-            alert('繧ｹ繝励Λ繧､繝医ｒ逋ｻ骭ｲ縺励※縺上□縺輔＞');
+            alert('スプライトを登録してください');
             return;
         }
 
@@ -1319,9 +1319,9 @@ const StageEditor = {
             div.addEventListener('touchstart', () => {
                 longPressTimer = setTimeout(() => {
                     App.showActionMenu(null, [
-                        { text: '隍・｣ｽ', action: () => this.duplicateTemplate(index) },
-                        { text: '蜑企勁', style: 'destructive', action: () => this.deleteTemplate(index, false) },
-                        { text: '繧ｭ繝｣繝ｳ繧ｻ繝ｫ', style: 'cancel' }
+                        { text: '複製', action: () => this.duplicateTemplate(index) },
+                        { text: '削除', style: 'destructive', action: () => this.deleteTemplate(index, false) },
+                        { text: 'キャンセル', style: 'cancel' }
                     ]);
                 }, 800);
             }, { passive: true });
@@ -2666,8 +2666,8 @@ const StageEditor = {
             if (!select) return;
             const currentValue = select.value;
 
-            // 驕ｸ謚櫁い繧偵け繝ｪ繧｢縺励※蜀肴ｧ狗ｯ・
-            select.innerHTML = '<option value="">縺ｪ縺・/option>';
+            // 選択肢をクリアして再構築
+            select.innerHTML = '<option value="">なし</option>';
 
             songs.forEach((song, idx) => {
                 const option = document.createElement('option');
@@ -2802,10 +2802,10 @@ const StageEditor = {
         modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
 
         modal.innerHTML = `
-            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;">閭梧勹濶ｲ</div>
+            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;">背景色</div>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">迴ｾ蝨ｨ</div>
+                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">現在</div>
                     <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
@@ -2829,11 +2829,11 @@ const StageEditor = {
                 <input type="text" id="cp-hex" value="${currentColor}" maxlength="7" style="flex:1;padding:10px 12px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;font-family:monospace;font-size:14px;text-transform:uppercase;">
             </div>
             <div style="margin-bottom:16px;">
-                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">繧医￥菴ｿ縺・牡</div>
+                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">よく使う色</div>
                 <div id="cp-recent" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
             </div>
             <div style="display:flex;gap:10px;">
-                <button id="cp-cancel" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#444466;color:#fff;">繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+                <button id="cp-cancel" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#444466;color:#fff;">キャンセル</button>
                 <button id="cp-ok" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#4a7dff;color:#fff;">OK</button>
             </div>
         `;
