@@ -166,6 +166,7 @@ const SpriteEditor = {
             div.addEventListener('mouseup', cancelLongPress);
             div.addEventListener('mouseleave', cancelLongPress);
             div.addEventListener('touchstart', startLongPress, { passive: true });
+            div.addEventListener('touchmove', cancelLongPress, { passive: true });
             div.addEventListener('touchend', cancelLongPress);
 
             // ダブルタップで編集、シングルタップで選択
@@ -709,6 +710,7 @@ const SpriteEditor = {
             div.addEventListener('mouseup', cancelLongPress);
             div.addEventListener('mouseleave', cancelLongPress);
             div.addEventListener('touchstart', startLongPress, { passive: true });
+            div.addEventListener('touchmove', cancelLongPress, { passive: true });
             div.addEventListener('touchend', (e) => {
                 cancelLongPress();
                 // タッチ用ダブルタップ検出
