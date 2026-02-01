@@ -36,6 +36,10 @@ const StageEditor = {
     pasteOffset: { x: 0, y: 0 },
     isMovingSelection: false,
     selectionMoveStart: null,
+    isFloating: false,
+    floatingData: null,
+    floatingPos: { x: 0, y: 0 },
+    isSelecting: false,
 
     init() {
         this.canvas = document.getElementById('stage-canvas');
@@ -1736,13 +1740,12 @@ const StageEditor = {
             data.push(row);
         }
         this.rangeClipboard = data;
-        alert('驕ｸ謚樒ｯ・峇繧偵さ繝斐・縺励∪縺励◆');
+        // alert removed
         this.render();
     },
 
     pasteTiles() {
         if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
-            alert('蜈医↓繧ｳ繝斐・縺吶ｋ遽・峇繧帝∈謚槭＠縺ｦ縺上□縺輔＞');
             return;
         }
 
@@ -2918,22 +2921,63 @@ const StageEditor = {
     },
 
     renderSelection() {
-        if (!this.selectionStart || !this.selectionEnd) return;
-
         const scrollX = this.canvasScrollX || 0;
         const scrollY = this.canvasScrollY || 0;
+        const palette = App.nesPalette;
+        const sprites = App.projectData.sprites;
+        const templates = App.projectData.templates || [];
+
+        // ペーストプレビュー
+        if (this.pasteMode && this.pasteData) {
+            this.ctx.globalAlpha = 0.7;
+            const h = this.pasteData.length;
+            const w = this.pasteData[0].length;
+
+            for (let dy = 0; dy < h; dy++) {
+                for (let dx = 0; dx < w; dx++) {
+                    const tileId = this.pasteData[dy][dx];
+                    if (tileId <= -1000 || tileId === -1) continue;
+
+                    let sprite;
+                    if (tileId >= 100) {
+                        const template = templates[tileId - 100];
+                        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                        sprite = sprites[spriteIdx];
+                    } else if (tileId >= 0 && tileId < sprites.length) {
+                        sprite = sprites[tileId];
+                    }
+
+                    if (sprite) {
+                        const tx = this.pasteOffset.x + dx;
+                        const ty = this.pasteOffset.y + dy;
+                        this.renderSprite(sprite, tx, ty, palette);
+                    }
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+
+            // 枠線
+            const rectX = this.pasteOffset.x * this.tileSize + scrollX;
+            const rectY = this.pasteOffset.y * this.tileSize + scrollY;
+            const rectW = w * this.tileSize;
+            const rectH = h * this.tileSize;
+            this.ctx.strokeStyle = '#00ff00';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([4, 4]);
+            this.ctx.strokeRect(rectX, rectY, rectW, rectH);
+            this.ctx.setLineDash([]);
+        }
+
+        if (!this.selectionStart || !this.selectionEnd) return;
 
         // 浮動レイヤー
         if (this.isFloating && this.floatingData) {
             this.ctx.globalAlpha = 0.5; // 半透明
-            const palette = App.nesPalette;
-            const sprites = App.projectData.sprites;
-            const templates = App.projectData.templates || [];
 
             for (let y = 0; y < this.floatingData.length; y++) {
                 for (let x = 0; x < this.floatingData[0].length; x++) {
                     const tileId = this.floatingData[y][x];
-                    if (tileId <= -1000) continue;
+                    if (tileId <= -1000 || tileId === -1) continue;
 
                     let sprite;
                     if (tileId >= 100) {
