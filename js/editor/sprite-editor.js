@@ -36,6 +36,10 @@ const SpriteEditor = {
     selectionStart: null,
     selectionEnd: null,
     rangeClipboard: null,  // 範囲コピー用クリップボード
+    isFloating: false,
+    floatingData: null,
+    floatingPos: { x: 0, y: 0 },
+    isSelecting: false,
     pasteMode: false,
     pasteData: null,
     pasteOffset: { x: 0, y: 0 },
@@ -862,6 +866,34 @@ const SpriteEditor = {
             console.error('Render error:', e);
         }
 
+        // 浮動レイヤー
+        if (this.isFloating && this.floatingData) {
+            const dimension = this.getCurrentSpriteDimension();
+            const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
+            const offsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
+
+            this.ctx.globalAlpha = 0.5;
+            for (let y = 0; y < this.floatingData.length; y++) {
+                for (let x = 0; x < this.floatingData[0].length; x++) {
+                    const colorIndex = this.floatingData[y][x];
+                    if (colorIndex >= 0) {
+                        const tx = this.floatingPos.x + x;
+                        const ty = this.floatingPos.y + y;
+
+                        if (tx >= 0 && tx < dimension && ty >= 0 && ty < dimension) {
+                            const screenX = tx - offsetX;
+                            const screenY = ty - offsetY;
+                            if (screenX >= 0 && screenX < 16 && screenY >= 0 && screenY < 16) {
+                                this.ctx.fillStyle = palette[colorIndex];
+                                this.ctx.fillRect(screenX * this.pixelSize, screenY * this.pixelSize, this.pixelSize, this.pixelSize);
+                            }
+                        }
+                    }
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+
         // ペーストプレビュー（確定前）
         if (this.pasteMode && this.pasteData) {
             const dataH = this.pasteData.length;
@@ -1344,10 +1376,20 @@ const SpriteEditor = {
 
             // 既存の選択範囲内をクリックした場合は移動モード
             if (this.selectionStart && this.selectionEnd && this.isPointInSelection(pixel.x, pixel.y)) {
+
+                // まだ浮動化していないなら、ここで浮動化（Cut）
+                if (!this.isFloating) {
+                    this.saveHistory(); // 移動開始前の状態を保存
+                    this.floatSelection();
+                }
+
                 this.selectionMoveStart = { x: pixel.x, y: pixel.y };
                 this.isMovingSelection = true;
             } else {
                 // 新規選択
+                if (this.isFloating) {
+                    this.commitFloatingData(); // 以前の選択を確定
+                }
                 this.isSelecting = true; // 新規選択フラグ（色制御用）
                 this.selectionStart = { x: pixel.x, y: pixel.y };
                 this.selectionEnd = { x: pixel.x, y: pixel.y };
@@ -1421,6 +1463,11 @@ const SpriteEditor = {
                     this.selectionStart.y += dy;
                     this.selectionEnd.x += dx;
                     this.selectionEnd.y += dy;
+
+                    if (this.isFloating) {
+                        this.floatingPos.x += dx;
+                        this.floatingPos.y += dy;
+                    }
 
                     this.selectionMoveStart = { x: pixel.x, y: pixel.y };
                 }
@@ -1580,6 +1627,13 @@ const SpriteEditor = {
         this.currentTool = 'select';
         this.isSelecting = false;
 
+        // 以前の浮動データがあれば確定
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
+        this.isFloating = false;
+        this.floatingData = null;
+
         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.tool === 'select');
         });
@@ -1606,6 +1660,25 @@ const SpriteEditor = {
 
 
 
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
+
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
+
+        this.selectionMode = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
+        // this.rangeClipboard = null; // Don't clear clipboard on cancel? Usually keep it.
+
+        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select' && this.selectionMode);
+        });
+
+        this.render();
+    },
+
     // ペーストモード開始
     pasteSprite() {
         if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
@@ -1623,6 +1696,72 @@ const SpriteEditor = {
         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.tool === 'paste');
         });
+        this.render();
+    },
+
+    floatSelection() { // Implement floating selection
+        if (!this.selectionStart || !this.selectionEnd) return;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const floatingData = [];
+
+        for (let y = 0; y < h; y++) {
+            const row = [];
+            for (let x = 0; x < w; x++) {
+                const ty = y + y1;
+                const tx = x + x1;
+                // Sprite data array extension check
+                if (!sprite.data[ty]) sprite.data[ty] = [];
+
+                if (typeof sprite.data[ty][tx] !== 'undefined') {
+                    row.push(sprite.data[ty][tx]);
+                    sprite.data[ty][tx] = -1; // Clear source
+                } else {
+                    row.push(-1);
+                }
+            }
+            floatingData.push(row);
+        }
+
+        this.floatingData = floatingData;
+        this.floatingPos = { x: x1, y: y1 };
+        this.isFloating = true;
+    },
+
+    commitFloatingData() { // Commit floating selection
+        if (!this.isFloating || !this.floatingData) return;
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const h = this.floatingData.length;
+        const w = this.floatingData[0].length;
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const val = this.floatingData[y][x];
+                // Overwrite everything including transparency to match StageEditor behavior
+                const ty = this.floatingPos.y + y;
+                const tx = this.floatingPos.x + x;
+
+                // Ensure row exists
+                if (!sprite.data[ty]) {
+                    // Check dimension bounds before extending?
+                    // Assuming processPixel logic handles bounds or we should check?
+                    // render loop checks bounds, so we should be safe to just check existence
+                    continue;
+                }
+
+                if (typeof sprite.data[ty][tx] !== 'undefined') {
+                    sprite.data[ty][tx] = val;
+                }
+            }
+        }
+        this.isFloating = false;
+        this.floatingData = null;
         this.render();
     },
 

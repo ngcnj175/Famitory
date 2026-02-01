@@ -1433,6 +1433,7 @@ const StageEditor = {
         let lastScrollY = 0;
 
         const handleStart = (e) => {
+            if (e.cancelable) e.preventDefault(); // Prevent native selection/drag
             if (isDrawing) return;
             hasMoved = false;
 
