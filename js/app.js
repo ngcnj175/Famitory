@@ -1026,13 +1026,22 @@ const App = {
                     item.classList.add('selected');
                 }
 
-                const isCurrent = (p.name === this.currentProjectName);
-                const dateStr = new Date(p.updatedAt).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                // 日付フォーマット (例: 2/2 21:00)
+                const d = new Date(p.updatedAt);
+                const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
+
+                // 文字数が多ければスクロール対象にする (全角文字を2文字としてカウントするなど簡易判定、あるいは単純に文字数)
+                // ここでは単純に12文字以上とする
+                const isLong = p.name.length > 12;
 
                 item.innerHTML = `
-                    <span class="arrow">${p.name === selectedName ? '▶' : ''}</span>
-                    <span style="flex:1; font-weight:${isCurrent ? 'bold' : 'normal'}">${p.name}</span>
-                    <span style="font-size:11px; color:#888;">${dateStr}</span>
+                    <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
+                    <div class="list-item-content">
+                        <div class="list-item-name-wrapper">
+                            <span class="list-item-name ${isLong ? 'scroll-text' : ''}">${p.name}</span>
+                        </div>
+                        <div class="list-item-date">${dateStr}</div>
+                    </div>
                 `;
 
                 item.onclick = () => {
