@@ -4166,94 +4166,92 @@ body {
 }
 
 
-/* プロジェクトリスト（選択UI） */
+/* プロジェクトリスト（選択UI） - 強制適用 */
 .modal-body.no-padding {
     padding: 0;
     margin: 10px 0;
 }
 
-.simple-list-scroll {
-    height: 280px;
-    /* 固定高さ */
-    overflow-y: auto;
-    background: #fff;
-    /* 背景白 */
-    border: 2px solid #ccc;
-    /* 枠線 */
-    border-radius: 4px;
-    padding: 0;
-    margin: 0 20px;
-    /* 余白 */
+#project-list-scroll.simple-list-scroll {
+    height: 280px !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    /* 背景白 強制 */
+    border: 2px solid #ccc !important;
+    border-radius: 4px !important;
+    padding: 0 !important;
+    margin: 0 20px !important;
 }
 
-/* スクロールバー設定 */
-.simple-list-scroll::-webkit-scrollbar {
+#project-list-scroll::-webkit-scrollbar {
     width: 6px;
 }
 
-.simple-list-scroll::-webkit-scrollbar-thumb {
+#project-list-scroll::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
-.selectable-list {
+#project-list.selectable-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    /* フラットリストなので隙間なし */
+    gap: 0 !important;
     width: 100%;
 }
 
-.list-item {
-    display: flex;
-    align-items: center;
-    background: transparent;
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    /* 区切り線 */
-    border-radius: 0;
-    margin: 0;
+/* リストアイテム - 詳細度を上げて適用 */
+#project-list .list-item {
+    display: flex !important;
+    align-items: center !important;
+    background: #fff !important;
+    /* 白背景 */
+    color: #333 !important;
+    /* 文字色黒 */
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #eee !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
     cursor: pointer;
-    min-height: 64px;
-    transition: background 0.1s;
+    min-height: 64px !important;
     box-sizing: border-box;
     width: 100%;
+    box-shadow: none !important;
 }
 
-.list-item:last-child {
-    border-bottom: none;
+#project-list .list-item:last-child {
+    border-bottom: none !important;
 }
 
-.list-item:hover {
-    background: #f9f9f9;
+#project-list .list-item:hover {
+    background: #f9f9f9 !important;
 }
 
-.list-item.selected {
-    background: #e0e0e0;
-    /* 選択時はライトグレー */
+#project-list .list-item.selected {
+    background: #e0e0e0 !important;
+    /* 選択時グレー */
+    color: #333 !important;
 }
 
-.list-item-arrow {
+#project-list .list-item .list-item-arrow {
     width: 24px;
     text-align: center;
     font-size: 14px;
-    color: #333;
+    color: #333 !important;
     flex-shrink: 0;
     margin-right: 8px;
     font-weight: bold;
 }
 
-.list-item-content {
+#project-list .list-item .list-item-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     justify-content: center;
     min-width: 0;
-    /* 重要: Flexアイテムがはみ出さないように */
 }
 
-.list-item-name-wrapper {
+#project-list .list-item .list-item-name-wrapper {
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -4261,28 +4259,24 @@ body {
     height: 22px;
 }
 
-.list-item-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+#project-list .list-item .list-item-name {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: #333 !important;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* 通常は省略 */
+    background: transparent !important;
 }
 
 /* スクロールアニメーション（選択中かつオーバーフロー時） */
-.list-item-name.scrolling {
+#project-list .list-item .list-item-name.scrolling {
     text-overflow: clip;
-    animation: scroll-left 6s linear infinite;
+    animation: scroll-left 8s linear infinite;
     padding-left: 100%;
-    /* 右端から開始 */
 }
 
-
-
-/* カーソルを合わせなくても流れる */
 @keyframes scroll-left {
     0% {
         transform: translateX(0);
@@ -4291,22 +4285,17 @@ body {
     100% {
         transform: translateX(-100%);
     }
-
-    /* テキスト全てが左に消えるまで */
 }
 
-
-
-.list-item-date {
-    font-size: 11px;
-    color: #666;
-    /* 少し濃く */
+#project-list .list-item .list-item-date {
+    font-size: 11px !important;
+    color: #666 !important;
     margin-top: 4px;
     font-family: monospace;
-    /* 等幅で見やすく */
+    font-weight: normal !important;
 }
 
-/* SAVEトースト（カスタム） */
+/* SAVEトースト（カスタム） - このまま維持 */
 #save-toast {
     position: fixed;
     top: 50%;
