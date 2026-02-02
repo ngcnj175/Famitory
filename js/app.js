@@ -1030,15 +1030,14 @@ const App = {
                 const d = new Date(p.updatedAt);
                 const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
 
-                // 文字数が多ければスクロール対象にする (全角文字を2文字としてカウントするなど簡易判定、あるいは単純に文字数)
-                // ここでは単純に12文字以上とする
-                const isLong = p.name.length > 12;
+                // 文字数が多ければスクロール対象にする... というロジックは廃止し、render後の幅判定に委ねる
+                // const isLong = p.name.length > 12;
 
                 item.innerHTML = `
                     <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
                     <div class="list-item-content">
                         <div class="list-item-name-wrapper">
-                            <span class="list-item-name ${isLong ? 'scroll-text' : ''}">${p.name}</span>
+                            <span class="list-item-name">${p.name}</span>
                         </div>
                         <div class="list-item-date">${dateStr}</div>
                     </div>
@@ -1060,11 +1059,38 @@ const App = {
                 listContainer.appendChild(item);
             });
             updateButtons();
+
+            // 描画後にスクロール判定を行う
+            setTimeout(() => {
+                const items = listContainer.querySelectorAll('.list-item');
+                items.forEach(item => {
+                    const nameEl = item.querySelector('.list-item-name');
+                    const wrapper = item.querySelector('.list-item-name-wrapper');
+
+                    if (nameEl && wrapper) {
+                        if (nameEl.scrollWidth > wrapper.clientWidth) {
+                            nameEl.classList.add('long-text');
+                        } else {
+                            nameEl.classList.remove('long-text');
+                        }
+
+                        if (item.classList.contains('selected') && nameEl.classList.contains('long-text')) {
+                            nameEl.classList.add('scrolling');
+                        } else {
+                            nameEl.classList.remove('scrolling');
+                        }
+                    }
+                });
+            }, 50);
         };
 
         selectedName = null;
-        renderList();
+        selectedName = null;
         modal.classList.remove('hidden');
+
+        // モーダルが表示されてから描画しないと幅が取れないため、微小遅延させるか直後に呼ぶ
+        // ここでは直後に呼びつつ、内部でレイアウト判定を遅延させる
+        renderList();
 
         const close = () => {
             modal.classList.add('hidden');
