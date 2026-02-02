@@ -986,7 +986,15 @@ const App = {
     showSimpleProjectList() {
         const modal = document.getElementById('project-list-modal');
         const listContainer = document.getElementById('project-list');
+        const scrollContainer = document.getElementById('project-list-scroll');
         const closeBtn = document.getElementById('project-list-close');
+
+        // iOSスクロール対策
+        if (scrollContainer) {
+            scrollContainer.addEventListener('touchmove', (e) => {
+                e.stopPropagation();
+            }, { passive: true });
+        }
 
         // アクションボタン
         const openBtn = document.getElementById('project-open-btn');
