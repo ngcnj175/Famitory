@@ -4169,21 +4169,24 @@ body {
 /* プロジェクトリスト（選択UI） */
 .modal-body.no-padding {
     padding: 0;
-    /* 横幅いっぱいにしない場合はパディング調整 */
     margin: 10px 0;
 }
 
 .simple-list-scroll {
     height: 280px;
-    /* 固定高さ (約4行分+マージン) */
+    /* 固定高さ */
     overflow-y: auto;
-    background: transparent;
-    border: none;
-    padding: 0 4px;
-    /* スクロールバーとの干渉避け */
+    background: #fff;
+    /* 背景白 */
+    border: 2px solid #ccc;
+    /* 枠線 */
+    border-radius: 4px;
+    padding: 0;
+    margin: 0 20px;
+    /* 余白 */
 }
 
-/* スクロールバー設定 (Webkit) */
+/* スクロールバー設定 */
 .simple-list-scroll::-webkit-scrollbar {
     width: 6px;
 }
@@ -4196,34 +4199,38 @@ body {
 .selectable-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    /* アイテム間隔 */
+    gap: 0;
+    /* フラットリストなので隙間なし */
+    width: 100%;
 }
 
 .list-item {
     display: flex;
     align-items: center;
-    background: #fff;
-    /* 白背景 */
+    background: transparent;
     padding: 12px 16px;
-    border-radius: 12px;
-    /* 角丸 */
-    margin-bottom: 0;
+    border-bottom: 1px solid #eee;
+    /* 区切り線 */
+    border-radius: 0;
+    margin: 0;
     cursor: pointer;
     min-height: 64px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     transition: background 0.1s;
-    border: 2px solid transparent;
-    /* 選択時の枠用（あるいは背景色のみなら不要） */
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.list-item:last-child {
+    border-bottom: none;
 }
 
 .list-item:hover {
-    background: #fbfbfb;
+    background: #f9f9f9;
 }
 
 .list-item.selected {
     background: #e0e0e0;
-    /* ライトグレー */
+    /* 選択時はライトグレー */
 }
 
 .list-item-arrow {
@@ -4241,8 +4248,9 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* コンテンツはみ出し防止 */
     justify-content: center;
+    min-width: 0;
+    /* 重要: Flexアイテムがはみ出さないように */
 }
 
 .list-item-name-wrapper {
@@ -4257,15 +4265,22 @@ body {
     font-size: 16px;
     font-weight: bold;
     color: #333;
-    display: inline-block;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 通常は省略 */
 }
 
-/* 自動スクロールアニメーション */
-.scroll-text {
-    animation: scroll-left 8s linear infinite;
+/* スクロールアニメーション（選択中かつオーバーフロー時） */
+.list-item-name.scrolling {
+    text-overflow: clip;
+    animation: scroll-left 6s linear infinite;
     padding-left: 100%;
-    /* 右端から開始させる場合 */
+    /* 右端から開始 */
 }
+
+
 
 /* カーソルを合わせなくても流れる */
 @keyframes scroll-left {
@@ -4280,10 +4295,7 @@ body {
     /* テキスト全てが左に消えるまで */
 }
 
-/* 注: padding-left:100% と translateX(-100%) の組み合わせだと、
-   初期位置(右外) -> 左外 まで移動する。ループさせるには工夫が必要だが、
-   簡易的にはこれで「右から出てきて左に消える」を繰り返す。
-   より滑らかにするには要素を複製するなどのDOM操作が必要だがCSSのみでは簡易版で対応。 */
+
 
 .list-item-date {
     font-size: 11px;
