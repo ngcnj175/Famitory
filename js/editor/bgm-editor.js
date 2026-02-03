@@ -964,6 +964,27 @@ const SoundEditor = {
                 }
             });
         }
+
+        // PEN（通常入力モードに戻る）
+        const penBtn = document.getElementById('sound-pen-btn');
+        if (penBtn) {
+            penBtn.addEventListener('click', () => {
+                // 選択モード解除
+                this.isSelecting = false;
+                this.selection = null;
+
+                // ペーストモード解除
+                this.isPasteMode = false;
+                this.pasteData = null;
+
+                // ボタンのアクティブ状態を更新
+                document.getElementById('sound-select-btn')?.classList.remove('active');
+                document.getElementById('sound-paste-btn')?.classList.remove('active');
+                penBtn.classList.add('active');
+
+                this.render();
+            });
+        }
     },
 
     // ========== 鍵盤 ==========
