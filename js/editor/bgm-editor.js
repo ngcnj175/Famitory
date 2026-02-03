@@ -969,17 +969,19 @@ const SoundEditor = {
         const penBtn = document.getElementById('sound-pen-btn');
         if (penBtn) {
             penBtn.addEventListener('click', () => {
-                // 選択モード解除
-                this.isSelecting = false;
-                this.selection = null;
+                // モード解除してペン（入力）モードへ
+                this.currentTool = 'pencil';
+                this.selectionMode = false;
+                this.pasteMode = false;
 
-                // ペーストモード解除
-                this.isPasteMode = false;
-                this.pasteData = null;
+                // 選択範囲クリア
+                this.selectionStart = null;
+                this.selectionEnd = null;
+                this.pasteData = null; // ペーストデータもクリア
 
                 // ボタンのアクティブ状態を更新
-                document.getElementById('sound-select-btn')?.classList.remove('active');
-                document.getElementById('sound-paste-btn')?.classList.remove('active');
+                const allBtns = document.querySelectorAll('#sound-controls .sound-ctrl-btn');
+                allBtns.forEach(b => b.classList.remove('active'));
                 penBtn.classList.add('active');
 
                 this.render();
