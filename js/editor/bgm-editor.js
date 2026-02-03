@@ -2146,8 +2146,33 @@ const SoundEditor = {
 
                     if (this.isMovingSelection && this.selectionMoveStart) {
                         const deltaStep = step - this.selectionMoveStart.step;
-                        if (this.selectionStart) this.selectionStart.step += deltaStep;
-                        if (this.selectionEnd) this.selectionEnd.step += deltaStep;
+                        const deltaPitch = pitch - this.selectionMoveStart.pitch;
+
+                        // 選択枠を移動
+                        if (this.selectionStart) {
+                            this.selectionStart.step += deltaStep;
+                            this.selectionStart.pitch += deltaPitch;
+                        }
+                        if (this.selectionEnd) {
+                            this.selectionEnd.step += deltaStep;
+                            this.selectionEnd.pitch += deltaPitch;
+                        }
+
+                        // 選択範囲内のノートも移動
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                        const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                        const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+                        const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+
+                        track.notes.forEach(note => {
+                            if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
+                                note.step += deltaStep;
+                                note.pitch += deltaPitch;
+                            }
+                        });
+
                         this.selectionMoveStart = { step, pitch };
                     } else {
                         // 範囲変更
@@ -2200,8 +2225,33 @@ const SoundEditor = {
 
                     if (this.isMovingSelection && this.selectionMoveStart) {
                         const deltaStep = step - this.selectionMoveStart.step;
-                        if (this.selectionStart) this.selectionStart.step += deltaStep;
-                        if (this.selectionEnd) this.selectionEnd.step += deltaStep;
+                        const deltaPitch = pitch - this.selectionMoveStart.pitch;
+
+                        // 選択枠を移動
+                        if (this.selectionStart) {
+                            this.selectionStart.step += deltaStep;
+                            this.selectionStart.pitch += deltaPitch;
+                        }
+                        if (this.selectionEnd) {
+                            this.selectionEnd.step += deltaStep;
+                            this.selectionEnd.pitch += deltaPitch;
+                        }
+
+                        // 選択範囲内のノートも移動
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                        const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                        const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+                        const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+
+                        track.notes.forEach(note => {
+                            if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
+                                note.step += deltaStep;
+                                note.pitch += deltaPitch;
+                            }
+                        });
+
                         this.selectionMoveStart = { step, pitch };
                     } else {
                         // 範囲変更

@@ -1496,7 +1496,12 @@ const SpriteEditor = {
         }
 
         if (pixel.x !== this.lastPixel.x || pixel.y !== this.lastPixel.y) {
-            this.processPixel(pixel.x, pixel.y);
+            // ペンツールの消去モード時はドラッグで連続消去しない（タップのみ）
+            if (this.currentTool === 'pen' && this.drawMode === 'erase') {
+                // 何もしない（タップ時の1回のみ消去）
+            } else {
+                this.processPixel(pixel.x, pixel.y);
+            }
         }
     },
 
