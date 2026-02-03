@@ -3224,22 +3224,20 @@ body {
 
 /* --- 2. Main Area (繝｡繧､繝ｳ繧ｨ繝ｪ繧｢: 繝��繝ｫ + 繝斐い繝弱Ο繝ｼ繝ｫ) --- */
 /* 荳区純縺医Ξ繧､繧｢繧ｦ繝茨ｼ医ヨ繝ｩ繝�け繝溘く繧ｵ繝ｼ縺ｮ荳奇ｼ� */
+/* --- 2. Main Area --- */
 #sound-main-area {
-    flex-shrink: 0;
+    flex: 1;
     display: flex;
-    align-items: flex-end;
-    /* 荳区純縺� */
+    align-items: stretch;
     justify-content: flex-start;
     padding: 0;
     gap: 0;
     min-height: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: hidden;
     margin-bottom: 12px;
-    /* 繝医Λ繝�け繝溘く繧ｵ繝ｼ縺ｨ縺ｮ髢薙↓繧ｹ繝壹�繧ｹ */
 }
 
-/* 繝��繝ｫ繝舌��亥ｷｦ蛛ｴ邵ｦ蛻暦ｼ�- 荳区純縺� */
+/* Tool bar (left column) */
 #sound-controls {
     flex-shrink: 0;
     display: flex;
@@ -3248,18 +3246,10 @@ body {
     padding: 4px;
     width: 48px;
     min-width: 48px;
-    align-self: flex-start;
+    align-self: stretch;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
-    height: 100%;
-    /* max-height: 320px; */
-    /*
-    overflow: visible;
-    /* 隕句�繧碁亟豁｢ */
-    align-self: flex-end;
-    /* 荳区純縺� */
-
+    -webkit-overflow-scrolling: touch;
 }
 
 .sound-ctrl-btn {
