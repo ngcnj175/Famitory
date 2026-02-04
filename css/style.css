@@ -3996,11 +3996,11 @@ body {
 }
 
 .modal-title-simple.sub {
-    font-size: 14px;
-    color: #666;
+    font-size: 20px;
+    color: #222;
     margin-top: 16px;
     margin-bottom: 8px;
-    font-weight: normal;
+    font-weight: 800;
 }
 
 /* 入力フィールド */
@@ -4239,6 +4239,7 @@ body {
     overflow: hidden;
     justify-content: center;
     min-width: 0;
+    text-align: left;
 }
 
 #project-list .list-item .list-item-name-wrapper {
@@ -4257,6 +4258,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
 }
 
 /* スクロールアニメーション（選択中かつオーバーフロー時） */
@@ -4312,6 +4314,7 @@ body {
     margin-top: 4px;
     font-family: monospace;
     font-weight: normal !important;
+    text-align: left;
 }
 
 /* SAVEトースト（カスタム） - このまま維持 */
@@ -4349,7 +4352,7 @@ body {
 }
 
 #save-toast .save-msg-large {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
-    color: #4a4a4a;
+    color: #222;
 }
