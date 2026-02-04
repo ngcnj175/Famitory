@@ -3992,12 +3992,12 @@ body {
     font-weight: 800;
     text-align: center;
     margin-bottom: 24px;
-    color: #222;
+    color: #666;
 }
 
 .modal-title-simple.sub {
     font-size: 20px;
-    color: #222 !important;
+    color: #666 !important;
     margin-top: 16px;
     margin-bottom: 8px;
     font-weight: 800;
@@ -4041,7 +4041,7 @@ body {
 
 /* 共通ボタン（ダークピル型） */
 .modal-action-btn {
-    padding: 12px 32px;
+    padding: 12px 16px;
     border: none;
     border-radius: 30px;
     background: #666;
@@ -4049,9 +4049,10 @@ body {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    min-width: 100px;
+    width: 80px;
     box-shadow: 0 4px 0 #444;
     transition: transform 0.1s, box-shadow 0.1s;
+    text-align: center;
 }
 
 .modal-action-btn:active {
