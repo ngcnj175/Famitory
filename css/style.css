@@ -3990,7 +3990,6 @@ body {
 .modal-title-simple {
     font-size: 20px;
     font-weight: 800;
-    /* 太字 */
     text-align: center;
     margin-bottom: 24px;
     color: #222;
@@ -4092,11 +4091,10 @@ body {
 .share-simple-btn {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 12px;
     padding: 12px 20px;
     background: #666;
-    /* 少し明るめのグレー */
     border: none;
     border-radius: 30px;
     font-size: 15px;
