@@ -1162,6 +1162,14 @@ const App = {
         const handleShare = async (type) => {
             if (typeof Share === 'undefined') {
                 this.showToast('共有機能がロードされていません');
+                console.error('Share object is not defined');
+                return;
+            }
+
+            // Firebase確認
+            if (!window.firebaseDB) {
+                this.showToast('クラウド接続がありません');
+                console.error('Firebase DB is not initialized');
                 return;
             }
 
@@ -1169,14 +1177,21 @@ const App = {
 
             try {
                 // Firebaseに保存
+                console.log('Saving game data to Firebase...');
                 const id = await Share.saveGame(this.projectData);
+                console.log('Save result ID:', id);
+
                 if (!id) {
                     this.showToast('保存に失敗しました');
+                    console.error('Share.saveGame returned null');
                     return;
                 }
 
                 const url = Share.createShortUrl(id);
-                document.getElementById('share-url-input').value = url;
+                console.log('Generated URL:', url);
+
+                const urlInput = document.getElementById('share-url-input');
+                if (urlInput) urlInput.value = url;
 
                 if (type === 'copy') {
                     await navigator.clipboard.writeText(url);
@@ -1192,8 +1207,8 @@ const App = {
                     this.showToast('Discord用に コピーしました');
                 }
             } catch (e) {
-                console.error('Share error:', e);
-                this.showToast('エラーが発生しました');
+                console.error('Share error details:', e);
+                this.showToast('エラー: ' + (e.message || '不明なエラー'));
             }
         };
 
