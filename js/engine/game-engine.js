@@ -2352,6 +2352,14 @@ const GameEngine = {
         const sprites = App.projectData.sprites;
         const frameSpeed = 10;
 
+        // ギミックブロック位置をセットに登録
+        const gimmickPositions = new Set();
+        if (this.gimmickBlocks) {
+            this.gimmickBlocks.forEach(block => {
+                gimmickPositions.add(`${block.tileX},${block.tileY}`);
+            });
+        }
+
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
             for (let x = startX; x < endX; x++) {
@@ -2359,6 +2367,11 @@ const GameEngine = {
 
                 // 破壊済みタイルはスキップ
                 if (this.destroyedTiles.has(`${x},${y}`)) continue;
+
+                // ギミックブロックは別途描画するのでスキップ
+                if (gimmickPositions.has(`${x},${y}`)) {
+                    continue;
+                }
 
                 const tileId = layer[y][x];
                 if (tileId >= 0) {
