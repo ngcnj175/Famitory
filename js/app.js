@@ -145,7 +145,7 @@ const App = {
 
         // デフォルトパレットをパステルに設定
         if (!this.nesPalette) {
-            this.nesPalette = this.PALETTE_PRESETS.pastel.colors.slice();
+            this.nesPalette = this.PALETTE_PRESETS.famicom.colors.slice();
         }
 
         this.registerServiceWorker();
