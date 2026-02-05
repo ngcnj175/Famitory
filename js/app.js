@@ -1157,7 +1157,34 @@ const App = {
         const fileInput = document.getElementById('import-file-input');
         const closeBtn = document.getElementById('share-close-btn');
 
-        // URLコピー
+        // クリップボードコピー（iOS対応フォールバック付き）
+        const copyToClipboard = async (text) => {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (e) {
+                // iOS Safariフォールバック
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '0';
+                textarea.setAttribute('readonly', '');
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    return true;
+                } catch (e2) {
+                    document.body.removeChild(textarea);
+                    console.error('Clipboard fallback failed:', e2);
+                    return false;
+                }
+            }
+        };
+
         // 共有処理共通関数
         const handleShare = async (type) => {
             if (typeof Share === 'undefined') {
@@ -1194,17 +1221,25 @@ const App = {
                 if (urlInput) urlInput.value = url;
 
                 if (type === 'copy') {
-                    await navigator.clipboard.writeText(url);
-                    this.showToast('URLを コピーしました');
+                    const success = await copyToClipboard(url);
+                    if (success) {
+                        this.showToast('URLを コピーしました');
+                    } else {
+                        this.showToast('コピーに失敗しました。URLをタップしてコピーしてください');
+                    }
                 } else if (type === 'x') {
                     const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
                     const twitterUrl = Share.createTwitterUrl(url, text);
-                    window.open(twitterUrl, '_blank');
-                    this.showToast('共有画面をひらきました');
+                    // iOS対応: location.hrefで遷移
+                    window.location.href = twitterUrl;
                 } else if (type === 'discord') {
                     const text = `PixelGameKitでゲームを作ったよ！\n${url}`;
-                    await navigator.clipboard.writeText(text);
-                    this.showToast('Discord用に コピーしました');
+                    const success = await copyToClipboard(text);
+                    if (success) {
+                        this.showToast('Discord用に コピーしました');
+                    } else {
+                        this.showToast('コピーに失敗しました。URLをタップしてコピーしてください');
+                    }
                 }
             } catch (e) {
                 console.error('Share error details:', e);
