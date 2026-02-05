@@ -49,6 +49,23 @@ const GameEngine = {
         this.canvas = document.getElementById('game-canvas');
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
+
+        // イースターエッグウィンドウ用クリックハンドラ
+        this.canvas.addEventListener('click', (e) => {
+            if (this.easterMessageActive && this.easterCloseButton) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+
+                const btn = this.easterCloseButton;
+                if (x >= btn.x && x <= btn.x + btn.width &&
+                    y >= btn.y && y <= btn.y + btn.height) {
+                    this.closeEasterMessage();
+                }
+            }
+        });
     },
 
     start() {
@@ -377,7 +394,7 @@ const GameEngine = {
                 const template = templates[ent.templateId];
                 if (template && template.type === 'item') {
                     const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                    const itemType = template.config?.itemType || 'star';
+                    const itemType = template.config?.itemType || 'coin';
 
                     // 座標をキーとして記録
                     const posKey = `${Math.floor(ent.x)},${Math.floor(ent.y)}`;
@@ -388,6 +405,8 @@ const GameEngine = {
                         y: ent.y,
                         width: 1,
                         height: 1,
+                        template: template,
+                        templateIdx: ent.templateId,
                         spriteIdx: spriteIdx,
                         itemType: itemType,
                         collected: false
@@ -415,7 +434,7 @@ const GameEngine = {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
                         if (template && template.type === 'item') {
                             const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                            const itemType = template.config?.itemType || 'star';
+                            const itemType = template.config?.itemType || 'coin';
                             this.items.push({
                                 x: x,
                                 y: y,
@@ -473,9 +492,9 @@ const GameEngine = {
         console.log('totalClearItems:', this.totalClearItems);
         console.log('items array length:', this.items.length);
         console.log('gimmickBlocks:', this.gimmickBlocks.length);
-        console.log('Clear items detail:');
-        this.items.filter(i => i.itemType === 'clear').forEach((item, idx) => {
-            console.log(`  [${idx}] x=${item.x}, y=${item.y}, type=${item.itemType}`);
+        console.log('All items detail:');
+        this.items.forEach((item, idx) => {
+            console.log(`  [${idx}] x=${item.x}, y=${item.y}, type=${item.itemType}, template=${item.template?.name}, easterMessage=${item.template?.config?.easterMessage}`);
         });
         console.log('processedItemPositions:', [...processedItemPositions]);
     },
@@ -728,7 +747,7 @@ const GameEngine = {
         let targetY = this.player.y + this.player.height / 2 - centerY;
 
         // ステージ端制限
-        const stage = App.projectData.stage;
+        const stage = this.stageData || App.projectData.stage;
         const viewWidth = this.canvas.width / this.TILE_SIZE;
         const viewHeight = this.canvas.height / this.TILE_SIZE;
 
@@ -846,6 +865,93 @@ const GameEngine = {
 
         // 11. UI
         this.renderUI();
+
+        // 12. イースターエッグメッセージウィンドウ
+        if (this.easterMessageActive) {
+            this.renderEasterWindow();
+        }
+    },
+
+    // イースターエッグメッセージを表示
+    showEasterMessage(message) {
+        this.easterMessage = message;
+        this.easterMessageActive = true;
+        this.isPaused = true; // ゲームを一時停止
+    },
+
+    // イースターエッグメッセージを閉じる
+    closeEasterMessage() {
+        this.easterMessageActive = false;
+        this.easterMessage = null;
+        this.isPaused = false; // ゲームを再開
+    },
+
+    // DQ風ウィンドウを描画
+    renderEasterWindow() {
+        const ctx = this.ctx;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const message = this.easterMessage || '';
+
+        // テキストを10文字ごとに改行
+        const maxCharsPerLine = 10;
+        const lines = [];
+        for (let i = 0; i < message.length; i += maxCharsPerLine) {
+            lines.push(message.slice(i, i + maxCharsPerLine));
+        }
+
+        // ウィンドウサイズ計算（ひらがな対応で広めに）
+        const padding = 24;
+        const lineHeight = 22;
+        const buttonHeight = 24;
+        const charWidth = 16; // ひらがな用に広めに
+
+        const textWidth = maxCharsPerLine * charWidth + padding * 2;
+        const windowWidth = Math.max(textWidth, 180);
+        const windowHeight = (lines.length * lineHeight) + buttonHeight + padding * 3;
+
+        const windowX = (w - windowWidth) / 2;
+        const windowY = (h - windowHeight) / 2;
+
+        // 外枠（白）
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(windowX - 4, windowY - 4, windowWidth + 8, windowHeight + 8);
+
+        // 内枠（黒背景）
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
+
+        // メッセージテキスト（ピクセルフォント風）
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '16px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        lines.forEach((line, idx) => {
+            const textY = windowY + padding + lineHeight * idx + lineHeight / 2;
+            ctx.fillText(line, w / 2, textY);
+        });
+
+        // 「とじる」ボタン
+        const buttonWidth = 80;
+        const buttonX = (w - buttonWidth) / 2;
+        const buttonY = windowY + windowHeight - buttonHeight - padding;
+
+        // ボタン背景
+        ctx.fillStyle = '#333333';
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+        // ボタンテキスト
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '14px monospace';
+        ctx.fillText('とじる', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+
+        // クリック判定用にボタン位置を保存
+        this.easterCloseButton = {
+            x: buttonX,
+            y: buttonY,
+            width: buttonWidth,
+            height: buttonHeight
+        };
     },
 
     renderProjectileOrItem(obj) {
@@ -1086,20 +1192,37 @@ const GameEngine = {
 
             // プレイヤーとの当たり判定
             if (this.player && !this.player.isDead && !item.collected) {
+                // イースターエッグウィンドウが表示中は収集しない
+                if (this.easterMessageActive) return;
+
                 if (this.projectileHits(item, this.player)) {
-                    this.player.collectItem(item.itemType);
+                    console.log(`>>> Collecting item: type=${item.itemType}, easterMessage=${item.template?.config?.easterMessage}`);
                     item.collected = true;
-                    if (this.player.template?.config?.seItemGet !== undefined) {
-                        // プレイヤー設定のSE
-                        // this.player.playSE('itemGet'); // player.js handles this in collectItem?
-                        // game-engine doesn't play sound here directly typically, assume player.collectItem handles?
-                        // Actually player.collectItem plays sound.
+
+                    // イースターエッグの場合はメッセージウィンドウを表示
+                    if (item.itemType === 'easter') {
+                        console.log('>>> Easter egg detected! Showing message window');
+                        const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
+                        console.log('>>> Easter message:', message);
+                        this.showEasterMessage(message);
+                        // アイテムゲット音を鳴らす
+                        this.player.playSE('itemGet');
+                        return;
                     }
+
+                    this.player.collectItem(item.itemType);
                     // クリアアイテムカウント
                     if (item.itemType === 'clear') {
                         this.collectedClearItems = (this.collectedClearItems || 0) + 1;
-                        // UI表示更新などの必要があれば
                     }
+
+                    // スコア加算
+                    let pts = 100;
+                    if (item.itemType === 'coin') pts = 50;
+                    if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
+                    if (item.itemType === 'weapon') pts = 200;
+                    if (item.itemType === 'clear') pts = 1000;
+                    this.addScore(pts);
                 }
             }
         });
@@ -1145,6 +1268,20 @@ const GameEngine = {
                     // ピンポン: 壁で反射
                     proj.x += proj.vx;
                     proj.y += proj.vy;
+                    break;
+                case 'melee':
+                    // 近接: オーナー（プレイヤー/敵）に追従
+                    if (proj.owner === 'player' && this.player) {
+                        const direction = this.player.facingRight ? 1 : -1;
+                        proj.x = this.player.x + direction;
+                        proj.y = this.player.y;
+                        proj.facingRight = this.player.facingRight;
+                    } else if (proj.owner === 'enemy' && proj.ownerEnemy) {
+                        const direction = proj.ownerEnemy.facingRight ? 1 : -1;
+                        proj.x = proj.ownerEnemy.x + direction;
+                        proj.y = proj.ownerEnemy.y;
+                        proj.facingRight = proj.ownerEnemy.facingRight;
+                    }
                     break;
                 default:
                     // straight, spread: 通常移動
@@ -1211,6 +1348,9 @@ const GameEngine = {
                         if (!enemy.isDying && this.projectileHits(proj, enemy)) {
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
+                            if (enemy.lives <= 0) {
+                                this.addScore(100);
+                            }
                             if (shotType !== 'pinball' && shotType !== 'boomerang') {
                                 return false;
                             }
@@ -1321,13 +1461,35 @@ const GameEngine = {
 
     checkItemCollisions() {
         if (!this.player || this.player.isDead) return;
+        // イースターエッグウィンドウが表示中は収集しない
+        if (this.easterMessageActive) return;
 
         this.items.forEach((item, idx) => {
             if (item.collected) return;
 
+            // 毎フレームログは多すぎるので、近くにいる時だけ
+            const dx = Math.abs(this.player.x - item.x);
+            const dy = Math.abs(this.player.y - item.y);
+            if (dx < 3 && dy < 3) {
+                console.log(`Player near item[${idx}]: player(${this.player.x.toFixed(2)}, ${this.player.y.toFixed(2)}) item(${item.x}, ${item.y}) dx=${dx.toFixed(2)} dy=${dy.toFixed(2)}`);
+            }
+
             if (this.player.collidesWith(item)) {
-                console.log(`>>> Collecting item[${idx}] at (${item.x}, ${item.y}), type=${item.itemType}, player at (${this.player.x.toFixed(2)}, ${this.player.y.toFixed(2)})`);
+                console.log(`>>> Collecting item[${idx}] at (${item.x}, ${item.y}), type=${item.itemType}, template=${item.template?.name}, easterMessage=${item.template?.config?.easterMessage}`);
                 item.collected = true;
+
+                // イースターエッグの場合はメッセージウィンドウを表示
+                if (item.itemType === 'easter') {
+                    console.log('>>> Easter egg detected! Showing message window');
+                    const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
+                    console.log('>>> Easter message:', message);
+                    this.showEasterMessage(message);
+                    // イースターエッグもアイテムゲット音を鳴らす
+                    this.player.playSE('itemGet');
+                    // イースターエッグはスコア加算なし
+                    return;
+                }
+
                 this.player.collectItem(item.itemType);
 
                 // CLEARアイテムの場合、取得数をカウント
@@ -1340,8 +1502,9 @@ const GameEngine = {
                     }
                 }
 
-                // スコア加算（アイテムタイプに応じて変えることも可能）
+                // スコア加算（アイテムタイプに応じて変える）
                 let pts = 100;
+                if (item.itemType === 'coin') pts = 50;  // コイン
                 if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                 if (item.itemType === 'weapon') pts = 200;
                 if (item.itemType === 'clear') pts = 1000;
@@ -2189,6 +2352,14 @@ const GameEngine = {
         const sprites = App.projectData.sprites;
         const frameSpeed = 10;
 
+        // ギミックブロック位置をセットに登録
+        const gimmickPositions = new Set();
+        if (this.gimmickBlocks) {
+            this.gimmickBlocks.forEach(block => {
+                gimmickPositions.add(`${block.tileX},${block.tileY}`);
+            });
+        }
+
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
             for (let x = startX; x < endX; x++) {
@@ -2196,6 +2367,11 @@ const GameEngine = {
 
                 // 破壊済みタイルはスキップ
                 if (this.destroyedTiles.has(`${x},${y}`)) continue;
+
+                // ギミックブロックは別途描画するのでスキップ
+                if (gimmickPositions.has(`${x},${y}`)) {
+                    continue;
+                }
 
                 const tileId = layer[y][x];
                 if (tileId >= 0) {
@@ -2459,9 +2635,6 @@ const GameEngine = {
 
     // ========== スコア管理 ==========
     addScore(points) {
-        // デフォルトはON
-        if (App.projectData.stage.showScore === false) return;
-
         this.score += points;
 
         // ハイスコア更新

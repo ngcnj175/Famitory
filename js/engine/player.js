@@ -66,12 +66,15 @@ class Player {
         this.canDoubleJump = false;
         this.hasDoubleJumped = false;
 
+        // 武器使用可能フラグ（weaponFromStart設定に基づく）
+        this.hasWeapon = template?.config?.weaponFromStart ?? true;
+
         // SE設定（-1はOFF）
         this.seJump = template?.config?.seJump ?? 0;
-        this.seAttack = template?.config?.seAttack ?? 1;
-        this.seDamage = template?.config?.seDamage ?? 2;
-        this.seItemGet = template?.config?.seItemGet ?? 3;
-        this.seEnemyDefeat = template?.config?.seEnemyDefeat ?? 4;
+        this.seAttack = template?.config?.seAttack ?? 5;
+        this.seDamage = template?.config?.seDamage ?? 10;
+        this.seItemGet = template?.config?.seItemGet ?? 15;
+        this.seEnemyDefeat = template?.config?.seEnemyDefeat ?? 24;
 
         // 喜びジャンプ（クリア演出用）
         this.joyJumpActive = false;
@@ -82,6 +85,12 @@ class Player {
     playSE(seKey) {
         if (typeof NesAudio === 'undefined') return;
 
+        // enemyDefeatは常にv2.0.1オリジナルの「ポン」音を再生
+        if (seKey === 'enemyDefeat') {
+            NesAudio.playSE('enemyDefeat');
+            return;
+        }
+
         const sounds = App.projectData?.sounds || [];
         let seIndex = -1;
 
@@ -90,7 +99,6 @@ class Player {
             case 'attack': seIndex = this.seAttack; break;
             case 'damage': seIndex = this.seDamage; break;
             case 'itemGet': seIndex = this.seItemGet; break;
-            case 'enemyDefeat': seIndex = this.seEnemyDefeat; break;
         }
 
         if (seIndex >= 0 && seIndex < sounds.length) {
@@ -268,6 +276,9 @@ class Player {
     }
 
     attack(engine) {
+        // 武器を持っていない場合は攻撃不可
+        if (!this.hasWeapon) return;
+
         this.isAttacking = true;
         this.attackTimer = 15;
         this.attackCooldown = 30;
@@ -419,6 +430,10 @@ class Player {
                 // SE再生
                 this.playSE('itemGet');
                 break;
+            case 'coin':
+                // コイン取得（スコアはgame-engine.js側で加算）
+                this.playSE('itemGet');
+                break;
             case 'lifeup':
                 if (this.lives < this.maxLives) {
                     this.lives++;
@@ -428,6 +443,11 @@ class Player {
                 break;
             case 'clear':
                 // クリアアイテム取得（カウントはgame-engine.js側で行う）
+                this.playSE('itemGet');
+                break;
+            case 'weapon':
+                // 武器アイテム取得 → 武器使用可能に
+                this.hasWeapon = true;
                 this.playSE('itemGet');
                 break;
         }
@@ -581,8 +601,9 @@ class Player {
         // 死亡中も落下するスプライトを表示
         if (this.isDead && this.isDying) {
             // 落下演出中はスプライトを表示
-            const screenX = (this.x - camera.x) * tileSize;
-            const screenY = (this.y - camera.y) * tileSize;
+            // 当たり判定の中心座標（下端基準）
+            const hitboxCenterX = this.x + this.width / 2;
+            const hitboxBottom = this.y + this.height;
             const frames = this.template?.sprites?.idle?.frames || [];
             const spriteIdx = frames[0];
             const sprite = App.projectData.sprites[spriteIdx];
@@ -596,17 +617,17 @@ class Player {
                 const pixelSize = renderSize / dimension;
                 const flipX = !this.facingRight;
 
-                // 32x32スプライトは足元を基準に描画（1タイル分上にオフセット）
-                const yOffset = spriteSize === 2 ? -tileSize : 0;
-                const adjustedScreenY = screenY + yOffset;
+                // スプライトを当たり判定に対して下端寄せ＆横軸中央寄せで描画
+                const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
+                const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
                 for (let y = 0; y < dimension; y++) {
                     for (let x = 0; x < dimension; x++) {
                         const colorIndex = sprite.data[y]?.[x];
                         if (colorIndex >= 0) {
                             ctx.fillStyle = palette[colorIndex];
-                            const drawX = flipX ? screenX + (dimension - 1 - x) * pixelSize : screenX + x * pixelSize;
-                            ctx.fillRect(drawX, adjustedScreenY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                            const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
+                            ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                         }
                     }
                 }
@@ -624,8 +645,9 @@ class Player {
             return;
         }
 
-        const screenX = (this.x - camera.x) * tileSize;
-        const screenY = (this.y - camera.y) * tileSize;
+        // 当たり判定の中心座標（下端基準）
+        const hitboxCenterX = this.x + this.width / 2;
+        const hitboxBottom = this.y + this.height;
 
         const spriteSlot = this.getSpriteSlot();
         const frames = this.template?.sprites?.[spriteSlot]?.frames || this.template?.sprites?.idle?.frames || [];
@@ -641,9 +663,9 @@ class Player {
             const renderSize = tileSize * tileCount;
             const pixelSize = renderSize / dimension;
 
-            // 32x32スプライトは足元を基準に描画（1タイル分上にオフセット）
-            const yOffset = spriteSize === 2 ? -tileSize : 0;
-            const adjustedScreenY = screenY + yOffset;
+            // スプライトを当たり判定に対して下端寄せ＆横軸中央寄せで描画
+            const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
+            const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
             // スターパワー中は虹色
             if (this.starPower) {
@@ -668,8 +690,8 @@ class Player {
                             color = starColors[colorPhase];
                         }
                         ctx.fillStyle = color;
-                        const drawX = flipX ? screenX + (dimension - 1 - x) * pixelSize : screenX + x * pixelSize;
-                        ctx.fillRect(drawX, adjustedScreenY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                        const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
+                        ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                     }
                 }
             }

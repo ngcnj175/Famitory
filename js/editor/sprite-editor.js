@@ -36,10 +36,23 @@ const SpriteEditor = {
     selectionStart: null,
     selectionEnd: null,
     rangeClipboard: null,  // 範囲コピー用クリップボード
+    isFloating: false,
+    floatingData: null,
+    floatingPos: { x: 0, y: 0 },
+    isSelecting: false,
     pasteMode: false,
     pasteData: null,
     pasteOffset: { x: 0, y: 0 },
     pasteDragStart: null,
+
+    // おてほん（下絵ガイド）
+    guideImage: null,          // 読み込んだ画像（Image object）
+    guideImageVisible: false,  // 表示ON/OFF
+    guideScale: 1,             // ズーム倍率
+    guideOffsetX: 0,           // 位置オフセット（ピクセル単位）
+    guideOffsetY: 0,
+    guideAdjustMode: false,    // 調整モード（初回読込み時のみtrue）
+    guideAdjustData: null,     // 調整中の2本指操作用データ
 
     init() {
         this.canvas = document.getElementById('paint-canvas');
@@ -153,6 +166,7 @@ const SpriteEditor = {
             div.addEventListener('mouseup', cancelLongPress);
             div.addEventListener('mouseleave', cancelLongPress);
             div.addEventListener('touchstart', startLongPress, { passive: true });
+            div.addEventListener('touchmove', cancelLongPress, { passive: true });
             div.addEventListener('touchend', cancelLongPress);
 
             // ダブルタップで編集、シングルタップで選択
@@ -389,7 +403,6 @@ const SpriteEditor = {
                     <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">編集中</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
@@ -593,11 +606,13 @@ const SpriteEditor = {
             const newBtn = btn.cloneNode(true);
             if (btn.parentNode) btn.parentNode.replaceChild(newBtn, btn);
 
-            // 消しゴム長押し検知用
+            // 消しゴム/ガイド長押し検知用
             let pressTimer;
             const startPress = () => {
                 if (newBtn.dataset.tool === 'eraser') {
                     pressTimer = setTimeout(() => this.clearSprite(), 800);
+                } else if (newBtn.dataset.tool === 'guide') {
+                    pressTimer = setTimeout(() => this.resetGuideImage(), 800);
                 }
             };
             const cancelPress = () => {
@@ -617,8 +632,11 @@ const SpriteEditor = {
                     case 'undo':
                         this.undo();
                         break;
+                    case 'select':
+                        this.startSelectionMode();
+                        break;
                     case 'copy':
-                        this.copySprite();
+                        this.copySelection();
                         break;
                     case 'paste':
                         this.pasteSprite();
@@ -631,7 +649,12 @@ const SpriteEditor = {
                         this.saveHistory();
                         this.flipHorizontal();
                         break;
+                    case 'guide':
+                        this.handleGuideButtonClick();
+                        break;
                     default:
+                        // 選択モードをキャンセル
+                        this.cancelSelectionMode();
                         this.currentTool = tool;
                         // PIXEL画面のツールのみアクティブ切替
                         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
@@ -687,6 +710,7 @@ const SpriteEditor = {
             div.addEventListener('mouseup', cancelLongPress);
             div.addEventListener('mouseleave', cancelLongPress);
             div.addEventListener('touchstart', startLongPress, { passive: true });
+            div.addEventListener('touchmove', cancelLongPress, { passive: true });
             div.addEventListener('touchend', (e) => {
                 cancelLongPress();
                 // タッチ用ダブルタップ検出
@@ -844,6 +868,34 @@ const SpriteEditor = {
             console.error('Render error:', e);
         }
 
+        // 浮動レイヤー
+        if (this.isFloating && this.floatingData) {
+            const dimension = this.getCurrentSpriteDimension();
+            const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
+            const offsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
+
+            this.ctx.globalAlpha = 0.5;
+            for (let y = 0; y < this.floatingData.length; y++) {
+                for (let x = 0; x < this.floatingData[0].length; x++) {
+                    const colorIndex = this.floatingData[y][x];
+                    if (colorIndex >= 0) {
+                        const tx = this.floatingPos.x + x;
+                        const ty = this.floatingPos.y + y;
+
+                        if (tx >= 0 && tx < dimension && ty >= 0 && ty < dimension) {
+                            const screenX = tx - offsetX;
+                            const screenY = ty - offsetY;
+                            if (screenX >= 0 && screenX < 16 && screenY >= 0 && screenY < 16) {
+                                this.ctx.fillStyle = palette[colorIndex];
+                                this.ctx.fillRect(screenX * this.pixelSize, screenY * this.pixelSize, this.pixelSize, this.pixelSize);
+                            }
+                        }
+                    }
+                }
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+
         // ペーストプレビュー（確定前）
         if (this.pasteMode && this.pasteData) {
             const dataH = this.pasteData.length;
@@ -890,6 +942,34 @@ const SpriteEditor = {
             this.ctx.stroke();
         }
 
+        // 8ピクセル毎のガイド線（白、0.75px）- スクロールに追従
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.lineWidth = 0.75;
+        {
+            const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
+            const offsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
+            // 8ピクセル境界線を描画
+            for (let i = 8; i < dimension; i += 8) {
+                // 16の倍数は別のガイド線で描画するのでスキップ（32x32時のみ）
+                if (dimension > 16 && i % 16 === 0) continue;
+                // ビューポート内に表示される位置を計算
+                const screenX = (i - offsetX) * this.pixelSize;
+                const screenY = (i - offsetY) * this.pixelSize;
+                if (screenX > 0 && screenX < this.canvas.width) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, 0);
+                    this.ctx.lineTo(screenX, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                if (screenY > 0 && screenY < this.canvas.height) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, screenY);
+                    this.ctx.lineTo(this.canvas.width, screenY);
+                    this.ctx.stroke();
+                }
+            }
+        }
+
         // 16ピクセル毎のガイド線（赤 - 32x32編集時の視認性向上）
         if (dimension > 16) {
             const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
@@ -928,7 +1008,7 @@ const SpriteEditor = {
 
             // ビューポート内に表示される部分のみ描画
             if (x2 >= 0 && x1 < 16 && y2 >= 0 && y1 < 16) {
-                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
                 this.ctx.lineWidth = 2;
                 this.ctx.setLineDash([4, 4]);
                 this.ctx.strokeRect(
@@ -963,6 +1043,37 @@ const SpriteEditor = {
                 dataH * this.pixelSize
             );
             this.ctx.setLineDash([]);
+        }
+
+        // おてほん（下絵ガイド）を最上位レイヤーに描画
+        if (this.guideImageVisible && this.guideImage) {
+            const viewOffsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
+            const viewOffsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
+
+            // ガイド画像のサイズ（ピクセル単位）
+            const imgW = this.guideImage.width;
+            const imgH = this.guideImage.height;
+
+            // 32x32時は2倍に拡大（キャンバスサイズに合わせる）
+            const spriteDimension = this.getCurrentSpriteDimension();
+            const dimensionMultiplier = spriteDimension / 16;  // 16x16 → 1, 32x32 → 2
+
+            // スケール適用後のガイド画像サイズ（スプライトピクセル単位）
+            // guideScale=1 → 画像が16スプライトピクセルに収まる
+            // 32x32時は dimensionMultiplier=2 で2倍に拡大
+            const baseSize = 16 * dimensionMultiplier;
+            const scaledW = baseSize * this.guideScale;
+            const scaledH = baseSize * this.guideScale * (imgH / imgW);
+
+            // 描画位置（スプライト座標系、ビューポートオフセット考慮）
+            const drawX = (this.guideOffsetX * dimensionMultiplier - viewOffsetX) * this.pixelSize;
+            const drawY = (this.guideOffsetY * dimensionMultiplier - viewOffsetY) * this.pixelSize;
+            const drawW = scaledW * this.pixelSize;
+            const drawH = scaledH * this.pixelSize;
+
+            this.ctx.globalAlpha = 0.5;
+            this.ctx.drawImage(this.guideImage, drawX, drawY, drawW, drawH);
+            this.ctx.globalAlpha = 1.0;
         }
 
         this.canvas.style.backgroundColor = bgColor;
@@ -1153,14 +1264,21 @@ const SpriteEditor = {
                 this.touchStartTimer = null;
             }
 
-            // 2本指の場合は即座にパン開始
-            if (e.touches.length === 2 && this.getCurrentSpriteSize() === 2) {
-                this.isPanning = true;
-                this.pendingTouch = null; // 保留中のタッチをキャンセル
+            // 2本指の場合
+            if (e.touches.length === 2) {
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
-                this.panStartX = (touch1.clientX + touch2.clientX) / 2;
-                this.panStartY = (touch1.clientY + touch2.clientY) / 2;
+                const centerX = (touch1.clientX + touch2.clientX) / 2;
+                const centerY = (touch1.clientY + touch2.clientY) / 2;
+                const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+                if (this.getCurrentSpriteSize() === 2) {
+                    // 通常の32x32パン
+                    this.isPanning = true;
+                    this.pendingTouch = null;
+                    this.panStartX = centerX;
+                    this.panStartY = centerY;
+                }
             } else if (e.touches.length === 1) {
                 // 1本指の場合、少し待ってから描画開始（2本指検出のため）
                 this.pendingTouch = e.touches[0];
@@ -1170,47 +1288,44 @@ const SpriteEditor = {
                     }
                     this.pendingTouch = null;
                     this.touchStartTimer = null;
-                }, 50); // 50ms待機
+                }, 50);
             }
         }, { passive: false });
 
         this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
 
-            // 2本指パン処理
-            if (e.touches.length === 2 && this.isPanning && this.getCurrentSpriteSize() === 2) {
+            if (e.touches.length === 2) {
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
                 const centerX = (touch1.clientX + touch2.clientX) / 2;
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
+                const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                // ピアノロールと同じ方式: ピクセル単位でスクロール
-                // 開始位置が不正ならリセット
-                if (!Number.isFinite(this.panStartX) || !Number.isFinite(this.panStartY)) {
+                if (this.isPanning && this.getCurrentSpriteSize() === 2) {
+                    // 通常の32x32パン処理
+                    if (!Number.isFinite(this.panStartX) || !Number.isFinite(this.panStartY)) {
+                        this.panStartX = centerX;
+                        this.panStartY = centerY;
+                        return;
+                    }
+
+                    const deltaX = this.panStartX - centerX;
+                    const deltaY = this.panStartY - centerY;
+                    const maxScroll = 16 * this.pixelSize;
+
+                    if (!Number.isFinite(this.viewportOffsetX)) this.viewportOffsetX = 0;
+                    if (!Number.isFinite(this.viewportOffsetY)) this.viewportOffsetY = 0;
+
+                    this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + deltaX));
+                    this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + deltaY));
+
                     this.panStartX = centerX;
                     this.panStartY = centerY;
-                    return;
+                    this.render();
                 }
-
-                const deltaX = this.panStartX - centerX;
-                const deltaY = this.panStartY - centerY;
-
-                // ピクセル単位でオフセットを更新（16ピクセル分 = 16タイル分 = 320pxが最大）
-                const maxScroll = 16 * this.pixelSize;  // 320px
-
-                // 現在のオフセットの正当性チェック
-                if (!Number.isFinite(this.viewportOffsetX)) this.viewportOffsetX = 0;
-                if (!Number.isFinite(this.viewportOffsetY)) this.viewportOffsetY = 0;
-
-                this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + deltaX));
-                this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + deltaY));
-
-                this.panStartX = centerX;
-                this.panStartY = centerY;
-
-                this.render();
             } else if (e.touches.length === 1 && !this.isPanning) {
-                // 2本指パン中でなければ、描画を続行
+                // 2本指パン/調整中でなければ、描画を続行
                 if (this.isDrawing) {
                     this.onPointerMove(e.touches[0]);
                 }
@@ -1248,6 +1363,7 @@ const SpriteEditor = {
 
     onPointerDown(e) {
         if (App.currentScreen !== 'paint') return;
+        this.hasMoved = false;
 
         const pixel = this.getPixelFromEvent(e);
         const dimension = this.getCurrentSpriteDimension();
@@ -1259,8 +1375,28 @@ const SpriteEditor = {
         // 範囲選択モード
         if (this.selectionMode) {
             this.isDrawing = true;
-            this.selectionStart = { x: pixel.x, y: pixel.y };
-            this.selectionEnd = { x: pixel.x, y: pixel.y };
+
+            // 既存の選択範囲内をクリックした場合は移動モード
+            if (this.selectionStart && this.selectionEnd && this.isPointInSelection(pixel.x, pixel.y)) {
+
+                // まだ浮動化していないなら、ここで浮動化（Cut）
+                if (!this.isFloating) {
+                    this.saveHistory(); // 移動開始前の状態を保存
+                    this.floatSelection();
+                }
+
+                this.selectionMoveStart = { x: pixel.x, y: pixel.y };
+                this.isMovingSelection = true;
+            } else {
+                // 新規選択
+                if (this.isFloating) {
+                    this.commitFloatingData(); // 以前の選択を確定
+                }
+                this.isSelecting = true; // 新規選択フラグ（色制御用）
+                this.selectionStart = { x: pixel.x, y: pixel.y };
+                this.selectionEnd = { x: pixel.x, y: pixel.y };
+                this.isMovingSelection = false;
+            }
             this.render();
             return;
         }
@@ -1311,16 +1447,39 @@ const SpriteEditor = {
 
     onPointerMove(e) {
         if (!this.isDrawing || App.currentScreen !== 'paint') return;
+        this.hasMoved = true;
 
         const pixel = this.getPixelFromEvent(e);
 
         // 範囲選択モード
         if (this.selectionMode) {
             const dimension = this.getCurrentSpriteDimension();
-            this.selectionEnd = {
-                x: Math.max(0, Math.min(dimension - 1, pixel.x)),
-                y: Math.max(0, Math.min(dimension - 1, pixel.y))
-            };
+
+            if (this.isMovingSelection && this.selectionMoveStart) {
+                // 選択範囲の移動
+                const dx = pixel.x - this.selectionMoveStart.x;
+                const dy = pixel.y - this.selectionMoveStart.y;
+
+                if (dx !== 0 || dy !== 0) {
+                    this.selectionStart.x += dx;
+                    this.selectionStart.y += dy;
+                    this.selectionEnd.x += dx;
+                    this.selectionEnd.y += dy;
+
+                    if (this.isFloating) {
+                        this.floatingPos.x += dx;
+                        this.floatingPos.y += dy;
+                    }
+
+                    this.selectionMoveStart = { x: pixel.x, y: pixel.y };
+                }
+            } else {
+                // 範囲選択中
+                this.selectionEnd = {
+                    x: Math.max(0, Math.min(dimension - 1, pixel.x)),
+                    y: Math.max(0, Math.min(dimension - 1, pixel.y))
+                };
+            }
             this.render();
             return;
         }
@@ -1337,7 +1496,12 @@ const SpriteEditor = {
         }
 
         if (pixel.x !== this.lastPixel.x || pixel.y !== this.lastPixel.y) {
-            this.processPixel(pixel.x, pixel.y);
+            // ペンツールの消去モード時はドラッグで連続消去しない（タップのみ）
+            if (this.currentTool === 'pen' && this.drawMode === 'erase') {
+                // 何もしない（タップ時の1回のみ消去）
+            } else {
+                this.processPixel(pixel.x, pixel.y);
+            }
         }
     },
 
@@ -1347,9 +1511,16 @@ const SpriteEditor = {
         this.isDrawing = false;
         this.lastPixel = { x: -1, y: -1 };
 
-        // 範囲選択モード確定
-        if (this.selectionMode && this.selectionStart && this.selectionEnd) {
-            this.confirmRangeCopy();
+        // 範囲選択モード（ドラッグ終了のみ、確定はボタンで行う→指を離すとライトグリーンになる）
+        if (this.selectionMode) {
+            this.isSelecting = false; // 新規選択完了（色はライトグリーンへ）
+
+            if (!this.hasMoved && !this.isMovingSelection) {
+                this.cancelSelectionMode();
+            }
+            this.isMovingSelection = false;
+            this.selectionMoveStart = null;
+            this.render(); // 色更新のため再描画
             return;
         }
 
@@ -1442,23 +1613,82 @@ const SpriteEditor = {
         this.initSpriteGallery();
     },
 
+    isPointInSelection(x, y) {
+        if (!this.selectionStart || !this.selectionEnd) return false;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    },
+
     // 範囲選択モード開始
-    copySprite() {
+    startSelectionMode() {
         this.selectionMode = true;
         this.pasteMode = false;
+        // 既存の選択がない場合は初期化（維持することでツール切り替えに対応）
+        if (!this.selectionStart) {
+            this.selectionStart = null;
+            this.selectionEnd = null;
+        }
+        this.currentTool = 'select';
+        this.isSelecting = false;
+
+        // 以前の浮動データがあれば確定
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
+        this.isFloating = false;
+        this.floatingData = null;
+
+        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tool === 'select');
+        });
+        this.render();
+    },
+
+    // 選択モードキャンセル
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
+
+        this.selectionMode = false;
         this.selectionStart = null;
         this.selectionEnd = null;
-        this.currentTool = 'copy';
-        // ツールボタンのアクティブ状態を更新
+
+        // 選択ツールが選択されている場合は、ボタンのアクティブ状態を維持する
+        if (this.currentTool === 'select') {
+            const selectBtn = document.querySelector('#paint-tools button[data-tool="select"]');
+            if (selectBtn) selectBtn.classList.add('active');
+        }
+        this.isMovingSelection = false;
+        this.selectionMoveStart = null;
+        this.render();
+    },
+
+
+
+    cancelSelectionMode() {
+        if (!this.selectionMode) return;
+
+        if (this.isFloating) {
+            this.commitFloatingData();
+        }
+
+        this.selectionMode = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
+        // this.rangeClipboard = null; // Don't clear clipboard on cancel? Usually keep it.
+
         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === 'copy');
+            b.classList.toggle('active', b.dataset.tool === 'select' && this.selectionMode);
         });
+
+        this.render();
     },
 
     // ペーストモード開始
     pasteSprite() {
         if (!this.rangeClipboard || this.rangeClipboard.length === 0) {
-            alert('先にコピーする範囲を選択してください');
             return;
         }
         this.pasteMode = true;
@@ -1476,9 +1706,77 @@ const SpriteEditor = {
         this.render();
     },
 
-    // 範囲コピー確定
-    confirmRangeCopy() {
+    floatSelection() { // Implement floating selection
         if (!this.selectionStart || !this.selectionEnd) return;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const floatingData = [];
+
+        for (let y = 0; y < h; y++) {
+            const row = [];
+            for (let x = 0; x < w; x++) {
+                const ty = y + y1;
+                const tx = x + x1;
+                // Sprite data array extension check
+                if (!sprite.data[ty]) sprite.data[ty] = [];
+
+                if (typeof sprite.data[ty][tx] !== 'undefined') {
+                    row.push(sprite.data[ty][tx]);
+                    sprite.data[ty][tx] = -1; // Clear source
+                } else {
+                    row.push(-1);
+                }
+            }
+            floatingData.push(row);
+        }
+
+        this.floatingData = floatingData;
+        this.floatingPos = { x: x1, y: y1 };
+        this.isFloating = true;
+    },
+
+    commitFloatingData() { // Commit floating selection
+        if (!this.isFloating || !this.floatingData) return;
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const h = this.floatingData.length;
+        const w = this.floatingData[0].length;
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const val = this.floatingData[y][x];
+                // Overwrite everything including transparency to match StageEditor behavior
+                const ty = this.floatingPos.y + y;
+                const tx = this.floatingPos.x + x;
+
+                // Ensure row exists
+                if (!sprite.data[ty]) {
+                    // Check dimension bounds before extending?
+                    // Assuming processPixel logic handles bounds or we should check?
+                    // render loop checks bounds, so we should be safe to just check existence
+                    continue;
+                }
+
+                if (typeof sprite.data[ty][tx] !== 'undefined') {
+                    sprite.data[ty][tx] = val;
+                }
+            }
+        }
+        this.isFloating = false;
+        this.floatingData = null;
+        this.render();
+    },
+
+    // 選択範囲をコピー
+    copySelection() {
+        if (!this.selectionStart || !this.selectionEnd) {
+            return;
+        }
 
         const sprite = App.projectData.sprites[this.currentSprite];
         const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
@@ -1497,14 +1795,11 @@ const SpriteEditor = {
         }
         this.rangeClipboard = data;
 
-        // 選択モード終了
-        this.selectionMode = false;
-        this.selectionStart = null;
-        this.selectionEnd = null;
-        this.currentTool = 'pen';
-        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === 'pen');
-        });
+        // ユーザーにお知らせ
+        // ユーザーにお知らせ
+        // alert('選択範囲をコピーしました');
+
+        // 選択モードは維持する
         this.render();
     },
 
@@ -1566,5 +1861,177 @@ const SpriteEditor = {
         sprite.data.forEach(row => row.reverse());
         this.render();
         this.initSpriteGallery();
+    },
+
+    // ========== おてほん（下絵ガイド） ==========
+    handleGuideButtonClick() {
+        if (!this.guideImage) {
+            // 画像未読込み → 読み込みダイアログ
+            this.loadGuideImage();
+        } else {
+            // 読込み済み → 表示ON/OFF切り替え
+            this.toggleGuideImage();
+        }
+    },
+
+    loadGuideImage() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.style.display = 'none';
+        // DOMに追加して参照を維持（iOS等でのガベージコレクション対策）
+        document.body.appendChild(input);
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                document.body.removeChild(input);
+                return;
+            }
+
+            const img = new Image();
+            img.onload = () => {
+                // 高解像度で保存（256pxにフィット、アスペクト比保持）
+                const maxSize = 256;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height = Math.round(height * maxSize / width);
+                        width = maxSize;
+                    } else {
+                        width = Math.round(width * maxSize / height);
+                        height = maxSize;
+                    }
+                }
+
+                // オフスクリーンキャンバスに描画
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                this.guideImage = canvas;
+                this.guideImageVisible = true;
+                // 初期位置・スケールをリセット
+                this.guideScale = 1;
+                this.guideOffsetX = 0;
+                this.guideOffsetY = 0;
+                // 調整モードON（初回読込み時のみ）
+                this.guideAdjustMode = true;
+                this.updateGuideButtonState();
+                this.render();
+
+                // ObjectURLを解放
+                URL.revokeObjectURL(img.src);
+                // input要素を削除
+                document.body.removeChild(input);
+            };
+            img.onerror = () => {
+                console.error('Guide image load failed');
+                document.body.removeChild(input);
+            };
+            img.src = URL.createObjectURL(file);
+        };
+        input.click();
+    },
+
+    toggleGuideImage() {
+        this.guideImageVisible = !this.guideImageVisible;
+        this.updateGuideButtonState();
+        this.render();
+    },
+
+    resetGuideImage() {
+        this.guideImage = null;
+        this.guideImageVisible = false;
+        this.guideScale = 1;
+        this.guideOffsetX = 0;
+        this.guideOffsetY = 0;
+        this.guideAdjustMode = false;
+        this.guideAdjustData = null;
+        this.updateGuideButtonState();
+        this.render();
+    },
+
+    updateGuideButtonState() {
+        const btn = document.querySelector('#paint-tools .paint-tool-btn[data-tool="guide"]');
+        if (btn) {
+            btn.classList.toggle('guide-active', this.guideImage && this.guideImageVisible);
+            btn.classList.toggle('guide-loaded', this.guideImage !== null);
+        }
+    },
+
+    floatSelection() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+
+        const floatingData = [];
+        const sprite = App.projectData.sprites[this.currentSprite];
+
+        // データを抽出して元データを消去
+        for (let y = 0; y < h; y++) {
+            const row = [];
+            for (let x = 0; x < w; x++) {
+                // 配列境界チェック
+                if (sprite.data[y + y1] && typeof sprite.data[y + y1][x + x1] !== 'undefined') {
+                    const val = sprite.data[y + y1][x + x1];
+                    row.push(val);
+                    sprite.data[y + y1][x + x1] = -1;
+                } else {
+                    row.push(-1);
+                }
+            }
+            floatingData.push(row);
+        }
+
+        this.floatingData = floatingData;
+        this.floatingPos = { x: x1, y: y1 };
+        this.isFloating = true;
+    },
+
+    commitFloatingData() {
+        if (!this.isFloating || !this.floatingData) return;
+
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const dim = this.getCurrentSpriteDimension();
+
+        // 浮動データをキャンバスに書き戻す
+        for (let y = 0; y < this.floatingData.length; y++) {
+            for (let x = 0; x < this.floatingData[0].length; x++) {
+                const val = this.floatingData[y][x];
+                // 浮動データの透明（-1）も書き込むか？
+                // 通常Moveツールは「切り取り＆移動」なので、移動先の絵を上書きする。透明部分は透けるべきだが...
+                // ここでは単純なペースト同様、透明部分(-1)は書き込まないことにする（合成）
+                // いや、もし「移動」なら、元の矩形がそのまま移動すべきなので、透明も書き込む（上書き）
+                // ただし、もしユーザーが「透明部分は下の絵を残したい」と思うなら別だが。
+                // pixel art editor の挙動としては上書きが自然。
+                // でも -1 は透明なので、下の色が見えるべき？ 
+                // data 上では -1 が入ると「透明」になる。
+                // つまり -1 を書き込めばそこは透明になる（消しゴム効果）。
+
+                const tx = this.floatingPos.x + x;
+                const ty = this.floatingPos.y + y;
+
+                if (tx >= 0 && tx < dim && ty >= 0 && ty < dim) {
+                    // 境界チェックの上で書き込み
+                    if (sprite.data[ty]) {
+                        sprite.data[ty][tx] = val;
+                    }
+                }
+            }
+        }
+
+        this.isFloating = false;
+        this.floatingData = null;
+        this.render();
     }
+
 };
