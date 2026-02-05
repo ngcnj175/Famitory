@@ -98,9 +98,7 @@ const Share = {
 
     // 短縮共有URL生成（Firebase ID使用）
     createShortUrl(id) {
-        // 本番環境のURL（GitHub Pages）
-        const baseUrl = 'https://ngcnj175.github.io/PixelGameKit/';
-        return baseUrl + '?g=' + id;
+        return window.location.origin + window.location.pathname + '?g=' + id;
     },
 
     // クリップボードにコピー

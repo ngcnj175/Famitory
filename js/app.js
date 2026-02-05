@@ -48,7 +48,7 @@ const App = {
         return {
             version: 1,
             meta: {
-                name: 'NEW GAME',
+                name: '新規プロジェクト',
                 author: '',
                 locked: false,
                 createdAt: Date.now()
@@ -91,36 +91,11 @@ const App = {
             },
             // プリセットSE
             sounds: [
-                // ジャンプ系
-                { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-                { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-                { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-                { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-                { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-                // 攻撃系
-                { id: 5, name: '攻撃_01', type: 'attack_01' },
-                { id: 6, name: '攻撃_02', type: 'attack_02' },
-                { id: 7, name: '攻撃_03', type: 'attack_03' },
-                { id: 8, name: '攻撃_04', type: 'attack_04' },
-                { id: 9, name: '攻撃_05', type: 'attack_05' },
-                // ダメージ系
-                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-                // ゲット系
-                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-                // その他
-                { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-                { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-                { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-                { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-                { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
+                { id: 0, name: 'JUMP', type: 'jump' },
+                { id: 1, name: 'ATTACK', type: 'attack' },
+                { id: 2, name: 'DAMAGE', type: 'damage' },
+                { id: 3, name: 'ITEM GET', type: 'itemGet' },
+                { id: 4, name: 'ENEMY DEFEAT', type: 'enemyDefeat' }
             ]
         };
     },
@@ -349,58 +324,6 @@ const App = {
                 }
             }
         }
-
-        // SEリストの拡張とマイグレーション
-        if (this.projectData.sounds && this.projectData.sounds.length <= 5) {
-            // 1. 新しいサウンドリストで上書き
-            this.projectData.sounds = [
-                // ジャンプ系
-                { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-                { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-                { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-                { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-                { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-                // 攻撃系
-                { id: 5, name: '攻撃_01', type: 'attack_01' },
-                { id: 6, name: '攻撃_02', type: 'attack_02' },
-                { id: 7, name: '攻撃_03', type: 'attack_03' },
-                { id: 8, name: '攻撃_04', type: 'attack_04' },
-                { id: 9, name: '攻撃_05', type: 'attack_05' },
-                // ダメージ系
-                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-                // ゲット系
-                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-                // その他
-                { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-                { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-                { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-                { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-                { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
-            ];
-
-            // 2. テンプレート設定のマイグレーション（IDの振り直し）
-            if (this.projectData.templates) {
-                const seMap = { 0: 0, 1: 5, 2: 10, 3: 15 };
-                this.projectData.templates.forEach(tmpl => {
-                    if (tmpl.type === 'player' && tmpl.config) {
-                        ['seJump', 'seAttack', 'seDamage', 'seItemGet'].forEach(key => {
-                            const oldVal = tmpl.config[key];
-                            if (oldVal !== undefined && seMap[oldVal] !== undefined) {
-                                tmpl.config[key] = seMap[oldVal];
-                            }
-                        });
-                    }
-                });
-            }
-        }
     },
 
     // プレイ専用モードのUI適用
@@ -468,21 +391,33 @@ const App = {
             });
         });
 
-        // タイトル編集
+        // タイトル・サブタイトル編集
         const titleInput = document.getElementById('game-title');
+        const subtitleInput = document.getElementById('game-subtitle');
 
         titleInput?.addEventListener('change', (e) => {
             if (this.projectData) {
                 this.projectData.meta.name = e.target.value;
             }
         });
+
+        subtitleInput?.addEventListener('change', (e) => {
+            if (this.projectData) {
+                // サブタイトルはauthor扱い（または拡張）
+                this.projectData.meta.author = e.target.value;
+            }
+        });
     },
 
     updateGameInfo() {
         const titleInput = document.getElementById('game-title');
+        const subtitleInput = document.getElementById('game-subtitle');
 
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
+        }
+        if (subtitleInput && this.projectData) {
+            subtitleInput.value = this.projectData.meta.author || 'Stage 1';
         }
     },
 
@@ -986,15 +921,7 @@ const App = {
     showSimpleProjectList() {
         const modal = document.getElementById('project-list-modal');
         const listContainer = document.getElementById('project-list');
-        const scrollContainer = document.getElementById('project-list-scroll');
         const closeBtn = document.getElementById('project-list-close');
-
-        // iOSスクロール対策
-        if (scrollContainer) {
-            scrollContainer.addEventListener('touchmove', (e) => {
-                e.stopPropagation();
-            }, { passive: true });
-        }
 
         // アクションボタン
         const openBtn = document.getElementById('project-open-btn');
@@ -1034,21 +961,13 @@ const App = {
                     item.classList.add('selected');
                 }
 
-                // 日付フォーマット (例: 2/2 21:00)
-                const d = new Date(p.updatedAt);
-                const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
-
-                // 文字数が多ければスクロール対象にする... というロジックは廃止し、render後の幅判定に委ねる
-                // const isLong = p.name.length > 12;
+                const isCurrent = (p.name === this.currentProjectName);
+                const dateStr = new Date(p.updatedAt).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
 
                 item.innerHTML = `
-                    <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
-                    <div class="list-item-content">
-                        <div class="list-item-name-wrapper">
-                            <span class="list-item-name">${p.name}</span>
-                        </div>
-                        <div class="list-item-date">${dateStr}</div>
-                    </div>
+                    <span class="arrow">${p.name === selectedName ? '▶' : ''}</span>
+                    <span style="flex:1; font-weight:${isCurrent ? 'bold' : 'normal'}">${p.name}</span>
+                    <span style="font-size:11px; color:#888;">${dateStr}</span>
                 `;
 
                 item.onclick = () => {
@@ -1067,38 +986,11 @@ const App = {
                 listContainer.appendChild(item);
             });
             updateButtons();
-
-            // 描画後にスクロール判定を行う
-            setTimeout(() => {
-                const items = listContainer.querySelectorAll('.list-item');
-                items.forEach(item => {
-                    const nameEl = item.querySelector('.list-item-name');
-                    const wrapper = item.querySelector('.list-item-name-wrapper');
-
-                    if (nameEl && wrapper) {
-                        if (nameEl.scrollWidth > wrapper.clientWidth) {
-                            nameEl.classList.add('long-text');
-                        } else {
-                            nameEl.classList.remove('long-text');
-                        }
-
-                        if (item.classList.contains('selected') && nameEl.classList.contains('long-text')) {
-                            nameEl.classList.add('scrolling');
-                        } else {
-                            nameEl.classList.remove('scrolling');
-                        }
-                    }
-                });
-            }, 50);
         };
 
         selectedName = null;
-        selectedName = null;
-        modal.classList.remove('hidden');
-
-        // モーダルが表示されてから描画しないと幅が取れないため、微小遅延させるか直後に呼ぶ
-        // ここでは直後に呼びつつ、内部でレイアウト判定を遅延させる
         renderList();
+        modal.classList.remove('hidden');
 
         const close = () => {
             modal.classList.add('hidden');
@@ -1157,104 +1049,29 @@ const App = {
         const fileInput = document.getElementById('import-file-input');
         const closeBtn = document.getElementById('share-close-btn');
 
-        // クリップボードコピー（iOS対応フォールバック付き）
-        const copyToClipboard = async (text) => {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (e) {
-                // iOS Safariフォールバック
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.left = '-9999px';
-                textarea.style.top = '0';
-                textarea.setAttribute('readonly', '');
-                document.body.appendChild(textarea);
-                textarea.focus();
-                textarea.select();
-                try {
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    return true;
-                } catch (e2) {
-                    document.body.removeChild(textarea);
-                    console.error('Clipboard fallback failed:', e2);
-                    return false;
-                }
-            }
-        };
-
-        // 共有処理共通関数
-        const handleShare = async (type) => {
-            if (typeof Share === 'undefined') {
-                this.showToast('共有機能がロードされていません');
-                console.error('Share object is not defined');
-                return;
-            }
-
-            // Firebase確認
-            if (!window.firebaseDB) {
-                this.showToast('クラウド接続がありません');
-                console.error('Firebase DB is not initialized');
-                return;
-            }
-
-            this.showToast('データを保存中...');
-
-            try {
-                // Firebaseに保存
-                console.log('Saving game data to Firebase...');
-                const id = await Share.saveGame(this.projectData);
-                console.log('Save result ID:', id);
-
-                if (!id) {
-                    this.showToast('保存に失敗しました');
-                    console.error('Share.saveGame returned null');
-                    return;
-                }
-
-                const url = Share.createShortUrl(id);
-                console.log('Generated URL:', url);
-
-                const urlInput = document.getElementById('share-url-input');
-                if (urlInput) urlInput.value = url;
-
-                if (type === 'copy') {
-                    const success = await copyToClipboard(url);
-                    if (success) {
-                        this.showToast('URLを コピーしました');
-                    } else {
-                        this.showToast('コピーに失敗しました。URLをタップしてコピーしてください');
-                    }
-                } else if (type === 'x') {
-                    const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
-                    const twitterUrl = Share.createTwitterUrl(url, text);
-                    // iOS対応: location.hrefで遷移
-                    window.location.href = twitterUrl;
-                } else if (type === 'discord') {
-                    const text = `PixelGameKitでゲームを作ったよ！\n${url}`;
-                    const success = await copyToClipboard(text);
-                    if (success) {
-                        this.showToast('Discord用に コピーしました');
-                    } else {
-                        this.showToast('コピーに失敗しました。URLをタップしてコピーしてください');
-                    }
-                }
-            } catch (e) {
-                console.error('Share error details:', e);
-                this.showToast('エラー: ' + (e.message || '不明なエラー'));
-            }
-        };
-
         // URLコピー
-        copyUrlBtn.onclick = () => handleShare('copy');
+        copyUrlBtn.onclick = () => {
+            const json = JSON.stringify(this.projectData);
+            const url = window.location.origin + window.location.pathname + '?data=' + encodeURIComponent(json);
+            document.getElementById('share-url-input').value = url; // 隠しinput等あれば更新
+
+            // クリップボード
+            navigator.clipboard.writeText(url).then(() => {
+                this.showToast('URLを コピーしました');
+            });
+        };
 
         // X
-        xBtn.onclick = () => handleShare('x');
+        xBtn.onclick = () => {
+            const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
+            // URLは長すぎるので省略するか、共有機能実装が必要。今回はトーストのみ
+            this.showToast('X に とうこう（未実装）');
+        };
 
         // Discord
-        discordBtn.onclick = () => handleShare('discord');
+        discordBtn.onclick = () => {
+            this.showToast('Discord に とうこう（未実装）');
+        };
 
         // 書き出し
         exportBtn.onclick = () => {

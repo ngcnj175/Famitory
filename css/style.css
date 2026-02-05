@@ -173,7 +173,20 @@ body {
     padding: 4px;
 }
 
-#game-title:focus {
+#game-subtitle {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-medium);
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 2px;
+}
+
+#game-title:focus,
+#game-subtitle:focus {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
 }
@@ -220,8 +233,8 @@ body {
 /* 蜊∝ｭ励く繝ｼ */
 #dpad-container {
     position: relative;
-    width: 132px;
-    height: 132px;
+    width: 120px;
+    height: 120px;
     /* 蜀�ｽ｢縺ｮ豬�＞遯ｪ縺ｿ閭梧勹�域万繧√°繧峨�蜈会ｼ� */
     background: radial-gradient(circle at 35% 35%,
             rgba(255, 255, 255, 0.8) 0%,
@@ -263,38 +276,38 @@ body {
 }
 
 #btn-up {
-    top: 7px;
+    top: 6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 6px 6px 0 0;
 }
 
 #btn-down {
-    bottom: 7px;
+    bottom: 6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 0 0 6px 6px;
 }
 
 #btn-left {
-    left: 7px;
+    left: 6px;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 6px 0 0 6px;
 }
 
 #btn-right {
-    right: 7px;
+    right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 0 6px 6px 0;
 }
 
@@ -305,8 +318,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 44px;
-    height: calc(100% - 14px);
+    width: 40px;
+    height: calc(100% - 12px);
     background: var(--color-dark);
     border-radius: 6px;
     pointer-events: none;
@@ -319,8 +332,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: calc(100% - 14px);
-    height: 44px;
+    width: calc(100% - 12px);
+    height: 40px;
     background: var(--color-dark);
     border-radius: 6px;
     pointer-events: none;
@@ -363,13 +376,13 @@ body {
 }
 
 .action-btn {
-    width: 80px;
-    height: 80px;
+    width: 67px;
+    height: 67px;
     border: none;
     border-radius: 50%;
     background: var(--color-dark);
     color: var(--text-light);
-    font-size: 29px;
+    font-size: 24px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -536,16 +549,6 @@ body {
 
 .paint-tool-btn:active {
     transform: scale(0.9);
-}
-
-/* おてほんボタン状態 */
-.paint-tool-btn.guide-loaded {
-    color: var(--color-medium);
-}
-
-.paint-tool-btn.guide-active {
-    color: var(--color-dark);
-    background: rgba(0, 0, 0, 0.1);
 }
 
 .tool-divider {
@@ -943,32 +946,16 @@ body {
     height: 16px;
 }
 
-/* セレクト */
+/* 繧ｻ繝ｬ繧ｯ繝� */
 .param-select {
     width: 50%;
     flex: none;
-    height: 28px;
     padding: 4px 8px;
     font-size: 12px;
     border: 1px solid var(--border-color);
     border-radius: 0;
     background: #ffffff;
     color: #000000;
-    box-sizing: border-box;
-}
-
-/* テキスト入力（セレクトと同じスタイル） */
-.param-input {
-    width: 50%;
-    flex: none;
-    height: 28px;
-    padding: 4px 8px;
-    font-size: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 0;
-    background: #ffffff;
-    color: #000000;
-    box-sizing: border-box;
 }
 
 /* SE驕ｸ謚櫁｡� */
@@ -1145,67 +1132,6 @@ body {
 
 .popup-btn.primary:active {
     opacity: 0.8;
-}
-
-/* SE選択ポップアップ */
-.se-select-content {
-    width: 240px;
-    max-width: 80%;
-    padding: 0;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    /* 子要素のスクロールを有効化 */
-}
-
-.se-select-list {
-    max-height: 50vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    touch-action: pan-y;
-}
-
-.se-select-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
-.se-select-item:last-child {
-    border-bottom: none;
-}
-
-/* 選択中のSE */
-.se-select-item.current {
-    background: #f0f0f0;
-}
-
-.se-select-item .se-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: #333;
-}
-
-.se-select-item .se-preview-btn {
-    width: 24px;
-    height: 24px;
-    border: 1px solid #999;
-    background: transparent;
-    color: #666;
-    border-radius: 50%;
-    font-size: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
 }
 
 .num-value {
@@ -2487,7 +2413,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .setting-row:last-child {
@@ -2495,24 +2421,20 @@ body {
 }
 
 .setting-row label {
-    width: 90px;
-    font-size: 11px;
-    font-weight: bold;
-    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-medium);
+    min-width: 60px;
     flex-shrink: 0;
 }
 
 .setting-row input[type="text"] {
-    width: 50%;
-    flex: none;
-    height: 28px;
-    padding: 4px 8px;
+    flex: 1;
+    padding: 6px 10px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 13px;
     background: #fff;
-    color: #000000;
-    box-sizing: border-box;
 }
 
 .setting-row input[type="text"]:focus {
@@ -2521,27 +2443,17 @@ body {
 }
 
 .setting-row select {
-    width: 50%;
-    flex: none;
-    height: 28px;
-    padding: 4px 8px;
+    flex: 1;
+    padding: 6px 10px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 13px;
     background: #fff;
-    color: #000000;
-    box-sizing: border-box;
 }
 
-/* BGM字下げ */
+/* BGM蟄嶺ｸ九￡ */
 .bgm-indented {
-    padding-left: 20px;
-    margin-left: 0;
-}
-
-/* ステージサイズ横行（間隔調整） */
-.setting-row-size-sub {
-    margin-top: -6px;
+    padding-left: 16px;
 }
 
 /* 繧ｵ繧､繧ｺ蛻ｶ蠕｡ */
@@ -2555,7 +2467,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding-left: 0;
+    padding-left: 16px;
 }
 
 .size-row {
@@ -2568,7 +2480,7 @@ body {
     width: 28px;
     height: 28px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
+    border-radius: 4px;
     background: #fff;
     font-size: 16px;
     cursor: pointer;
@@ -2583,11 +2495,10 @@ body {
 
 #area-w-value,
 #area-h-value {
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 600;
     min-width: 20px;
     text-align: center;
-    color: var(--text-dark);
 }
 
 .size-separator {
@@ -2602,12 +2513,12 @@ body {
     margin-left: 4px;
 }
 
-/* カラースウォッチ */
+/* 繧ｫ繝ｩ繝ｼ繧ｹ繧ｦ繧ｩ繝�メ */
 .color-swatch {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--border-color);
-    border-radius: 0;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
     cursor: pointer;
     background: #3CBCFC;
 }
@@ -2616,11 +2527,11 @@ body {
     opacity: 0.8;
 }
 
-/* 設定ボタン */
+/* 險ｭ螳壹�繧ｿ繝ｳ */
 .setting-btn {
-    padding: 4px 8px;
+    padding: 6px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
+    border-radius: 4px;
     background: #fff;
     font-size: 12px;
     cursor: pointer;
@@ -2639,13 +2550,11 @@ body {
 
 .time-control input[type="number"] {
     width: 60px;
-    padding: 4px 8px;
+    padding: 6px 8px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 13px;
     text-align: center;
-    height: 28px;
-    box-sizing: border-box;
 }
 
 .time-control span {
@@ -2677,20 +2586,16 @@ body {
 .bgm-label {
     font-size: 11px;
     color: var(--color-medium);
-    width: 70px;
-    flex-shrink: 0;
+    min-width: 80px;
 }
 
 .bgm-select {
-    width: calc(50% + 35px);
-    flex: none;
+    flex: 1;
     padding: 4px 8px;
     border: 1px solid var(--border-color);
-    border-radius: 0;
+    border-radius: 4px;
     font-size: 12px;
     background: #fff;
-    height: 28px;
-    box-sizing: border-box;
 }
 
 /* 菫晏ｭ倥�繧ｿ繝ｳ */
@@ -2739,7 +2644,7 @@ body {
 .share-modal-content h3 {
     margin: 0 0 8px;
     font-size: 18px;
-    /* color removed - use .modal-title-simple styling */
+    color: var(--color-light);
 }
 
 .share-description {
@@ -3224,20 +3129,22 @@ body {
 
 /* --- 2. Main Area (繝｡繧､繝ｳ繧ｨ繝ｪ繧｢: 繝��繝ｫ + 繝斐い繝弱Ο繝ｼ繝ｫ) --- */
 /* 荳区純縺医Ξ繧､繧｢繧ｦ繝茨ｼ医ヨ繝ｩ繝�け繝溘く繧ｵ繝ｼ縺ｮ荳奇ｼ� */
-/* --- 2. Main Area --- */
 #sound-main-area {
-    flex: 1;
+    flex-shrink: 0;
     display: flex;
-    align-items: stretch;
+    align-items: flex-end;
+    /* 荳区純縺� */
     justify-content: flex-start;
     padding: 0;
     gap: 0;
     min-height: 0;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     margin-bottom: 12px;
+    /* 繝医Λ繝�け繝溘く繧ｵ繝ｼ縺ｨ縺ｮ髢薙↓繧ｹ繝壹�繧ｹ */
 }
 
-/* Tool bar (left column) */
+/* 繝��繝ｫ繝舌��亥ｷｦ蛛ｴ邵ｦ蛻暦ｼ�- 荳区純縺� */
 #sound-controls {
     flex-shrink: 0;
     display: flex;
@@ -3246,10 +3153,10 @@ body {
     padding: 4px;
     width: 48px;
     min-width: 48px;
-    align-self: stretch;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
+    /* 隕句�繧碁亟豁｢ */
+    align-self: flex-end;
+    /* 荳区純縺� */
 }
 
 .sound-ctrl-btn {
@@ -3990,17 +3897,18 @@ body {
 .modal-title-simple {
     font-size: 20px;
     font-weight: 800;
+    /* 太字 */
     text-align: center;
     margin-bottom: 24px;
-    color: #666;
+    color: #222;
 }
 
 .modal-title-simple.sub {
-    font-size: 20px;
-    color: #666 !important;
+    font-size: 14px;
+    color: #666;
     margin-top: 16px;
     margin-bottom: 8px;
-    font-weight: 800;
+    font-weight: normal;
 }
 
 /* 入力フィールド */
@@ -4041,18 +3949,20 @@ body {
 
 /* 共通ボタン（ダークピル型） */
 .modal-action-btn {
-    padding: 12px 16px;
+    padding: 12px 32px;
     border: none;
     border-radius: 30px;
-    background: #666;
+    /* 丸み */
+    background: #555;
+    /* 濃いグレー */
     color: white;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    width: 80px;
-    box-shadow: 0 4px 0 #444;
+    min-width: 100px;
+    box-shadow: 0 4px 0 #333;
+    /* 立体感 */
     transition: transform 0.1s, box-shadow 0.1s;
-    text-align: center;
 }
 
 .modal-action-btn:active {
@@ -4068,14 +3978,14 @@ body {
 }
 
 .modal-action-btn.primary {
-    background: #666;
-    box-shadow: 0 4px 0 #444;
+    background: #555;
+    box-shadow: 0 4px 0 #333;
 }
 
 .modal-action-btn.cancel {
-    background: #666;
+    background: #555;
     color: white;
-    box-shadow: 0 4px 0 #444;
+    box-shadow: 0 4px 0 #333;
 }
 
 /* SHARE画面のボタンリスト */
@@ -4089,10 +3999,11 @@ body {
 .share-simple-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
     padding: 12px 20px;
     background: #666;
+    /* 少し明るめのグレー */
     border: none;
     border-radius: 30px;
     font-size: 15px;
@@ -4152,177 +4063,70 @@ body {
 }
 
 
-/* プロジェクトリスト（選択UI） - 強制適用 */
+/* プロジェクトリスト（選択UI） */
 .modal-body.no-padding {
     padding: 0;
-    margin: 10px 0;
+    margin: -10px -20px 0;
+    /* マージン調整 */
 }
 
-#project-list-scroll.simple-list-scroll {
-    height: 280px !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    /* iOS慣性スクロール */
-    background: #fff !important;
-    /* 背景白 強制 */
-    border: 2px solid #ccc !important;
-    border-radius: 4px !important;
-    padding: 0 !important;
-    margin: 0 20px !important;
+.simple-list-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    background: transparent;
+    border: none;
 }
 
-#project-list-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-#project-list-scroll::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-}
-
-#project-list.selectable-list {
+.selectable-list {
     display: flex;
     flex-direction: column;
-    gap: 0 !important;
-    width: 100%;
+    gap: 4px;
 }
 
-/* リストアイテム - 詳細度を上げて適用 */
-#project-list .list-item {
-    display: flex !important;
-    align-items: center !important;
-    background: #fff !important;
-    /* 白背景 */
-    color: #333 !important;
-    /* 文字色黒 */
-    padding: 12px 16px !important;
-    border-bottom: 1px solid #eee !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
+.list-item {
+    padding: 12px 16px;
+    margin: 0 10px;
+    border-radius: 8px;
     cursor: pointer;
-    min-height: 64px !important;
-    box-sizing: border-box;
-    width: 100%;
-    box-shadow: none !important;
-}
-
-#project-list .list-item:last-child {
-    border-bottom: none !important;
-}
-
-#project-list .list-item:hover {
-    background: #f9f9f9 !important;
-}
-
-#project-list .list-item.selected {
-    background: #e0e0e0 !important;
-    /* 選択時グレー */
-    color: #333 !important;
-}
-
-#project-list .list-item .list-item-arrow {
-    width: 24px;
-    text-align: center;
-    font-size: 14px;
-    color: #333 !important;
-    flex-shrink: 0;
-    margin-right: 8px;
-    font-weight: bold;
-}
-
-#project-list .list-item .list-item-content {
-    flex: 1;
+    font-size: 16px;
+    background: transparent;
+    border: none;
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    justify-content: center;
-    min-width: 0;
-    text-align: left;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    color: #333;
 }
 
-#project-list .list-item .list-item-name-wrapper {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-    height: 22px;
+.list-item:hover {
+    background: #f0f0f0;
 }
 
-#project-list .list-item .list-item-name {
-    font-size: 16px !important;
-    font-weight: bold !important;
-    color: #333 !important;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: left;
+.list-item.selected {
+    background: #ccc;
+    /* 選択時はグレー背景 */
+    color: #222;
 }
 
-/* スクロールアニメーション（選択中かつオーバーフロー時） */
-#project-list .list-item .list-item-name.scrolling {
-    text-overflow: clip;
-    animation: scroll-left-seq 12s linear infinite;
-    padding-left: 0;
+.list-item .arrow {
+    display: inline-block;
+    width: 20px;
+    font-size: 14px;
+    color: transparent;
 }
 
-@keyframes scroll-left-seq {
-    0% {
-        transform: translateX(0);
-    }
-
-    5% {
-        transform: translateX(0);
-    }
-
-    /* 開始待ち */
-    45% {
-        transform: translateX(-100%);
-        opacity: 1;
-    }
-
-    /* 左へ流れる */
-    45.1% {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-
-    /* 右へワープ */
-    50% {
-        transform: translateX(100%);
-        opacity: 1;
-    }
-
-    /* 右から出現 */
-    90% {
-        transform: translateX(0);
-    }
-
-    /* 定位置に戻る */
-    100% {
-        transform: translateX(0);
-    }
-
-    /* 待機 */
+.list-item.selected .arrow {
+    color: #333;
 }
 
-#project-list .list-item .list-item-date {
-    font-size: 11px !important;
-    color: #666 !important;
-    margin-top: 4px;
-    font-family: monospace;
-    font-weight: normal !important;
-    text-align: left;
-}
-
-/* SAVEトースト（カスタム） - このまま維持 */
+/* SAVEトースト（カスタム） */
 #save-toast {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 30px 60px;
+    padding: 30px 50px;
     border-radius: 24px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     text-align: center;
@@ -4334,8 +4138,6 @@ body {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s;
-    min-width: 200px;
-    white-space: nowrap;
 }
 
 #save-toast.visible {
@@ -4352,7 +4154,7 @@ body {
 }
 
 #save-toast .save-msg-large {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 800;
-    color: #222;
+    color: #4a4a4a;
 }
