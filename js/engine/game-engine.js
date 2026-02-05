@@ -747,7 +747,7 @@ const GameEngine = {
         let targetY = this.player.y + this.player.height / 2 - centerY;
 
         // ステージ端制限
-        const stage = App.projectData.stage;
+        const stage = this.stageData || App.projectData.stage;
         const viewWidth = this.canvas.width / this.TILE_SIZE;
         const viewHeight = this.canvas.height / this.TILE_SIZE;
 

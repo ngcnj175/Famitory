@@ -1158,28 +1158,53 @@ const App = {
         const closeBtn = document.getElementById('share-close-btn');
 
         // URLコピー
-        copyUrlBtn.onclick = () => {
-            const json = JSON.stringify(this.projectData);
-            const url = window.location.origin + window.location.pathname + '?data=' + encodeURIComponent(json);
-            document.getElementById('share-url-input').value = url; // 隠しinput等あれば更新
+        // 共有処理共通関数
+        const handleShare = async (type) => {
+            if (!window.Share) {
+                this.showToast('共有機能がロードされていません');
+                return;
+            }
 
-            // クリップボード
-            navigator.clipboard.writeText(url).then(() => {
-                this.showToast('URLを コピーしました');
-            });
+            this.showToast('データを保存中...');
+
+            try {
+                // Firebaseに保存
+                const id = await Share.saveGame(this.projectData);
+                if (!id) {
+                    this.showToast('保存に失敗しました');
+                    return;
+                }
+
+                const url = Share.createShortUrl(id);
+                document.getElementById('share-url-input').value = url;
+
+                if (type === 'copy') {
+                    await navigator.clipboard.writeText(url);
+                    this.showToast('URLを コピーしました');
+                } else if (type === 'x') {
+                    const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
+                    const twitterUrl = Share.createTwitterUrl(url, text);
+                    window.open(twitterUrl, '_blank');
+                    this.showToast('共有画面をひらきました');
+                } else if (type === 'discord') {
+                    const text = `PixelGameKitでゲームを作ったよ！\n${url}`;
+                    await navigator.clipboard.writeText(text);
+                    this.showToast('Discord用に コピーしました');
+                }
+            } catch (e) {
+                console.error('Share error:', e);
+                this.showToast('エラーが発生しました');
+            }
         };
+
+        // URLコピー
+        copyUrlBtn.onclick = () => handleShare('copy');
 
         // X
-        xBtn.onclick = () => {
-            const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
-            // URLは長すぎるので省略するか、共有機能実装が必要。今回はトーストのみ
-            this.showToast('X に とうこう（未実装）');
-        };
+        xBtn.onclick = () => handleShare('x');
 
         // Discord
-        discordBtn.onclick = () => {
-            this.showToast('Discord に とうこう（未実装）');
-        };
+        discordBtn.onclick = () => handleShare('discord');
 
         // 書き出し
         exportBtn.onclick = () => {
