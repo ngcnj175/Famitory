@@ -1180,36 +1180,59 @@ const App = {
         const fileInput = document.getElementById('import-file-input');
         const closeBtn = document.getElementById('share-close-btn');
 
-        // クリップボードコピー（同期的に実行 - iOS対応）
-        const copyToClipboardSync = (text) => {
+        // クリップボードコピー（iOS対応強化版）
+        const copyToClipboard = async (text) => {
+            // 1. Clipboard APIを試す（同期的イベントハンドラ内ならiOSでも動く可能性が高い）
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } catch (e) {
+                    console.warn('Clipboard API failed, falling back to legacy:', e);
+                }
+            }
+
+            // 2. execCommandフォールバック (iOS特有の対応を含む)
             const textarea = document.createElement('textarea');
             textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.left = '0';
+
+            // iOSでの選択を確実にするためのスタイルと属性
+            textarea.contentEditable = true;
+            textarea.readOnly = false;
+            textarea.style.position = 'fixed'; // スクロール防止
+            textarea.style.left = '-9999px';
             textarea.style.top = '0';
-            textarea.style.opacity = '0';
-            textarea.setAttribute('readonly', '');
+
             document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.setSelectionRange(0, textarea.value.length);
+
+            // iOS向けの選択ロジック
+            const range = document.createRange();
+            range.selectNodeContents(textarea);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            textarea.setSelectionRange(0, 999999); // 追加の保険
+
             let success = false;
             try {
                 success = document.execCommand('copy');
             } catch (e) {
                 console.error('execCommand copy failed:', e);
             }
+
             document.body.removeChild(textarea);
+            selection.removeAllRanges();
             return success;
         };
 
         // URLコピー（事前生成されたURLを使用）
-        copyUrlBtn.onclick = () => {
+        copyUrlBtn.onclick = async () => {
             const url = this._shareUrl;
             if (!url) {
                 this.showToast('URLが生成されていません');
                 return;
             }
-            const success = copyToClipboardSync(url);
+            const success = await copyToClipboard(url);
             if (success) {
                 this.showToast('URLを コピーしました');
             } else {
@@ -1230,14 +1253,14 @@ const App = {
         };
 
         // Discord
-        discordBtn.onclick = () => {
+        discordBtn.onclick = async () => {
             const url = this._shareUrl;
             if (!url) {
                 this.showToast('URLが生成されていません');
                 return;
             }
             const text = `PixelGameKitでゲームを作ったよ!\n${url}`;
-            const success = copyToClipboardSync(text);
+            const success = await copyToClipboard(text);
             if (success) {
                 this.showToast('Discord用に コピーしました');
             } else {
