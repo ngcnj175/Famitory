@@ -1160,7 +1160,7 @@ const App = {
         // URLコピー
         // 共有処理共通関数
         const handleShare = async (type) => {
-            if (!window.Share) {
+            if (typeof Share === 'undefined') {
                 this.showToast('共有機能がロードされていません');
                 return;
             }
