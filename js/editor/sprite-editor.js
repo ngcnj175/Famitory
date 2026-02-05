@@ -228,9 +228,9 @@ const SpriteEditor = {
     openPresetDialog() {
         const dialog = document.getElementById('palette-preset-dialog');
         if (dialog) {
-            // デフォルトでパステルを選択
-            const pastelRadio = document.querySelector('input[name="palette-preset"][value="pastel"]');
-            if (pastelRadio) pastelRadio.checked = true;
+            // デフォルトでファミコンを選択
+            const famicomRadio = document.querySelector('input[name="palette-preset"][value="famicom"]');
+            if (famicomRadio) famicomRadio.checked = true;
             dialog.classList.remove('hidden');
         }
     },
@@ -270,7 +270,7 @@ const SpriteEditor = {
             alert('プリセットを選択してください');
             return;
         }
-        if (!confirm('現在のパレットを置換しますか？\nスプライトの色が変わる可能性があります。')) {
+        if (!confirm('現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。')) {
             return;
         }
         const preset = App.PALETTE_PRESETS[selected.value];
@@ -396,13 +396,14 @@ const SpriteEditor = {
         modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
 
         modal.innerHTML = `
-            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;">カラー編集</div>
+            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;text-align:center;">カラー編集</div>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;">
                     <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">現在</div>
-                    <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
+                    <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
+                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">編集中</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
