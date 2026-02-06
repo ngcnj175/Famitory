@@ -53,6 +53,7 @@ const SpriteEditor = {
     guideOffsetY: 0,
     guideAdjustMode: false,    // 調整モード（初回読込み時のみtrue）
     guideAdjustData: null,     // 調整中の2本指操作用データ
+    guideRotation: 0,          // 回転角度（ラジアン）
 
     init() {
         this.canvas = document.getElementById('paint-canvas');
@@ -1073,7 +1074,14 @@ const SpriteEditor = {
             const drawH = scaledH * this.pixelSize;
 
             this.ctx.globalAlpha = 0.5;
-            this.ctx.drawImage(this.guideImage, drawX, drawY, drawW, drawH);
+            // 回転を適用
+            const centerDrawX = drawX + drawW / 2;
+            const centerDrawY = drawY + drawH / 2;
+            this.ctx.save();
+            this.ctx.translate(centerDrawX, centerDrawY);
+            this.ctx.rotate(this.guideRotation);
+            this.ctx.drawImage(this.guideImage, -drawW / 2, -drawH / 2, drawW, drawH);
+            this.ctx.restore();
             this.ctx.globalAlpha = 1.0;
         }
 
@@ -1276,11 +1284,14 @@ const SpriteEditor = {
                 // おてほん調整モードの場合
                 if (this.guideAdjustMode && this.guideImage) {
                     this.pendingTouch = null;
+                    const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX);
                     this.guideAdjustData = {
                         startCenterX: centerX,
                         startCenterY: centerY,
                         startDist: dist,
+                        startAngle: angle,
                         startScale: this.guideScale,
+                        startRotation: this.guideRotation,
                         startOffsetX: this.guideOffsetX,
                         startOffsetY: this.guideOffsetY
                     };
@@ -1328,6 +1339,11 @@ const SpriteEditor = {
                     // スケール変更（ピンチズーム）
                     const scaleRatio = dist / this.guideAdjustData.startDist;
                     this.guideScale = Math.max(0.1, Math.min(5, this.guideAdjustData.startScale * scaleRatio));
+
+                    // 回転（ローテートジェスチャー）
+                    const currentAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX);
+                    const angleDelta = currentAngle - this.guideAdjustData.startAngle;
+                    this.guideRotation = this.guideAdjustData.startRotation + angleDelta;
 
                     this.render();
                 } else if (this.isPanning && this.getCurrentSpriteSize() === 2) {
@@ -1979,6 +1995,7 @@ const SpriteEditor = {
         this.guideScale = 1;
         this.guideOffsetX = 0;
         this.guideOffsetY = 0;
+        this.guideRotation = 0;
         this.guideAdjustMode = false;
         this.guideAdjustData = null;
         this.updateGuideButtonState();

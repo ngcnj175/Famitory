@@ -279,6 +279,9 @@ class Player {
         // 武器を持っていない場合は攻撃不可
         if (!this.hasWeapon) return;
 
+        // ダメージによる無敵中（starPower以外）は攻撃不可
+        if (this.invincible && !this.starPower) return;
+
         this.isAttacking = true;
         this.attackTimer = 15;
         this.attackCooldown = 30;
