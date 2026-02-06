@@ -1273,7 +1273,18 @@ const SpriteEditor = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                if (this.getCurrentSpriteSize() === 2) {
+                // おてほん調整モードの場合
+                if (this.guideAdjustMode && this.guideImage) {
+                    this.pendingTouch = null;
+                    this.guideAdjustData = {
+                        startCenterX: centerX,
+                        startCenterY: centerY,
+                        startDist: dist,
+                        startScale: this.guideScale,
+                        startOffsetX: this.guideOffsetX,
+                        startOffsetY: this.guideOffsetY
+                    };
+                } else if (this.getCurrentSpriteSize() === 2) {
                     // 通常の32x32パン
                     this.isPanning = true;
                     this.pendingTouch = null;
@@ -1303,7 +1314,23 @@ const SpriteEditor = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                if (this.isPanning && this.getCurrentSpriteSize() === 2) {
+                // おてほん調整モードの場合
+                if (this.guideAdjustData) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const pixelSize = this.pixelSize;
+
+                    // 位置移動（ピクセル単位に変換）
+                    const deltaX = (centerX - this.guideAdjustData.startCenterX) / pixelSize;
+                    const deltaY = (centerY - this.guideAdjustData.startCenterY) / pixelSize;
+                    this.guideOffsetX = this.guideAdjustData.startOffsetX + deltaX;
+                    this.guideOffsetY = this.guideAdjustData.startOffsetY + deltaY;
+
+                    // スケール変更（ピンチズーム）
+                    const scaleRatio = dist / this.guideAdjustData.startDist;
+                    this.guideScale = Math.max(0.1, Math.min(5, this.guideAdjustData.startScale * scaleRatio));
+
+                    this.render();
+                } else if (this.isPanning && this.getCurrentSpriteSize() === 2) {
                     // 通常の32x32パン処理
                     if (!Number.isFinite(this.panStartX) || !Number.isFinite(this.panStartY)) {
                         this.panStartX = centerX;
@@ -1341,6 +1368,7 @@ const SpriteEditor = {
             }
             this.pendingTouch = null;
             this.isPanning = false;
+            this.guideAdjustData = null; // おてほん調整データをリセット
             this.onPointerUp();
         });
     },
