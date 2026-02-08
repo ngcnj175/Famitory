@@ -707,20 +707,13 @@ const SoundEditor = {
     // ========== Song Jukebox (ソングリスト) ==========
     initSongJukebox() {
         const modal = document.getElementById('song-jukebox-modal');
-        const closeBtn = document.getElementById('jukebox-close-btn');
-        const addBtn = document.getElementById('jukebox-add-btn');
 
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-        }
-
-        if (addBtn) {
-            addBtn.addEventListener('click', () => {
-                this.addSong();
-                this.renderJukeboxList(); // リスト更新
-                modal.classList.add('hidden'); // 閉じて編集へ
+        // 背景クリックで閉じる
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
             });
         }
     },
@@ -735,65 +728,82 @@ const SoundEditor = {
         const listContainer = document.getElementById('jukebox-list');
         if (!listContainer) return;
 
-        listContainer.innerHTML = '';
-
+        let html = '';
         this.songs.forEach((song, idx) => {
-            const item = document.createElement('div');
-            item.className = 'jukebox-item' + (idx === this.currentSongIdx ? ' active' : '');
+            const isCurrent = idx === this.currentSongIdx ? 'current' : '';
+            html += `
+                <div class="se-select-item ${isCurrent}" data-song-index="${idx}">
+                    <span class="se-name">${song.name}</span>
+                    <button class="se-preview-btn" data-song-index="${idx}">▶</button>
+                </div>
+            `;
+        });
 
-            // 再生ボタン
-            const playBtn = document.createElement('button');
-            playBtn.className = 'jukebox-play-btn';
-            playBtn.innerHTML = '▶';
-            playBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.selectSong(idx);
-                this.play();
-                document.querySelectorAll('.jukebox-play-btn').forEach(b => {
-                    b.innerHTML = '▶'; b.classList.remove('playing');
-                });
-                playBtn.innerHTML = '■';
-                playBtn.classList.add('playing');
-            };
+        listContainer.innerHTML = html;
 
-            // 情報エリア（ソング名のみ）
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'jukebox-info';
-            infoDiv.innerHTML = `<div class="jukebox-title">${song.name}</div>`;
+        // タッチイベント伝播停止
+        listContainer.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+        listContainer.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
 
-            // タップで選択
-            infoDiv.onclick = () => {
+        // アイテムクリックで選択
+        listContainer.querySelectorAll('.se-select-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // プレビューボタンクリック時は選択しない
+                if (e.target.classList.contains('se-preview-btn')) return;
+
+                const idx = parseInt(item.dataset.songIndex);
                 this.selectSong(idx);
                 document.getElementById('song-jukebox-modal').classList.add('hidden');
-            };
+            });
 
             // 長押しで削除
             let longPressTimer;
-            const startLongPress = (e) => {
+            item.addEventListener('mousedown', () => {
                 longPressTimer = setTimeout(() => {
+                    const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
                         alert('最後のソングは削除できません');
                         return;
                     }
-                    if (confirm(`"${song.name}" を削除しますか？`)) {
+                    if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
                         this.deleteSong(idx);
                         this.renderJukeboxList();
                     }
                 }, 800);
-            };
-            const cancelLongPress = () => {
-                clearTimeout(longPressTimer);
-            };
-            infoDiv.addEventListener('mousedown', startLongPress);
-            infoDiv.addEventListener('touchstart', startLongPress, { passive: true });
-            infoDiv.addEventListener('mouseup', cancelLongPress);
-            infoDiv.addEventListener('mouseleave', cancelLongPress);
-            infoDiv.addEventListener('touchend', cancelLongPress);
+            });
+            item.addEventListener('touchstart', () => {
+                longPressTimer = setTimeout(() => {
+                    const idx = parseInt(item.dataset.songIndex);
+                    if (this.songs.length <= 1) {
+                        alert('最後のソングは削除できません');
+                        return;
+                    }
+                    if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
+                        this.deleteSong(idx);
+                        this.renderJukeboxList();
+                    }
+                }, 800);
+            }, { passive: true });
+            item.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+            item.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+            item.addEventListener('touchend', () => clearTimeout(longPressTimer));
+        });
 
-            item.appendChild(playBtn);
-            item.appendChild(infoDiv);
-
-            listContainer.appendChild(item);
+        // プレビューボタン
+        listContainer.querySelectorAll('.se-preview-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(btn.dataset.songIndex);
+                this.selectSong(idx);
+                this.play();
+                // 他のボタンをリセット
+                listContainer.querySelectorAll('.se-preview-btn').forEach(b => {
+                    b.textContent = '▶';
+                    b.classList.remove('playing');
+                });
+                btn.textContent = '■';
+                btn.classList.add('playing');
+            });
         });
     },
 
