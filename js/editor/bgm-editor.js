@@ -226,6 +226,7 @@ const SoundEditor = {
             let startYBpm = 0;
             let startValueBpm = 0;
             let hasDraggedBpm = false;
+            let bpmTapTimeout = null;
 
             const onStartBpm = (e) => {
                 isDraggingBpm = true;
@@ -248,8 +249,29 @@ const SoundEditor = {
                 }
             };
 
-            const onEndBpm = () => {
+            const onEndBpm = (e) => {
+                const wasTarget = e.target === bpmDisplay || bpmDisplay.contains(e.target);
                 isDraggingBpm = false;
+
+                if (!wasTarget || hasDraggedBpm) return;
+
+                const now = Date.now();
+                if (now - lastTapBpm < 350) {
+                    // ダブルタップ
+                    if (bpmTapTimeout) clearTimeout(bpmTapTimeout);
+                    this.getCurrentSong().bpm = 120;
+                    this.updateConsoleDisplay();
+                    lastTapBpm = 0;
+                } else {
+                    // シングルタップ(遅延実行)
+                    lastTapBpm = now;
+                    bpmTapTimeout = setTimeout(() => {
+                        if (lastTapBpm !== 0) {
+                            this.openBpmInput();
+                            lastTapBpm = 0;
+                        }
+                    }, 350);
+                }
             };
 
             bpmDisplay.addEventListener('mousedown', onStartBpm);
@@ -258,24 +280,6 @@ const SoundEditor = {
             document.addEventListener('touchmove', onMoveBpm, { passive: false });
             document.addEventListener('mouseup', onEndBpm);
             document.addEventListener('touchend', onEndBpm);
-
-            bpmDisplay.addEventListener('click', () => {
-                if (hasDraggedBpm) return; // ドラッグ後はタップ処理しない
-                const now = Date.now();
-                if (now - lastTapBpm < 300) {
-                    this.getCurrentSong().bpm = 120;
-                    this.updateConsoleDisplay();
-                    lastTapBpm = 0;
-                } else {
-                    lastTapBpm = now;
-                    setTimeout(() => {
-                        if (lastTapBpm !== 0) {
-                            this.openBpmInput();
-                            lastTapBpm = 0;
-                        }
-                    }, 300);
-                }
-            });
         }
 
         // BAR表示（タップで入力、ダブルタップでデフォルト、ドラッグで調整）
@@ -286,6 +290,7 @@ const SoundEditor = {
             let startYBar = 0;
             let startValueBar = 0;
             let hasDraggedBar = false;
+            let barTapTimeout = null;
 
             const onStartBar = (e) => {
                 isDraggingBar = true;
@@ -309,8 +314,30 @@ const SoundEditor = {
                 }
             };
 
-            const onEndBar = () => {
+            const onEndBar = (e) => {
+                const wasTarget = e.target === barDisplay || barDisplay.contains(e.target);
                 isDraggingBar = false;
+
+                if (!wasTarget || hasDraggedBar) return;
+
+                const now = Date.now();
+                if (now - lastTapBar < 350) {
+                    // ダブルタップ
+                    if (barTapTimeout) clearTimeout(barTapTimeout);
+                    this.getCurrentSong().bars = 16;
+                    this.updateConsoleDisplay();
+                    this.render();
+                    lastTapBar = 0;
+                } else {
+                    // シングルタップ(遅延実行)
+                    lastTapBar = now;
+                    barTapTimeout = setTimeout(() => {
+                        if (lastTapBar !== 0) {
+                            this.openBarInput();
+                            lastTapBar = 0;
+                        }
+                    }, 350);
+                }
             };
 
             barDisplay.addEventListener('mousedown', onStartBar);
@@ -319,25 +346,6 @@ const SoundEditor = {
             document.addEventListener('touchmove', onMoveBar, { passive: false });
             document.addEventListener('mouseup', onEndBar);
             document.addEventListener('touchend', onEndBar);
-
-            barDisplay.addEventListener('click', () => {
-                if (hasDraggedBar) return; // ドラッグ後はタップ処理しない
-                const now = Date.now();
-                if (now - lastTapBar < 300) {
-                    this.getCurrentSong().bars = 16;
-                    this.updateConsoleDisplay();
-                    this.render();
-                    lastTapBar = 0;
-                } else {
-                    lastTapBar = now;
-                    setTimeout(() => {
-                        if (lastTapBar !== 0) {
-                            this.openBarInput();
-                            lastTapBar = 0;
-                        }
-                    }, 300);
-                }
-            });
         }
     },
 
