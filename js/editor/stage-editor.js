@@ -1082,8 +1082,8 @@ const StageEditor = {
         const list = document.getElementById('bgm-select-list');
         if (!popup || !list) return;
 
-        // ソング一覧を取得
-        const songs = App.projectData?.sounds || [];
+        // ソング一覧を取得（SoundEditorから）
+        const songs = (typeof SoundEditor !== 'undefined' && SoundEditor.songs) ? SoundEditor.songs : [];
         const currentValue = App.projectData.stage?.bgm?.[this.selectedBgmType] || '';
 
         let html = `
@@ -2739,7 +2739,7 @@ const StageEditor = {
 
     updateBgmSelects() {
         const bgmTypes = ['stage', 'invincible', 'clear', 'gameover', 'boss'];
-        const songs = App.projectData.sounds || [];
+        const songs = (typeof SoundEditor !== 'undefined' && SoundEditor.songs) ? SoundEditor.songs : [];
         const bgm = App.projectData.stage?.bgm || {};
 
         bgmTypes.forEach(type => {
