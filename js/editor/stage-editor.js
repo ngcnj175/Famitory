@@ -265,9 +265,9 @@ const StageEditor = {
     getDefaultConfig(type) {
         switch (type) {
             case 'player':
-                return { life: 3, lifeCount: 3, speed: 5, jumpPower: 10, wJump: false, shotMaxRange: 16 };
+                return { life: 3, lifeCount: 3, speed: 5, jumpPower: 10, wJump: false, shotMaxRange: 3 };
             case 'enemy':
-                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 5, shotMaxRange: 16, move: 'idle' };
+                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 5, shotMaxRange: 3, move: 'idle' };
             case 'material':
                 return { collision: true, life: -1 };
             case 'item':
@@ -391,7 +391,7 @@ const StageEditor = {
             } else {
                 html += this.renderSlider('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20);
             }
-            html += this.renderRangeSlider('射程距離', 'shotMaxRange', config.shotMaxRange ?? 16, 0, 256);
+            html += this.renderBlockGauge('射程距離', 'shotMaxRange', config.shotMaxRange ?? 3, 1, 5);
             html += `
                 <div class="param-row">
                     <span class="param-label">攻撃タイプ</span>
