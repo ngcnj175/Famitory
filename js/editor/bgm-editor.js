@@ -283,9 +283,9 @@ const SoundEditor = {
             const onMove = (e) => {
                 if (!isDragging) return;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const delta = Math.round((startY - clientY) / 20); // 上に20px = +1BAR
+                const delta = Math.round((startY - clientY) / 10); // 上に10px = +1BAR
                 const song = this.getCurrentSong();
-                song.bars = Math.max(1, Math.min(16, startValue + delta));
+                song.bars = Math.max(1, Math.min(256, startValue + delta));
                 this.updateConsoleDisplay();
                 this.render();
             };
@@ -306,7 +306,7 @@ const SoundEditor = {
             barDisplay.addEventListener('touchend', () => {
                 const now = Date.now();
                 if (now - lastTapBar < 300) {
-                    this.getCurrentSong().bars = 4;
+                    this.getCurrentSong().bars = 16;
                     this.updateConsoleDisplay();
                     this.render();
                 }
@@ -770,7 +770,7 @@ const SoundEditor = {
             id: id,
             name: `Song${id + 1}`,
             bpm: 120,
-            bars: 1,
+            bars: 16,
             tracks: [
                 { type: 'square', notes: [], volume: 0.65, pan: 0.0, tone: 0 },
                 { type: 'square', notes: [], volume: 0.65, pan: 0.0, tone: 0 },
@@ -931,7 +931,7 @@ const SoundEditor = {
                 if (this.isStepRecording) {
                     this.currentStep++;
                     const song = this.getCurrentSong();
-                    const maxSteps = song.bars * 16;
+                    const maxSteps = song.bars;
                     if (this.currentStep >= maxSteps) {
                         this.currentStep = 0;
                     }
@@ -954,7 +954,7 @@ const SoundEditor = {
                         if (prevNote) {
                             prevNote.length++;
                             this.currentStep++;
-                            const maxSteps = song.bars * 16;
+                            const maxSteps = song.bars;
                             if (this.currentStep >= maxSteps) {
                                 this.currentStep = 0;
                             }
@@ -1669,7 +1669,7 @@ const SoundEditor = {
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
         const pitch = this.noteToPitch(note, octave);
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         if (this.currentStep < maxSteps) {
             track.notes.push({
@@ -1684,7 +1684,7 @@ const SoundEditor = {
 
     inputRest() {
         const song = this.getCurrentSong();
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
         if (this.currentStep < maxSteps) {
             this.currentStep++;
             this.render();
@@ -1694,7 +1694,7 @@ const SoundEditor = {
     inputTie() {
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         if (track.notes.length > 0) {
             const lastNote = track.notes[track.notes.length - 1];
@@ -1844,7 +1844,7 @@ const SoundEditor = {
 
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         // ペーストデータを追加
         this.noteClipboard.notes.forEach(copyNote => {
@@ -2515,7 +2515,7 @@ const SoundEditor = {
             const newPitch = this.pasteOffset.pitch + note.pitch; // ノートのピッチオフセットを加算
 
             // 範囲チェック
-            if (newStep >= 0 && newStep < song.bars * 16 && newPitch >= 0 && newPitch <= 71) {
+            if (newStep >= 0 && newStep < song.bars && newPitch >= 0 && newPitch <= 71) {
                 // 重なるノートを削除するかどうかだが、PixelGameKitの仕様としては重ねてOKまたは上書き
                 // 単音トラックなら上書きすべきだが、データ構造的には重複許容
                 // ここでは既存の同じ位置・ピッチのノートがあれば削除して上書き
@@ -2601,7 +2601,7 @@ const SoundEditor = {
         const stepDuration = 60 / song.bpm / 4; // 16分音符
         const startStep = this.isPaused ? this.currentStep : 0;
         let step = startStep;
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         this.isPaused = false;
         this.playInterval = setInterval(() => {
@@ -2674,7 +2674,7 @@ const SoundEditor = {
 
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         // 背景（ステージ設定の背景色を使用）
         const bgColor = App.projectData?.stage?.bgColor || '#3CBCFC';
