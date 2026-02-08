@@ -2535,8 +2535,9 @@ body {
 
 /* BGM字下げ */
 .bgm-indented {
-    padding-left: 20px;
+    padding-left: 0;
     margin-left: 0;
+    width: 100%;
 }
 
 /* ステージサイズ横行（間隔調整） */
@@ -2677,7 +2678,7 @@ body {
 .bgm-label {
     font-size: 11px;
     color: var(--color-medium);
-    width: 50px;
+    width: 90px;
     flex-shrink: 0;
 }
 
