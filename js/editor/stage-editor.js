@@ -1076,7 +1076,95 @@ const StageEditor = {
         this.closeSeSelectPopup();
     },
 
-    // ========== 繧ｹ繝励Λ繧､繝磯∈謚槭・繝・・繧｢繝・・ ==========
+    // ========== BGM選択ポップアップ ==========
+    openBgmSelectPopup() {
+        const popup = document.getElementById('bgm-select-popup');
+        const list = document.getElementById('bgm-select-list');
+        if (!popup || !list) return;
+
+        // ソング一覧を取得
+        const songs = App.projectData?.sounds || [];
+        const currentValue = App.projectData.stage?.bgm?.[this.selectedBgmType] || '';
+
+        let html = `
+            <div class="se-select-item ${currentValue === '' ? 'current' : ''}" data-bgm-index="">
+                <span class="se-name">なし</span>
+            </div>
+        `;
+        songs.forEach((song, idx) => {
+            const isCurrent = currentValue === String(idx) ? 'current' : '';
+            html += `
+                <div class="se-select-item ${isCurrent}" data-bgm-index="${idx}">
+                    <span class="se-name">${song.name || `Song ${idx + 1}`}</span>
+                    <button class="se-preview-btn" data-bgm-index="${idx}">▶</button>
+                </div>
+            `;
+        });
+
+        list.innerHTML = html;
+
+        // タッチイベント伝播停止
+        list.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+        list.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
+
+        // アイテムクリックで選択
+        list.querySelectorAll('.se-select-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.classList.contains('se-preview-btn')) return;
+
+                const idx = item.dataset.bgmIndex;
+                this.confirmBgmSelection(idx);
+            });
+        });
+
+        // プレビューボタン
+        list.querySelectorAll('.se-preview-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(btn.dataset.bgmIndex);
+                this.playBgmPreview(idx);
+            });
+        });
+
+        popup.classList.remove('hidden');
+    },
+
+    confirmBgmSelection(idx) {
+        if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
+        App.projectData.stage.bgm[this.selectedBgmType] = idx;
+
+        // ボタンテキストを更新
+        const btn = document.getElementById(`bgm-${this.selectedBgmType}-btn`);
+        if (btn) {
+            if (idx === '') {
+                btn.textContent = 'なし';
+            } else {
+                const song = App.projectData.sounds?.[parseInt(idx)];
+                btn.textContent = song?.name || `Song ${parseInt(idx) + 1}`;
+            }
+        }
+
+        document.getElementById('bgm-select-popup').classList.add('hidden');
+        this.stopBgmPreview();
+    },
+
+    playBgmPreview(idx) {
+        this.stopBgmPreview();
+        if (typeof SoundEditor !== 'undefined' && SoundEditor.songs?.[idx]) {
+            SoundEditor.selectSong(idx);
+            SoundEditor.play();
+            this.bgmPreviewPlaying = true;
+        }
+    },
+
+    stopBgmPreview() {
+        if (this.bgmPreviewPlaying && typeof SoundEditor !== 'undefined') {
+            SoundEditor.stop();
+            this.bgmPreviewPlaying = false;
+        }
+    },
+
+    // ========== スプライト選択モーダル ==========
     initSpriteSelectPopup() {
         const cancelBtn = document.getElementById('sprite-select-cancel');
         const doneBtn = document.getElementById('sprite-select-done');
@@ -2487,43 +2575,24 @@ const StageEditor = {
             });
         }
 
-        // BGM繧ｵ繝夜・岼
-        const bgmStage = document.getElementById('bgm-stage');
-        const bgmInvincible = document.getElementById('bgm-invincible');
-        const bgmClear = document.getElementById('bgm-clear');
-        const bgmGameover = document.getElementById('bgm-gameover');
+        // BGM選択ボタン
+        this.selectedBgmType = null;
+        const bgmButtons = document.querySelectorAll('.bgm-select-btn');
+        bgmButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectedBgmType = btn.dataset.bgmType;
+                this.openBgmSelectPopup();
+            });
+        });
 
-        if (bgmStage) {
-            bgmStage.addEventListener('change', () => {
-                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-                App.projectData.stage.bgm.stage = bgmStage.value;
-            });
-        }
-        if (bgmInvincible) {
-            bgmInvincible.addEventListener('change', () => {
-                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-                App.projectData.stage.bgm.invincible = bgmInvincible.value;
-            });
-        }
-        if (bgmClear) {
-            bgmClear.addEventListener('change', () => {
-                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-                App.projectData.stage.bgm.clear = bgmClear.value;
-            });
-        }
-        if (bgmGameover) {
-            bgmGameover.addEventListener('change', () => {
-                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-                App.projectData.stage.bgm.gameover = bgmGameover.value;
-            });
-        }
-
-        // 繝懊せBGM
-        const bgmBoss = document.getElementById('bgm-boss');
-        if (bgmBoss) {
-            bgmBoss.addEventListener('change', () => {
-                if (!App.projectData.stage.bgm) App.projectData.stage.bgm = {};
-                App.projectData.stage.bgm.boss = bgmBoss.value;
+        // BGMポップアップ背景クリックで閉じる
+        const bgmPopup = document.getElementById('bgm-select-popup');
+        if (bgmPopup) {
+            bgmPopup.addEventListener('click', (e) => {
+                if (e.target === bgmPopup) {
+                    bgmPopup.classList.add('hidden');
+                    this.stopBgmPreview();
+                }
             });
         }
 
@@ -2624,11 +2693,6 @@ const StageEditor = {
         const transparentSelect = document.getElementById('stage-transparent-index');
         const timeMin = document.getElementById('stage-time-min');
         const timeSec = document.getElementById('stage-time-sec');
-        const bgmStage = document.getElementById('bgm-stage');
-        const bgmInvincible = document.getElementById('bgm-invincible');
-        const bgmClear = document.getElementById('bgm-clear');
-        const bgmGameover = document.getElementById('bgm-gameover');
-        const bgmBoss = document.getElementById('bgm-boss');
 
         // 蜷榊燕・医せ繝・・繧ｸ蜷阪∪縺溘・繝励Ο繧ｸ繧ｧ繧ｯ繝亥錐・・
         if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
@@ -2669,45 +2733,27 @@ const StageEditor = {
         const totalSec = stage.timeLimit || 0;
         if (timeSec) timeSec.value = totalSec % 60;
 
-        // BGM驕ｸ謚櫁い繧貞虚逧・函謌・
+        // BGMボタン表示を更新
         this.updateBgmSelects();
-
-        // BGM
-        const bgm = stage.bgm || {};
-        if (bgmStage) bgmStage.value = bgm.stage || '';
-        if (bgmInvincible) bgmInvincible.value = bgm.invincible || '';
-        if (bgmClear) bgmClear.value = bgm.clear || '';
-        if (bgmGameover) bgmGameover.value = bgm.gameover || '';
-        if (bgmBoss) bgmBoss.value = bgm.boss || '';
     },
 
     updateBgmSelects() {
-        const selects = [
-            document.getElementById('bgm-stage'),
-            document.getElementById('bgm-invincible'),
-            document.getElementById('bgm-clear'),
-            document.getElementById('bgm-gameover'),
-            document.getElementById('bgm-boss')
-        ];
+        const bgmTypes = ['stage', 'invincible', 'clear', 'gameover', 'boss'];
+        const songs = App.projectData.sounds || [];
+        const bgm = App.projectData.stage?.bgm || {};
 
-        const songs = App.projectData.songs || [];
+        bgmTypes.forEach(type => {
+            const btn = document.getElementById(`bgm-${type}-btn`);
+            if (!btn) return;
 
-        selects.forEach(select => {
-            if (!select) return;
-            const currentValue = select.value;
-
-            // 選択肢をクリアして再構築
-            select.innerHTML = '<option value="">なし</option>';
-
-            songs.forEach((song, idx) => {
-                const option = document.createElement('option');
-                option.value = idx.toString();
-                option.textContent = song.name || `SONG ${idx + 1}`;
-                select.appendChild(option);
-            });
-
-            // 蜈・・驕ｸ謚槭ｒ蠕ｩ蜈・
-            select.value = currentValue;
+            const value = bgm[type];
+            if (value === '' || value === undefined || value === null) {
+                btn.textContent = 'なし';
+            } else {
+                const idx = parseInt(value);
+                const song = songs[idx];
+                btn.textContent = song?.name || `Song ${idx + 1}`;
+            }
         });
     },
 

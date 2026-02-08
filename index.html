@@ -311,38 +311,25 @@
                         <div class="bgm-selects bgm-indented">
                             <div class="bgm-select-row">
                                 <span class="bgm-label">ステージ</span>
-                                <select id="bgm-stage" class="bgm-select">
-                                    <option value="">なし</option>
-                                    <option value="bgm1">BGM 1</option>
-                                </select>
+                                <button id="bgm-stage-btn" class="bgm-select-btn" data-bgm-type="stage">なし</button>
                             </div>
                             <div class="bgm-select-row">
                                 <span class="bgm-label">無敵</span>
-                                <select id="bgm-invincible" class="bgm-select">
-                                    <option value="">なし</option>
-                                    <option value="bgm1">BGM 1</option>
-                                </select>
+                                <button id="bgm-invincible-btn" class="bgm-select-btn"
+                                    data-bgm-type="invincible">なし</button>
                             </div>
                             <div class="bgm-select-row">
                                 <span class="bgm-label">クリア</span>
-                                <select id="bgm-clear" class="bgm-select">
-                                    <option value="">なし</option>
-                                    <option value="bgm1">BGM 1</option>
-                                </select>
+                                <button id="bgm-clear-btn" class="bgm-select-btn" data-bgm-type="clear">なし</button>
                             </div>
                             <div class="bgm-select-row">
                                 <span class="bgm-label">ゲームオーバー</span>
-                                <select id="bgm-gameover" class="bgm-select">
-                                    <option value="">なし</option>
-                                    <option value="bgm1">BGM 1</option>
-                                </select>
+                                <button id="bgm-gameover-btn" class="bgm-select-btn"
+                                    data-bgm-type="gameover">なし</button>
                             </div>
                             <div class="bgm-select-row">
                                 <span class="bgm-label">ボス</span>
-                                <select id="bgm-boss" class="bgm-select">
-                                    <option value="">なし</option>
-                                    <option value="bgm1">BGM 1</option>
-                                </select>
+                                <button id="bgm-boss-btn" class="bgm-select-btn" data-bgm-type="boss">なし</button>
                             </div>
                         </div>
                     </div>
@@ -515,6 +502,15 @@
         <div id="se-select-popup" class="popup-overlay hidden">
             <div class="popup-content se-select-content">
                 <div class="se-select-list">
+                    <!-- JSで生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- BGM選択ポップアップ -->
+        <div id="bgm-select-popup" class="popup-overlay hidden">
+            <div class="popup-content se-select-content">
+                <div class="se-select-list" id="bgm-select-list">
                     <!-- JSで生成 -->
                 </div>
             </div>

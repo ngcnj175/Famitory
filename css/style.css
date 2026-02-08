@@ -2682,7 +2682,7 @@ body {
     flex-shrink: 0;
 }
 
-.bgm-select {
+.bgm-select-btn {
     width: 50%;
     flex: none;
     padding: 4px 8px;
@@ -2692,6 +2692,15 @@ body {
     background: #fff;
     height: 28px;
     box-sizing: border-box;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bgm-select-btn:hover {
+    border-color: var(--color-dark);
 }
 
 /* 菫晏ｭ倥�繧ｿ繝ｳ */
