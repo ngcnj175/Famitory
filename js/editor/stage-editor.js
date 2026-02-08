@@ -391,7 +391,7 @@ const StageEditor = {
             } else {
                 html += this.renderSlider('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20);
             }
-            html += this.renderSlider('射程距離', 'shotMaxRange', config.shotMaxRange ?? 16, 0, 16);
+            html += this.renderRangeSlider('射程距離', 'shotMaxRange', config.shotMaxRange ?? 16, 0, 256);
             html += `
                 <div class="param-row">
                     <span class="param-label">攻撃タイプ</span>
@@ -589,6 +589,20 @@ const StageEditor = {
         `;
     },
 
+    // ピクセル単位の実スライダー（射程距離用）
+    renderRangeSlider(label, key, value, min, max) {
+        return `
+            <div class="param-row param-row-range">
+                <span class="param-label">${label}</span>
+                <div class="range-slider-container">
+                    <input type="range" class="range-slider" data-key="${key}" 
+                           min="${min}" max="${max}" value="${value}" step="1">
+                    <span class="range-value" data-key="${key}">${value}</span>
+                </div>
+            </div>
+        `;
+    },
+
     renderSeSelect(label, key, selectedValue) {
         // soundsがなければデフォルトのSEリストを適用
         let sounds = App.projectData?.sounds;
@@ -651,7 +665,7 @@ const StageEditor = {
         return `
             <div class="sound-reg-row">
                 <span class="sound-reg-label">${label}</span>
-                <div class="sound-slot" data-slot="${slot}">笙ｪ</div>
+                <div class="sound-slot" data-slot="${slot}">♪</div>
             </div>
         `;
     },
@@ -847,6 +861,22 @@ const StageEditor = {
             });
         });
 
+        // レンジスライダー（射程距離など）
+        document.querySelectorAll('.range-slider').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const key = slider.dataset.key;
+                const value = parseInt(e.target.value);
+                if (key && this.editingTemplate?.config) {
+                    this.editingTemplate.config[key] = value;
+                    // 値表示を更新
+                    const valueEl = document.querySelector(`.range-value[data-key="${key}"]`);
+                    if (valueEl) {
+                        valueEl.textContent = value;
+                    }
+                }
+            });
+        });
+
         // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧貞・譛溷喧
         this.updateConfigAnimations();
     },
@@ -984,7 +1014,7 @@ const StageEditor = {
             html += `
                 <div class="se-select-item ${this.selectedSeIndex === idx ? 'current' : ''}" data-se-index="${idx}">
                     <span class="se-name">${se.name}</span>
-                    <button class="se-preview-btn" data-se-index="${idx}">笆ｶ</button>
+                    <button class="se-preview-btn" data-se-index="${idx}">▶</button>
                 </div>
             `;
         });
