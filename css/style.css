@@ -2677,12 +2677,12 @@ body {
 .bgm-label {
     font-size: 11px;
     color: var(--color-medium);
-    width: 70px;
+    width: 50px;
     flex-shrink: 0;
 }
 
 .bgm-select {
-    width: calc(50% + 35px);
+    width: 50%;
     flex: none;
     padding: 4px 8px;
     border: 1px solid var(--border-color);
