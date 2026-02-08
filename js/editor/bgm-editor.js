@@ -218,100 +218,153 @@ const SoundEditor = {
         });
 
 
-        // BPM表示（上下ドラッグで調整）
+        // BPM表示（タップで入力、ダブルタップでデフォルト、ドラッグで調整）
         const bpmDisplay = document.getElementById('bpm-display');
         if (bpmDisplay) {
-            let isDragging = false;
-            let startY = 0;
-            let startValue = 0;
+            let lastTapBpm = 0;
+            let isDraggingBpm = false;
+            let startYBpm = 0;
+            let startValueBpm = 0;
+            let hasDraggedBpm = false;
 
-            const onStart = (e) => {
-                isDragging = true;
+            const onStartBpm = (e) => {
+                isDraggingBpm = true;
+                hasDraggedBpm = false;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startY = clientY;
-                startValue = this.getCurrentSong().bpm;
+                startYBpm = clientY;
+                startValueBpm = this.getCurrentSong().bpm;
                 e.preventDefault();
             };
 
-            const onMove = (e) => {
-                if (!isDragging) return;
+            const onMoveBpm = (e) => {
+                if (!isDraggingBpm) return;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const delta = Math.round((startY - clientY) / 3); // 上に3px = +1BPM
-                const song = this.getCurrentSong();
-                song.bpm = Math.max(60, Math.min(240, startValue + delta));
-                this.updateConsoleDisplay();
+                const delta = Math.round((startYBpm - clientY) / 3);
+                if (Math.abs(delta) > 0) {
+                    hasDraggedBpm = true;
+                    const song = this.getCurrentSong();
+                    song.bpm = Math.max(60, Math.min(240, startValueBpm + delta));
+                    this.updateConsoleDisplay();
+                }
             };
 
-            const onEnd = () => {
-                isDragging = false;
+            const onEndBpm = () => {
+                isDraggingBpm = false;
             };
 
-            bpmDisplay.addEventListener('mousedown', onStart);
-            bpmDisplay.addEventListener('touchstart', onStart, { passive: false });
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('touchmove', onMove, { passive: false });
-            document.addEventListener('mouseup', onEnd);
-            document.addEventListener('touchend', onEnd);
+            bpmDisplay.addEventListener('mousedown', onStartBpm);
+            bpmDisplay.addEventListener('touchstart', onStartBpm, { passive: false });
+            document.addEventListener('mousemove', onMoveBpm);
+            document.addEventListener('touchmove', onMoveBpm, { passive: false });
+            document.addEventListener('mouseup', onEndBpm);
+            document.addEventListener('touchend', onEndBpm);
 
-            // ダブルタップでリセット（120BPM）
-            let lastTapBpm = 0;
-            bpmDisplay.addEventListener('touchend', () => {
+            bpmDisplay.addEventListener('click', () => {
+                if (hasDraggedBpm) return; // ドラッグ後はタップ処理しない
                 const now = Date.now();
                 if (now - lastTapBpm < 300) {
                     this.getCurrentSong().bpm = 120;
                     this.updateConsoleDisplay();
+                    lastTapBpm = 0;
+                } else {
+                    lastTapBpm = now;
+                    setTimeout(() => {
+                        if (lastTapBpm !== 0) {
+                            this.openBpmInput();
+                            lastTapBpm = 0;
+                        }
+                    }, 300);
                 }
-                lastTapBpm = now;
             });
         }
 
-        // BAR表示（上下ドラッグで調整）
+        // BAR表示（タップで入力、ダブルタップでデフォルト、ドラッグで調整）
         const barDisplay = document.getElementById('bar-display');
         if (barDisplay) {
-            let isDragging = false;
-            let startY = 0;
-            let startValue = 0;
+            let lastTapBar = 0;
+            let isDraggingBar = false;
+            let startYBar = 0;
+            let startValueBar = 0;
+            let hasDraggedBar = false;
 
-            const onStart = (e) => {
-                isDragging = true;
+            const onStartBar = (e) => {
+                isDraggingBar = true;
+                hasDraggedBar = false;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startY = clientY;
-                startValue = this.getCurrentSong().bars;
+                startYBar = clientY;
+                startValueBar = this.getCurrentSong().bars;
                 e.preventDefault();
             };
 
-            const onMove = (e) => {
-                if (!isDragging) return;
+            const onMoveBar = (e) => {
+                if (!isDraggingBar) return;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const delta = Math.round((startY - clientY) / 10); // 上に10px = +1BAR
-                const song = this.getCurrentSong();
-                song.bars = Math.max(1, Math.min(256, startValue + delta));
-                this.updateConsoleDisplay();
-                this.render();
+                const delta = Math.round((startYBar - clientY) / 10);
+                if (Math.abs(delta) > 0) {
+                    hasDraggedBar = true;
+                    const song = this.getCurrentSong();
+                    song.bars = Math.max(1, Math.min(256, startValueBar + delta));
+                    this.updateConsoleDisplay();
+                    this.render();
+                }
             };
 
-            const onEnd = () => {
-                isDragging = false;
+            const onEndBar = () => {
+                isDraggingBar = false;
             };
 
-            barDisplay.addEventListener('mousedown', onStart);
-            barDisplay.addEventListener('touchstart', onStart, { passive: false });
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('touchmove', onMove, { passive: false });
-            document.addEventListener('mouseup', onEnd);
-            document.addEventListener('touchend', onEnd);
+            barDisplay.addEventListener('mousedown', onStartBar);
+            barDisplay.addEventListener('touchstart', onStartBar, { passive: false });
+            document.addEventListener('mousemove', onMoveBar);
+            document.addEventListener('touchmove', onMoveBar, { passive: false });
+            document.addEventListener('mouseup', onEndBar);
+            document.addEventListener('touchend', onEndBar);
 
-            // ダブルタップでリセット（4BAR）
-            let lastTapBar = 0;
-            barDisplay.addEventListener('touchend', () => {
+            barDisplay.addEventListener('click', () => {
+                if (hasDraggedBar) return; // ドラッグ後はタップ処理しない
                 const now = Date.now();
                 if (now - lastTapBar < 300) {
                     this.getCurrentSong().bars = 16;
                     this.updateConsoleDisplay();
                     this.render();
+                    lastTapBar = 0;
+                } else {
+                    lastTapBar = now;
+                    setTimeout(() => {
+                        if (lastTapBar !== 0) {
+                            this.openBarInput();
+                            lastTapBar = 0;
+                        }
+                    }, 300);
                 }
-                lastTapBar = now;
             });
+        }
+    },
+
+    // BPM入力ダイアログ
+    openBpmInput() {
+        const current = this.getCurrentSong().bpm;
+        const input = prompt('BPMを入力 (60-240)', current);
+        if (input !== null) {
+            const value = parseInt(input);
+            if (!isNaN(value) && value >= 60 && value <= 240) {
+                this.getCurrentSong().bpm = value;
+                this.updateConsoleDisplay();
+            }
+        }
+    },
+
+    // BAR入力ダイアログ
+    openBarInput() {
+        const current = this.getCurrentSong().bars;
+        const input = prompt('BARを入力 (1-256)', current);
+        if (input !== null) {
+            const value = parseInt(input);
+            if (!isNaN(value) && value >= 1 && value <= 256) {
+                this.getCurrentSong().bars = value;
+                this.updateConsoleDisplay();
+                this.render();
+            }
         }
     },
 
