@@ -183,6 +183,11 @@ const SoundEditor = {
 
     // ========== Console Header (ソング制御盤) ==========
     initConsoleHeader() {
+        // ソング追加ボタン
+        document.getElementById('song-add-btn')?.addEventListener('click', () => {
+            this.addSong();
+        });
+
         // 前へ
         document.getElementById('song-prev-btn')?.addEventListener('click', () => {
             let nextIdx = this.currentSongIdx - 1;
@@ -352,7 +357,7 @@ const SoundEditor = {
     // BPM入力ダイアログ
     openBpmInput() {
         const current = this.getCurrentSong().bpm;
-        const input = prompt('BPMを入力 (60-240)', current);
+        const input = prompt('SPEEDを入力 (60-240)', current);
         if (input !== null) {
             const value = parseInt(input);
             if (!isNaN(value) && value >= 60 && value <= 240) {
@@ -365,7 +370,7 @@ const SoundEditor = {
     // BAR入力ダイアログ
     openBarInput() {
         const current = this.getCurrentSong().bars;
-        const input = prompt('BARを入力 (1-256)', current);
+        const input = prompt('STEPを入力 (1-256)', current);
         if (input !== null) {
             const value = parseInt(input);
             if (!isNaN(value) && value >= 1 && value <= 256) {
