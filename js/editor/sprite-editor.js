@@ -307,9 +307,13 @@ const SpriteEditor = {
             alert('最低1色は必要です');
             return;
         }
-        if (needConfirm && !confirm('この色を削除しますか？')) {
+        if (needConfirm && !confirm('この色を削除しますか？\n（使用されているドットは透明になります）')) {
             return;
         }
+
+        // スプライト内の参照を更新（削除）
+        this.updateAllSpriteColorReferences('delete', index);
+
         App.nesPalette.splice(index, 1);
         if (this.selectedColor >= App.nesPalette.length) {
             this.selectedColor = App.nesPalette.length - 1;
@@ -320,6 +324,11 @@ const SpriteEditor = {
     // 色を複製
     duplicateColor(index) {
         const color = App.nesPalette[index];
+
+        // スプライト内の参照を更新（挿入によるズレ補正）
+        // index+1 の位置に挿入される
+        this.updateAllSpriteColorReferences('insert', index + 1);
+
         // 該当色の後ろに追加
         App.nesPalette.splice(index + 1, 0, color);
         // 追加した色を選択状態にする
@@ -1177,9 +1186,12 @@ const SpriteEditor = {
             return;
         }
 
-        if (needConfirm && !confirm('このスプライトを削除しますか？')) {
+        if (needConfirm && !confirm('このスプライトを削除しますか？\n（使用されている箇所は削除されます）')) {
             return;
         }
+
+        // マップ上の参照を更新（削除）
+        this.updateMapSpriteReferences('delete', index);
 
         App.projectData.sprites.splice(index, 1);
         App.projectData.sprites.forEach((s, i) => s.id = i);
@@ -1201,6 +1213,10 @@ const SpriteEditor = {
         newSprite.name = srcSprite.name + '_copy';
 
         // 該当スプライトの後ろに追加
+        // マップ上の参照を更新（挿入によるズレ補正）
+        // index+1 の位置に挿入されるので、現在の index+1 以上のものは +1 される必要がある
+        this.updateMapSpriteReferences('insert', index + 1);
+
         App.projectData.sprites.splice(index + 1, 0, newSprite);
 
         // ID振り直し
@@ -2078,6 +2094,83 @@ const SpriteEditor = {
         this.isFloating = false;
         this.floatingData = null;
         this.render();
+    },
+
+    // ========== 参照更新ヘルパー ==========
+    // スプライト操作時のマップデータ参照更新
+    updateMapSpriteReferences(action, index) {
+        const stage = App.projectData.stage;
+        if (!stage) return;
+
+        const updateLayer = (layer) => {
+            if (!layer) return;
+            for (let y = 0; y < layer.length; y++) {
+                if (!layer[y]) continue;
+                for (let x = 0; x < layer[y].length; x++) {
+                    const val = layer[y][x];
+                    if (val === -1) continue;
+
+                    // テンプレート（100以上）は対象外、通常スプライト（0-99）のみ
+                    if (val >= 100) continue;
+
+                    if (action === 'insert') {
+                        // 挿入箇所以降のIDを+1
+                        if (val >= index) {
+                            layer[y][x] = val + 1;
+                        }
+                    } else if (action === 'delete') {
+                        if (val === index) {
+                            // 削除されたスプライトは空(-1)に
+                            layer[y][x] = -1;
+                        } else if (val > index) {
+                            // 削除箇所以降のIDを-1
+                            layer[y][x] = val - 1;
+                        }
+                    }
+                }
+            }
+        };
+
+        // 全レイヤー更新
+        updateLayer(stage.layers.bg);
+        updateLayer(stage.layers.fg);
+        // collisionは通常0/1だが、将来的に拡張される可能性も考慮して一応通すか、あるいは除外か。
+        // 現状の仕様では collision にスプライトIDは入らない（0か1）ので、影響はないはずだが
+        // 念のため bg/fg のみに限定するのが安全。
+        // updateLayer(stage.layers.collision); 
+    },
+
+    // カラー操作時のスプライトデータ参照更新
+    updateAllSpriteColorReferences(action, index) {
+        const sprites = App.projectData.sprites;
+        sprites.forEach(sprite => {
+            if (!sprite.data) return;
+
+            for (let y = 0; y < sprite.data.length; y++) {
+                if (!sprite.data[y]) continue;
+                for (let x = 0; x < sprite.data[y].length; x++) {
+                    const val = sprite.data[y][x];
+                    if (val === -1) continue; // 透明
+
+                    if (action === 'insert') {
+                        // 挿入箇所以降のインデックスを+1
+                        // index = 挿入された位置（新しい色）
+                        // 例: index=2に挿入(元2は3へ) -> val >= 2 なら +1
+                        if (val >= index) {
+                            sprite.data[y][x] = val + 1;
+                        }
+                    } else if (action === 'delete') {
+                        if (val === index) {
+                            // 削除された色は透明(-1)に（または0=黒にする手もあるが、破壊的なので透明が無難）
+                            sprite.data[y][x] = -1;
+                        } else if (val > index) {
+                            // 削除箇所以降のインデックスを-1
+                            sprite.data[y][x] = val - 1;
+                        }
+                    }
+                }
+            }
+        });
     }
 
 };
