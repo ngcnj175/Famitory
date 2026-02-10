@@ -1192,6 +1192,10 @@ const SpriteEditor = {
 
         // マップ上の参照を更新（削除）
         this.updateMapSpriteReferences('delete', index);
+        // テンプレート内の参照を更新（削除）
+        this.updateTemplateSpriteReferences('delete', index);
+        // オブジェクト配置の参照を更新（削除）
+        this.updateObjectSpriteReferences('delete', index);
 
         App.projectData.sprites.splice(index, 1);
         App.projectData.sprites.forEach((s, i) => s.id = i);
@@ -1199,6 +1203,12 @@ const SpriteEditor = {
         this.currentSprite = Math.max(0, index - 1);
         this.history = [];
         this.initSpriteGallery();
+
+        // ステージエディタのサムネイルなども更新
+        if (typeof StageEditor !== 'undefined') {
+            StageEditor.initTemplateList();
+        }
+
         this.render();
     },
 
@@ -1216,6 +1226,10 @@ const SpriteEditor = {
         // マップ上の参照を更新（挿入によるズレ補正）
         // index+1 の位置に挿入されるので、現在の index+1 以上のものは +1 される必要がある
         this.updateMapSpriteReferences('insert', index + 1);
+        // テンプレート内の参照を更新（挿入によるズレ補正）
+        this.updateTemplateSpriteReferences('insert', index + 1);
+        // オブジェクト配置の参照を更新（挿入によるズレ補正）
+        this.updateObjectSpriteReferences('insert', index + 1);
 
         App.projectData.sprites.splice(index + 1, 0, newSprite);
 
@@ -1226,6 +1240,12 @@ const SpriteEditor = {
         this.currentSprite = index + 1;
         this.history = [];
         this.initSpriteGallery();
+
+        // ステージエディタのサムネイルなども更新
+        if (typeof StageEditor !== 'undefined') {
+            StageEditor.initTemplateList();
+        }
+
         this.render();
     },
 
@@ -2138,6 +2158,81 @@ const SpriteEditor = {
         // 現状の仕様では collision にスプライトIDは入らない（0か1）ので、影響はないはずだが
         // 念のため bg/fg のみに限定するのが安全。
         // updateLayer(stage.layers.collision); 
+    },
+
+    // テンプレート内のスプライト参照更新
+    updateTemplateSpriteReferences(action, index) {
+        if (!App.projectData.templates) return;
+
+        console.log(`[SpriteEditor] updateTemplateSpriteReferences action=${action} index=${index}`);
+
+        App.projectData.templates.forEach((template, tIdx) => {
+            if (!template.sprites) return;
+
+            Object.keys(template.sprites).forEach(key => {
+                const spriteDef = template.sprites[key];
+                if (!spriteDef || !spriteDef.frames) return;
+
+                // 参照共有チェック（念のため）
+                // if (spriteDef._updated) return;
+                // spriteDef._updated = true; 
+                // ※通常共有されないはずだが、万が一共有されていると二重更新になる
+
+                for (let i = 0; i < spriteDef.frames.length; i++) {
+                    const val = spriteDef.frames[i];
+                    if (val === null || val === undefined) continue;
+
+                    if (action === 'insert') {
+                        // 挿入箇所以降のIDを+1
+                        if (val >= index) {
+                            console.log(`  Upd Tmpl[${tIdx}].${key}[${i}]: ${val} -> ${val + 1}`);
+                            spriteDef.frames[i] = val + 1;
+                        }
+                    } else if (action === 'delete') {
+                        if (val === index) {
+                            // 削除されたスプライトを参照している場合
+                            console.log(`  Del Tmpl[${tIdx}].${key}[${i}]: ${val} -> Empty`);
+                            spriteDef.frames.splice(i, 1);
+                            i--; // インデックス調整
+                        } else if (val > index) {
+                            // 削除箇所以降のIDを-1
+                            console.log(`  Upd Tmpl[${tIdx}].${key}[${i}]: ${val} -> ${val - 1}`);
+                            spriteDef.frames[i] = val - 1;
+                        }
+                    }
+                }
+            });
+        });
+    },
+
+    // オブジェクト（旧形式配置）のスプライト参照更新
+    updateObjectSpriteReferences(action, index) {
+        if (!App.projectData.objects) return;
+
+        console.log(`[SpriteEditor] updateObjectSpriteReferences action=${action} index=${index}`);
+
+        App.projectData.objects.forEach((obj, oIdx) => {
+            if (obj.sprite === undefined || obj.sprite === null) return;
+            const val = obj.sprite;
+
+            if (action === 'insert') {
+                if (val >= index) {
+                    console.log(`  Upd Obj[${oIdx}]: ${val} -> ${val + 1}`);
+                    obj.sprite = val + 1;
+                }
+            } else if (action === 'delete') {
+                if (val === index) {
+                    // オブジェクトが参照していたスプライトが削除された場合
+                    // デフォルト(0)に戻すか、削除するか？
+                    // 配置データなので削除するのは危険（位置情報が消える）。0にする。
+                    console.log(`  Upd Obj[${oIdx}]: ${val} -> 0 (Reset)`);
+                    obj.sprite = 0;
+                } else if (val > index) {
+                    console.log(`  Upd Obj[${oIdx}]: ${val} -> ${val - 1}`);
+                    obj.sprite = val - 1;
+                }
+            }
+        });
     },
 
     // カラー操作時のスプライトデータ参照更新
