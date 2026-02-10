@@ -643,24 +643,26 @@ body {
     image-rendering: pixelated;
 }
 
-/* 繧ｹ繝励Λ繧､繝域悴逋ｻ鬮ｲ（遨ｺ）縺ｮ繧ｿ繧､繝ｫ */
+/* スプライト未登録（空）のタイル */
 .tile-item.empty {
     background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-light);
-    /* 繧ｰ繝ｬ繝ｼ縺ｮ＋ */
+    color: var(--border-color);
+    /* 薄いグレー */
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 300;
+    /* 細字にする */
 }
 
 .tile-item.empty::after {
     content: '+';
+    /* 位置調整不要（flex centerで中央配置） */
 }
 
 /* ========================================
-   繧ｹ繝��繧ｸ逕ｻ髱｢
+   繧ｹ繝繧ｸ逕ｻ髱｢
    ======================================== */
 
 #stage-screen {

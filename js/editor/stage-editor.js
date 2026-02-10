@@ -1461,14 +1461,12 @@ const StageEditor = {
         if (needConfirm && !confirm('このタイルを削除しますか？')) {
             return;
         }
-        // 繧ｭ繝｣繝ｳ繝舌せ縺九ｉ隧ｲ蠖薙ち繧､繝ｫ繧偵け繝ｪ繧｢
-        this.clearTileFromCanvas(index);
 
-        // 繝・Φ繝励Ξ繝ｼ繝医ｒ蜑企勁
+        // 【修正】マップ上のテンプレート参照を更新（削除前に実行するか、後でもIDベースならOKだが、ロジック的には削除IDを指定）
+        this.updateMapTemplateReferences('delete', index);
+
+        // テンプレートを削除
         App.projectData.templates.splice(index, 1);
-
-        // 蜑企勁蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
-        this.updateCanvasTileIndices(index);
 
         if (this.selectedTemplate === index) {
             this.selectedTemplate = null;
@@ -1478,23 +1476,26 @@ const StageEditor = {
         }
         this.initTemplateList();
         this.render();
-        this.render();
     },
 
-    // 繧ｿ繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ隍・｣ｽ
+    // タイルテンプレートを複製
     duplicateTemplate(index) {
         const src = App.projectData.templates[index];
         const newTmpl = JSON.parse(JSON.stringify(src));
 
-        // 隧ｲ蠖薙ち繧､繝ｫ縺ｮ蠕後ｍ縺ｫ霑ｽ蜉
+        // 【修正】マップ上のテンプレート参照を更新（挿入によるズレ補正）
+        // index+1 に挿入されるので、既存の index+1 以上のIDを +1 する
+        this.updateMapTemplateReferences('insert', index + 1);
+
+        // 該当タイルの後ろに追加
         App.projectData.templates.splice(index + 1, 0, newTmpl);
 
-        // 驕ｸ謚樒憾諷九・隱ｿ謨ｴ
+        // 選択状態の調整
         if (this.selectedTemplate !== null) {
             if (this.selectedTemplate > index) {
                 this.selectedTemplate++;
             } else if (this.selectedTemplate === index) {
-                this.selectedTemplate = index + 1; // 隍・｣ｽ繧帝∈謚・
+                this.selectedTemplate = index + 1; // 複製を選択
             }
         }
 
@@ -1527,13 +1528,40 @@ const StageEditor = {
         }
     },
 
-    // 繝・Φ繝励Ξ繝ｼ繝亥炎髯､蠕後・繧､繝ｳ繝・ャ繧ｯ繧ｹ隱ｿ謨ｴ
-    // 蜑企勁縺輔ｌ縺溘う繝ｳ繝・ャ繧ｯ繧ｹ繧医ｊ螟ｧ縺阪＞繧ｹ繝励Λ繧､繝亥盾辣ｧ繧呈戟縺､繧ｿ繧､繝ｫ縺ｯ隱ｿ謨ｴ荳崎ｦ・
-    // ・医ち繧､繝ｫ驟咲ｽｮ縺ｯ繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ・・
-    updateCanvasTileIndices(deletedIndex) {
-        // 豕ｨ諢・ 迴ｾ蝨ｨ縺ｮ螳溯｣・〒縺ｯ繧ｿ繧､繝ｫ驟咲ｽｮ譎ゅ↓繧ｹ繝励Λ繧､繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺励※縺・ｋ縺溘ａ
-        // 繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ縺ｮ隱ｿ謨ｴ縺ｯ荳崎ｦ・
-        // 蟆・擂逧・↓繝・Φ繝励Ξ繝ｼ繝医う繝ｳ繝・ャ繧ｯ繧ｹ繧剃ｽｿ逕ｨ縺吶ｋ蝣ｴ蜷医・縺薙％縺ｧ隱ｿ謨ｴ
+    // テンプレート削除・挿入時のマップ参照更新
+    updateMapTemplateReferences(action, index) {
+        const stage = App.projectData.stage;
+        if (!stage || !stage.layers) return;
+
+        ['bg', 'fg', 'collision'].forEach(layerName => {
+            const layer = stage.layers[layerName];
+            if (!layer) return;
+
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const val = layer[y][x];
+                    // テンプレート参照は 100以上
+                    if (val < 100) continue;
+
+                    const templateId = val - 100;
+
+                    if (action === 'insert') {
+                        // 挿入箇所以降のIDを+1
+                        if (templateId >= index) {
+                            layer[y][x] = (templateId + 1) + 100;
+                        }
+                    } else if (action === 'delete') {
+                        if (templateId === index) {
+                            // 削除されたテンプレートを参照している場合 -> 削除(-1)
+                            layer[y][x] = -1;
+                        } else if (templateId > index) {
+                            // 削除箇所以降のIDを-1
+                            layer[y][x] = (templateId - 1) + 100;
+                        }
+                    }
+                }
+            }
+        });
     },
 
     // ========== 繧ｭ繝｣繝ｳ繝舌せ ==========
