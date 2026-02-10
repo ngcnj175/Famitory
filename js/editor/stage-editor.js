@@ -1531,37 +1531,63 @@ const StageEditor = {
     // テンプレート削除・挿入時のマップ参照更新
     updateMapTemplateReferences(action, index) {
         const stage = App.projectData.stage;
-        if (!stage || !stage.layers) return;
+        if (!stage) return;
 
-        ['bg', 'fg', 'collision'].forEach(layerName => {
-            const layer = stage.layers[layerName];
-            if (!layer) return;
+        // 1. マップタイル（レイヤー）の更新
+        if (stage.layers) {
+            ['bg', 'fg', 'collision'].forEach(layerName => {
+                const layer = stage.layers[layerName];
+                if (!layer) return;
 
-            for (let y = 0; y < stage.height; y++) {
-                for (let x = 0; x < stage.width; x++) {
-                    const val = layer[y][x];
-                    // テンプレート参照は 100以上
-                    if (val < 100) continue;
+                for (let y = 0; y < stage.height; y++) {
+                    for (let x = 0; x < stage.width; x++) {
+                        const val = layer[y][x];
+                        // テンプレート参照は 100以上
+                        if (val < 100) continue;
 
-                    const templateId = val - 100;
+                        const templateId = val - 100;
 
-                    if (action === 'insert') {
-                        // 挿入箇所以降のIDを+1
-                        if (templateId >= index) {
-                            layer[y][x] = (templateId + 1) + 100;
-                        }
-                    } else if (action === 'delete') {
-                        if (templateId === index) {
-                            // 削除されたテンプレートを参照している場合 -> 削除(-1)
-                            layer[y][x] = -1;
-                        } else if (templateId > index) {
-                            // 削除箇所以降のIDを-1
-                            layer[y][x] = (templateId - 1) + 100;
+                        if (action === 'insert') {
+                            // 挿入箇所以降のIDを+1
+                            if (templateId >= index) {
+                                layer[y][x] = (templateId + 1) + 100;
+                            }
+                        } else if (action === 'delete') {
+                            if (templateId === index) {
+                                // 削除されたテンプレートを参照している場合 -> 削除(-1)
+                                layer[y][x] = -1;
+                            } else if (templateId > index) {
+                                // 削除箇所以降のIDを-1
+                                layer[y][x] = (templateId - 1) + 100;
+                            }
                         }
                     }
                 }
+            });
+        }
+
+        // 2. エンティティ（Player/Enemy/Itemなど）の更新
+        if (stage.entities && Array.isArray(stage.entities)) {
+            if (action === 'insert') {
+                stage.entities.forEach(e => {
+                    if (e.templateId >= index) {
+                        e.templateId++;
+                    }
+                });
+            } else if (action === 'delete') {
+                // 削除対象のエンティティを除去
+                // filterを使うと再代入が必要になるため、spliceで逆順処理推奨だが、
+                // ここでは分かりやすさ優先で filter 結果を代入
+                stage.entities = stage.entities.filter(e => e.templateId !== index);
+
+                // 削除箇所以降のIDを-1
+                stage.entities.forEach(e => {
+                    if (e.templateId > index) {
+                        e.templateId--;
+                    }
+                });
             }
-        });
+        }
     },
 
     // ========== 繧ｭ繝｣繝ｳ繝舌せ ==========
