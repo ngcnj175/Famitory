@@ -1361,17 +1361,17 @@ const StageEditor = {
                 miniCanvas.width = 16;
                 miniCanvas.height = 16;
 
-                // 蛻晄悄繝輔Ξ繝ｼ繝謠冗判
+                // 初期フレーム描画
                 const firstSprite = App.projectData.sprites[frames[0]];
                 if (firstSprite) {
                     this.renderSpriteToMiniCanvas(firstSprite, miniCanvas, this.getBackgroundColor());
                 }
 
-                // 隍・焚繝輔Ξ繝ｼ繝縺ｮ蝣ｴ蜷医・繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ
+                // 複数フレームの場合のアニメーション
                 if (frames.length > 1) {
                     let frameIndex = 0;
                     const animInterval = setInterval(() => {
-                        // 逕ｻ髱｢縺後せ繝・・繧ｸ縺ｧ縺ｪ縺上↑縺｣縺溘ｉ繧｢繝九Γ蛛懈ｭ｢
+                        // 画面がステージでなくなったらアニメ停止
                         if (App.currentScreen !== 'stage') {
                             clearInterval(animInterval);
                             return;
@@ -1385,13 +1385,18 @@ const StageEditor = {
                 }
 
                 div.appendChild(miniCanvas);
-            }
 
-            // 遞ｮ蛻･繝舌ャ繧ｸ
-            const badge = document.createElement('span');
-            badge.className = 'type-badge';
-            badge.textContent = typeIcons[template.type] || '?';
-            div.appendChild(badge);
+                // 種別バッジ（スプライトがある場合のみ）
+                const badge = document.createElement('span');
+                badge.className = 'type-badge';
+                badge.textContent = typeIcons[template.type] || '?';
+                div.appendChild(badge);
+
+            } else {
+                // スプライト未登録（空）の場合
+                div.classList.add('empty');
+                // バッジは表示しない（+マークのみ、CSSで表示）
+            }
 
             // 繧ｿ繝・・/繧ｯ繝ｪ繝・け蜃ｦ逅・ｼ医す繝ｳ繧ｰ繝ｫ・壼叉蠎ｧ縺ｫ驕ｸ謚槭√ム繝悶Ν・夊ｨｭ螳夊｡ｨ遉ｺ・・
             const handleTap = (e) => {
