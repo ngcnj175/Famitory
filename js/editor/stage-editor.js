@@ -1140,7 +1140,7 @@ const StageEditor = {
             if (idx === '') {
                 btn.textContent = 'なし';
             } else {
-                const song = App.projectData.sounds?.[parseInt(idx)];
+                const song = App.projectData.songs?.[parseInt(idx)];
                 btn.textContent = song?.name || `Song ${parseInt(idx) + 1}`;
             }
         }

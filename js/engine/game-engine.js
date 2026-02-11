@@ -839,8 +839,8 @@ const GameEngine = {
             enemy.render(this.ctx, this.TILE_SIZE, this.camera);
         });
 
-        // 5. プレイヤー
-        if (this.player) {
+        // 5. プレイヤー（死亡落下中はFGレイヤーの後で描画するためスキップ）
+        if (this.player && !(this.player.isDead && this.player.isDying)) {
             this.player.render(this.ctx, this.TILE_SIZE, this.camera);
         }
 
@@ -872,6 +872,11 @@ const GameEngine = {
                 enemy.render(this.ctx, this.TILE_SIZE, this.camera);
             }
         });
+
+        // 8.5. 死亡中のプレイヤー（FGレイヤーより手前に表示）
+        if (this.player && this.player.isDead && this.player.isDying) {
+            this.player.render(this.ctx, this.TILE_SIZE, this.camera);
+        }
 
         // 9. プロジェクタイル
         this.projectiles.forEach(proj => {
@@ -2633,7 +2638,7 @@ const GameEngine = {
         this.currentBgmType = type;
         const stepDuration = 60 / song.bpm / 4; // 16分音符
         let step = 0;
-        const maxSteps = song.bars * 16;
+        const maxSteps = song.bars;
 
         this.bgmPlayInterval = setInterval(() => {
             if (this.isPaused) return;
