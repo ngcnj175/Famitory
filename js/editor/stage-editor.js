@@ -1462,7 +1462,7 @@ const StageEditor = {
             return;
         }
 
-        // 【修正】マップ上のテンプレート参照を更新（削除前に実行するか、後でもIDベースならOKだが、ロジック的には削除IDを指定）
+        // マップ上のテンプレート参照を更新（削除前に実行）
         this.updateMapTemplateReferences('delete', index);
 
         // テンプレートを削除
