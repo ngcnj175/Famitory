@@ -22,6 +22,7 @@ class Enemy {
         this.behavior = behavior;
         this.facingRight = false; // 敵はデフォルトで左向き（プレイヤーと向き合う）
         this.onGround = false;
+        this.onLadder = false;
         this.moveSpeed = 0.05;
 
         this.template = template;
@@ -197,10 +198,17 @@ class Enemy {
                 this.vx = 0;
         }
 
-        // 重力
-        this.vy += this.gravity;
-        if (this.vy > this.maxFallSpeed) {
-            this.vy = this.maxFallSpeed;
+        // はしご判定
+        this.onLadder = engine.isOnLadder(this.x, this.y, this.width, this.height);
+
+        // 重力（はしご上では無効）
+        if (!this.onLadder) {
+            this.vy += this.gravity;
+            if (this.vy > this.maxFallSpeed) {
+                this.vy = this.maxFallSpeed;
+            }
+        } else {
+            this.vy = 0; // はしご上では縦方向の速度をリセット
         }
 
         this.x += this.vx;
@@ -563,6 +571,8 @@ class Enemy {
     updateState() {
         if (this.isAttacking) {
             this.state = 'attack';
+        } else if (this.onLadder) {
+            this.state = 'climb';
         } else if (!this.onGround && !this.isAerial) {
             this.state = 'jump';
         } else if (this.vx !== 0) {
@@ -576,6 +586,8 @@ class Enemy {
         switch (this.state) {
             case 'attack':
                 return this.template?.sprites?.attack?.frames?.length > 0 ? 'attack' : 'idle';
+            case 'climb':
+                return this.template?.sprites?.climb?.frames?.length > 0 ? 'climb' : 'idle';
             case 'jump':
                 return this.template?.sprites?.jump?.frames?.length > 0 ? 'jump' : 'idle';
             case 'walk':

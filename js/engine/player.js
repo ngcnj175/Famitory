@@ -20,6 +20,7 @@ class Player {
         this.height = spriteSize === 2 ? 1.6 : 0.8;
 
         this.onGround = false;
+        this.onLadder = false;
         this.facingRight = true;
 
         // テンプレート情報
@@ -156,12 +157,17 @@ class Player {
             }
         }
 
+        // はしご判定
+        this.onLadder = engine.isOnLadder(this.x, this.y, this.width, this.height);
+
         this.handleInput(engine);
 
-        // 重力
-        this.vy += this.gravity;
-        if (this.vy > this.maxFallSpeed) {
-            this.vy = this.maxFallSpeed;
+        // 重力（はしご上では無効）
+        if (!this.onLadder) {
+            this.vy += this.gravity;
+            if (this.vy > this.maxFallSpeed) {
+                this.vy = this.maxFallSpeed;
+            }
         }
 
         // 移動と衝突
@@ -194,6 +200,10 @@ class Player {
     updateState() {
         if (this.isAttacking) {
             this.state = 'attack';
+        } else if (this.onLadder && (this.vx !== 0 || this.vy !== 0)) {
+            this.state = 'climb';
+        } else if (this.onLadder) {
+            this.state = 'climb';
         } else if (!this.onGround) {
             this.state = 'jump';
         } else if (this.vx !== 0) {
@@ -222,6 +232,8 @@ class Player {
         switch (this.state) {
             case 'attack':
                 return this.template?.sprites?.attack?.frames?.length > 0 ? 'attack' : 'idle';
+            case 'climb':
+                return this.template?.sprites?.climb?.frames?.length > 0 ? 'climb' : 'idle';
             case 'jump':
                 return this.template?.sprites?.jump?.frames?.length > 0 ? 'jump' : 'idle';
             case 'walk':
@@ -246,6 +258,19 @@ class Player {
         if (GameController.isPressed('right')) {
             this.vx = this.moveSpeed;
             this.facingRight = true;
+        }
+
+        // はしご上では上下移動（十字キー）、ジャンプ無効
+        if (this.onLadder) {
+            if (GameController.isPressed('up')) {
+                this.vy = -this.moveSpeed;
+            } else if (GameController.isPressed('down')) {
+                this.vy = this.moveSpeed;
+            } else {
+                this.vy = 0; // 上下キー離すと停止
+            }
+            this._jumpKeyWasPressed = GameController.isPressed('a');
+            return; // はしご上ではジャンプ処理をスキップ
         }
 
         // ジャンプ処理

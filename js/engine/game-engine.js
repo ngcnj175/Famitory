@@ -15,6 +15,7 @@ const GameEngine = {
     projectiles: [],
     items: [],
     gimmickBlocks: [],
+    ladderTiles: null, // はしごタイルの座標Set
 
     GRAVITY: 0.5,
     TILE_SIZE: 16,
@@ -486,6 +487,23 @@ const GameEngine = {
                 }
             }
         }
+
+        // はしごタイル初期化
+        this.ladderTiles = new Set();
+        if (stage && stage.layers && stage.layers.fg) {
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const tileId = stage.layers.fg[y][x];
+                    if (tileId >= 0) {
+                        const { template: tmpl } = getTemplateFromTileId(tileId);
+                        if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'ladder') {
+                            this.ladderTiles.add(`${x},${y}`);
+                        }
+                    }
+                }
+            }
+        }
+        console.log('ladderTiles:', this.ladderTiles.size);
 
         // デバッグログ
         console.log('=== Game Initialized ===');
@@ -1889,12 +1907,28 @@ const GameEngine = {
             return 0; // テンプレートが見つからない
         }
 
+        // はしごタイルは衝突なし（すり抜け可能）
+        if (template.type === 'material' && template.config?.gimmick === 'ladder') {
+            return 0;
+        }
+
         // 素材タイルで衝突がオン = 壁
         if (template.type === 'material' && template.config?.collision !== false) {
             return 1;
         }
 
         return 0; // 衝突なし
+    },
+
+    // はしごタイル上にいるか判定
+    isOnLadder(x, y, width, height) {
+        if (!this.ladderTiles || this.ladderTiles.size === 0) return false;
+        // エンティティの中心X、上半分と下半分をチェック
+        const centerX = Math.floor(x + width / 2);
+        const topY = Math.floor(y);
+        const bottomY = Math.floor(y + height - 0.01);
+        return this.ladderTiles.has(`${centerX},${topY}`) ||
+            this.ladderTiles.has(`${centerX},${bottomY}`);
     },
 
     damageTile(tileX, tileY) {

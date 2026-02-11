@@ -251,9 +251,9 @@ const StageEditor = {
     getSpriteKeysForType(type) {
         switch (type) {
             case 'player':
-                return ['idle', 'walk', 'jump', 'attack', 'shot', 'life'];
+                return ['idle', 'walk', 'climb', 'jump', 'attack', 'shot', 'life'];
             case 'enemy':
-                return ['idle', 'walk', 'jump', 'attack', 'shot'];
+                return ['idle', 'walk', 'climb', 'jump', 'attack', 'shot'];
             case 'material':
             case 'item':
                 return ['main'];
@@ -360,7 +360,7 @@ const StageEditor = {
 
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
         const labels = {
-            idle: '立ち', walk: '歩き', jump: 'ジャンプ',
+            idle: '立ち', walk: '歩き', climb: 'のぼる', jump: 'ジャンプ',
             attack: '攻撃', shot: '飛び道具', life: 'ライフ', main: '見た目'
         };
 
@@ -472,6 +472,7 @@ const StageEditor = {
                         <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>横移動</option>
                         <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>縦移動</option>
                         <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>落下</option>
+                        <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>はしご</option>
                     </select>
                 </div>
             `;
