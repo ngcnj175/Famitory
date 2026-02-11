@@ -456,39 +456,7 @@ const GameEngine = {
                 }
             }
         }
-        // ギミックブロック初期化
-        this.gimmickBlocks = [];
-        if (stage && stage.layers && stage.layers.fg) {
-            for (let y = 0; y < stage.height; y++) {
-                for (let x = 0; x < stage.width; x++) {
-                    const tileId = stage.layers.fg[y][x];
-                    if (tileId >= 0) {
-                        const { template, templateIdx } = getTemplateFromTileId(tileId);
-                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none') {
-                            this.gimmickBlocks.push({
-                                tileX: x,
-                                tileY: y,
-                                x: x, // 実際の位置（小数）
-                                y: y,
-                                tileId: tileId,
-                                template: template,
-                                templateIdx: templateIdx,
-                                gimmick: template.config.gimmick,
-                                vx: template.config.gimmick === 'moveH' ? 0.02 : 0,
-                                vy: template.config.gimmick === 'moveV' ? 0.02 : 0,
-                                state: 'normal', // 'normal', 'triggered', 'shaking', 'falling'
-                                timer: 0
-                            });
-                            // 実行用ステージデータから元タイルを削除（二重当たり判定防止）
-                            stage.layers.fg[y][x] = -1;
-                            console.log(`Gimmick block initialized at ${x},${y}. Original tile cleared.`);
-                        }
-                    }
-                }
-            }
-        }
-
-        // はしごタイル初期化
+        // はしごタイル初期化（ギミックブロック初期化より前に実行）
         this.ladderTiles = new Set();
         if (stage && stage.layers && stage.layers.fg) {
             for (let y = 0; y < stage.height; y++) {
@@ -504,6 +472,38 @@ const GameEngine = {
             }
         }
         console.log('ladderTiles:', this.ladderTiles.size);
+
+        // ギミックブロック初期化（はしごは除外）
+        this.gimmickBlocks = [];
+        if (stage && stage.layers && stage.layers.fg) {
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const tileId = stage.layers.fg[y][x];
+                    if (tileId >= 0) {
+                        const { template, templateIdx } = getTemplateFromTileId(tileId);
+                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder') {
+                            this.gimmickBlocks.push({
+                                tileX: x,
+                                tileY: y,
+                                x: x,
+                                y: y,
+                                tileId: tileId,
+                                template: template,
+                                templateIdx: templateIdx,
+                                gimmick: template.config.gimmick,
+                                vx: template.config.gimmick === 'moveH' ? 0.02 : 0,
+                                vy: template.config.gimmick === 'moveV' ? 0.02 : 0,
+                                state: 'normal',
+                                timer: 0
+                            });
+                            // 実行用ステージデータから元タイルを削除（二重当たり判定防止）
+                            stage.layers.fg[y][x] = -1;
+                            console.log(`Gimmick block initialized at ${x},${y}. Original tile cleared.`);
+                        }
+                    }
+                }
+            }
+        }
 
         // デバッグログ
         console.log('=== Game Initialized ===');
@@ -2420,7 +2420,7 @@ const GameEngine = {
 
                         // 当たり判定の確認（materialタイプでcollisionがfalseでない場合は当たり判定あり）
                         if (template && template.type === 'material') {
-                            hasCollision = template.config?.collision !== false;
+                            hasCollision = template.config?.collision !== false && template.config?.gimmick !== 'ladder';
                         }
 
                         // アニメーション対応
