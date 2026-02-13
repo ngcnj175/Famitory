@@ -176,6 +176,9 @@ const App = {
             setTimeout(() => this.adjustViewportScale(), 100);
         });
 
+        // レイアウト確定後にリサイズ再実行（初回読み込み時のタイミングずれ対策）
+        setTimeout(() => this.refreshCurrentScreen(), 100);
+
         console.log('PixelGameKit initialized!');
     },
 
