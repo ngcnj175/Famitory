@@ -1975,18 +1975,20 @@ const GameEngine = {
         if (!this.player.hasKey) return;
         if (!this.doorTiles || this.doorTiles.size === 0) return;
 
+        // 待機中のとびらがある場合はスキップ（連続発動防止）
+        if (this.doorFlashTiles && this.doorFlashTiles.length > 0) return;
+
         const stage = this.stageData || App.projectData.stage;
 
-        // プレイヤーの当たり判定範囲内のタイルをチェック
+        // プレイヤーの当たり判定範囲内のタイルのみチェック（直接接触）
         const px1 = Math.floor(this.player.x);
         const py1 = Math.floor(this.player.y);
         const px2 = Math.floor(this.player.x + this.player.width - 0.01);
         const py2 = Math.floor(this.player.y + this.player.height - 0.01);
 
-        // プレイヤーが触れているタイル＋隣接タイルをチェック
         const checkTiles = new Set();
-        for (let ty = py1 - 1; ty <= py2 + 1; ty++) {
-            for (let tx = px1 - 1; tx <= px2 + 1; tx++) {
+        for (let ty = py1; ty <= py2; ty++) {
+            for (let tx = px1; tx <= px2; tx++) {
                 checkTiles.add(`${tx},${ty}`);
             }
         }
@@ -1994,18 +1996,32 @@ const GameEngine = {
         let doorOpened = false;
         for (const key of checkTiles) {
             if (this.doorTiles.has(key)) {
-                // とびらを破壊
                 const [dx, dy] = key.split(',').map(Number);
+
+                // とびらのスプライト情報を取得
+                const tileId = stage.layers?.fg?.[dy]?.[dx];
+                let spriteData = null;
+                if (tileId >= 0) {
+                    const { template: tmpl } = getTemplateFromTileId(tileId);
+                    const spriteIdx = tmpl?.sprites?.main?.frames?.[0] ?? tmpl?.sprites?.idle?.frames?.[0];
+                    if (spriteIdx !== undefined) {
+                        spriteData = App.projectData.sprites[spriteIdx];
+                    }
+                }
+
+                // 破壊リストに追加
                 if (!this.destroyedTiles) this.destroyedTiles = new Set();
                 this.destroyedTiles.add(key);
                 this.doorTiles.delete(key);
 
-                // 白点滅エフェクト追加
+                // 待機→白点灯→消滅エフェクト追加
                 this.doorFlashTiles.push({
                     x: dx,
                     y: dy,
-                    timer: 20, // 20フレーム白点滅
-                    alpha: 1.0
+                    phase: 'wait',    // 'wait' → 'flash'
+                    waitTimer: 60,    // 60フレーム（約1秒）静止
+                    flashTimer: 20,   // 20フレーム白点灯
+                    spriteData: spriteData
                 });
 
                 doorOpened = true;
@@ -2020,7 +2036,7 @@ const GameEngine = {
         }
     },
 
-    // とびら白点滅エフェクト描画
+    // とびら白点灯エフェクト描画
     renderDoorFlash() {
         if (!this.doorFlashTiles || this.doorFlashTiles.length === 0) return;
 
@@ -2030,18 +2046,80 @@ const GameEngine = {
         const camY = this.camera.y;
 
         this.doorFlashTiles = this.doorFlashTiles.filter(flash => {
-            flash.timer--;
-            flash.alpha = flash.timer / 20;
+            if (flash.phase === 'wait') {
+                // 待機フェーズ：スプライトをそのまま描画（FGから削除済みなので手動描画）
+                flash.waitTimer--;
+                if (flash.waitTimer <= 0) {
+                    flash.phase = 'flash';
+                }
 
-            if (flash.timer <= 0) return false;
+                // 待機中はスプライトを通常描画
+                if (flash.spriteData) {
+                    const sprite = flash.spriteData;
+                    const palette = App.nesPalette;
+                    const spriteSize = sprite.size || 1;
+                    const dimension = spriteSize === 2 ? 32 : 16;
+                    const pixelSize = tileSize / 16;
+                    const screenX = (flash.x - camX) * tileSize;
+                    const screenY = (flash.y - camY) * tileSize;
 
-            const screenX = (flash.x - camX) * tileSize;
-            const screenY = (flash.y - camY) * tileSize;
+                    for (let y = 0; y < dimension; y++) {
+                        for (let x = 0; x < dimension; x++) {
+                            const colorIndex = sprite.data[y]?.[x];
+                            if (colorIndex >= 0) {
+                                ctx.fillStyle = palette[colorIndex];
+                                ctx.fillRect(
+                                    screenX + x * pixelSize,
+                                    screenY + y * pixelSize,
+                                    pixelSize + 0.5,
+                                    pixelSize + 0.5
+                                );
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
 
-            ctx.globalAlpha = flash.alpha;
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(screenX, screenY, tileSize, tileSize);
-            ctx.globalAlpha = 1.0;
+            // 白点灯フェーズ：スプライト形状を白で描画→フェードアウト
+            flash.flashTimer--;
+            const alpha = flash.flashTimer / 20;
+
+            if (flash.flashTimer <= 0) return false;
+
+            if (flash.spriteData) {
+                const sprite = flash.spriteData;
+                const spriteSize = sprite.size || 1;
+                const dimension = spriteSize === 2 ? 32 : 16;
+                const pixelSize = tileSize / 16;
+                const screenX = (flash.x - camX) * tileSize;
+                const screenY = (flash.y - camY) * tileSize;
+
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#FFFFFF';
+                for (let y = 0; y < dimension; y++) {
+                    for (let x = 0; x < dimension; x++) {
+                        const colorIndex = sprite.data[y]?.[x];
+                        if (colorIndex >= 0) {
+                            ctx.fillRect(
+                                screenX + x * pixelSize,
+                                screenY + y * pixelSize,
+                                pixelSize + 0.5,
+                                pixelSize + 0.5
+                            );
+                        }
+                    }
+                }
+                ctx.globalAlpha = 1.0;
+            } else {
+                // スプライトなしの場合はタイル全体を白く
+                const screenX = (flash.x - camX) * tileSize;
+                const screenY = (flash.y - camY) * tileSize;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                ctx.globalAlpha = 1.0;
+            }
 
             return true;
         });
