@@ -16,7 +16,7 @@ const GameEngine = {
     items: [],
     gimmickBlocks: [],
     ladderTiles: null, // はしごタイルの座標Set
-    doorTiles: null, // とびらタイルの座標Set
+    doorTiles: null, // とびらタイルの座標Map（key: "x,y", value: spriteData）
     doorFlashTiles: [], // とびら白点滅エフェクト
 
     GRAVITY: 0.5,
@@ -475,8 +475,8 @@ const GameEngine = {
         }
         console.log('ladderTiles:', this.ladderTiles.size);
 
-        // とびらタイル初期化
-        this.doorTiles = new Set();
+        // とびらタイル初期化（スプライトデータも保存）
+        this.doorTiles = new Map();
         this.doorFlashTiles = [];
         if (stage && stage.layers && stage.layers.fg) {
             for (let y = 0; y < stage.height; y++) {
@@ -485,7 +485,10 @@ const GameEngine = {
                     if (tileId >= 0) {
                         const { template: tmpl } = getTemplateFromTileId(tileId);
                         if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'door') {
-                            this.doorTiles.add(`${x},${y}`);
+                            // スプライトデータを取得して保存
+                            const spriteIdx = tmpl.sprites?.main?.frames?.[0] ?? tmpl.sprites?.idle?.frames?.[0];
+                            const spriteData = spriteIdx !== undefined ? App.projectData.sprites[spriteIdx] : null;
+                            this.doorTiles.set(`${x},${y}`, { spriteData });
                         }
                     }
                 }
@@ -1978,10 +1981,8 @@ const GameEngine = {
         // 待機中のとびらがある場合はスキップ（連続発動防止）
         if (this.doorFlashTiles && this.doorFlashTiles.length > 0) return;
 
-        const stage = this.stageData || App.projectData.stage;
-
         // プレイヤーの当たり判定をわずかに拡張して接触判定（壁なので重なれないため）
-        const margin = 0.1;
+        const margin = 0.15;
         const px1 = Math.floor(this.player.x - margin);
         const py1 = Math.floor(this.player.y - margin);
         const px2 = Math.floor(this.player.x + this.player.width - 0.01 + margin);
@@ -1998,17 +1999,7 @@ const GameEngine = {
         for (const key of checkTiles) {
             if (this.doorTiles.has(key)) {
                 const [dx, dy] = key.split(',').map(Number);
-
-                // とびらのスプライト情報を取得
-                const tileId = stage.layers?.fg?.[dy]?.[dx];
-                let spriteData = null;
-                if (tileId >= 0) {
-                    const { template: tmpl } = getTemplateFromTileId(tileId);
-                    const spriteIdx = tmpl?.sprites?.main?.frames?.[0] ?? tmpl?.sprites?.idle?.frames?.[0];
-                    if (spriteIdx !== undefined) {
-                        spriteData = App.projectData.sprites[spriteIdx];
-                    }
-                }
+                const doorInfo = this.doorTiles.get(key);
 
                 // 破壊リストに追加
                 if (!this.destroyedTiles) this.destroyedTiles = new Set();
@@ -2019,10 +2010,10 @@ const GameEngine = {
                 this.doorFlashTiles.push({
                     x: dx,
                     y: dy,
-                    phase: 'wait',    // 'wait' → 'flash'
-                    waitTimer: 60,    // 60フレーム（約1秒）静止
-                    flashTimer: 20,   // 20フレーム白点灯
-                    spriteData: spriteData
+                    phase: 'wait',
+                    waitTimer: 60,
+                    flashTimer: 20,
+                    spriteData: doorInfo.spriteData
                 });
 
                 doorOpened = true;
@@ -2030,9 +2021,7 @@ const GameEngine = {
         }
 
         if (doorOpened) {
-            // カギ消費
             this.player.hasKey = false;
-            // SE再生
             this.player.playSE('itemGet');
         }
     },
