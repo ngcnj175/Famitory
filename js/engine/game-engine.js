@@ -16,6 +16,8 @@ const GameEngine = {
     items: [],
     gimmickBlocks: [],
     ladderTiles: null, // はしごタイルの座標Set
+    doorTiles: null, // とびらタイルの座標Set
+    doorFlashTiles: [], // とびら白点滅エフェクト
 
     GRAVITY: 0.5,
     TILE_SIZE: 16,
@@ -473,6 +475,24 @@ const GameEngine = {
         }
         console.log('ladderTiles:', this.ladderTiles.size);
 
+        // とびらタイル初期化
+        this.doorTiles = new Set();
+        this.doorFlashTiles = [];
+        if (stage && stage.layers && stage.layers.fg) {
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const tileId = stage.layers.fg[y][x];
+                    if (tileId >= 0) {
+                        const { template: tmpl } = getTemplateFromTileId(tileId);
+                        if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'door') {
+                            this.doorTiles.add(`${x},${y}`);
+                        }
+                    }
+                }
+            }
+        }
+        console.log('doorTiles:', this.doorTiles.size);
+
         // ギミックブロック初期化（はしごは除外）
         this.gimmickBlocks = [];
         if (stage && stage.layers && stage.layers.fg) {
@@ -481,7 +501,7 @@ const GameEngine = {
                     const tileId = stage.layers.fg[y][x];
                     if (tileId >= 0) {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
-                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder') {
+                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door') {
                             this.gimmickBlocks.push({
                                 tileX: x,
                                 tileY: y,
@@ -886,6 +906,9 @@ const GameEngine = {
         // 10. パーティクル
         this.renderParticles();
 
+        // 10.5. とびら白点滅エフェクト
+        this.renderDoorFlash();
+
         // 11. UI
         this.renderUI();
 
@@ -1244,11 +1267,15 @@ const GameEngine = {
                     if (item.itemType === 'coin') pts = 50;
                     if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                     if (item.itemType === 'weapon') pts = 200;
+                    if (item.itemType === 'key') pts = 50;
                     if (item.itemType === 'clear') pts = 1000;
                     this.addScore(pts);
                 }
             }
         });
+
+        // とびらチェック（カギ所持時）
+        this.checkDoorInteraction();
     },
 
     updateProjectiles() {
@@ -1530,6 +1557,7 @@ const GameEngine = {
                 if (item.itemType === 'coin') pts = 50;  // コイン
                 if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                 if (item.itemType === 'weapon') pts = 200;
+                if (item.itemType === 'key') pts = 50;
                 if (item.itemType === 'clear') pts = 1000;
                 this.addScore(pts);
             }
@@ -1917,6 +1945,11 @@ const GameEngine = {
             return 0;
         }
 
+        // とびらタイルは破壊済みでなければ壁として扱う
+        if (template.type === 'material' && template.config?.gimmick === 'door') {
+            return 1; // 壁（カギで開くまでブロック）
+        }
+
         // 素材タイルで衝突がオン = 壁
         if (template.type === 'material' && template.config?.collision !== false) {
             return 1;
@@ -1934,6 +1967,84 @@ const GameEngine = {
         const bottomY = Math.floor(y + height - 0.01);
         return this.ladderTiles.has(`${centerX},${topY}`) ||
             this.ladderTiles.has(`${centerX},${bottomY}`);
+    },
+
+    // とびらインタラクションチェック
+    checkDoorInteraction() {
+        if (!this.player || this.player.isDead) return;
+        if (!this.player.hasKey) return;
+        if (!this.doorTiles || this.doorTiles.size === 0) return;
+
+        const stage = this.stageData || App.projectData.stage;
+
+        // プレイヤーの当たり判定範囲内のタイルをチェック
+        const px1 = Math.floor(this.player.x);
+        const py1 = Math.floor(this.player.y);
+        const px2 = Math.floor(this.player.x + this.player.width - 0.01);
+        const py2 = Math.floor(this.player.y + this.player.height - 0.01);
+
+        // プレイヤーが触れているタイル＋隣接タイルをチェック
+        const checkTiles = new Set();
+        for (let ty = py1 - 1; ty <= py2 + 1; ty++) {
+            for (let tx = px1 - 1; tx <= px2 + 1; tx++) {
+                checkTiles.add(`${tx},${ty}`);
+            }
+        }
+
+        let doorOpened = false;
+        for (const key of checkTiles) {
+            if (this.doorTiles.has(key)) {
+                // とびらを破壊
+                const [dx, dy] = key.split(',').map(Number);
+                if (!this.destroyedTiles) this.destroyedTiles = new Set();
+                this.destroyedTiles.add(key);
+                this.doorTiles.delete(key);
+
+                // 白点滅エフェクト追加
+                this.doorFlashTiles.push({
+                    x: dx,
+                    y: dy,
+                    timer: 20, // 20フレーム白点滅
+                    alpha: 1.0
+                });
+
+                doorOpened = true;
+            }
+        }
+
+        if (doorOpened) {
+            // カギ消費
+            this.player.hasKey = false;
+            // SE再生
+            this.player.playSE('itemGet');
+        }
+    },
+
+    // とびら白点滅エフェクト描画
+    renderDoorFlash() {
+        if (!this.doorFlashTiles || this.doorFlashTiles.length === 0) return;
+
+        const ctx = this.ctx;
+        const tileSize = this.TILE_SIZE;
+        const camX = this.camera.x;
+        const camY = this.camera.y;
+
+        this.doorFlashTiles = this.doorFlashTiles.filter(flash => {
+            flash.timer--;
+            flash.alpha = flash.timer / 20;
+
+            if (flash.timer <= 0) return false;
+
+            const screenX = (flash.x - camX) * tileSize;
+            const screenY = (flash.y - camY) * tileSize;
+
+            ctx.globalAlpha = flash.alpha;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(screenX, screenY, tileSize, tileSize);
+            ctx.globalAlpha = 1.0;
+
+            return true;
+        });
     },
 
     damageTile(tileX, tileY) {

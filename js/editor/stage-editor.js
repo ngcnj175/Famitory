@@ -473,6 +473,7 @@ const StageEditor = {
                         <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>縦移動</option>
                         <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>落下</option>
                         <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>はしご</option>
+                        <option value="door" ${config.gimmick === 'door' ? 'selected' : ''}>とびら</option>
                     </select>
                 </div>
             `;
@@ -486,6 +487,7 @@ const StageEditor = {
                         <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                         <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>
                         <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>武器</option>
+                        <option value="key" ${config.itemType === 'key' ? 'selected' : ''}>カギ</option>
                         <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                     </select>
                 </div>

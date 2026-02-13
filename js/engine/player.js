@@ -70,6 +70,9 @@ class Player {
         // 武器使用可能フラグ（weaponFromStart設定に基づく）
         this.hasWeapon = template?.config?.weaponFromStart ?? true;
 
+        // カギ所持フラグ
+        this.hasKey = false;
+
         // SE設定（-1はOFF）
         this.seJump = template?.config?.seJump ?? 0;
         this.seAttack = template?.config?.seAttack ?? 5;
@@ -476,6 +479,11 @@ class Player {
             case 'weapon':
                 // 武器アイテム取得 → 武器使用可能に
                 this.hasWeapon = true;
+                this.playSE('itemGet');
+                break;
+            case 'key':
+                // カギ取得
+                this.hasKey = true;
                 this.playSE('itemGet');
                 break;
         }
