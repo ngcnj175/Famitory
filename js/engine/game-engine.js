@@ -1980,11 +1980,12 @@ const GameEngine = {
 
         const stage = this.stageData || App.projectData.stage;
 
-        // プレイヤーの当たり判定範囲内のタイルのみチェック（直接接触）
-        const px1 = Math.floor(this.player.x);
-        const py1 = Math.floor(this.player.y);
-        const px2 = Math.floor(this.player.x + this.player.width - 0.01);
-        const py2 = Math.floor(this.player.y + this.player.height - 0.01);
+        // プレイヤーの当たり判定をわずかに拡張して接触判定（壁なので重なれないため）
+        const margin = 0.1;
+        const px1 = Math.floor(this.player.x - margin);
+        const py1 = Math.floor(this.player.y - margin);
+        const px2 = Math.floor(this.player.x + this.player.width - 0.01 + margin);
+        const py2 = Math.floor(this.player.y + this.player.height - 0.01 + margin);
 
         const checkTiles = new Set();
         for (let ty = py1; ty <= py2; ty++) {
