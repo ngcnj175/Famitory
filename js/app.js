@@ -169,7 +169,75 @@ const App = {
         // iOSドラッグスクロール防止（必要な場所以外）
         this.preventIOSScroll();
 
+        // ビューポートスケーリング（クロスデバイス対応）
+        this.adjustViewportScale();
+        window.addEventListener('resize', () => this.adjustViewportScale());
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => this.adjustViewportScale(), 100);
+        });
+
         console.log('PixelGameKit initialized!');
+    },
+
+    // ビューポートスケーリング（クロスデバイス対応）
+    // iPhone基準（375px幅）で設計されたUIを、他デバイスでは拡大表示する
+    adjustViewportScale() {
+        const app = document.getElementById('app');
+        if (!app) return;
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // iPhone/スマホサイズ（480px以下）ではスケーリングしない
+        if (screenWidth <= 480) {
+            app.style.transform = '';
+            app.style.transformOrigin = '';
+            app.style.width = '';
+            app.style.height = '';
+            app.style.maxWidth = '';
+            app.style.marginTop = '';
+            document.body.style.overflow = 'hidden';
+            document.body.style.display = '';
+            document.body.style.justifyContent = '';
+            document.body.style.alignItems = '';
+            return;
+        }
+
+        // 基準サイズ: iPhone想定の幅と高さ
+        const baseWidth = 375;
+        const baseHeight = 667;
+
+        // 幅と高さ両方の比率を計算し、小さい方に合わせる
+        const scaleX = screenWidth / baseWidth;
+        const scaleY = screenHeight / baseHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        // 最大スケールをキャップ（あまり大きくしすぎない）
+        const cappedScale = Math.min(scale, 2.5);
+
+        app.style.width = baseWidth + 'px';
+        app.style.height = baseHeight + 'px';
+        app.style.maxWidth = 'none';
+        app.style.transform = `scale(${cappedScale})`;
+        app.style.transformOrigin = 'top center';
+
+        // body側をセンタリング用にセットアップ
+        document.body.style.overflow = 'hidden';
+        document.body.style.display = 'flex';
+        document.body.style.justifyContent = 'center';
+        document.body.style.alignItems = 'flex-start';
+
+        // スケーリング後の余白を考慮したマージン調整
+        const scaledHeight = baseHeight * cappedScale;
+        if (scaledHeight < screenHeight) {
+            // 縦方向にも中央配置
+            const topMargin = (screenHeight - scaledHeight) / 2;
+            app.style.marginTop = topMargin + 'px';
+        } else {
+            app.style.marginTop = '0';
+        }
+
+        console.log(`Viewport scale: ${cappedScale.toFixed(2)} (${screenWidth}x${screenHeight})`);
     },
 
     // iOSでのドラッグによる全画面スクロールを防止
