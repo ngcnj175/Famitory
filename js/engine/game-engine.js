@@ -18,6 +18,7 @@ const GameEngine = {
     ladderTiles: null, // はしごタイルの座標Set
     doorTiles: null, // とびらタイルの座標Map（key: "x,y", value: spriteData）
     doorFlashTiles: [], // とびら白点滅エフェクト
+    doorAnimating: false, // とびら演出中フラグ
 
     GRAVITY: 0.5,
     TILE_SIZE: 16,
@@ -622,7 +623,7 @@ const GameEngine = {
         }
 
         // 一時停止中はupdateをスキップ（描画は続行）
-        if (!this.isPaused) {
+        if (!this.isPaused && !this.doorAnimating) {
             this.update();
             // タイルアニメーションフレームカウンターを更新
             this.tileAnimationFrame++;
@@ -1977,9 +1978,7 @@ const GameEngine = {
         if (!this.player || this.player.isDead) return;
         if (!this.player.hasKey) return;
         if (!this.doorTiles || this.doorTiles.size === 0) return;
-
-        // 待機中のとびらがある場合はスキップ（連続発動防止）
-        if (this.doorFlashTiles && this.doorFlashTiles.length > 0) return;
+        if (this.doorAnimating) return;
 
         // プレイヤーの当たり判定をわずかに拡張して接触判定（壁なので重なれないため）
         const margin = 0.15;
@@ -2001,15 +2000,14 @@ const GameEngine = {
                 const [dx, dy] = key.split(',').map(Number);
                 const doorInfo = this.doorTiles.get(key);
 
-                // 破壊リストに追加
-                if (!this.destroyedTiles) this.destroyedTiles = new Set();
-                this.destroyedTiles.add(key);
+                // まだdestroyedTilesに追加しない（演出完了まで壁を維持）
                 this.doorTiles.delete(key);
 
                 // 待機→白点灯→消滅エフェクト追加
                 this.doorFlashTiles.push({
                     x: dx,
                     y: dy,
+                    tileKey: key, // 破壊用に保存
                     phase: 'wait',
                     waitTimer: 60,
                     flashTimer: 20,
@@ -2023,6 +2021,7 @@ const GameEngine = {
         if (doorOpened) {
             this.player.hasKey = false;
             this.player.playSE('itemGet');
+            this.doorAnimating = true; // ゲーム一時停止
         }
     },
 
@@ -2075,7 +2074,14 @@ const GameEngine = {
             flash.flashTimer--;
             const alpha = flash.flashTimer / 20;
 
-            if (flash.flashTimer <= 0) return false;
+            if (flash.flashTimer <= 0) {
+                // 演出完了: 衝突を解除
+                if (flash.tileKey) {
+                    if (!this.destroyedTiles) this.destroyedTiles = new Set();
+                    this.destroyedTiles.add(flash.tileKey);
+                }
+                return false;
+            }
 
             if (flash.spriteData) {
                 const sprite = flash.spriteData;
@@ -2113,6 +2119,11 @@ const GameEngine = {
 
             return true;
         });
+
+        // 全エフェクト完了後にゲーム再開
+        if (this.doorAnimating && this.doorFlashTiles.length === 0) {
+            this.doorAnimating = false;
+        }
     },
 
     damageTile(tileX, tileY) {
