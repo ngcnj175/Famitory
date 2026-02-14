@@ -179,6 +179,9 @@ const App = {
         // レイアウト確定後にリサイズ再実行（初回読み込み時のタイミングずれ対策）
         setTimeout(() => this.refreshCurrentScreen(), 100);
 
+        // PC向け：マウスドラッグでのスクロールを有効化
+        this.enableDragScroll();
+
         console.log('PixelGameKit initialized!');
     },
 
@@ -201,8 +204,10 @@ const App = {
             app.style.marginTop = '';
             document.body.style.overflow = 'hidden';
             document.body.style.display = '';
+            document.body.style.display = '';
             document.body.style.justifyContent = '';
             document.body.style.alignItems = '';
+            this.viewportScale = 1; // スケールなし
             return;
         }
 
@@ -217,6 +222,7 @@ const App = {
 
         // 最大スケールをキャップ（あまり大きくしすぎない）
         const cappedScale = Math.min(scale, 2.5);
+        this.viewportScale = cappedScale; // グローバルに保存
 
         app.style.width = baseWidth + 'px';
         app.style.height = baseHeight + 'px';
@@ -303,6 +309,65 @@ const App = {
             // それ以外は全てスクロール防止
             e.preventDefault();
         }, { passive: false });
+    },
+
+    // PC向け：マウスドラッグでのスクロール（.gallery-scroll）
+    enableDragScroll() {
+        const sliders = document.querySelectorAll('.gallery-scroll');
+        sliders.forEach(slider => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            let isDragging = false; // ドラッグ中かどうか（クリック誤爆防止用）
+
+            // 初期カーソル
+            slider.style.cursor = 'grab';
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                isDragging = false;
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+                slider.style.cursor = 'grabbing';
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.style.cursor = 'grab';
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.style.cursor = 'grab';
+                // ドラッグしていた場合はフラグを少し遅延させて下ろす（clickイベントで判定するため）
+                if (isDragging) {
+                    setTimeout(() => { isDragging = false; }, 100);
+                }
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const scale = this.viewportScale || 1;
+                const walk = (x - startX) / scale; // スケールを考慮して1:1に補正
+
+                // 5px以上動いたらドラッグとみなす
+                if (Math.abs(x - startX) > 5) {
+                    isDragging = true;
+                }
+
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            // ドラッグ中のクリックイベントを無効化（キャプチャフェーズで止める）
+            slider.addEventListener('click', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        });
     },
 
     registerServiceWorker() {

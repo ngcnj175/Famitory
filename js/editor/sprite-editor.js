@@ -687,7 +687,7 @@ const SpriteEditor = {
         App.projectData.sprites.forEach((sprite, index) => {
             const div = document.createElement('div');
             div.className = 'sprite-item' + (index === this.currentSprite ? ' selected' : '');
-            div.draggable = true;
+            // div.draggable = true; // PCでのドラッグスクロールと競合するため無効化
             div.dataset.index = index;
 
             const miniCanvas = document.createElement('canvas');
@@ -773,7 +773,7 @@ const SpriteEditor = {
                 }
             });
 
-            // ドラッグ並べ替え
+            /* ドラッグ並べ替え（スクロール優先のため無効化）
             div.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', index);
                 div.classList.add('dragging');
@@ -796,6 +796,7 @@ const SpriteEditor = {
                     this.reorderSprites(fromIndex, toIndex);
                 }
             });
+            */
 
             container.appendChild(div);
         });
