@@ -696,20 +696,31 @@ const SpriteEditor = {
             this.renderSpriteToMiniCanvas(sprite, miniCanvas);
             div.appendChild(miniCanvas);
 
-            // 長押しで削除
+            // 長押しで削除 & スクロール判定
             let longPressTimer;
             let isLongPress = false;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let isScrolling = false;
 
-            const startLongPress = () => {
+            const startLongPress = (e) => {
                 isLongPress = false;
+                isScrolling = false;
+                if (e.touches && e.touches[0]) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }
+
                 longPressTimer = setTimeout(() => {
-                    isLongPress = true;
-                    // アクションメニュー表示
-                    App.showActionMenu(null, [
-                        { text: '複製', action: () => this.duplicateSprite(index) },
-                        { text: '削除', style: 'destructive', action: () => this.deleteSprite(index, false) },
-                        { text: 'キャンセル', style: 'cancel' }
-                    ]);
+                    if (!isScrolling) {
+                        isLongPress = true;
+                        // アクションメニュー表示
+                        App.showActionMenu(null, [
+                            { text: '複製', action: () => this.duplicateSprite(index) },
+                            { text: '削除', style: 'destructive', action: () => this.deleteSprite(index, false) },
+                            { text: 'キャンセル', style: 'cancel' }
+                        ]);
+                    }
                 }, 800);
             };
 
@@ -717,19 +728,35 @@ const SpriteEditor = {
                 clearTimeout(longPressTimer);
             };
 
+            const handleTouchMove = (e) => {
+                cancelLongPress();
+                if (isScrolling) return;
+
+                if (e.touches && e.touches[0]) {
+                    const dx = e.touches[0].clientX - touchStartX;
+                    const dy = e.touches[0].clientY - touchStartY;
+                    // 10px以上動いたらスクロールとみなす
+                    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                        isScrolling = true;
+                    }
+                }
+            };
+
             div.addEventListener('mousedown', startLongPress);
             div.addEventListener('mouseup', cancelLongPress);
             div.addEventListener('mouseleave', cancelLongPress);
             div.addEventListener('touchstart', startLongPress, { passive: true });
-            div.addEventListener('touchmove', cancelLongPress, { passive: true });
+            div.addEventListener('touchmove', handleTouchMove, { passive: true });
             div.addEventListener('touchend', (e) => {
                 cancelLongPress();
+                if (isScrolling) return;
+
                 // タッチ用ダブルタップ検出
                 if (!isLongPress) {
                     const now = Date.now();
                     if (now - this.lastSpriteClickTime < 300 && this.lastSpriteClickIndex === index) {
                         // ダブルタップ → サイズ切り替え
-                        e.preventDefault();
+                        if (e.cancelable) e.preventDefault();
                         this.toggleSpriteSize(index);
                         this.lastSpriteClickTime = 0;
                         this.lastSpriteClickIndex = -1;
