@@ -2412,8 +2412,9 @@ const SoundEditor = {
             }
         });
 
-        this.canvas.addEventListener('mousemove', (e) => {
+        window.addEventListener('mousemove', (e) => {
             if (isDragging) {
+                e.preventDefault();
                 this.lastPointerEvent = e;
                 checkAutoScroll(e.clientX, e.clientY, (ev) => processMove(ev));
                 processMove(e);
@@ -2484,7 +2485,7 @@ const SoundEditor = {
             }
         });
 
-        this.canvas.addEventListener('mouseup', (e) => {
+        window.addEventListener('mouseup', (e) => {
             // 選択モード
             if (this.currentTool === 'select') {
                 // 移動なし（タップ）なら選択解除
