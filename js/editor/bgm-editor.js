@@ -794,6 +794,16 @@ const SoundEditor = {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const idx = parseInt(btn.dataset.songIndex);
+
+                // トグル動作: 再生中で同じ曲なら停止
+                if (this.currentSongIdx === idx && this.isPlaying) {
+                    this.stop();
+                    // ボタンを停止状態に戻す
+                    btn.textContent = '▶';
+                    btn.classList.remove('playing');
+                    return;
+                }
+
                 this.selectSong(idx);
                 this.play();
                 // 他のボタンをリセット
@@ -1987,6 +1997,46 @@ const SoundEditor = {
         let lastTouchX = 0;
         let lastTouchY = 0;
 
+        // --- PC: マウスホイールスクロール ---
+        this.canvas.addEventListener('wheel', (e) => {
+            if (App.currentScreen !== 'sound') return;
+            e.preventDefault();
+            const maxScrollY = 72 * this.cellSize - this.canvas.height;
+            const speed = 0.3;
+            const dx = (e.shiftKey ? e.deltaY : 0) * speed;
+            const dy = (e.shiftKey ? 0 : e.deltaY) * speed;
+            this.scrollX = Math.max(0, this.scrollX + dx);
+            this.scrollY = Math.max(0, Math.min(maxScrollY, this.scrollY + dy));
+            this.render();
+        }, { passive: false });
+
+        // --- PC: 中ボタンドラッグパン ---
+        let isBgmMiddlePan = false;
+        let bgmMidPanX = 0, bgmMidPanY = 0;
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 1) {
+                if (App.currentScreen !== 'sound') return;
+                e.preventDefault();
+                isBgmMiddlePan = true;
+                bgmMidPanX = e.clientX;
+                bgmMidPanY = e.clientY;
+            }
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!isBgmMiddlePan) return;
+            const maxScrollY = 72 * this.cellSize - this.canvas.height;
+            const dx = bgmMidPanX - e.clientX;
+            const dy = bgmMidPanY - e.clientY;
+            bgmMidPanX = e.clientX;
+            bgmMidPanY = e.clientY;
+            this.scrollX = Math.max(0, this.scrollX + dx);
+            this.scrollY = Math.max(0, Math.min(maxScrollY, this.scrollY + dy));
+            this.render();
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (e.button === 1) isBgmMiddlePan = false;
+        });
+
         const getPos = (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const touch = e.touches ? e.touches[0] : e;
@@ -2127,6 +2177,8 @@ const SoundEditor = {
         });
 
         this.canvas.addEventListener('mousedown', (e) => {
+            // 中ボタン（パン用）は描画に使わない
+            if (e.button !== undefined && e.button !== 0) return;
             const pos = getPos(e);
             const { step, pitch } = getStepPitch(pos);
 

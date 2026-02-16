@@ -60,14 +60,14 @@ const StageEditor = {
     },
 
     refresh() {
-        // 繧ｭ繝｣繝ｳ繝舌せ繧貞・蜿門ｾ暦ｼ・OM譖ｴ譁ｰ蟇ｾ蠢懶ｼ・
+        // キャンバスを再取得（DOM更新対応）
         this.canvas = document.getElementById('stage-canvas');
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
         }
 
         this.initTemplateList();
-        this.initCanvasEvents(); // 繧､繝吶Φ繝医Μ繧ｹ繝翫・蜀崎ｨｭ螳・
+        this.initCanvasEvents();
         this.updateStageSettingsUI();
         this.resize();
         this.render();
@@ -1152,11 +1152,25 @@ const StageEditor = {
     },
 
     playBgmPreview(idx) {
+        // 既に同じ曲をプレビュー中の場合は停止して終了
+        if (this.bgmPreviewPlaying && typeof SoundEditor !== 'undefined' &&
+            SoundEditor.currentSongIdx === parseInt(idx) && SoundEditor.isPlaying) {
+            this.stopBgmPreview();
+            return;
+        }
+
         this.stopBgmPreview();
         if (typeof SoundEditor !== 'undefined' && SoundEditor.songs?.[idx]) {
             SoundEditor.selectSong(idx);
             SoundEditor.play();
             this.bgmPreviewPlaying = true;
+
+            // UI更新
+            const btn = document.querySelector(`#bgm-select-popup .se-preview-btn[data-bgm-index="${idx}"]`);
+            if (btn) {
+                btn.textContent = '■';
+                btn.classList.add('playing');
+            }
         }
     },
 
@@ -1164,6 +1178,14 @@ const StageEditor = {
         if (this.bgmPreviewPlaying && typeof SoundEditor !== 'undefined') {
             SoundEditor.stop();
             this.bgmPreviewPlaying = false;
+        }
+        // UIリセット
+        const popup = document.getElementById('bgm-select-popup');
+        if (popup) {
+            popup.querySelectorAll('.se-preview-btn').forEach(btn => {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            });
         }
     },
 
@@ -1401,12 +1423,17 @@ const StageEditor = {
                 // バッジは表示しない（+マークのみ、CSSで表示）
             }
 
-            // 繧ｿ繝・・/繧ｯ繝ｪ繝・け蜃ｦ逅・ｼ医す繝ｳ繧ｰ繝ｫ・壼叉蠎ｧ縺ｫ驕ｸ謚槭√ム繝悶Ν・夊ｨｭ螳夊｡ｨ遉ｺ・・
+            let isLongPress = false;
+
+            // タップ/クリック処理（シングル＝座標に選択、ダブル＝設定表示）
             const handleTap = (e) => {
-                // 繧､繝吶Φ繝医ち繝ｼ繧ｲ繝・ヨ縺後％縺ｮdiv蜀・〒縺ｪ縺・ｴ蜷医・辟｡隕厄ｼ・Phone繝舌げ蟇ｾ遲厄ｼ・
+                // イベントターゲットがこのdiv内でない場合は無視
                 if (e && e.target && !div.contains(e.target)) {
                     return;
                 }
+
+                // 長押し判定後はクリック処理を中断
+                if (isLongPress) return;
 
                 const state = this.tileClickState;
 
@@ -1440,20 +1467,34 @@ const StageEditor = {
 
             div.addEventListener('click', handleTap);
 
-            // 髟ｷ謚ｼ縺励〒繝｡繝九Η繝ｼ陦ｨ遉ｺ
+            // 長押しでメニュー表示 (PC mousedown + Touch start)
             let longPressTimer = null;
-            div.addEventListener('touchstart', () => {
+
+            const startLongPress = () => {
+                isLongPress = false;
                 longPressTimer = setTimeout(() => {
+                    isLongPress = true;
                     App.showActionMenu(null, [
                         { text: '複製', action: () => this.duplicateTemplate(index) },
                         { text: '削除', style: 'destructive', action: () => this.deleteTemplate(index, false) },
                         { text: 'キャンセル', style: 'cancel' }
                     ]);
                 }, 800);
-            }, { passive: true });
+            };
 
-            div.addEventListener('touchend', () => clearTimeout(longPressTimer));
-            div.addEventListener('touchmove', () => clearTimeout(longPressTimer));
+            const cancelLongPress = () => {
+                clearTimeout(longPressTimer);
+            };
+
+            // Touch
+            div.addEventListener('touchstart', startLongPress, { passive: true });
+            div.addEventListener('touchend', cancelLongPress);
+            div.addEventListener('touchmove', cancelLongPress);
+
+            // Mouse (PC)
+            div.addEventListener('mousedown', startLongPress);
+            div.addEventListener('mouseup', cancelLongPress);
+            div.addEventListener('mouseleave', cancelLongPress);
 
             container.appendChild(div);
         });
@@ -1603,6 +1644,7 @@ const StageEditor = {
 
         let isDrawing = false;
 
+
         // 2譛ｬ謖・ヱ繝ｳ逕ｨ縺ｮ迥ｶ諷・
         this.canvasScrollX = 0;
         this.canvasScrollY = 0;
@@ -1612,8 +1654,57 @@ const StageEditor = {
         let lastScrollX = 0;
         let lastScrollY = 0;
 
+        // --- PC: マウスホイールスクロール ---
+        this.canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const stage = App.projectData?.stage;
+            if (!stage) return;
+            const maxScrollX = Math.max(0, (stage.width - 16) * this.tileSize);
+            const maxScrollY = Math.max(0, (stage.height - 16) * this.tileSize);
+            if (maxScrollX === 0 && maxScrollY === 0) return;
+
+            const speed = 0.3;
+            const dx = (e.shiftKey ? e.deltaY : 0) * speed;
+            const dy = (e.shiftKey ? 0 : e.deltaY) * speed;
+            this.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.canvasScrollX - dx));
+            this.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.canvasScrollY - dy));
+            this.render();
+        }, { passive: false });
+
+        // --- PC: 中ボタンドラッグパン ---
+        let isMiddlePanning = false;
+        let midPanX = 0, midPanY = 0;
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 1) {
+                e.preventDefault();
+                isMiddlePanning = true;
+                midPanX = e.clientX;
+                midPanY = e.clientY;
+            }
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!isMiddlePanning) return;
+            const stage = App.projectData?.stage;
+            if (!stage) return;
+            const maxScrollX = Math.max(0, (stage.width - 16) * this.tileSize);
+            const maxScrollY = Math.max(0, (stage.height - 16) * this.tileSize);
+
+            const dx = e.clientX - midPanX;
+            const dy = e.clientY - midPanY;
+            midPanX = e.clientX;
+            midPanY = e.clientY;
+            this.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.canvasScrollX + dx));
+            this.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.canvasScrollY + dy));
+            this.render();
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (e.button === 1) isMiddlePanning = false;
+        });
+
         const handleStart = (e) => {
             if (e.cancelable) e.preventDefault(); // Prevent native selection/drag
+            // 中ボタン（パン用）は描画に使わない
+            if (e.button !== undefined && e.button !== 0) return;
             if (isDrawing) return;
             hasMoved = false;
 
@@ -1837,17 +1928,54 @@ const StageEditor = {
 
 
     getTileFromEvent(e) {
+        // 1. PC (Mouse): offsetX / offsetY を優先利用
+        // これらは要素のパディングボックス座標系（枠線除外・変換適用前）で返されるため、
+        // CSS transform や border の計算を自動的に回避できて最も正確。
+        if (e.offsetX !== undefined && e.offsetY !== undefined) {
+            // クライアントサイズ（padding含む・border除外）と内部解像度の比率
+            const w = this.canvas.clientWidth;
+            const h = this.canvas.clientHeight;
+            if (w === 0 || h === 0) return { x: 0, y: 0 };
+
+            const scaleX = this.canvas.width / w;
+            const scaleY = this.canvas.height / h;
+
+            // スクロールオフセットを加算してステージ座標に変換
+            const scrollOffsetX = Math.round(-(this.canvasScrollX || 0) / this.tileSize);
+            const scrollOffsetY = Math.round(-(this.canvasScrollY || 0) / this.tileSize);
+            const x = Math.floor((e.offsetX * scaleX) / this.tileSize) + scrollOffsetX;
+            const y = Math.floor((e.offsetY * scaleY) / this.tileSize) + scrollOffsetY;
+            return { x, y };
+        }
+
+        // 2. Touch (Fallback): touches[] から手動計算
         const clientX = e.clientX ?? e.touches?.[0]?.clientX;
         const clientY = e.clientY ?? e.touches?.[0]?.clientY;
 
-        if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 }; // 繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ
+        if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 };
 
         const rect = this.canvas.getBoundingClientRect();
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
 
-        const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
-        const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
+        // 枠線の幅を計算
+        const cssScaleX = rect.width / this.canvas.offsetWidth;
+        const cssScaleY = rect.height / this.canvas.offsetHeight;
+
+        const style = window.getComputedStyle(this.canvas);
+        const borderLeft = (parseFloat(style.borderLeftWidth) || 0) * cssScaleX;
+        const borderTop = (parseFloat(style.borderTopWidth) || 0) * cssScaleY;
+        const borderRight = (parseFloat(style.borderRightWidth) || 0) * cssScaleX;
+        const borderBottom = (parseFloat(style.borderBottomWidth) || 0) * cssScaleY;
+
+        const drawRectWidth = rect.width - borderLeft - borderRight;
+        const scaleX = this.canvas.width / drawRectWidth;
+        const scaleY = this.canvas.height / (rect.height - borderTop - borderBottom);
+
+        // スクロールオフセットを加算してステージ座標に変換
+        const scrollOffsetX = Math.round(-(this.canvasScrollX || 0) / this.tileSize);
+        const scrollOffsetY = Math.round(-(this.canvasScrollY || 0) / this.tileSize);
+        const x = Math.floor(((clientX - rect.left - borderLeft) * scaleX) / this.tileSize) + scrollOffsetX;
+        const y = Math.floor(((clientY - rect.top - borderTop) * scaleY) / this.tileSize) + scrollOffsetY;
+
         return { x, y };
     },
 
@@ -2042,18 +2170,7 @@ const StageEditor = {
         const clientY = e.clientY ?? e.touches?.[0]?.clientY;
         if (clientX === undefined || clientY === undefined) return;
 
-        const rect = this.canvas.getBoundingClientRect();
-
-        // 繧ｭ繝｣繝ｳ繝舌せ螟悶・繧ｿ繝・メ縺ｯ辟｡隕厄ｼ医せ繝・・繧ｸ險ｭ螳壹ヱ繝阪Ν縺ｪ縺ｩ莉剖I隕∫ｴ縺ｮ繧ｿ繝・・蟇ｾ遲厄ｼ・
-        if (clientX < rect.left || clientX > rect.right ||
-            clientY < rect.top || clientY > rect.bottom) {
-            return;
-        }
-
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
-        const x = Math.floor((clientX - rect.left - scrollX) / this.tileSize);
-        const y = Math.floor((clientY - rect.top - scrollY) / this.tileSize);
+        const { x, y } = this.getTileFromEvent(e);
 
         // 蠎ｧ讓吶′NaN縺ｮ蝣ｴ蜷医・蜃ｦ逅・＠縺ｪ縺・
         if (isNaN(x) || isNaN(y)) return;
@@ -2282,8 +2399,8 @@ const StageEditor = {
         const container = document.getElementById('stage-canvas-area');
         if (!container || !this.canvas) return;
 
-        // 繧ｭ繝｣繝ｳ繝舌せ縺ｯ蟶ｸ縺ｫ16x16繧ｿ繧､繝ｫ・・20px・牙崋螳・
-        // 繧ｹ繝・・繧ｸ繧ｵ繧､繧ｺ縺悟､ｧ縺阪＞蝣ｴ蜷医・2譛ｬ謖・ヱ繝ｳ縺ｧ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
+        // キャンバスは常に16x16タイル・20px固定ビューポート
+        // ステージサイズが大きい場合は2本指パンでスクロール
         this.tileSize = 20;
         const canvasSize = 320;
 

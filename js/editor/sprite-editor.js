@@ -1319,6 +1319,52 @@ const SpriteEditor = {
             }
         });
 
+        // --- PC: マウスホイールスクロール（32x32時のみ） ---
+        this.canvas.addEventListener('wheel', (e) => {
+            if (App.currentScreen !== 'paint') return;
+            if (this.getCurrentSpriteSize() !== 2) return;
+            e.preventDefault();
+            const maxScroll = 16 * this.pixelSize;
+            const speed = 0.3;
+            const dx = (e.shiftKey ? e.deltaY : 0) * speed;
+            const dy = (e.shiftKey ? 0 : e.deltaY) * speed;
+            if (!Number.isFinite(this.viewportOffsetX)) this.viewportOffsetX = 0;
+            if (!Number.isFinite(this.viewportOffsetY)) this.viewportOffsetY = 0;
+            this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + dx));
+            this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + dy));
+            this.render();
+        }, { passive: false });
+
+        // --- PC: 中ボタンドラッグパン（32x32時のみ） ---
+        let isSpriteMiddlePan = false;
+        let spriteMidPanX = 0, spriteMidPanY = 0;
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 1) {
+                if (App.currentScreen !== 'paint') return;
+                if (this.getCurrentSpriteSize() !== 2) return;
+                e.preventDefault();
+                isSpriteMiddlePan = true;
+                spriteMidPanX = e.clientX;
+                spriteMidPanY = e.clientY;
+            }
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!isSpriteMiddlePan) return;
+            const maxScroll = 16 * this.pixelSize;
+            const dx = spriteMidPanX - e.clientX;
+            const dy = spriteMidPanY - e.clientY;
+            spriteMidPanX = e.clientX;
+            spriteMidPanY = e.clientY;
+            if (!Number.isFinite(this.viewportOffsetX)) this.viewportOffsetX = 0;
+            if (!Number.isFinite(this.viewportOffsetY)) this.viewportOffsetY = 0;
+            this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + dx));
+            this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + dy));
+            this.render();
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (e.button === 1) isSpriteMiddlePan = false;
+        });
+
         this.canvas.addEventListener('mousedown', (e) => this.onPointerDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.onPointerMove(e));
         document.addEventListener('mouseup', () => this.onPointerUp());
@@ -1472,6 +1518,8 @@ const SpriteEditor = {
 
     onPointerDown(e) {
         if (App.currentScreen !== 'paint') return;
+        // 中ボタン（パン用）は描画に使わない
+        if (e.button !== undefined && e.button !== 0) return;
         this.hasMoved = false;
 
         const pixel = this.getPixelFromEvent(e);
