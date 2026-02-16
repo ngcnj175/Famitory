@@ -28,6 +28,12 @@ const SoundEditor = {
     scrollY: 480, // 縦スクロール位置（C4が下端に表示: (71-36)*20=700、表示領域を考慮して調整）
     highlightPitch: -1, // ハイライト中の音階
 
+    // オートスクロール
+    autoScrollTimer: null,
+    autoScrollX: 0,
+    autoScrollY: 0,
+    lastPointerEvent: null,
+
     // 編集ツール
     currentTool: 'pencil', // pencil, eraser, select, copy, paste
 
@@ -1978,14 +1984,72 @@ const SoundEditor = {
         if (!this.canvas) return;
 
         let isDragging = false;
+        let hasMoved = false; // 前回の編集で変数が消えていたなら追加
         let startX = 0, startY = 0;
 
         // 長押し＆ドラッグ用
         let longPressTimer = null;
         let isLongPress = false;
+        // duplicate removed
         let draggingNote = null;
         let originalStep = 0;
         let originalPitch = 0;
+
+        // --- オートスクロール関数 ---
+        const stopAutoScroll = () => {
+            if (this.autoScrollTimer) {
+                clearInterval(this.autoScrollTimer);
+                this.autoScrollTimer = null;
+            }
+        };
+
+        const startAutoScroll = (dx, dy, eventUpdater) => {
+            this.autoScrollX = dx;
+            this.autoScrollY = dy;
+            if (this.autoScrollTimer) return;
+
+            this.autoScrollTimer = setInterval(() => {
+                if (!isDragging) {
+                    stopAutoScroll();
+                    return;
+                }
+
+                const maxScrollY = 72 * this.cellSize - this.canvas.height;
+                const oldX = this.scrollX;
+                const oldY = this.scrollY;
+
+                this.scrollX = Math.max(0, this.scrollX + this.autoScrollX);
+                this.scrollY = Math.max(0, Math.min(maxScrollY, this.scrollY + this.autoScrollY));
+
+                if (this.scrollX === oldX && this.scrollY === oldY) return;
+
+                // 座標更新のために直前のイベントで再処理
+                if (this.lastPointerEvent) {
+                    eventUpdater(this.lastPointerEvent);
+                }
+                this.render();
+            }, 30);
+        };
+
+        const checkAutoScroll = (clientX, clientY, eventUpdater) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const edgeSize = 30;
+            const scrollSpeed = 15;
+            let dx = 0;
+            let dy = 0;
+
+            if (clientX < rect.left + edgeSize) dx = -scrollSpeed;
+            else if (clientX > rect.right - edgeSize) dx = scrollSpeed;
+
+            if (clientY < rect.top + edgeSize) dy = -scrollSpeed;
+            else if (clientY > rect.bottom - edgeSize) dy = scrollSpeed;
+
+            if (dx !== 0 || dy !== 0) {
+                startAutoScroll(dx, dy, eventUpdater);
+            } else {
+                stopAutoScroll();
+            }
+        };
 
         // 新規ノート入力用（ドラッグで長さ設定）
         let isCreatingNote = false;
@@ -2016,6 +2080,10 @@ const SoundEditor = {
         this.canvas.addEventListener('mousedown', (e) => {
             if (e.button === 1) {
                 if (App.currentScreen !== 'sound') return;
+                stopAutoScroll();
+                this.lastPointerEvent = null;
+
+                // ロングタップタイマー解除
                 e.preventDefault();
                 isBgmMiddlePan = true;
                 bgmMidPanX = e.clientX;
@@ -2071,6 +2139,85 @@ const SoundEditor = {
             const row = Math.floor((pos.y + scrollY) / this.cellSize);
             const pitch = Math.max(0, Math.min(71, maxPitch - row));
             return { step, pitch };
+        };
+
+        // 共通処理関数
+        const processMove = (e) => {
+            const pos = getPos(e);
+
+            // startX, startY は initPianoRoll スコープの変数を使用
+            const moved = Math.abs(pos.x - startX) > 5 || Math.abs(pos.y - startY) > 5;
+
+            if (moved && !isLongPress && !isCreatingNote) {
+                clearTimeout(longPressTimer);
+            }
+            if (moved) hasMoved = true;
+
+            // 選択モード
+            if (this.currentTool === 'select') {
+                const { step, pitch } = getStepPitch(pos);
+
+                if (this.isMovingSelection && this.selectionMoveStart) {
+                    const deltaStep = step - this.selectionMoveStart.step;
+                    const deltaPitch = pitch - this.selectionMoveStart.pitch;
+
+                    // 選択枠を移動
+                    if (this.selectionStart) {
+                        this.selectionStart.step += deltaStep;
+                        this.selectionStart.pitch += deltaPitch;
+                    }
+                    if (this.selectionEnd) {
+                        this.selectionEnd.step += deltaStep;
+                        this.selectionEnd.pitch += deltaPitch;
+                    }
+
+                    // 選択範囲内のノートも移動
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                    const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
+                    const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+                    const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+
+                    track.notes.forEach(note => {
+                        if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
+                            note.step += deltaStep;
+                            note.pitch += deltaPitch;
+                        }
+                    });
+
+                    this.selectionMoveStart = { step, pitch };
+                } else {
+                    // 範囲変更
+                    this.selectionEnd = { step, pitch };
+                }
+                this.render();
+                return;
+            }
+
+            // ペーストモード
+            if (this.currentTool === 'paste') {
+                const { step, pitch } = getStepPitch(pos);
+                this.pasteOffset = { step, pitch };
+                this.render();
+                return;
+            }
+
+            // 長押しドラッグ中ならノート移動
+            if (isLongPress && draggingNote) {
+                const { step, pitch } = getStepPitch(pos);
+                draggingNote.step = Math.max(0, step);
+                draggingNote.pitch = pitch;
+                this.render();
+            }
+
+            // 新規ノート作成中ならドラッグで長さ更新
+            if (isCreatingNote && creatingNote) {
+                const { step } = getStepPitch(pos);
+                const length = Math.max(1, step - createStartStep + 1);
+                creatingNote.length = length;
+                this.render();
+            }
         };
 
         // 2本指パン誤入力防止用
@@ -2237,6 +2384,8 @@ const SoundEditor = {
             }
         });
 
+
+
         // タッチムーブ
         this.canvas.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2 && isTwoFingerPan) {
@@ -2257,161 +2406,17 @@ const SoundEditor = {
                 e.preventDefault();
             } else if (isDragging && e.touches.length === 1) {
                 e.preventDefault();
-
-                const pos = getPos(e);
-                const moved = Math.abs(pos.x - startX) > 5 || Math.abs(pos.y - startY) > 5;
-
-                if (moved && !isLongPress && !isCreatingNote) {
-                    clearTimeout(longPressTimer);
-                }
-                if (moved) hasMoved = true;
-                if (moved) hasMoved = true;
-                if (moved) hasMoved = true;
-
-                // 選択モード
-                if (this.currentTool === 'select') {
-                    const { step, pitch } = getStepPitch(pos);
-
-                    if (this.isMovingSelection && this.selectionMoveStart) {
-                        const deltaStep = step - this.selectionMoveStart.step;
-                        const deltaPitch = pitch - this.selectionMoveStart.pitch;
-
-                        // 選択枠を移動
-                        if (this.selectionStart) {
-                            this.selectionStart.step += deltaStep;
-                            this.selectionStart.pitch += deltaPitch;
-                        }
-                        if (this.selectionEnd) {
-                            this.selectionEnd.step += deltaStep;
-                            this.selectionEnd.pitch += deltaPitch;
-                        }
-
-                        // 選択範囲内のノートも移動
-                        const song = this.getCurrentSong();
-                        const track = song.tracks[this.currentTrack];
-                        const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                        const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                        const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
-                        const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
-
-                        track.notes.forEach(note => {
-                            if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
-                                note.step += deltaStep;
-                                note.pitch += deltaPitch;
-                            }
-                        });
-
-                        this.selectionMoveStart = { step, pitch };
-                    } else {
-                        // 範囲変更
-                        this.selectionEnd = { step, pitch };
-                    }
-                    this.render();
-                    return;
-                }
-
-                // ペーストモード
-                if (this.currentTool === 'paste') {
-                    const { step, pitch } = getStepPitch(pos);
-                    this.pasteOffset = { step, pitch };
-                    this.render();
-                    return;
-                }
-
-                // 長押しドラッグ中ならノート移動
-                if (isLongPress && draggingNote) {
-                    const { step, pitch } = getStepPitch(pos);
-                    draggingNote.step = Math.max(0, step);
-                    draggingNote.pitch = pitch;
-                    this.render();
-                }
-
-                // 新規ノート作成中ならドラッグで長さ更新
-                if (isCreatingNote && creatingNote) {
-                    const { step } = getStepPitch(pos);
-                    const length = Math.max(1, step - createStartStep + 1);
-                    creatingNote.length = length;
-                    this.render();
-                }
+                this.lastPointerEvent = e;
+                checkAutoScroll(e.touches[0].clientX, e.touches[0].clientY, (ev) => processMove(ev));
+                processMove(e);
             }
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
             if (isDragging) {
-                const pos = getPos(e);
-                const moved = Math.abs(pos.x - startX) > 5 || Math.abs(pos.y - startY) > 5;
-
-                if (moved && !isLongPress && !isCreatingNote) {
-                    clearTimeout(longPressTimer);
-                }
-                if (moved) hasMoved = true;
-                if (moved) hasMoved = true;
-
-                // 選択モード
-                if (this.currentTool === 'select') {
-                    const { step, pitch } = getStepPitch(pos);
-
-                    if (this.isMovingSelection && this.selectionMoveStart) {
-                        const deltaStep = step - this.selectionMoveStart.step;
-                        const deltaPitch = pitch - this.selectionMoveStart.pitch;
-
-                        // 選択枠を移動
-                        if (this.selectionStart) {
-                            this.selectionStart.step += deltaStep;
-                            this.selectionStart.pitch += deltaPitch;
-                        }
-                        if (this.selectionEnd) {
-                            this.selectionEnd.step += deltaStep;
-                            this.selectionEnd.pitch += deltaPitch;
-                        }
-
-                        // 選択範囲内のノートも移動
-                        const song = this.getCurrentSong();
-                        const track = song.tracks[this.currentTrack];
-                        const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                        const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                        const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
-                        const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
-
-                        track.notes.forEach(note => {
-                            if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
-                                note.step += deltaStep;
-                                note.pitch += deltaPitch;
-                            }
-                        });
-
-                        this.selectionMoveStart = { step, pitch };
-                    } else {
-                        // 範囲変更
-                        this.selectionEnd = { step, pitch };
-                    }
-                    this.render();
-                    return;
-                }
-
-                // ペーストモード
-                if (this.currentTool === 'paste') {
-                    const { step, pitch } = getStepPitch(pos);
-                    this.pasteOffset = { step, pitch };
-                    this.render();
-                    return;
-                }
-
-                // 長押しドラッグ中ならノート移動
-                if (isLongPress && draggingNote) {
-                    const { step, pitch } = getStepPitch(pos);
-                    draggingNote.step = Math.max(0, step);
-                    draggingNote.pitch = pitch;
-                    this.render();
-                }
-
-                // 新規ノート作成中ならドラッグで長さ更新
-                if (isCreatingNote && creatingNote) {
-                    const { step } = getStepPitch(pos);
-                    const length = Math.max(1, step - createStartStep + 1);
-                    creatingNote.length = length;
-                    this.render();
-                }
+                this.lastPointerEvent = e;
+                checkAutoScroll(e.clientX, e.clientY, (ev) => processMove(ev));
+                processMove(e);
             }
         });
 

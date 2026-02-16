@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pixel-game-kit-v2.7.29';
+const CACHE_NAME = 'pixel-game-kit-v2.7.30';
 const urlsToCache = [
     './',
     './index.html',

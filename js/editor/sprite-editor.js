@@ -13,9 +13,16 @@ const SpriteEditor = {
     lastPixel: { x: -1, y: -1 },
     clipboard: null,
 
-    // Undo履歴
+    // 履歴管理
     history: [],
+    historyIndex: -1,
     maxHistory: 20,
+
+    // オートスクロール
+    autoScrollTimer: null,
+    autoScrollX: 0,
+    autoScrollY: 0,
+    lastPointerEvent: null, // オートスクロール用イベントキャッシュ
 
     SPRITE_SIZE: 16,
     pixelSize: 20,
@@ -1496,7 +1503,51 @@ const SpriteEditor = {
             this.isPanning = false;
             this.guideAdjustData = null; // おてほん調整データをリセット
             this.onPointerUp();
+            this.guideAdjustData = null; // おてほん調整データをリセット
+            this.stopAutoScroll();
+            this.onPointerUp();
         });
+    },
+
+    // オートスクロール開始
+    startAutoScroll(dx, dy) {
+        this.autoScrollX = dx;
+        this.autoScrollY = dy;
+        if (this.autoScrollTimer) return;
+
+        this.autoScrollTimer = setInterval(() => {
+            const dimension = this.getCurrentSpriteDimension();
+            // 32x32以外や描画停止時は終了
+            if (dimension !== 32 || (!this.isSelecting && !this.isMovingSelection && !this.pasteMode)) {
+                this.stopAutoScroll();
+                return;
+            }
+
+            // スクロール実行
+            const oldX = this.viewportOffsetX;
+            const oldY = this.viewportOffsetY;
+            const maxScroll = Math.max(0, dimension * this.pixelSize - this.canvas.width);
+
+            this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + this.autoScrollX));
+            this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + this.autoScrollY));
+
+            if (this.viewportOffsetX === oldX && this.viewportOffsetY === oldY) return;
+
+            // 座標更新のために直前のイベントで再処理
+            if (this.lastPointerEvent) {
+                // onPointerMoveを再呼び出し（再帰ガードが必要かもだが、autoScrollTimerからの呼び出しは非同期なのでOK）
+                // ただし onPointerMove 内でまた startAutoScroll が呼ばれるが、Timerがあれば無視されるのでOK
+                this.onPointerMove(this.lastPointerEvent);
+            }
+            this.render();
+        }, 30);
+    },
+
+    stopAutoScroll() {
+        if (this.autoScrollTimer) {
+            clearInterval(this.autoScrollTimer);
+            this.autoScrollTimer = null;
+        }
     },
 
     getPixelFromEvent(e) {
@@ -1606,6 +1657,41 @@ const SpriteEditor = {
         if (!this.isDrawing || App.currentScreen !== 'paint') return;
         this.hasMoved = true;
 
+        // イベントをキャッシュ（オートスクロール用）
+        // Touchオブジェクトの場合はそのまま保持できない（変更される可能性がある）ため、必要な情報だけ持つか、
+        // あるいは毎回更新されるので参照でいいか… eはイベントハンドラ内で有効。
+        // ここでは単純に e を保持する（TouchListの参照問題があるかもしれないが、clientXなどはプリミティブ）
+        // 正確には e が TouchEvent か MouseEvent かで異なる。
+        // 簡易的に e をそのまま使う。
+        this.lastPointerEvent = e;
+
+        // オートスクロール判定
+        const dimension = this.getCurrentSpriteDimension();
+        if (dimension === 32 && (this.isSelecting || this.isMovingSelection || this.pasteMode)) {
+            const rect = this.canvas.getBoundingClientRect();
+            const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+            const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+            if (clientX !== undefined && clientY !== undefined) {
+                const edgeSize = 30;
+                const scrollSpeed = 15;
+                let dx = 0;
+                let dy = 0;
+
+                if (clientX < rect.left + edgeSize) dx = -scrollSpeed;
+                else if (clientX > rect.right - edgeSize) dx = scrollSpeed;
+
+                if (clientY < rect.top + edgeSize) dy = -scrollSpeed;
+                else if (clientY > rect.bottom - edgeSize) dy = scrollSpeed;
+
+                if (dx !== 0 || dy !== 0) {
+                    this.startAutoScroll(dx, dy);
+                } else {
+                    this.stopAutoScroll();
+                }
+            }
+        }
+
         const pixel = this.getPixelFromEvent(e);
 
         // 範囲選択モード
@@ -1663,6 +1749,8 @@ const SpriteEditor = {
     },
 
     onPointerUp() {
+        this.stopAutoScroll();
+        this.lastPointerEvent = null;
         if (!this.isDrawing) return;
 
         this.isDrawing = false;
