@@ -208,6 +208,31 @@ const SoundEditor = {
             this.selectSong(nextIdx);
         });
 
+        // 数値入力モーダル初期化
+        const numModal = document.getElementById('number-input-modal');
+        const numOkBtn = document.getElementById('number-input-ok');
+        const numCancelBtn = document.getElementById('number-input-cancel');
+        if (numModal && numOkBtn && numCancelBtn) {
+            numOkBtn.addEventListener('click', () => {
+                if (this.onNumberInputCallback) {
+                    const val = document.getElementById('number-input-value').value;
+                    this.onNumberInputCallback(val);
+                }
+                numModal.classList.add('hidden');
+                // iOS: User gesture (click) resumes AudioContext
+                if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            });
+            numCancelBtn.addEventListener('click', () => {
+                numModal.classList.add('hidden');
+                // iOS: Ensure resume even on cancel if needed
+                if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            });
+        }
+
         // タイトルタップ（名前変更モーダル表示）
         document.getElementById('song-title-display')?.addEventListener('click', () => {
             this.openSongNameModal();
@@ -370,42 +395,68 @@ const SoundEditor = {
         }
     },
 
+    // 数値入力ダイアログ (iOS対策: prompt非推奨)
+    openNumberInput(title, initialValue, callback) {
+        const modal = document.getElementById('number-input-modal');
+        const titleEl = document.getElementById('number-input-title');
+        const inputEl = document.getElementById('number-input-value');
+        if (!modal || !titleEl || !inputEl) return;
+
+        titleEl.textContent = title;
+        inputEl.value = initialValue;
+        this.onNumberInputCallback = callback;
+        modal.classList.remove('hidden');
+        inputEl.focus();
+    },
+
     // BPM入力ダイアログ
     openBpmInput() {
-        // Playback stops during prompt, so we manage state
+        // Playback stops/resumes automatically handled by modal (no blocking)
+        // But to be safe, we can pause if we want, or rely on non-blocking nature.
+        // For iOS, let's keep playing if possible, or pause?
+        // Let's pause to avoid confusion, and resume in OK callback.
+        /*
         const wasPlaying = this.isPlaying;
         if (wasPlaying) this.pause();
+        */
+
+        // prompt is blocking, but modal is not. We don't necessarily need to pause!
+        // However, user might want to focus on input.
+        // Let's NOT pause automatically unless requested. User can hear the change immediately.
 
         const current = this.getCurrentSong().bpm;
-        const input = prompt('SPEEDを入力 (60-240)', current);
-        if (input !== null) {
-            const value = parseInt(input);
+        this.openNumberInput('SPEED (60-240)', current, (val) => {
+            const value = parseInt(val);
             if (!isNaN(value) && value >= 60 && value <= 240) {
+                // Stop & play to restart scheduler with new BPM
+                const wasPlaying = this.isPlaying;
+                if (wasPlaying) this.stop();
+
                 this.getCurrentSong().bpm = value;
                 this.updateConsoleDisplay();
-            }
-        }
 
-        if (wasPlaying) this.play();
+                if (wasPlaying) this.play();
+            }
+        });
     },
 
     // BAR入力ダイアログ
     openBarInput() {
-        const wasPlaying = this.isPlaying;
-        if (wasPlaying) this.pause();
-
         const current = this.getCurrentSong().bars;
-        const input = prompt('STEPを入力 (1-256)', current);
-        if (input !== null) {
-            const value = parseInt(input);
+        this.openNumberInput('STEP (1-256)', current, (val) => {
+            const value = parseInt(val);
             if (!isNaN(value) && value >= 1 && value <= 256) {
+                // Restart scheduler if size changed (though less critical for bars)
+                const wasPlaying = this.isPlaying;
+                if (wasPlaying) this.stop();
+
                 this.getCurrentSong().bars = value;
                 this.updateConsoleDisplay();
                 this.render();
-            }
-        }
 
-        if (wasPlaying) this.play();
+                if (wasPlaying) this.play();
+            }
+        });
     },
 
     updateConsoleDisplay() {

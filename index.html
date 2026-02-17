@@ -1112,6 +1112,23 @@
         </div>
     </div>
 
+    <!-- 数値入力モーダル (iOS対策: prompt回避) -->
+    <div id="number-input-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header-simple" id="number-input-title">値を入力を</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input type="number" id="number-input-value" class="simple-input"
+                        style="font-size: 24px; text-align: center;">
+                </div>
+            </div>
+            <div class="modal-footer-actions">
+                <button class="modal-action-btn primary" id="number-input-ok">OK</button>
+                <button class="modal-action-btn cancel" id="number-input-cancel">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SAVE トースト -->
     <div id="save-toast">
         <div class="save-msg-large">セーブしました</div>
