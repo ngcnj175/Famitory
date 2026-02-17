@@ -2486,6 +2486,8 @@ const SoundEditor = {
         });
 
         window.addEventListener('mouseup', (e) => {
+            console.log('[DEBUG] mouseup fired', 'isDragging:', isDragging, 'currentTool:', this.currentTool, 'hasMoved:', hasMoved, 'target:', e.target?.id || e.target?.tagName);
+            if (!isDragging) return;
             // 選択モード
             if (this.currentTool === 'select') {
                 // 移動なし（タップ）なら選択解除
@@ -2535,12 +2537,7 @@ const SoundEditor = {
             clearTimeout(longPressTimer);
         });
 
-        this.canvas.addEventListener('mouseleave', () => {
-            isDragging = false;
-            isLongPress = false;
-            draggingNote = null;
-            clearTimeout(longPressTimer);
-        });
+
     },
 
     // 範囲選択モード開始
@@ -2571,8 +2568,13 @@ const SoundEditor = {
 
     // 範囲コピー
     copySelection() {
+        console.log('[DEBUG] copySelection called',
+            'selectionStart:', this.selectionStart,
+            'selectionEnd:', this.selectionEnd,
+            'selectionMode:', this.selectionMode,
+            'currentTool:', this.currentTool);
         if (!this.selectionStart || !this.selectionEnd) {
-            // alert('コピーする範囲を選択してください');
+            console.log('[DEBUG] copySelection: selection is null, returning early');
             return;
         }
 
