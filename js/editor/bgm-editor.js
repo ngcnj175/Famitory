@@ -2198,7 +2198,13 @@ const SoundEditor = {
             // ペーストモード
             if (this.currentTool === 'paste') {
                 const { step, pitch } = getStepPitch(pos);
-                this.pasteOffset = { step, pitch };
+                if (this.pasteDragStart) {
+                    const dStep = step - this.pasteDragStart.step;
+                    const dPitch = pitch - this.pasteDragStart.pitch;
+                    this.pasteOffset.step += dStep;
+                    this.pasteOffset.pitch += dPitch;
+                    this.pasteDragStart = { step, pitch };
+                }
                 this.render();
                 return;
             }
@@ -2279,7 +2285,7 @@ const SoundEditor = {
 
                 // ペーストモード
                 if (this.currentTool === 'paste') {
-                    this.pasteOffset = { step, pitch };
+                    this.pasteDragStart = { step, pitch };
                     this.render();
                     return;
                 }
@@ -2351,7 +2357,7 @@ const SoundEditor = {
 
             // ペーストモード
             if (this.currentTool === 'paste') {
-                this.pasteOffset = { step, pitch };
+                this.pasteDragStart = { step, pitch };
                 this.render();
                 return;
             }
@@ -2486,7 +2492,6 @@ const SoundEditor = {
         });
 
         window.addEventListener('mouseup', (e) => {
-            console.log('[DEBUG] mouseup fired', 'isDragging:', isDragging, 'currentTool:', this.currentTool, 'hasMoved:', hasMoved, 'target:', e.target?.id || e.target?.tagName);
             if (!isDragging) return;
             // 選択モード
             if (this.currentTool === 'select') {
@@ -2568,13 +2573,8 @@ const SoundEditor = {
 
     // 範囲コピー
     copySelection() {
-        console.log('[DEBUG] copySelection called',
-            'selectionStart:', this.selectionStart,
-            'selectionEnd:', this.selectionEnd,
-            'selectionMode:', this.selectionMode,
-            'currentTool:', this.currentTool);
         if (!this.selectionStart || !this.selectionEnd) {
-            console.log('[DEBUG] copySelection: selection is null, returning early');
+            // alert('コピーする範囲を選択してください');
             return;
         }
 
@@ -2612,6 +2612,7 @@ const SoundEditor = {
 
         this.pasteMode = true;
         this.selectionMode = false;
+        this.pasteDragStart = null;
         this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
 
         // 画面中央付近に配置（現在のスクロール位置基準）
