@@ -781,6 +781,9 @@ const GameEngine = {
         this.ctx.fillStyle = bgColor;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // ステージ情報を取得（共通で使用）
+        const stage = this.stageData || App.projectData.stage;
+
         // カメラ更新（線形補間なしでシンプルに追従）
         // ただし、クリア演出中('clear')は更新しない（プレイヤーがジャンプしても画面を揺らさないため）
         if (this.titleState !== 'clear') {
@@ -791,7 +794,6 @@ const GameEngine = {
             let targetY = this.player.y + this.player.height / 2 - centerY;
 
             // ステージ端制限
-            const stage = this.stageData || App.projectData.stage;
             const viewWidth = this.canvas.width / this.TILE_SIZE;
             const viewHeight = this.canvas.height / this.TILE_SIZE;
 
