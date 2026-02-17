@@ -3042,10 +3042,10 @@ const SoundEditor = {
             }
         }
 
-        // 現在位置（再生中のみ表示、ビビッドグリーン）
-        if (this.isPlaying) {
+        // 現在位置（再生中のみ表示、ビビッドグリーン / ステップ録音中は赤）
+        if (this.isPlaying || this.isStepRecording) {
             const x = this.currentStep * this.cellSize - this.scrollX;
-            this.ctx.strokeStyle = '#00FF00';
+            this.ctx.strokeStyle = this.isStepRecording ? '#FF0000' : '#00FF00';
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
             this.ctx.moveTo(x, 0);
