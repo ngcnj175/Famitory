@@ -782,22 +782,25 @@ const GameEngine = {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // カメラ更新（線形補間なしでシンプルに追従）
-        const centerX = this.canvas.width / 2 / this.TILE_SIZE;
-        const centerY = this.canvas.height / 2 / this.TILE_SIZE;
-        // プレイヤー中心
-        let targetX = this.player.x + this.player.width / 2 - centerX;
-        let targetY = this.player.y + this.player.height / 2 - centerY;
+        // ただし、クリア演出中('clear')は更新しない（プレイヤーがジャンプしても画面を揺らさないため）
+        if (this.titleState !== 'clear') {
+            const centerX = this.canvas.width / 2 / this.TILE_SIZE;
+            const centerY = this.canvas.height / 2 / this.TILE_SIZE;
+            // プレイヤー中心
+            let targetX = this.player.x + this.player.width / 2 - centerX;
+            let targetY = this.player.y + this.player.height / 2 - centerY;
 
-        // ステージ端制限
-        const stage = this.stageData || App.projectData.stage;
-        const viewWidth = this.canvas.width / this.TILE_SIZE;
-        const viewHeight = this.canvas.height / this.TILE_SIZE;
+            // ステージ端制限
+            const stage = this.stageData || App.projectData.stage;
+            const viewWidth = this.canvas.width / this.TILE_SIZE;
+            const viewHeight = this.canvas.height / this.TILE_SIZE;
 
-        targetX = Math.max(0, Math.min(targetX, stage.width - viewWidth));
-        targetY = Math.max(0, Math.min(targetY, stage.height - viewHeight));
+            targetX = Math.max(0, Math.min(targetX, stage.width - viewWidth));
+            targetY = Math.max(0, Math.min(targetY, stage.height - viewHeight));
 
-        this.camera.x = targetX;
-        this.camera.y = targetY;
+            this.camera.x = targetX;
+            this.camera.y = targetY;
+        }
 
         // ワイプ中は更新しない（見た目を固定）
         if (this.titleState === 'wipe' || this.titleState === 'gameover' || this.titleState === 'clear') {
