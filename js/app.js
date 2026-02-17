@@ -569,11 +569,56 @@ const App = {
             this.showSimpleProjectList();
         });
 
-        // 保存（SAVE）
+        // 保存（SAVE） - 長押し対応
         const saveBtn = document.getElementById('save-icon-btn');
-        saveBtn?.addEventListener('click', () => {
-            this.saveProject();
-        });
+        if (saveBtn) {
+            let pressTimer;
+            const startPress = (e) => {
+                // 右クリック等は無視
+                if (e.type === 'mousedown' && e.button !== 0) return;
+
+                pressTimer = setTimeout(() => {
+                    pressTimer = null;
+                    // 長押しイベント発生
+                    this.showSaveAsModal();
+                }, 800); // 800ms長押し
+            };
+
+            const cancelPress = () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+            };
+
+            const endPress = (e) => {
+                if (pressTimer) {
+                    // タイマーが残っている＝短押し
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                    this.saveProject(); // 通常保存
+                }
+            };
+
+            // マウスイベント
+            saveBtn.addEventListener('mousedown', startPress);
+            saveBtn.addEventListener('mouseup', endPress);
+            saveBtn.addEventListener('mouseleave', cancelPress);
+
+            // タッチイベント
+            saveBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // クリックイベント重複防止
+                startPress(e);
+            }, { passive: false });
+            saveBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                endPress(e);
+            });
+            saveBtn.addEventListener('touchcancel', cancelPress);
+        }
+
+        // 名前をつけて保存モーダル初期化
+        this.initSaveAsModal();
 
         // 共有ボタン
         const shareBtn = document.getElementById('share-icon-btn');
@@ -1431,6 +1476,71 @@ const App = {
         document.getElementById('share-dialog').onclick = (e) => {
             if (e.target === document.getElementById('share-dialog')) close();
         };
+    },
+
+    // 名前をつけて保存モーダル初期化
+    initSaveAsModal() {
+        const modal = document.getElementById('save-as-modal');
+        const okBtn = document.getElementById('save-as-ok-btn');
+        const cancelBtn = document.getElementById('save-as-cancel-btn');
+        const input = document.getElementById('save-as-name-input');
+
+        if (!modal) return;
+
+        const close = () => modal.classList.add('hidden');
+
+        okBtn.addEventListener('click', () => {
+            const newName = input.value.trim();
+            if (newName) {
+                this.saveProjectAs(newName);
+                close();
+            } else {
+                alert('プロジェクト名を入力してください');
+            }
+        });
+
+        cancelBtn.addEventListener('click', close);
+
+        // 背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+        });
+    },
+
+    showSaveAsModal() {
+        const modal = document.getElementById('save-as-modal');
+        const input = document.getElementById('save-as-name-input');
+        if (modal && input) {
+            // 現在のプロジェクト名を初期値に
+            input.value = this.currentProjectName || 'MyGame';
+            modal.classList.remove('hidden');
+            input.focus();
+        }
+    },
+
+    // 名前をつけて保存（複製保存して切り替え）
+    saveProjectAs(newName) {
+        // 現在のデータをコピー
+        const newData = JSON.parse(JSON.stringify(this.projectData));
+
+        // メタデータ更新
+        // タイトルは変更しない（仕様）
+        // newData.meta.name = newName; 
+        newData.meta.updatedAt = Date.now();
+
+        // 内部変数更新
+        this.projectData = newData;
+        this.currentProjectName = newName;
+
+        // UI反映
+        this.updateGameInfo();
+
+        // 保存実行
+        Storage.saveProject(newName, newData);
+        Storage.save('currentProject', newData);
+
+        this.showToast(`「${newName}」として保存しました`);
+        console.log(`Project saved as: ${newName}`);
     }
 };
 

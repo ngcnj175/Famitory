@@ -1155,6 +1155,18 @@
         window.firebaseDB = firebase.database();
     </script>
 
+    <div id="save-as-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>名前をつけて保存</h3>
+            <p>新しいプロジェクト名を入力してください</p>
+            <input type="text" id="save-as-name-input" class="modal-input" placeholder="Project Name">
+            <div class="modal-buttons">
+                <button id="save-as-cancel-btn" class="modal-btn cancel">キャンセル</button>
+                <button id="save-as-ok-btn" class="modal-btn ok">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/utils/storage.js"></script>
     <script src="js/utils/share.js"></script>
 
