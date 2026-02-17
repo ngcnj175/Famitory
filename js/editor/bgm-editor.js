@@ -224,9 +224,7 @@ const SoundEditor = {
         });
 
         // メニュー（ジュークボックスを開く）
-        document.getElementById('song-menu-btn')?.addEventListener('click', () => {
-            this.openSongJukebox();
-        });
+
 
 
         // BPM表示（タップで入力、ダブルタップでデフォルト、ドラッグで調整）
@@ -264,7 +262,13 @@ const SoundEditor = {
                 const wasTarget = e.target === bpmDisplay || bpmDisplay.contains(e.target);
                 isDraggingBpm = false;
 
-                if (!wasTarget || hasDraggedBpm) return;
+                if (!wasTarget || hasDraggedBpm) {
+                    if (hasDraggedBpm && this.isPlaying) {
+                        this.stop();
+                        this.play();
+                    }
+                    return;
+                }
 
                 const now = Date.now();
                 if (now - lastTapBpm < 350) {
@@ -329,7 +333,13 @@ const SoundEditor = {
                 const wasTarget = e.target === barDisplay || barDisplay.contains(e.target);
                 isDraggingBar = false;
 
-                if (!wasTarget || hasDraggedBar) return;
+                if (!wasTarget || hasDraggedBar) {
+                    if (hasDraggedBar && this.isPlaying) {
+                        this.stop();
+                        this.play();
+                    }
+                    return;
+                }
 
                 const now = Date.now();
                 if (now - lastTapBar < 350) {
@@ -362,6 +372,10 @@ const SoundEditor = {
 
     // BPM入力ダイアログ
     openBpmInput() {
+        // Playback stops during prompt, so we manage state
+        const wasPlaying = this.isPlaying;
+        if (wasPlaying) this.pause();
+
         const current = this.getCurrentSong().bpm;
         const input = prompt('SPEEDを入力 (60-240)', current);
         if (input !== null) {
@@ -371,10 +385,15 @@ const SoundEditor = {
                 this.updateConsoleDisplay();
             }
         }
+
+        if (wasPlaying) this.play();
     },
 
     // BAR入力ダイアログ
     openBarInput() {
+        const wasPlaying = this.isPlaying;
+        if (wasPlaying) this.pause();
+
         const current = this.getCurrentSong().bars;
         const input = prompt('STEPを入力 (1-256)', current);
         if (input !== null) {
@@ -385,6 +404,8 @@ const SoundEditor = {
                 this.render();
             }
         }
+
+        if (wasPlaying) this.play();
     },
 
     updateConsoleDisplay() {
