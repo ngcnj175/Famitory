@@ -1155,14 +1155,18 @@
         window.firebaseDB = firebase.database();
     </script>
 
-    <div id="save-as-modal" class="modal hidden">
+    <div id="save-as-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h3>名前をつけて保存</h3>
-            <p>新しいプロジェクト名を入力してください</p>
-            <input type="text" id="save-as-name-input" class="modal-input" placeholder="Project Name">
-            <div class="modal-buttons">
-                <button id="save-as-cancel-btn" class="modal-btn cancel">キャンセル</button>
-                <button id="save-as-ok-btn" class="modal-btn ok">保存</button>
+            <div class="modal-header-simple">なまえをつけてセーブ</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>なまえ</label>
+                    <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name">
+                </div>
+            </div>
+            <div class="modal-footer-actions">
+                <button class="modal-action-btn primary" id="save-as-ok-btn">セーブ</button>
+                <button class="modal-action-btn cancel" id="save-as-cancel-btn">やめる</button>
             </div>
         </div>
     </div>
