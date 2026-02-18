@@ -185,6 +185,12 @@ const GameEngine = {
 
     // プレビュー表示（ゲーム開始前）
     showPreview() {
+        // 既存のループがあれば停止
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+
         this.titleState = 'title';
         this.resize();
         this.initGame();
@@ -743,7 +749,7 @@ const GameEngine = {
 
         // タイトル画面のループ
         if (this.titleState === 'title') {
-            requestAnimationFrame(() => this.renderTitleScreen());
+            this.animationId = requestAnimationFrame(() => this.renderTitleScreen());
         }
     },
 
