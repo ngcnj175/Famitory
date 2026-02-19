@@ -205,8 +205,14 @@ const GameController = {
             'ArrowDown': 'down',
             'ArrowLeft': 'left',
             'ArrowRight': 'right',
+            'KeyW': 'up',
+            'KeyS': 'down',
+            'KeyA': 'left',
+            'KeyD': 'right',
             'KeyZ': 'a',
+            'KeyJ': 'a',
             'KeyX': 'b',
+            'KeyK': 'b',
             'Space': 'a'
         };
 

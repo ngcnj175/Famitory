@@ -596,7 +596,7 @@ body {
     border: 2px solid var(--border-color);
     border-radius: 0;
     cursor: pointer;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+    /* transition: transform 0.15s ease, border-color 0.15s ease; */
 }
 
 .palette-color.selected {

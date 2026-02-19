@@ -194,6 +194,11 @@ const SoundEditor = {
             this.addSong();
         });
 
+        // ソング削除ボタン
+        document.getElementById('song-delete-btn')?.addEventListener('click', () => {
+            this.deleteSong();
+        });
+
         // 前へ
         document.getElementById('song-prev-btn')?.addEventListener('click', () => {
             let nextIdx = this.currentSongIdx - 1;
@@ -929,23 +934,46 @@ const SoundEditor = {
     },
 
     addSong() {
-        const id = this.songs.length;
-        const song = {
-            id: id,
-            name: `Song${id + 1}`,
+        const newSong = {
+            name: `Song ${this.songs.length + 1}`,
             bpm: 120,
-            bars: 16,
+            bars: 4,
             tracks: [
-                { type: 'square', notes: [], volume: 0.65, pan: 0.0, tone: 0 },
-                { type: 'square', notes: [], volume: 0.65, pan: 0.0, tone: 0 },
-                { type: 'triangle', notes: [], volume: 0.65, pan: 0.0, tone: 0 },
-                { type: 'noise', notes: [], volume: 0.65, pan: 0.0, tone: 0 }
+                { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
+                { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
+                { type: 'triangle', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
+                { type: 'noise', volume: 0.65, pan: 0.0, tone: 0, notes: [] }
             ]
         };
-        this.songs.push(song);
-        this.currentSongIdx = id;
-        this.updateConsoleDisplay();
-        this.render();
+        this.songs.push(newSong);
+        this.selectSong(this.songs.length - 1);
+    },
+
+    deleteSong() {
+        if (this.songs.length <= 1) {
+            alert('最後のソングは削除できません');
+            return;
+        }
+
+        if (!confirm(`「${this.getCurrentSong().name}」を削除しますか？\nこの操作は取り消せません。`)) {
+            return;
+        }
+
+        // 削除実行
+        this.songs.splice(this.currentSongIdx, 1);
+
+        // インデックス調整（末尾を削除した場合は一つ前へ）
+        if (this.currentSongIdx >= this.songs.length) {
+            this.currentSongIdx = this.songs.length - 1;
+        }
+
+        // 表示更新
+        this.selectSong(this.currentSongIdx);
+
+        // ステージエディタ等のBGM選択肢更新
+        if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
+            StageEditor.updateBgmSelects();
+        }
     },
 
     selectSong(idx) {
