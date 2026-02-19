@@ -937,7 +937,7 @@ const SoundEditor = {
         const newSong = {
             name: `Song ${this.songs.length + 1}`,
             bpm: 120,
-            bars: 4,
+            bars: 16,
             tracks: [
                 { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
                 { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
@@ -955,9 +955,12 @@ const SoundEditor = {
             return;
         }
 
-        if (!confirm(`「${this.getCurrentSong().name}」を削除しますか？\nこの操作は取り消せません。`)) {
+        if (!confirm(`「${this.getCurrentSong().name}」を削除しますか？`)) {
             return;
         }
+
+        // iOS: confirmダイアログ後にAudioContextが壊れるため再作成
+        this.resetAudioContext();
 
         // 削除実行
         this.songs.splice(this.currentSongIdx, 1);
