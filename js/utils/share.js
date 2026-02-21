@@ -26,7 +26,8 @@ const Share = {
 
             await window.firebaseDB.ref('games/' + id).set({
                 data: encoded,
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                lastAccessed: Date.now()
             });
 
             console.log('Game saved with ID:', id);
@@ -49,6 +50,9 @@ const Share = {
             const record = snapshot.val();
 
             if (record && record.data) {
+                // 最終アクセス日時を更新（削除判断に使用するため）
+                window.firebaseDB.ref('games/' + id + '/lastAccessed').set(Date.now())
+                    .catch(e => console.warn('[Share] lastAccessed update failed:', e));
                 return this.decode(record.data);
             }
             return null;
