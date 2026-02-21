@@ -91,7 +91,7 @@
 
         <!-- ========== ゲーム画面 ========== -->
         <div id="play-screen" class="screen active">
-            <div class="screen-title">FAMITORY</div>
+
             <!-- ゲーム情報（編集可能） -->
             <div id="game-info">
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル">
@@ -101,6 +101,8 @@
             <div id="game-viewport">
                 <canvas id="game-canvas"></canvas>
             </div>
+
+            <div class="screen-title">FAMITORY</div>
 
             <!-- コントローラー -->
             <div id="controller-area">
@@ -170,7 +172,7 @@
 
         <!-- ========== ピクセル画面 ========== -->
         <div id="paint-screen" class="screen">
-            <div class="screen-title">FAMITORY</div>
+
             <div id="paint-content-wrapper">
                 <!-- スプライトエリア（追加ボタン左固定 + スクロール可能リスト） -->
                 <div id="sprite-area" class="gallery-row">
@@ -217,7 +219,7 @@
                                     d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
                             </svg>
                         </button>
-                        <hr class="tool-divider">
+
                         <button class="paint-tool-btn" data-tool="select" title="選択">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
@@ -274,7 +276,7 @@
 
         <!-- ========== ステージ画面 ========== -->
         <div id="stage-screen" class="screen">
-            <div class="screen-title">FAMITORY</div>
+
 
             <!-- ステージ設定パネル（折りたたみ可能、デフォルト非表示） -->
             <div id="stage-settings-panel" class="collapsed">
@@ -412,7 +414,6 @@
                                     d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
                             </svg>
                         </button>
-                        <hr class="tool-divider">
                         <button class="paint-tool-btn" data-tool="select" title="選択">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
@@ -559,7 +560,7 @@
         <!-- ========== サウンド画面 ========== -->
         <!-- ========== サウンド画面 (Pocket Console Layout) ========== -->
         <div id="sound-screen" class="screen">
-            <div class="screen-title">FAMITORY</div>
+
 
             <!-- 1. ヘッダー：ソング制御盤 -->
             <div id="bgm-console-header">
@@ -624,8 +625,6 @@
                                 d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                     </button>
-
-                    <hr class="ctrl-divider">
 
                     <button id="sound-select-btn" class="sound-ctrl-btn" title="選択">
                         <svg viewBox="0 0 24 24" fill="currentColor">

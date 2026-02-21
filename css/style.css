@@ -3206,14 +3206,8 @@ body {
     font-weight: 300;
 }
 
-/* 〈20〉の文字オフセット補正 */
-#song-prev-btn {
-    padding-right: 2px;
-}
 
-#song-next-btn {
-    padding-left: 2px;
-}
+
 
 .console-menu-btn {
     width: 28px;
