@@ -3191,11 +3191,22 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
     cursor: pointer;
+    padding: 0;
 }
 
 .console-nav-btn:active {
     background: var(--border-color);
+}
+
+/* ソング追加・削除ボタン（大きめ） */
+.song-action-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+    font-weight: 300;
+    border-radius: 8px;
 }
 
 .console-menu-btn {
