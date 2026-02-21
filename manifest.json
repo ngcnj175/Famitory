@@ -1,6 +1,6 @@
 {
-    "name": "PixelGameKit",
-    "short_name": "PixelGameKit",
+    "name": "FAMITORY",
+    "short_name": "FAMITORY",
     "description": "ピクセルアートとゲームを作って遊ぼう！",
     "start_url": "./",
     "display": "standalone",

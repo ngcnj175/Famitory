@@ -141,7 +141,7 @@ const App = {
 
     // 初期化
     init() {
-        console.log('PixelGameKit initializing...');
+        console.log('FAMITORY initializing...');
 
         // デフォルトパレットをパステルに設定
         if (!this.nesPalette) {
@@ -182,7 +182,7 @@ const App = {
         // PC向け：マウスドラッグでのスクロールを有効化
         this.enableDragScroll();
 
-        console.log('PixelGameKit initialized!');
+        console.log('FAMITORY initialized!');
     },
 
     // ビューポートスケーリング（クロスデバイス対応）
@@ -1442,7 +1442,7 @@ const App = {
                 this.showToast('URLが生成されていません。共有画面を開き直してください');
                 return;
             }
-            const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
+            const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #FAMITORY`;
             const twitterUrl = Share.createTwitterUrl(url, text);
             window.location.href = twitterUrl;
         };
@@ -1458,7 +1458,7 @@ const App = {
                 this.showToast('URLが生成されていません。共有画面を開き直してください');
                 return;
             }
-            const text = `PixelGameKitでゲームを作ったよ!\n${url}`;
+            const text = `FAMITORYでゲームを作ったよ!\n${url}`;
             const success = await copyToClipboard(text);
             if (success) {
                 this.showToast('Discord用に コピーしました');

@@ -132,7 +132,7 @@ const Share = {
     },
 
     // X (Twitter) 共有URL生成
-    createTwitterUrl(shareUrl, text = 'PixelGameKitでゲームを作ったよ！🎮\nプレイしてみてね！') {
+    createTwitterUrl(shareUrl, text = 'FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！') {
         const tweetText = encodeURIComponent(text);
         const encodedUrl = encodeURIComponent(shareUrl);
         return `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodedUrl}`;
@@ -209,13 +209,13 @@ const Share = {
         if (shareXBtn && urlInput) {
             shareXBtn.addEventListener('click', () => {
                 if (urlInput.value.startsWith('http')) {
-                    let text = 'PixelGameKitでゲームを作ったよ！🎮\nプレイしてみてね！';
+                    let text = 'FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！';
 
                     // スコア共有の場合
                     if (this.currentShareData) {
                         const { score, title, isNewRecord } = this.currentShareData;
                         const newRecordText = isNewRecord ? ' [ハイスコア更新！]' : '';
-                        text = `「${title}」をクリア！\nスコア: ${score}点！${newRecordText} #PixelGameKit`;
+                        text = `「${title}」をクリア！\nスコア: ${score}点！${newRecordText} #FAMITORY`;
                     }
 
                     const twitterUrl = this.createTwitterUrl(urlInput.value, text);
@@ -228,7 +228,7 @@ const Share = {
         if (shareDiscordBtn && urlInput) {
             shareDiscordBtn.addEventListener('click', async () => {
                 if (urlInput.value.startsWith('http')) {
-                    let text = `PixelGameKitでゲームを作ったよ！\n${urlInput.value}`;
+                    let text = `FAMITORYでゲームを作ったよ！\n${urlInput.value}`;
 
                     // スコア共有の場合
                     if (this.currentShareData) {
