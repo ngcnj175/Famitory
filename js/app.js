@@ -622,38 +622,44 @@ const App = {
 
         // 共有ボタン
         const shareBtn = document.getElementById('share-icon-btn');
+        // 共有イベントは一度だけバインド
+        this.bindShareSimpleEvents();
         shareBtn?.addEventListener('click', async () => {
             this.projectData.palette = this.nesPalette.slice();
+            this._shareUrl = null;
+            this._shareLoading = true;
             document.getElementById('share-dialog').classList.remove('hidden');
 
             // iOS対応: モーダルを開いた時点でFirebase保存とURL生成
-            const urlInput = document.getElementById('share-url-input');
-            if (urlInput) urlInput.value = '共有URL生成中...';
+            console.log('[Share] Starting URL generation...');
+            console.log('[Share] Share defined:', typeof Share !== 'undefined');
+            console.log('[Share] firebaseDB:', !!window.firebaseDB);
 
             if (typeof Share !== 'undefined' && window.firebaseDB) {
                 try {
                     const id = await Share.saveGame(this.projectData);
+                    console.log('[Share] saveGame returned id:', id);
                     if (id) {
                         const url = Share.createShortUrl(id);
-                        if (urlInput) urlInput.value = url;
-                        // 生成したURLをグローバルに保存（ボタンクリック時に使用）
                         this._shareUrl = url;
-                        console.log('Share URL prepared:', url);
+                        console.log('[Share] URL prepared:', url);
+                        this.showToast('共有URLを生成しました');
                     } else {
-                        if (urlInput) urlInput.value = '保存に失敗しました';
+                        console.error('[Share] saveGame returned null');
                         this._shareUrl = null;
+                        this.showToast('URL生成に失敗しました');
                     }
                 } catch (e) {
-                    console.error('Share save error:', e);
-                    if (urlInput) urlInput.value = 'エラーが発生しました';
+                    console.error('[Share] save error:', e);
                     this._shareUrl = null;
+                    this.showToast('URL生成でエラーが発生しました');
                 }
             } else {
-                if (urlInput) urlInput.value = 'クラウド接続がありません';
+                console.error('[Share] No cloud connection. Share:', typeof Share, 'firebaseDB:', !!window.firebaseDB);
                 this._shareUrl = null;
+                this.showToast('クラウド接続がありません');
             }
-
-            this.bindShareSimpleEvents();
+            this._shareLoading = false;
         });
 
         // 共有ダイアログのイベント初期化（使わないがエラー防止で残すか、削除するか）
@@ -1408,9 +1414,13 @@ const App = {
 
         // URLコピー（事前生成されたURLを使用）
         copyUrlBtn.onclick = async () => {
+            if (this._shareLoading) {
+                this.showToast('URL生成中です…少しお待ちください');
+                return;
+            }
             const url = this._shareUrl;
             if (!url) {
-                this.showToast('URLが生成されていません');
+                this.showToast('URLが生成されていません。共有画面を開き直してください');
                 return;
             }
             const success = await copyToClipboard(url);
@@ -1423,9 +1433,13 @@ const App = {
 
         // X
         xBtn.onclick = () => {
+            if (this._shareLoading) {
+                this.showToast('URL生成中です…少しお待ちください');
+                return;
+            }
             const url = this._shareUrl;
             if (!url) {
-                this.showToast('URLが生成されていません');
+                this.showToast('URLが生成されていません。共有画面を開き直してください');
                 return;
             }
             const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #PixelGameKit`;
@@ -1435,9 +1449,13 @@ const App = {
 
         // Discord
         discordBtn.onclick = async () => {
+            if (this._shareLoading) {
+                this.showToast('URL生成中です…少しお待ちください');
+                return;
+            }
             const url = this._shareUrl;
             if (!url) {
-                this.showToast('URLが生成されていません');
+                this.showToast('URLが生成されていません。共有画面を開き直してください');
                 return;
             }
             const text = `PixelGameKitでゲームを作ったよ!\n${url}`;
