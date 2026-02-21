@@ -239,6 +239,7 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.2));
 }
 
 .dpad-btn {
@@ -247,7 +248,7 @@ body {
     background: var(--color-dark);
     cursor: pointer;
     border-radius: 6px;
-    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: none;
     /* 髟ｷ謚ｼ縺玲凾縺ｮ譁�ｭ鈴∈謚樣亟豁｢ */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
