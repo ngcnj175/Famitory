@@ -1179,9 +1179,9 @@ const App = {
                 return;
             }
 
-            // 作成処理
+            // デフォルトパレット（ファミトリー）で作成
+            this.nesPalette = this.PALETTE_PRESETS.famitory.colors.slice();
             this.projectData = this.createDefaultProject();
-            this.nesPalette = ['#000000'];
             this.projectData.meta.name = name;
             this.currentProjectName = name;
 

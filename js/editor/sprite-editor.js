@@ -236,9 +236,9 @@ const SpriteEditor = {
     openPresetDialog() {
         const dialog = document.getElementById('palette-preset-dialog');
         if (dialog) {
-            // デフォルトでファミコンを選択
-            const famicomRadio = document.querySelector('input[name="palette-preset"][value="famicom"]');
-            if (famicomRadio) famicomRadio.checked = true;
+            // デフォルトでファミトリーを選択
+            const famitoryRadio = document.querySelector('input[name="palette-preset"][value="famitory"]');
+            if (famitoryRadio) famitoryRadio.checked = true;
             dialog.classList.remove('hidden');
         }
     },
