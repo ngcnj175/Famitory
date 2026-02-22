@@ -10,6 +10,18 @@ const App = {
 
     // パレットプリセット
     PALETTE_PRESETS: {
+        famitory: {
+            name: 'ファミトリー',
+            colors: [
+                '#ffffff', '#bcbcbc', '#757575', '#000000',
+                '#abe7ff', '#3CBCFC', '#0073ef', '#271b8f',
+                '#d7cbff', '#a78Bfd', '#8300f3', '#47009f',
+                '#FDADCA', '#FF77B7', '#EF217E', '#AB0058',
+                '#FDC4AB', '#FD972B', '#E71B08', '#910E02',
+                '#FFE7A3', '#FDD745', '#BA7400', '#7F4100',
+                '#abf3bf', '#4fdf4B', '#00ab00', '#005100'
+            ]
+        },
         pastel: {
             name: 'パステル',
             colors: [
@@ -143,9 +155,9 @@ const App = {
     init() {
         console.log('FAMITORY initializing...');
 
-        // デフォルトパレットをパステルに設定
+        // デフォルトパレットをファミトリーに設定
         if (!this.nesPalette) {
-            this.nesPalette = this.PALETTE_PRESETS.famicom.colors.slice();
+            this.nesPalette = this.PALETTE_PRESETS.famitory.colors.slice();
         }
 
         this.registerServiceWorker();
