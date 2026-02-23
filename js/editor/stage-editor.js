@@ -2988,21 +2988,13 @@ const StageEditor = {
     },
 
     openBgColorPicker() {
-        // SpriteEditor縺ｨ蜷後§繝輔Ν繧ｫ繝ｩ繝ｼ繝斐ャ繧ｫ繝ｼ繧貞ｮ溯｣・
         const currentColor = App.projectData.stage.bgColor || '#3CBCFC';
 
-        // 繧医￥菴ｿ縺・牡繝励Μ繧ｻ繝・ヨ
-        const recentColors = [
-            '#3CBCFC', '#000000', '#ffffff', '#ff0000',
-            '#00ff00', '#0000ff', '#ffff00', '#ff00ff',
-            '#00ffff', '#ff6b6b', '#4ecdc4', '#96ceb4'
-        ];
-
-        // 迥ｶ諷・
+        // 状態
         let hue = 0, saturation = 100, brightness = 100;
         let r = 255, g = 0, b = 0;
 
-        // 繧ｫ繝ｩ繝ｼ螟画鋤髢｢謨ｰ
+        // カラー変換関数
         const hsvToRgb = (h, s, v) => {
             s /= 100; v /= 100;
             const c = v * s;
@@ -3039,17 +3031,17 @@ const StageEditor = {
             return { r: parseInt(hex.substr(0, 2), 16), g: parseInt(hex.substr(2, 2), 16), b: parseInt(hex.substr(4, 2), 16) };
         };
 
-        // 蛻晄悄蛟､繧団urrentColor縺九ｉ險ｭ螳・
+        // 初期値をcurrentColorから設定
         const initRgb = hexToRgb(currentColor);
         r = initRgb.r; g = initRgb.g; b = initRgb.b;
         const initHsv = rgbToHsv(r, g, b);
         hue = initHsv.h; saturation = initHsv.s; brightness = initHsv.v;
 
-        // body繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ辟｡蜉ｹ蛹・
+        // bodyスクロール無効化
         const originalOverflow = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
 
-        // 繝｢繝ｼ繝繝ｫ繧ｪ繝ｼ繝舌・繝ｬ繧､
+        // モーダルオーバーレイ
         const overlay = document.createElement('div');
         overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;touch-action:none;';
 
@@ -3057,25 +3049,47 @@ const StageEditor = {
         modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
 
         modal.innerHTML = `
-            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;">背景色</div>
+            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;text-align:center;">背景色</div>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;">
                     <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">現在</div>
-                    <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};opacity:0.7;"></div>
+                    <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
+                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">編集中</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
+            <div style="display:flex;gap:4px;margin-bottom:12px;background:#1a1a2e;padding:4px;border-radius:8px;">
+                <button id="cp-tab-hsv" style="flex:1;padding:8px;border:none;background:#4a4a6a;color:#fff;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;">HSV</button>
+                <button id="cp-tab-rgb" style="flex:1;padding:8px;border:none;background:transparent;color:#8888aa;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;">RGB</button>
+            </div>
             <div id="cp-picker-area" style="height:200px;position:relative;margin-bottom:12px;">
                 <div id="cp-hsv" style="position:absolute;top:0;left:0;right:0;bottom:0;">
-                    <div id="cp-sb-box" class="sb-box" style="position:relative;width:100%;height:160px;border-radius:8px;cursor:crosshair;margin-bottom:12px;overflow:hidden;background:#ff0000;">
+                    <div id="cp-sb-box" style="position:relative;width:100%;height:160px;border-radius:8px;cursor:crosshair;margin-bottom:12px;overflow:hidden;background:#ff0000;">
                         <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to right,#fff,transparent);"></div>
                         <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,transparent,#000);"></div>
                         <div id="cp-sb-cursor" style="position:absolute;width:16px;height:16px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 4px rgba(0,0,0,0.5);pointer-events:none;z-index:10;transform:translate(-50%,-50%);left:100%;top:0%;"></div>
                     </div>
-                    <div id="cp-hue-slider" class="hue-slider" style="position:relative;height:24px;border-radius:12px;background:linear-gradient(to right,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);cursor:pointer;">
+                    <div id="cp-hue-slider" style="position:relative;height:24px;border-radius:12px;background:linear-gradient(to right,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);cursor:pointer;">
                         <div id="cp-hue-cursor" style="position:absolute;top:50%;width:8px;height:28px;background:#fff;border-radius:4px;box-shadow:0 0 4px rgba(0,0,0,0.5);pointer-events:none;transform:translate(-50%,-50%);left:0%;"></div>
+                    </div>
+                </div>
+                <div id="cp-rgb" style="position:absolute;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column;justify-content:center;gap:20px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="color:#ff6b6b;font-size:14px;font-weight:600;width:24px;">R</span>
+                        <input type="range" id="cp-slider-r" min="0" max="255" value="${r}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#ff0000);">
+                        <span id="cp-value-r" style="color:#fff;font-size:13px;width:36px;text-align:right;">${r}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="color:#6bff6b;font-size:14px;font-weight:600;width:24px;">G</span>
+                        <input type="range" id="cp-slider-g" min="0" max="255" value="${g}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#00ff00);">
+                        <span id="cp-value-g" style="color:#fff;font-size:13px;width:36px;text-align:right;">${g}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="color:#6b6bff;font-size:14px;font-weight:600;width:24px;">B</span>
+                        <input type="range" id="cp-slider-b" min="0" max="255" value="${b}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#0000ff);">
+                        <span id="cp-value-b" style="color:#fff;font-size:13px;width:36px;text-align:right;">${b}</span>
                     </div>
                 </div>
             </div>
@@ -3084,7 +3098,7 @@ const StageEditor = {
                 <input type="text" id="cp-hex" value="${currentColor}" maxlength="7" style="flex:1;padding:10px 12px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;font-family:monospace;font-size:14px;text-transform:uppercase;">
             </div>
             <div style="margin-bottom:16px;">
-                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">よく使う色</div>
+                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">カラーパレット</div>
                 <div id="cp-recent" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
             </div>
             <div style="display:flex;gap:10px;">
@@ -3096,16 +3110,26 @@ const StageEditor = {
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
 
-        // DOM隕∫ｴ蜿門ｾ・
+        // DOM要素取得
         const newColorEl = modal.querySelector('#cp-new');
         const sbBox = modal.querySelector('#cp-sb-box');
         const sbCursor = modal.querySelector('#cp-sb-cursor');
         const hueSlider = modal.querySelector('#cp-hue-slider');
         const hueCursor = modal.querySelector('#cp-hue-cursor');
         const hexInput = modal.querySelector('#cp-hex');
+        const hsvPanel = modal.querySelector('#cp-hsv');
+        const rgbPanel = modal.querySelector('#cp-rgb');
+        const tabHsv = modal.querySelector('#cp-tab-hsv');
+        const tabRgb = modal.querySelector('#cp-tab-rgb');
+        const sliderR = modal.querySelector('#cp-slider-r');
+        const sliderG = modal.querySelector('#cp-slider-g');
+        const sliderB = modal.querySelector('#cp-slider-b');
+        const valueR = modal.querySelector('#cp-value-r');
+        const valueG = modal.querySelector('#cp-value-g');
+        const valueB = modal.querySelector('#cp-value-b');
         const recentColorsEl = modal.querySelector('#cp-recent');
 
-        // UI譖ｴ譁ｰ
+        // UI更新
         const updateUI = () => {
             const rgb = hsvToRgb(hue, saturation, brightness);
             r = rgb.r; g = rgb.g; b = rgb.b;
@@ -3116,9 +3140,32 @@ const StageEditor = {
             sbCursor.style.left = `${saturation}%`;
             sbCursor.style.top = `${100 - brightness}%`;
             hueCursor.style.left = `${(hue / 360) * 100}%`;
+            if (sliderR) { sliderR.value = r; valueR.textContent = r; }
+            if (sliderG) { sliderG.value = g; valueG.textContent = g; }
+            if (sliderB) { sliderB.value = b; valueB.textContent = b; }
         };
 
-        // SB繝懊ャ繧ｯ繧ｹ謫堺ｽ・
+        const updateFromRGB = () => {
+            const hsv = rgbToHsv(r, g, b);
+            hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
+            updateUI();
+        };
+
+        // HSV/RGBタブ切替
+        tabHsv.addEventListener('click', () => {
+            hsvPanel.style.display = 'block';
+            rgbPanel.style.display = 'none';
+            tabHsv.style.background = '#4a4a6a'; tabHsv.style.color = '#fff';
+            tabRgb.style.background = 'transparent'; tabRgb.style.color = '#8888aa';
+        });
+        tabRgb.addEventListener('click', () => {
+            hsvPanel.style.display = 'none';
+            rgbPanel.style.display = 'flex';
+            tabRgb.style.background = '#4a4a6a'; tabRgb.style.color = '#fff';
+            tabHsv.style.background = 'transparent'; tabHsv.style.color = '#8888aa';
+        });
+
+        // SBボックス操作
         let sbDrag = false;
         const updateSB = (e) => {
             const rect = sbBox.getBoundingClientRect();
@@ -3138,7 +3185,7 @@ const StageEditor = {
         document.addEventListener('mouseup', () => sbDrag = false);
         document.addEventListener('touchend', () => sbDrag = false);
 
-        // Hue繧ｹ繝ｩ繧､繝繝ｼ謫堺ｽ・
+        // Hueスライダー操作
         let hueDrag = false;
         const updateHue = (e) => {
             const rect = hueSlider.getBoundingClientRect();
@@ -3155,7 +3202,12 @@ const StageEditor = {
         document.addEventListener('mouseup', () => hueDrag = false);
         document.addEventListener('touchend', () => hueDrag = false);
 
-        // HEX蜈･蜉・
+        // RGBスライダー
+        if (sliderR) sliderR.addEventListener('input', () => { r = parseInt(sliderR.value); updateFromRGB(); });
+        if (sliderG) sliderG.addEventListener('input', () => { g = parseInt(sliderG.value); updateFromRGB(); });
+        if (sliderB) sliderB.addEventListener('input', () => { b = parseInt(sliderB.value); updateFromRGB(); });
+
+        // HEX入力
         hexInput.addEventListener('change', () => {
             const val = hexInput.value.trim();
             if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
@@ -3167,10 +3219,11 @@ const StageEditor = {
             }
         });
 
-        // 繧医￥菴ｿ縺・牡
-        recentColors.forEach(c => {
+        // カラーパレット（App.nesPalette）からスウォッチを生成
+        const palette = App.nesPalette || [];
+        palette.forEach(c => {
             const swatch = document.createElement('div');
-            swatch.style.cssText = `width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid #444466;background:${c};`;
+            swatch.style.cssText = `width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid #444466;background:${c};flex-shrink:0;`;
             swatch.addEventListener('click', () => {
                 const rgb = hexToRgb(c);
                 r = rgb.r; g = rgb.g; b = rgb.b;
@@ -3191,8 +3244,8 @@ const StageEditor = {
         modal.querySelector('#cp-ok').addEventListener('click', () => {
             App.projectData.stage.bgColor = hexInput.value;
             this.updateStageSettingsUI();
-            this.initTemplateList(); // 繧ｿ繧､繝ｫ繝代Ξ繝・ヨ繧ｵ繝繝阪う繝ｫ譖ｴ譁ｰ
-            this.initSpriteGallery(); // 繧ｹ繝励Λ繧､繝医ぐ繝｣繝ｩ繝ｪ繝ｼ譖ｴ譁ｰ
+            this.initTemplateList();
+            this.initSpriteGallery();
             this.render();
             close();
         });
@@ -3218,213 +3271,213 @@ const StageEditor = {
         }
     },
 
-    renderSelection() {
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
-        const palette = App.nesPalette;
-        const sprites = App.projectData.sprites;
-        const templates = App.projectData.templates || [];
+        renderSelection() {
+    const scrollX = this.canvasScrollX || 0;
+    const scrollY = this.canvasScrollY || 0;
+    const palette = App.nesPalette;
+    const sprites = App.projectData.sprites;
+    const templates = App.projectData.templates || [];
 
-        // Helper to render an entity/sprite at pos
-        const renderSpriteAt = (tileIdOrTemplateId, tx, ty, opacity = 1.0, isEntity = false) => {
-            if (tileIdOrTemplateId <= -1000 || tileIdOrTemplateId === -1) return;
+    // Helper to render an entity/sprite at pos
+    const renderSpriteAt = (tileIdOrTemplateId, tx, ty, opacity = 1.0, isEntity = false) => {
+        if (tileIdOrTemplateId <= -1000 || tileIdOrTemplateId === -1) return;
 
-            this.ctx.globalAlpha = opacity;
-            let sprite;
-            let flipX = false;
+        this.ctx.globalAlpha = opacity;
+        let sprite;
+        let flipX = false;
 
-            if (isEntity) {
-                const template = templates[tileIdOrTemplateId];
-                if (template) {
-                    const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                    sprite = sprites[spriteIdx];
-                    flipX = template.type === 'enemy';
-                }
-            } else {
-                // Tile logic
-                if (tileIdOrTemplateId >= 100) {
-                    const template = templates[tileIdOrTemplateId - 100];
-                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                    sprite = sprites[spriteIdx];
-                } else if (tileIdOrTemplateId >= 0 && tileIdOrTemplateId < sprites.length) {
-                    sprite = sprites[tileIdOrTemplateId];
-                }
+        if (isEntity) {
+            const template = templates[tileIdOrTemplateId];
+            if (template) {
+                const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+                sprite = sprites[spriteIdx];
+                flipX = template.type === 'enemy';
             }
-
-            if (sprite) {
-                this.renderSprite(sprite, tx, ty, palette, flipX);
-            }
-            this.ctx.globalAlpha = 1.0;
-        };
-
-        // ペーストプレビュー
-        if (this.pasteMode && this.pasteData && this.pasteData.tiles) {
-            const h = this.pasteData.tiles.length;
-            const w = this.pasteData.tiles[0].length;
-
-            // Tiles
-            for (let dy = 0; dy < h; dy++) {
-                for (let dx = 0; dx < w; dx++) {
-                    const tileId = this.pasteData.tiles[dy][dx];
-                    const tx = this.pasteOffset.x + dx;
-                    const ty = this.pasteOffset.y + dy;
-                    renderSpriteAt(tileId, tx, ty, 0.7);
-                }
-            }
-            // Entities
-            if (this.pasteData.entities) {
-                this.pasteData.entities.forEach(e => {
-                    renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, 0.7, true);
-                });
-            }
-
-            // 枠線
-            // ... (keep existing rect logic logic)
-            const rectX = this.pasteOffset.x * this.tileSize + scrollX;
-            const rectY = this.pasteOffset.y * this.tileSize + scrollY;
-            const rectW = w * this.tileSize;
-            const rectH = h * this.tileSize;
-            this.ctx.strokeStyle = '#00ff00';
-            this.ctx.lineWidth = 2;
-            this.ctx.setLineDash([4, 4]);
-            this.ctx.strokeRect(rectX, rectY, rectW, rectH);
-            this.ctx.setLineDash([]);
-        }
-
-        if (!this.selectionStart || !this.selectionEnd) return;
-
-        // 浮動レイヤー
-        if (this.isFloating && this.floatingData) {
-
-            // Tiles
-            for (let y = 0; y < this.floatingData.length; y++) {
-                for (let x = 0; x < this.floatingData[0].length; x++) {
-                    const tileId = this.floatingData[y][x];
-                    const tx = this.floatingPos.x + x;
-                    const ty = this.floatingPos.y + y;
-                    renderSpriteAt(tileId, tx, ty, 0.5);
-                }
-            }
-
-            // Entities
-            if (this.floatingEntities) {
-                this.floatingEntities.forEach(e => {
-                    renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, 0.5, true);
-                });
+        } else {
+            // Tile logic
+            if (tileIdOrTemplateId >= 100) {
+                const template = templates[tileIdOrTemplateId - 100];
+                const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                sprite = sprites[spriteIdx];
+            } else if (tileIdOrTemplateId >= 0 && tileIdOrTemplateId < sprites.length) {
+                sprite = sprites[tileIdOrTemplateId];
             }
         }
 
-        // 選択枠
-        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+        if (sprite) {
+            this.renderSprite(sprite, tx, ty, palette, flipX);
+        }
+        this.ctx.globalAlpha = 1.0;
+    };
 
-        const rectX = x1 * this.tileSize + scrollX;
-        const rectY = y1 * this.tileSize + scrollY;
-        const rectW = (x2 - x1 + 1) * this.tileSize;
-        const rectH = (y2 - y1 + 1) * this.tileSize;
+    // ペーストプレビュー
+    if (this.pasteMode && this.pasteData && this.pasteData.tiles) {
+        const h = this.pasteData.tiles.length;
+        const w = this.pasteData.tiles[0].length;
 
-        this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
+        // Tiles
+        for (let dy = 0; dy < h; dy++) {
+            for (let dx = 0; dx < w; dx++) {
+                const tileId = this.pasteData.tiles[dy][dx];
+                const tx = this.pasteOffset.x + dx;
+                const ty = this.pasteOffset.y + dy;
+                renderSpriteAt(tileId, tx, ty, 0.7);
+            }
+        }
+        // Entities
+        if (this.pasteData.entities) {
+            this.pasteData.entities.forEach(e => {
+                renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, 0.7, true);
+            });
+        }
+
+        // 枠線
+        // ... (keep existing rect logic logic)
+        const rectX = this.pasteOffset.x * this.tileSize + scrollX;
+        const rectY = this.pasteOffset.y * this.tileSize + scrollY;
+        const rectW = w * this.tileSize;
+        const rectH = h * this.tileSize;
+        this.ctx.strokeStyle = '#00ff00';
         this.ctx.lineWidth = 2;
         this.ctx.setLineDash([4, 4]);
         this.ctx.strokeRect(rectX, rectY, rectW, rectH);
         this.ctx.setLineDash([]);
-    },
+    }
 
-    floatSelection() {
-        if (!this.selectionStart || !this.selectionEnd) return;
-        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-        const w = x2 - x1 + 1;
-        const h = y2 - y1 + 1;
+    if (!this.selectionStart || !this.selectionEnd) return;
 
-        const stage = App.projectData.stage;
-        const layer = stage.layers.fg;
-        if (!stage.entities) stage.entities = [];
+    // 浮動レイヤー
+    if (this.isFloating && this.floatingData) {
 
-        // 1. Tiles processing
-        const floatingData = [];
-
-        for (let y = 0; y < h; y++) {
-            const row = [];
-            for (let x = 0; x < w; x++) {
-                const ty = y + y1;
-                const tx = x + x1;
-                if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
-                    row.push(layer[ty][tx]);
-                    layer[ty][tx] = -1; // Clear
-                } else {
-                    row.push(-1);
-                }
-            }
-            floatingData.push(row);
-        }
-
-        // 2. Entities processing
-        const floatingEntities = [];
-        const entitiesToRemove = [];
-
-        stage.entities.forEach((e, index) => {
-            if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
-                floatingEntities.push({
-                    ...e,
-                    relX: e.x - x1,
-                    relY: e.y - y1
-                });
-                entitiesToRemove.push(index);
-            }
-        });
-
-        // Remove from stage (sort descending)
-        entitiesToRemove.sort((a, b) => b - a).forEach(idx => stage.entities.splice(idx, 1));
-
-        this.floatingData = floatingData;
-        this.floatingEntities = floatingEntities;
-        this.floatingPos = { x: x1, y: y1 };
-        this.isFloating = true;
-    },
-
-    commitFloatingData() {
-        if (!this.isFloating || !this.floatingData) return;
-        const stage = App.projectData.stage;
-        const layer = stage.layers.fg;
-
-        // 1. Tiles commit
-        const h = this.floatingData.length;
-        const w = this.floatingData[0].length;
-
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                const val = this.floatingData[y][x];
-                const ty = this.floatingPos.y + y;
+        // Tiles
+        for (let y = 0; y < this.floatingData.length; y++) {
+            for (let x = 0; x < this.floatingData[0].length; x++) {
+                const tileId = this.floatingData[y][x];
                 const tx = this.floatingPos.x + x;
-
-                if (ty >= 0 && ty < stage.height && tx >= 0 && tx < stage.width) {
-                    layer[ty][tx] = val;
-                }
+                const ty = this.floatingPos.y + y;
+                renderSpriteAt(tileId, tx, ty, 0.5);
             }
         }
 
-        // 2. Entities commit
+        // Entities
         if (this.floatingEntities) {
-            if (!stage.entities) stage.entities = [];
-            this.floatingEntities.forEach(fe => {
-                const newX = this.floatingPos.x + fe.relX;
-                const newY = this.floatingPos.y + fe.relY;
-                stage.entities.push({
-                    x: newX,
-                    y: newY,
-                    templateId: fe.templateId
-                });
+            this.floatingEntities.forEach(e => {
+                renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, 0.5, true);
             });
         }
-
-        this.isFloating = false;
-        this.floatingData = null;
-        this.floatingEntities = null;
-        this.render();
     }
+
+    // 選択枠
+    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+
+    const rectX = x1 * this.tileSize + scrollX;
+    const rectY = y1 * this.tileSize + scrollY;
+    const rectW = (x2 - x1 + 1) * this.tileSize;
+    const rectH = (y2 - y1 + 1) * this.tileSize;
+
+    this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
+    this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([4, 4]);
+    this.ctx.strokeRect(rectX, rectY, rectW, rectH);
+    this.ctx.setLineDash([]);
+},
+
+floatSelection() {
+    if (!this.selectionStart || !this.selectionEnd) return;
+    const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+    const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+    const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+    const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+    const w = x2 - x1 + 1;
+    const h = y2 - y1 + 1;
+
+    const stage = App.projectData.stage;
+    const layer = stage.layers.fg;
+    if (!stage.entities) stage.entities = [];
+
+    // 1. Tiles processing
+    const floatingData = [];
+
+    for (let y = 0; y < h; y++) {
+        const row = [];
+        for (let x = 0; x < w; x++) {
+            const ty = y + y1;
+            const tx = x + x1;
+            if (layer[ty] && typeof layer[ty][tx] !== 'undefined') {
+                row.push(layer[ty][tx]);
+                layer[ty][tx] = -1; // Clear
+            } else {
+                row.push(-1);
+            }
+        }
+        floatingData.push(row);
+    }
+
+    // 2. Entities processing
+    const floatingEntities = [];
+    const entitiesToRemove = [];
+
+    stage.entities.forEach((e, index) => {
+        if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
+            floatingEntities.push({
+                ...e,
+                relX: e.x - x1,
+                relY: e.y - y1
+            });
+            entitiesToRemove.push(index);
+        }
+    });
+
+    // Remove from stage (sort descending)
+    entitiesToRemove.sort((a, b) => b - a).forEach(idx => stage.entities.splice(idx, 1));
+
+    this.floatingData = floatingData;
+    this.floatingEntities = floatingEntities;
+    this.floatingPos = { x: x1, y: y1 };
+    this.isFloating = true;
+},
+
+commitFloatingData() {
+    if (!this.isFloating || !this.floatingData) return;
+    const stage = App.projectData.stage;
+    const layer = stage.layers.fg;
+
+    // 1. Tiles commit
+    const h = this.floatingData.length;
+    const w = this.floatingData[0].length;
+
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            const val = this.floatingData[y][x];
+            const ty = this.floatingPos.y + y;
+            const tx = this.floatingPos.x + x;
+
+            if (ty >= 0 && ty < stage.height && tx >= 0 && tx < stage.width) {
+                layer[ty][tx] = val;
+            }
+        }
+    }
+
+    // 2. Entities commit
+    if (this.floatingEntities) {
+        if (!stage.entities) stage.entities = [];
+        this.floatingEntities.forEach(fe => {
+            const newX = this.floatingPos.x + fe.relX;
+            const newY = this.floatingPos.y + fe.relY;
+            stage.entities.push({
+                x: newX,
+                y: newY,
+                templateId: fe.templateId
+            });
+        });
+    }
+
+    this.isFloating = false;
+    this.floatingData = null;
+    this.floatingEntities = null;
+    this.render();
+}
 };

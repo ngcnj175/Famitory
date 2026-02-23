@@ -2699,6 +2699,7 @@ body {
     color: var(--color-medium);
     width: 90px;
     flex-shrink: 0;
+    padding-left: 0.5em;
 }
 
 .bgm-select-btn {
@@ -2709,6 +2710,7 @@ body {
     border-radius: 0;
     font-size: 12px;
     background: #fff;
+    color: #000;
     height: 28px;
     box-sizing: border-box;
     text-align: left;
