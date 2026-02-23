@@ -68,7 +68,9 @@ class Enemy {
         // SHOT設定
         this.shotMaxRange = template?.config?.shotMaxRange || 0;
         this.shotCooldown = 0;
-        this.shotInterval = 120;
+        // 連射設定: shotRate 1（200フレーム）～5（60フレーム）
+        const shotRateConfig = template?.config?.shotRate ?? 3;
+        this.shotInterval = Math.round(200 - (shotRateConfig - 1) * 35); // 1=200, 3=130, 5=60
     }
 
     update(engine) {
@@ -608,7 +610,9 @@ class Enemy {
 
         const shotType = this.template?.config?.shotType || 'straight';
         const direction = this.facingRight ? 1 : -1;
-        const baseSpeed = 0.15;
+        // 速度設定: shotSpeed 1（0.06）～5（0.2）
+        const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
+        const baseSpeed = 0.06 + (shotSpeedConfig - 1) * 0.035; // 1=0.06, 3=0.13, 5=0.2
         const startX = this.x + (this.facingRight ? this.width : -0.2);
         const startY = this.y + this.height / 2 - 0.25;
 

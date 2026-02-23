@@ -312,7 +312,9 @@ class Player {
 
         this.isAttacking = true;
         this.attackTimer = 15;
-        this.attackCooldown = 30;
+        // 連射設定: shotRate 1（50フレーム）～5（10フレーム）
+        const shotRateConfig = this.template?.config?.shotRate ?? 3;
+        this.attackCooldown = Math.round(50 - (shotRateConfig - 1) * 10); // 1=50, 3=30, 5=10
         this.animFrame = 0;
 
         // SE再生
@@ -323,7 +325,9 @@ class Player {
         if (shotSprite !== undefined) {
             const shotType = this.template?.config?.shotType || 'straight';
             const direction = this.facingRight ? 1 : -1;
-            const baseSpeed = 0.225;
+            // 速度設定: shotSpeed 1（0.1）～5（0.35）
+            const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
+            const baseSpeed = 0.1 + (shotSpeedConfig - 1) * 0.0625; // 1=0.1, 3=0.225, 5=0.35
             const startX = this.x + (this.facingRight ? this.width : -0.2);
             const startY = this.y + this.height / 2 - 0.25;
 
