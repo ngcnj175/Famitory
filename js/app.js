@@ -1244,7 +1244,7 @@ const App = {
             list.sort((a, b) => b.updatedAt - a.updatedAt);
 
             if (list.length === 0) {
-                listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">セーブデータは ありません</div>';
+                listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">セーブデータなし</div>';
                 updateButtons();
                 return;
             }

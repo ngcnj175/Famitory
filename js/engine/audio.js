@@ -132,12 +132,15 @@ const NesAudio = {
         osc.stop(this.ctx.currentTime + duration);
     },
 
-    // ノイズ (tone: 0=White, 1=Short(Metal), 2=Kick(Low))
+    // ノイズ (tone: 0=White/Drum, 1=Short/Staccato, 2=Kick(Low), 3=Snare(タン))
     playNoise(duration, tone) {
         let bufferSize;
 
         if (tone === 1) {
             bufferSize = 128;
+        } else if (tone === 3) {
+            // スネア: ノート長かかわらず小さく固定
+            bufferSize = Math.floor(this.ctx.sampleRate * 0.1);
         } else {
             bufferSize = this.ctx.sampleRate * duration;
         }
@@ -160,29 +163,38 @@ const NesAudio = {
 
         const gain = this.ctx.createGain();
 
-        // フィルタ（Kick用）
+        // フィルタ（Kick・ Snare用）
         let filter = null;
         if (tone === 2) {
+            // Kick: ローパスでボコボコ
             filter = this.ctx.createBiquadFilter();
             filter.type = 'lowpass';
             filter.frequency.value = 200;
             filter.Q.value = 1;
-
+            source.connect(filter);
+            filter.connect(gain);
+        } else if (tone === 3) {
+            // Snare: バンドパスでタンっと短い
+            filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 1500;
+            filter.Q.value = 0.5;
             source.connect(filter);
             filter.connect(gain);
         } else {
             source.connect(gain);
         }
 
-        // Bass Drum (Kick) stays loud (0.8), others unified to 0.2
-        const volume = (tone === 2) ? 0.8 : 0.2;
+        // ボリューム設定
+        const volume = (tone === 2) ? 0.8 : (tone === 3) ? 0.5 : 0.2;
+        const stopTime = (tone === 3) ? 0.1 : duration;
         gain.gain.setValueAtTime(volume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + stopTime);
 
         gain.connect(this.masterGain);
 
         source.start();
-        source.stop(this.ctx.currentTime + duration);
+        source.stop(this.ctx.currentTime + stopTime);
     },
 
     // ========== SE再生 ==========

@@ -218,8 +218,9 @@ const SpriteEditor = {
         const endPress = () => {
             clearTimeout(longPressTimer);
             if (!isLongPress) {
-                // 短押し: 色追加
+                // 短押し: 色追加（追加した色を選択状態にする）
                 App.nesPalette.push('#000000');
+                this.selectedColor = App.nesPalette.length - 1;
                 this.initColorPalette();
             }
         };
@@ -236,9 +237,12 @@ const SpriteEditor = {
     openPresetDialog() {
         const dialog = document.getElementById('palette-preset-dialog');
         if (dialog) {
-            // デフォルトでファミトリーを選択
-            const famitoryRadio = document.querySelector('input[name="palette-preset"][value="famitory"]');
-            if (famitoryRadio) famitoryRadio.checked = true;
+            // 未選択状態で開く
+            document.querySelectorAll('#palette-preset-list .preset-item').forEach(item => {
+                item.classList.remove('selected');
+                const arrow = item.querySelector('.preset-item-arrow');
+                if (arrow) arrow.textContent = '';
+            });
             dialog.classList.remove('hidden');
         }
     },
@@ -253,12 +257,12 @@ const SpriteEditor = {
 
     // プリセットを適用（追加モード）
     applyPresetAdd() {
-        const selected = document.querySelector('input[name="palette-preset"]:checked');
+        const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
             alert('プリセットを選択してください');
             return;
         }
-        const preset = App.PALETTE_PRESETS[selected.value];
+        const preset = App.PALETTE_PRESETS[selected.dataset.value];
         if (preset) {
             // 既存パレットに追加
             preset.colors.forEach(color => {
@@ -273,7 +277,7 @@ const SpriteEditor = {
 
     // プリセットを適用（置換モード）
     applyPresetReplace() {
-        const selected = document.querySelector('input[name="palette-preset"]:checked');
+        const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
             alert('プリセットを選択してください');
             return;
@@ -281,7 +285,7 @@ const SpriteEditor = {
         if (!confirm('現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。')) {
             return;
         }
-        const preset = App.PALETTE_PRESETS[selected.value];
+        const preset = App.PALETTE_PRESETS[selected.dataset.value];
         if (preset) {
             App.nesPalette = preset.colors.slice();
             this.initColorPalette();
@@ -299,6 +303,20 @@ const SpriteEditor = {
         if (addBtn) addBtn.addEventListener('click', () => this.applyPresetAdd());
         if (replaceBtn) replaceBtn.addEventListener('click', () => this.applyPresetReplace());
         if (closeBtn) closeBtn.addEventListener('click', () => this.closePresetDialog());
+
+        // 各項目のクリックで選択（‖＋ライトグレー背景）
+        document.querySelectorAll('#palette-preset-list .preset-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('#palette-preset-list .preset-item').forEach(el => {
+                    el.classList.remove('selected');
+                    const a = el.querySelector('.preset-item-arrow');
+                    if (a) a.textContent = '';
+                });
+                item.classList.add('selected');
+                const arrow = item.querySelector('.preset-item-arrow');
+                if (arrow) arrow.textContent = '▶';
+            });
+        });
 
         // 背景クリックで閉じる
         if (dialog) {

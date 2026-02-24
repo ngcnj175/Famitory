@@ -2735,57 +2735,100 @@ const GameEngine = {
             }
 
             if (waveType === 'noise') {
-                // ドラム音（ピッチに応じた連続的なフィルター周波数）
-                const bufferSize = ctx.sampleRate * Math.max(duration, 0.05);
+                // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）
+                const octave = Math.floor(pitch / 12) + 1;
+
+                let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown;
+
+                switch (octave) {
+                    case 1: // Low Kick
+                        filterType = 'lowpass'; filterFreq = 150; filterQ = 2;
+                        drumVol = 0.45; decayTime = 0.10;
+                        useShortNoise = false; pitchEnvDown = true;
+                        break;
+                    case 2: // Tight Snare
+                        filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
+                        drumVol = 0.35; decayTime = 0.13;
+                        useShortNoise = false; pitchEnvDown = false;
+                        break;
+                    case 3: // Open Snare / Clap
+                        filterType = 'bandpass'; filterFreq = 2500; filterQ = 0.8;
+                        drumVol = 0.32; decayTime = 0.22;
+                        useShortNoise = false; pitchEnvDown = false;
+                        break;
+                    case 4: // Closed Hi-Hat
+                        filterType = 'highpass'; filterFreq = 7000; filterQ = 3;
+                        drumVol = 0.22; decayTime = 0.06;
+                        useShortNoise = true; pitchEnvDown = false;
+                        break;
+                    case 5: // Open Hi-Hat
+                        filterType = 'highpass'; filterFreq = 5000; filterQ = 1.5;
+                        drumVol = 0.25; decayTime = 0.25;
+                        useShortNoise = true; pitchEnvDown = false;
+                        break;
+                    case 6: // Noise Roll
+                    default:
+                        filterType = 'bandpass'; filterFreq = 3000; filterQ = 1;
+                        drumVol = 0.28; decayTime = 0.18;
+                        useShortNoise = false; pitchEnvDown = false;
+                        break;
+                }
+
+                // 同一オクターブ内の微調整
+                const noteInOct = pitch % 12;
+                filterFreq *= (1 + noteInOct * 0.02);
+                decayTime *= (1 + noteInOct * 0.015);
+
+                // NES APU 15-bit LFSR風ノイズ生成
+                const actualDuration = Math.max(decayTime + 0.02, 0.05);
+                const bufferSize = Math.floor(ctx.sampleRate * actualDuration);
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
+
+                if (useShortNoise) {
+                    const period = 93;
+                    const shortBuf = new Float32Array(period);
+                    let lfsr = 1;
+                    for (let i = 0; i < period; i++) {
+                        const bit = ((lfsr >> 0) ^ (lfsr >> 6)) & 1;
+                        shortBuf[i] = (lfsr & 1) ? 1.0 : -1.0;
+                        lfsr = (lfsr >> 1) | (bit << 14);
+                    }
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = shortBuf[i % period];
+                    }
+                } else {
+                    let lfsr = 1;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
+                        data[i] = (lfsr & 1) ? 1.0 : -1.0;
+                        lfsr = (lfsr >> 1) | (bit << 14);
+                    }
                 }
 
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
 
-                const gain = ctx.createGain();
                 const filter = ctx.createBiquadFilter();
+                filter.type = filterType;
+                filter.frequency.value = filterFreq;
+                filter.Q.value = filterQ;
 
-                // ピッチ0-71を周波数80Hz-15000Hzにマッピング（指数的）
-                const minFreq = 80;
-                const maxFreq = 15000;
-                const maxPitch = 71;
-                const freqRatio = Math.pow(maxFreq / minFreq, pitch / maxPitch);
-                const filterFreq = minFreq * freqRatio;
-
-                // 低音はローパス（バスドラム）、中音はバンドパス（スネア）、高音はハイパス（ハイハット）
-                if (pitch < 24) {
-                    filter.type = 'lowpass';
-                    filter.frequency.value = filterFreq;
-                    filter.Q.value = 1;
-                } else if (pitch < 48) {
-                    filter.type = 'bandpass';
-                    filter.frequency.value = filterFreq;
-                    filter.Q.value = 3;
-                } else {
-                    filter.type = 'highpass';
-                    filter.frequency.value = filterFreq * 0.4;
-                    filter.Q.value = 1;
+                if (pitchEnvDown) {
+                    filter.frequency.setValueAtTime(filterFreq * 3, ctx.currentTime);
+                    filter.frequency.exponentialRampToValueAtTime(filterFreq, ctx.currentTime + decayTime * 0.5);
                 }
 
-                // 音量とディケイ
-                const baseVolume = 0.35;
-                const volume = baseVolume - (pitch / maxPitch) * 0.15;
-
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.005);
-                const sustainTime = duration * 0.5;
-                gain.gain.setValueAtTime(volume, ctx.currentTime + 0.005 + sustainTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(drumVol, ctx.currentTime);
+                gain.gain.setValueAtTime(drumVol, ctx.currentTime + 0.003);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + decayTime);
 
                 noise.connect(filter);
                 filter.connect(gain);
                 gain.connect(ctx.destination);
                 noise.start();
-                noise.stop(ctx.currentTime + duration);
+                noise.stop(ctx.currentTime + actualDuration);
 
                 activeNodes[trackIdx] = noise;
                 return;
