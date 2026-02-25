@@ -2738,49 +2738,50 @@ const GameEngine = {
                 // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）
                 const octave = Math.floor(pitch / 12) + 1;
 
-                let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown;
+                // --- ドラムタイプ別パラメータ ---
+                let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown, attackTime, holdTime, isRoll;
 
                 switch (octave) {
-                    case 1: // Low Kick
-                        filterType = 'lowpass'; filterFreq = 150; filterQ = 2;
-                        drumVol = 0.45; decayTime = 0.10;
+                    case 1: // Low Kick — 丸く、空気感のある「ボッ」
+                        filterType = 'lowpass'; filterFreq = 120; filterQ = 1.5;
+                        drumVol = 0.45; decayTime = 0.14;
                         useShortNoise = false; pitchEnvDown = true;
-                        break;
-                    case 2: // Tight Snare
+                        attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
+                    case 2: // Tight Snare — シャープ、タイト（変更なし）
                         filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
                         drumVol = 0.35; decayTime = 0.13;
                         useShortNoise = false; pitchEnvDown = false;
-                        break;
-                    case 3: // Open Snare / Clap
-                        filterType = 'bandpass'; filterFreq = 2500; filterQ = 0.8;
+                        attackTime = 0.002; holdTime = 0.00; isRoll = false; break;
+                    case 3: // Open Snare / Clap — 自然なスネア感「タンッ」
+                        filterType = 'bandpass'; filterFreq = 2200; filterQ = 0.6;
                         drumVol = 0.32; decayTime = 0.22;
                         useShortNoise = false; pitchEnvDown = false;
-                        break;
-                    case 4: // Closed Hi-Hat
-                        filterType = 'highpass'; filterFreq = 7000; filterQ = 3;
-                        drumVol = 0.22; decayTime = 0.06;
-                        useShortNoise = true; pitchEnvDown = false;
-                        break;
-                    case 5: // Open Hi-Hat
-                        filterType = 'highpass'; filterFreq = 5000; filterQ = 1.5;
-                        drumVol = 0.25; decayTime = 0.25;
-                        useShortNoise = true; pitchEnvDown = false;
-                        break;
-                    case 6: // Noise Roll
-                    default:
-                        filterType = 'bandpass'; filterFreq = 3000; filterQ = 1;
-                        drumVol = 0.28; decayTime = 0.18;
+                        attackTime = 0.003; holdTime = 0.015; isRoll = false; break;
+                    case 4: // Closed Hi-Hat — ホワイトノイズ寄り、極短「サッ」
+                        filterType = 'highpass'; filterFreq = 7000; filterQ = 0.5;
+                        drumVol = 0.22; decayTime = 0.05;
                         useShortNoise = false; pitchEnvDown = false;
-                        break;
+                        attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
+                    case 5: // Open Hi-Hat — ホワイトノイズ寄り、広がり「サー」
+                        filterType = 'highpass'; filterFreq = 5000; filterQ = 0.5;
+                        drumVol = 0.25; decayTime = 0.25;
+                        useShortNoise = false; pitchEnvDown = false;
+                        attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
+                    case 6: // Noise Roll — 連続ロール「タタタタタ」
+                    default:
+                        filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
+                        drumVol = 0.28; decayTime = duration;
+                        useShortNoise = false; pitchEnvDown = false;
+                        attackTime = 0.005; holdTime = 0.00; isRoll = true; break;
                 }
 
                 // 同一オクターブ内の微調整
                 const noteInOct = pitch % 12;
                 filterFreq *= (1 + noteInOct * 0.02);
-                decayTime *= (1 + noteInOct * 0.015);
+                if (!isRoll) decayTime *= (1 + noteInOct * 0.015);
 
                 // NES APU 15-bit LFSR風ノイズ生成
-                const actualDuration = Math.max(decayTime + 0.02, 0.05);
+                const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
                 const bufferSize = Math.floor(ctx.sampleRate * actualDuration);
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -2806,6 +2807,17 @@ const GameEngine = {
                     }
                 }
 
+                // ロール用の高速リトリガー（内部的な音量変調で粒立ちを作る）
+                if (isRoll) {
+                    const rollRate = 24; // 1秒間のパルス数
+                    for (let i = 0; i < bufferSize; i++) {
+                        const sec = i / ctx.sampleRate;
+                        const phase = (sec * rollRate) % 1.0;
+                        const amp = 0.2 + 0.8 * Math.pow(1.0 - phase, 2); // 減衰するパルス形状
+                        data[i] *= amp;
+                    }
+                }
+
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
 
@@ -2815,14 +2827,23 @@ const GameEngine = {
                 filter.Q.value = filterQ;
 
                 if (pitchEnvDown) {
-                    filter.frequency.setValueAtTime(filterFreq * 3, ctx.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(filterFreq, ctx.currentTime + decayTime * 0.5);
+                    filter.frequency.setValueAtTime(filterFreq * 2.5, ctx.currentTime);
+                    filter.frequency.exponentialRampToValueAtTime(filterFreq, ctx.currentTime + decayTime * 0.4);
                 }
 
                 const gain = ctx.createGain();
-                gain.gain.setValueAtTime(drumVol, ctx.currentTime);
-                gain.gain.setValueAtTime(drumVol, ctx.currentTime + 0.003);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + decayTime);
+                gain.gain.setValueAtTime(0.01, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(drumVol, ctx.currentTime + attackTime);
+
+                if (isRoll) {
+                    gain.gain.setValueAtTime(drumVol, ctx.currentTime + Math.max(0, duration - 0.05));
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + duration);
+                } else if (holdTime > 0) {
+                    gain.gain.setValueAtTime(drumVol, ctx.currentTime + attackTime + holdTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + attackTime + holdTime + decayTime);
+                } else {
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + attackTime + decayTime);
+                }
 
                 noise.connect(filter);
                 filter.connect(gain);

@@ -1792,73 +1792,49 @@ const SoundEditor = {
         const octave = Math.floor(pitch / 12) + 1;
 
         // --- ドラムタイプ別パラメータ ---
-        let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown;
+        let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown, attackTime, holdTime, isRoll;
 
         switch (octave) {
-            case 1: // Low Kick — 暗く短い、ピッチダウン
-                filterType = 'lowpass';
-                filterFreq = 150;
-                filterQ = 2;
-                drumVol = 0.9 * volume;
-                decayTime = 0.10; // 80-120ms
-                useShortNoise = false;
-                pitchEnvDown = true;
-                break;
-            case 2: // Tight Snare — シャープ、タイト
-                filterType = 'bandpass';
-                filterFreq = 1200;
-                filterQ = 1.5;
-                drumVol = 0.7 * volume;
-                decayTime = 0.13; // 120-150ms
-                useShortNoise = false;
-                pitchEnvDown = false;
-                break;
-            case 3: // Open Snare / Clap — 粗い、ノイジー
-                filterType = 'bandpass';
-                filterFreq = 2500;
-                filterQ = 0.8;
-                drumVol = 0.65 * volume;
-                decayTime = 0.22; // 180-250ms
-                useShortNoise = false;
-                pitchEnvDown = false;
-                break;
-            case 4: // Closed Hi-Hat — 金属的、極短
-                filterType = 'highpass';
-                filterFreq = 7000;
-                filterQ = 3;
-                drumVol = 0.45 * volume;
-                decayTime = 0.06; // 40-80ms
-                useShortNoise = true; // 短周期ノイズ（金属質）
-                pitchEnvDown = false;
-                break;
-            case 5: // Open Hi-Hat — 明るいが緩い
-                filterType = 'highpass';
-                filterFreq = 5000;
-                filterQ = 1.5;
-                drumVol = 0.5 * volume;
-                decayTime = 0.25; // 200-300ms
-                useShortNoise = true;
-                pitchEnvDown = false;
-                break;
-            case 6: // Noise Roll — 連続ロール向け
+            case 1: // Low Kick — 丸く、空気感のある「ボッ」
+                filterType = 'lowpass'; filterFreq = 120; filterQ = 1.5;
+                drumVol = 0.9 * volume; decayTime = 0.14;
+                useShortNoise = false; pitchEnvDown = true;
+                attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
+            case 2: // Tight Snare — シャープ、タイト（変更なし）
+                filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
+                drumVol = 0.7 * volume; decayTime = 0.13;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.002; holdTime = 0.00; isRoll = false; break;
+            case 3: // Open Snare / Clap — 自然なスネア感「タンッ」
+                filterType = 'bandpass'; filterFreq = 2200; filterQ = 0.6;
+                drumVol = 0.65 * volume; decayTime = 0.22;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.003; holdTime = 0.015; isRoll = false; break;
+            case 4: // Closed Hi-Hat — ホワイトノイズ寄り、極短「サッ」
+                filterType = 'highpass'; filterFreq = 7000; filterQ = 0.5;
+                drumVol = 0.45 * volume; decayTime = 0.05;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
+            case 5: // Open Hi-Hat — ホワイトノイズ寄り、広がり「サー」
+                filterType = 'highpass'; filterFreq = 5000; filterQ = 0.5;
+                drumVol = 0.5 * volume; decayTime = 0.25;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
+            case 6: // Noise Roll — 連続ロール「タタタタタ」
             default:
-                filterType = 'bandpass';
-                filterFreq = 3000;
-                filterQ = 1;
-                drumVol = 0.55 * volume;
-                decayTime = 0.18; // 150-220ms
-                useShortNoise = false;
-                pitchEnvDown = false;
-                break;
+                filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
+                drumVol = 0.55 * volume; decayTime = duration;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.005; holdTime = 0.00; isRoll = true; break;
         }
 
         // 同一オクターブ内のノート位置で微妙にパラメータ変化
         const noteInOct = pitch % 12;
         filterFreq *= (1 + noteInOct * 0.02); // ノートが上がるとフィルタ周波数が少し上がる
-        decayTime *= (1 + noteInOct * 0.015); // ノートが上がるとディケイが少し長くなる
+        if (!isRoll) decayTime *= (1 + noteInOct * 0.015);
 
         // --- NES APU 15-bit LFSR風ノイズ生成 ---
-        const actualDuration = Math.max(decayTime + 0.02, 0.05);
+        const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
         const bufferSize = Math.floor(ctx.sampleRate * actualDuration);
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
@@ -1886,6 +1862,17 @@ const SoundEditor = {
             }
         }
 
+        // ロール用の高速リトリガー（内部的な音量変調で粒立ちを作る）
+        if (isRoll) {
+            const rollRate = 24; // 1秒間のパルス数
+            for (let i = 0; i < bufferSize; i++) {
+                const sec = i / ctx.sampleRate;
+                const phase = (sec * rollRate) % 1.0;
+                const amp = 0.2 + 0.8 * Math.pow(1.0 - phase, 2); // 減衰するパルス形状
+                data[i] *= amp;
+            }
+        }
+
         const noise = ctx.createBufferSource();
         noise.buffer = buffer;
 
@@ -1897,8 +1884,8 @@ const SoundEditor = {
 
         // ピッチダウンエンベロープ（Low Kick用）
         if (pitchEnvDown) {
-            filter.frequency.setValueAtTime(filterFreq * 3, t);
-            filter.frequency.exponentialRampToValueAtTime(filterFreq, t + decayTime * 0.5);
+            filter.frequency.setValueAtTime(filterFreq * 2.5, t); // 少し浅く
+            filter.frequency.exponentialRampToValueAtTime(filterFreq, t + decayTime * 0.4);
         }
 
         // ゲインノード
@@ -1914,10 +1901,19 @@ const SoundEditor = {
         gain.connect(panner);
         panner.connect(ctx.destination);
 
-        // エンベロープ: 瞬時アタック → 急速減衰
-        gain.gain.setValueAtTime(drumVol, t);
-        gain.gain.setValueAtTime(drumVol, t + 0.003);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + decayTime);
+        // エンベロープ
+        gain.gain.setValueAtTime(0.01, t);
+        gain.gain.linearRampToValueAtTime(drumVol, t + attackTime);
+        if (isRoll) {
+            // ロールは指定durationまで音を持続させ、最後に減衰
+            gain.gain.setValueAtTime(drumVol, t + Math.max(0, duration - 0.05));
+            gain.gain.linearRampToValueAtTime(0.01, t + duration);
+        } else if (holdTime > 0) {
+            gain.gain.setValueAtTime(drumVol, t + attackTime + holdTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + attackTime + holdTime + decayTime);
+        } else {
+            gain.gain.exponentialRampToValueAtTime(0.01, t + attackTime + decayTime);
+        }
 
         noise.start(t);
         noise.stop(t + actualDuration);
