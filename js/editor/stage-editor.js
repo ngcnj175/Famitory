@@ -780,28 +780,18 @@ const StageEditor = {
         document.querySelectorAll('.block-gauge-item').forEach(item => {
             item.addEventListener('click', () => {
                 const key = item.dataset.key;
-                let index = parseInt(item.dataset.index);
+                const index = parseInt(item.dataset.index);
                 const gaugeContainer = item.closest('.block-gauge');
                 const min = parseInt(gaugeContainer.dataset.min);
                 const max = parseInt(gaugeContainer.dataset.max);
-
-                // 現在1つだけ点灯している状態でそこをタップした場合は0（全消灯）にする
-                if (index === 1 && item.classList.contains('active') &&
-                    (!item.nextElementSibling || !item.nextElementSibling.classList.contains('active'))) {
-                    index = 0;
-                }
 
                 // data-type="speed" の場合 (スプライト速度)
                 if (gaugeContainer.dataset.type === 'speed') {
                     const slot = gaugeContainer.dataset.slot;
                     if (slot && this.editingTemplate?.sprites?.[slot]) {
                         // 速度マッピング (1-20 -> 5段階)
-                        // index === 0 の場合は 0 にする
-                        let value = 0;
-                        if (index > 0) {
-                            const range = max - min;
-                            value = Math.round(((index - 1) / 4) * range + min);
-                        }
+                        const range = max - min;
+                        const value = Math.round(((index - 1) / 4) * range + min);
 
                         this.editingTemplate.sprites[slot].speed = value;
 
@@ -821,14 +811,11 @@ const StageEditor = {
                 }
 
                 if (key && this.editingTemplate?.config) {
-                    // インデックス(0-5)を実際の値にマッピング
+                    // インデックス(1-5)を実際の値にマッピング
                     let value;
-                    if (index === 0) {
-                        value = 0;
-                    } else if (key === 'life' && min === -1) {
+                    if (key === 'life' && min === -1) {
                         // 特殊ケース: 0=無敵(-1), 1-5=1-5
-                        value = index;
-                        if (index === 1) value = -1; // 1番目のブロックが選択されたら-1 (無敵)
+                        value = index === 0 ? -1 : index;
                     } else {
                         // 通常マッピング
                         const range = max - min;
@@ -837,7 +824,7 @@ const StageEditor = {
 
                     this.editingTemplate.config[key] = value;
 
-                    // 繧ｲ繝ｼ繧ｸUI繧呈峩譁ｰ
+                    // ゲージUIを更新
                     gaugeContainer.querySelectorAll('.block-gauge-item').forEach((g, i) => {
                         if (i + 1 <= index) {
                             g.classList.add('active');

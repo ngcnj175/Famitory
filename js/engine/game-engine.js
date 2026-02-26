@@ -2331,9 +2331,14 @@ const GameEngine = {
             // アニメーション対応: 複数フレームがある場合は切り替え
             let spriteIdx;
             if (frames.length > 1) {
-                const frameSpeed = 10;
-                const frameIndex = Math.floor(this.tileAnimationFrame / frameSpeed) % frames.length;
-                spriteIdx = frames[frameIndex];
+                const speed = lifeSprites.speed || 5;
+                const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
+                if (interval !== Infinity) {
+                    const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                    spriteIdx = frames[frameIndex];
+                } else {
+                    spriteIdx = frames[0];
+                }
             } else if (frames.length === 1) {
                 spriteIdx = frames[0];
             }
@@ -2416,7 +2421,7 @@ const GameEngine = {
 
         // スコア表示（中央上）
         if (App.projectData.stage.showScore) {
-            const scoreText = `SCORE: ${this.score.toString().padStart(6, '0')}`;
+            const scoreText = this.score.toString().padStart(6, '0');
             // const hiText = `HI: ${this.highScore.toString().padStart(6, '0')}`; // スペースがあれば表示
 
             this.ctx.font = 'bold 16px Arial';
