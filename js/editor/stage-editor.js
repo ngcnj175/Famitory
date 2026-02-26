@@ -500,8 +500,6 @@ const StageEditor = {
                 `;
             }
         } else if (type === 'material') {
-            html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
-            html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
             html += `
                 <div class="param-row">
                     <span class="param-label">ギミック</span>
@@ -511,10 +509,16 @@ const StageEditor = {
                         <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>縦移動</option>
                         <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>落下</option>
                         <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>はしご</option>
+                        <option value="spring" ${config.gimmick === 'spring' ? 'selected' : ''}>スプリング</option>
                         <option value="door" ${config.gimmick === 'door' ? 'selected' : ''}>とびら</option>
                     </select>
                 </div>
             `;
+            if (config.gimmick === 'spring') {
+                html += this.renderBlockGauge('はねる力', 'springPower', config.springPower ?? 3, 1, 5);
+            }
+            html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
+            html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
         } else if (type === 'item') {
             html += `
                 <div class="param-row">

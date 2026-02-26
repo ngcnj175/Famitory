@@ -59,7 +59,7 @@ class Player {
         this.starDuration = 300; // 5秒
 
         // SHOT設定
-        this.shotMaxRange = template?.config?.shotMaxRange || 0;
+        this.shotMaxRange = (template?.config?.shotMaxRange || 0) * 2;
         this.attackCooldown = 0;
 
         // W JUMP（2段ジャンプ）
@@ -601,6 +601,31 @@ class Player {
                 this.vy = 0;
             }
             if (this.vy >= 0 && engine.getCollision(tx, bottom) === 1) {
+                // スプリング判定
+                const posKey = `${tx},${bottom}`;
+                if (engine.springTiles && engine.springTiles.has(posKey)) {
+                    const springData = engine.springTiles.get(posKey);
+                    // power: 1~5 -> vy: -0.5 ~ -0.9
+                    // jumpPowerは通常 -0.215 ~ -0.5 程度。
+                    this.vy = -0.4 - (springData.power * 0.1);
+                    this.y = bottom - this.height;
+                    this.onGround = false;
+                    this.hasDoubleJumped = false;
+                    this.canDoubleJump = this.wJumpEnabled;
+                    this.playSE('jump');
+
+                    // スプリングアニメーションなどのフック用
+                    if (typeof engine.activateSpring === 'function') {
+                        engine.activateSpring(tx, bottom);
+                    }
+
+                    if (this.isKnockback) {
+                        this.isKnockback = false;
+                        this.vx = 0;
+                    }
+                    break; // スプリング処理したので終了
+                }
+
                 this.y = bottom - this.height;
                 this.vy = 0;
                 this.onGround = true;
@@ -721,11 +746,16 @@ class Player {
             const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
             const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
-            // スターパワー中は虹色
+            // ダメージ無敵中はファミコン風に高速点滅（描画スキップ）させる
+            if (this.invincible && !this.starPower) {
+                if (Math.floor(this.invincibleTimer / 4) % 2 === 0) {
+                    return; // 描画をスキップ
+                }
+            }
+
+            // スターパワー中は薄くする（全体を虹色にするため）
             if (this.starPower) {
                 ctx.globalAlpha = 0.8;
-            } else if (this.invincible) {
-                ctx.globalAlpha = 0.5;
             }
 
             // 左向きの場合は反転描画

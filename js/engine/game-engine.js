@@ -503,7 +503,25 @@ const GameEngine = {
         }
         console.log('doorTiles:', this.doorTiles.size);
 
-        // ギミックブロック初期化（はしごは除外）
+        // スプリングタイル初期化
+        this.springTiles = new Map();
+        if (stage && stage.layers && stage.layers.fg) {
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const tileId = stage.layers.fg[y][x];
+                    if (tileId >= 0) {
+                        const { template: tmpl } = getTemplateFromTileId(tileId);
+                        if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'spring') {
+                            const power = tmpl.config.springPower ?? 3;
+                            this.springTiles.set(`${x},${y}`, { power: power });
+                        }
+                    }
+                }
+            }
+        }
+        console.log('springTiles:', this.springTiles.size);
+
+        // ギミックブロック初期化（はしご、とびら、スプリングは除外）
         this.gimmickBlocks = [];
         if (stage && stage.layers && stage.layers.fg) {
             for (let y = 0; y < stage.height; y++) {
@@ -511,7 +529,7 @@ const GameEngine = {
                     const tileId = stage.layers.fg[y][x];
                     if (tileId >= 0) {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
-                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door') {
+                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door' && template.config.gimmick !== 'spring') {
                             this.gimmickBlocks.push({
                                 tileX: x,
                                 tileY: y,
@@ -836,6 +854,23 @@ const GameEngine = {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, false); // collision=false のみ
         }
 
+        // 2.5 ギミックブロック（動くブロック）をプレイヤーやアイテムの奥（背景寄り）で描画
+        if (this.gimmickBlocks) {
+            this.gimmickBlocks.forEach(block => {
+                if (block.template) {
+                    const spriteIdx = block.template.sprites?.main?.frames?.[0];
+                    if (spriteIdx !== undefined) {
+                        const obj = {
+                            x: block.x, y: block.y,
+                            spriteIdx: spriteIdx,
+                            facingRight: true
+                        };
+                        this.renderProjectileOrItem(obj);
+                    }
+                }
+            });
+        }
+
         // 3. アイテム (blocksの後ろにある場合は隠す)
         this.items.forEach(item => {
             if (item.collected) return;
@@ -883,23 +918,6 @@ const GameEngine = {
         if (stage.layers.fg) {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
         }
-
-        // 7. ギミックブロック（動くブロック）
-        this.gimmickBlocks.forEach(block => {
-            if (block.template) {
-                // gimmickBlocks have template property, use main sprite
-                const spriteIdx = block.template.sprites?.main?.frames?.[0];
-                if (spriteIdx !== undefined) {
-                    const obj = {
-                        x: block.x, y: block.y,
-                        spriteIdx: spriteIdx,
-                        facingRight: true
-                    };
-                    // renderProjectileOrItem (renderObject replacement)
-                    this.renderProjectileOrItem(obj);
-                }
-            }
-        });
 
         // 8. 死亡中の敵（FGレイヤーより手前に表示）
         this.enemies.forEach(enemy => {
@@ -1053,7 +1071,14 @@ const GameEngine = {
                     const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
 
                     if (interval !== Infinity) {
-                        const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                        let frameIndex;
+                        if (obj.shotType === 'melee') {
+                            // 近接の場合はループさせず、生成からの経過時間（age）を使用し最後のフレームで止める
+                            frameIndex = Math.min(Math.floor((obj.age || 0) / interval), frames.length - 1);
+                        } else {
+                            // 通常はタイマーによるループ
+                            frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                        }
                         spriteIdx = frames[frameIndex];
                     } else {
                         spriteIdx = frames[0];
@@ -1311,6 +1336,8 @@ const GameEngine = {
 
     updateProjectiles() {
         this.projectiles = this.projectiles.filter(proj => {
+            if (proj.age === undefined) proj.age = 0;
+            proj.age++;
             const shotType = proj.shotType || 'straight';
 
             // 寿命(duration)があれば減少

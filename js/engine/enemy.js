@@ -66,7 +66,7 @@ class Enemy {
         this.rushStartY = tileY;
 
         // SHOT設定
-        this.shotMaxRange = template?.config?.shotMaxRange || 0;
+        this.shotMaxRange = (template?.config?.shotMaxRange || 0) * 2;
         this.shotCooldown = 0;
         // 連射設定: shotRate 1（200フレーム）～5（60フレーム）
         const shotRateConfig = template?.config?.shotRate ?? 3;
@@ -585,17 +585,22 @@ class Enemy {
     }
 
     getSpriteSlot() {
-        switch (this.state) {
-            case 'attack':
-                return this.template?.sprites?.attack?.frames?.length > 0 ? 'attack' : 'idle';
-            case 'climb':
-                return this.template?.sprites?.climb?.frames?.length > 0 ? 'climb' : 'idle';
-            case 'jump':
-                return this.template?.sprites?.jump?.frames?.length > 0 ? 'jump' : 'idle';
-            case 'walk':
-                return this.template?.sprites?.walk?.frames?.length > 0 ? 'walk' : 'idle';
-            default:
-                return 'idle';
+        let slot = this.state;
+
+        // attack スプライトがない場合は、他の状態にフォールバック
+        if (slot === 'attack' && !(this.template?.sprites?.attack?.frames?.length > 0)) {
+            if (this.onLadder) slot = 'climb';
+            else if (!this.onGround && !this.isAerial) slot = 'jump';
+            else if (this.vx !== 0) slot = 'walk';
+            else slot = 'idle';
+        }
+
+        switch (slot) {
+            case 'attack': return 'attack';
+            case 'climb': return this.template?.sprites?.climb?.frames?.length > 0 ? 'climb' : 'idle';
+            case 'jump': return this.template?.sprites?.jump?.frames?.length > 0 ? 'jump' : 'idle';
+            case 'walk': return this.template?.sprites?.walk?.frames?.length > 0 ? 'walk' : 'idle';
+            default: return 'idle';
         }
     }
 
@@ -771,6 +776,23 @@ class Enemy {
                 this.vy = 0;
             }
             if (this.vy >= 0 && engine.getCollision(tx, bottom) === 1) {
+                // スプリング判定
+                const posKey = `${tx},${bottom}`;
+                if (engine.springTiles && engine.springTiles.has(posKey)) {
+                    const springData = engine.springTiles.get(posKey);
+                    // power: 1~5 -> vy: -0.5 ~ -0.9
+                    this.vy = -0.4 - (springData.power * 0.1);
+                    this.y = bottom - this.height;
+                    this.onGround = false;
+
+                    // スプリングアニメーションなどのフック用
+                    if (typeof engine.activateSpring === 'function') {
+                        engine.activateSpring(tx, bottom);
+                    }
+
+                    break; // スプリング処理したので終了
+                }
+
                 this.y = bottom - this.height;
                 this.vy = 0;
                 this.onGround = true;
