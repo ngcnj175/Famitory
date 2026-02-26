@@ -1823,9 +1823,12 @@ const SoundEditor = {
             case 6: // Noise Roll — 連続ロール「タタタタタ」
             default:
                 filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
-                drumVol = 0.55 * volume; decayTime = duration;
+                drumVol = 0.45 * volume; // 音量を少し弱く
+                // 音長が0.15s（1STEP強）より長い場合のみロール（高速リトリガー）にする
+                isRoll = (duration > 0.15);
+                decayTime = isRoll ? duration : 0.15; // 短い場合は単発のディケイ
                 useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.005; holdTime = 0.00; isRoll = true; break;
+                attackTime = 0.005; holdTime = 0.00; break;
         }
 
         // 同一オクターブ内のノート位置で微妙にパラメータ変化

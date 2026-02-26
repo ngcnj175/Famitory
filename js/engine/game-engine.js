@@ -2770,9 +2770,11 @@ const GameEngine = {
                     case 6: // Noise Roll — 連続ロール「タタタタタ」
                     default:
                         filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
-                        drumVol = 0.28; decayTime = duration;
+                        drumVol = 0.22; // 音量を少し弱く (元の0.28から低下)
+                        isRoll = (duration > 0.15);
+                        decayTime = isRoll ? duration : 0.15;
                         useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.005; holdTime = 0.00; isRoll = true; break;
+                        attackTime = 0.005; holdTime = 0.00; break;
                 }
 
                 // 同一オクターブ内の微調整
