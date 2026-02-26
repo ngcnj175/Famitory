@@ -780,22 +780,32 @@ const StageEditor = {
         document.querySelectorAll('.block-gauge-item').forEach(item => {
             item.addEventListener('click', () => {
                 const key = item.dataset.key;
-                const index = parseInt(item.dataset.index);
+                let index = parseInt(item.dataset.index);
                 const gaugeContainer = item.closest('.block-gauge');
                 const min = parseInt(gaugeContainer.dataset.min);
                 const max = parseInt(gaugeContainer.dataset.max);
 
-                // data-type="speed" 縺ｮ蝣ｴ蜷・(繧ｹ繝励Λ繧､繝磯溷ｺｦ)
+                // 現在1つだけ点灯している状態でそこをタップした場合は0（全消灯）にする
+                if (index === 1 && item.classList.contains('active') &&
+                    (!item.nextElementSibling || !item.nextElementSibling.classList.contains('active'))) {
+                    index = 0;
+                }
+
+                // data-type="speed" の場合 (スプライト速度)
                 if (gaugeContainer.dataset.type === 'speed') {
                     const slot = gaugeContainer.dataset.slot;
                     if (slot && this.editingTemplate?.sprites?.[slot]) {
-                        // 騾溷ｺｦ繝槭ャ繝斐Φ繧ｰ (1-20 -> 5谿ｵ髫・
-                        const range = max - min;
-                        const value = Math.round(((index - 1) / 4) * range + min);
+                        // 速度マッピング (1-20 -> 5段階)
+                        // index === 0 の場合は 0 にする
+                        let value = 0;
+                        if (index > 0) {
+                            const range = max - min;
+                            value = Math.round(((index - 1) / 4) * range + min);
+                        }
 
                         this.editingTemplate.sprites[slot].speed = value;
 
-                        // 繧ｲ繝ｼ繧ｸUI譖ｴ譁ｰ
+                        // ゲージUI更新
                         gaugeContainer.querySelectorAll('.block-gauge-item').forEach((g, i) => {
                             if (i + 1 <= index) {
                                 g.classList.add('active');
@@ -804,20 +814,23 @@ const StageEditor = {
                             }
                         });
 
-                        // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ譖ｴ譁ｰ
+                        // アニメーション更新
                         this.updateConfigAnimations();
                     }
                     return;
                 }
 
                 if (key && this.editingTemplate?.config) {
-                    // 繧､繝ｳ繝・ャ繧ｯ繧ｹ(1-5)繧貞ｮ滄圀縺ｮ蛟､縺ｫ繝槭ャ繝斐Φ繧ｰ
+                    // インデックス(0-5)を実際の値にマッピング
                     let value;
-                    if (key === 'life' && min === -1) {
-                        // 迚ｹ谿翫こ繝ｼ繧ｹ: 0=辟｡髯・-1), 1-5=1-5
-                        value = index === 0 ? -1 : index;
+                    if (index === 0) {
+                        value = 0;
+                    } else if (key === 'life' && min === -1) {
+                        // 特殊ケース: 0=無敵(-1), 1-5=1-5
+                        value = index;
+                        if (index === 1) value = -1; // 1番目のブロックが選択されたら-1 (無敵)
                     } else {
-                        // 騾壼ｸｸ繝槭ャ繝斐Φ繧ｰ
+                        // 通常マッピング
                         const range = max - min;
                         value = Math.round(((index - 1) / 4) * range + min);
                     }

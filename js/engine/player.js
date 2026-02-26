@@ -263,7 +263,7 @@ class Player {
             this.facingRight = true;
         }
 
-        // はしご上では上下移動（十字キー）、ジャンプ無効
+        // はしご上では上下移動（十字キー）、ジャンプ無効（最上部のみジャンプ可）
         if (this.onLadder) {
             if (GameController.isPressed('up')) {
                 this.vy = -this.moveSpeed;
@@ -272,8 +272,22 @@ class Player {
             } else {
                 this.vy = 0; // 上下キー離すと停止
             }
+
+            // はしご最上部でのジャンプ許可
+            const atLadderTop = engine.isAtLadderTop(this.x, this.y, this.width, this.height);
+            if (atLadderTop && GameController.isPressed('a') && !this._jumpKeyWasPressed) {
+                this.vy = this.jumpPower;
+                this.onGround = false;
+                this.onLadder = false;
+                this.hasDoubleJumped = false;
+                this.canDoubleJump = this.wJumpEnabled;
+                this.playSE('jump');
+                this._jumpKeyWasPressed = GameController.isPressed('a');
+                return;
+            }
+
             this._jumpKeyWasPressed = GameController.isPressed('a');
-            return; // はしご上ではジャンプ処理をスキップ
+            return; // はしご上での基本処理終了
         }
 
         // ジャンプ処理

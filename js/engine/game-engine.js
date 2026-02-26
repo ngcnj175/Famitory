@@ -1038,10 +1038,26 @@ const GameEngine = {
                     }
                 }
                 if (frames.length > 1) {
-                    // アニメーション速度: 10フレームごとにスプライトを切り替え
-                    const frameSpeed = 10;
-                    const frameIndex = Math.floor(this.tileAnimationFrame / frameSpeed) % frames.length;
-                    spriteIdx = frames[frameIndex];
+                    // アニメーション速度: スプライトごとの設定を取得
+                    let speed = 5;
+                    if (obj.animationSlot && spriteSlots[obj.animationSlot]?.speed !== undefined) {
+                        speed = spriteSlots[obj.animationSlot].speed;
+                    } else {
+                        for (const slotName of ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life']) {
+                            if (spriteSlots[slotName]?.frames?.length > 0 && spriteSlots[slotName]?.speed !== undefined) {
+                                speed = spriteSlots[slotName].speed;
+                                break;
+                            }
+                        }
+                    }
+                    const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
+
+                    if (interval !== Infinity) {
+                        const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                        spriteIdx = frames[frameIndex];
+                    } else {
+                        spriteIdx = frames[0];
+                    }
                 } else if (frames.length === 1) {
                     spriteIdx = frames[0];
                 }
@@ -1434,8 +1450,10 @@ const GameEngine = {
                 }
             }
 
-            // 画面外チェック（ピンポン用）
-            if (proj.y > 20 || proj.y < -5 || proj.x < -5 || proj.x > 100) {
+            // 画面外チェック（全プロジェクタイル共通。ステージサイズに基づく）
+            const stageWidth = this.stageData ? this.stageData.width : App.projectData.stage.width;
+            const stageHeight = this.stageData ? this.stageData.height : App.projectData.stage.height;
+            if (proj.y > stageHeight + 5 || proj.y < -5 || proj.x < -5 || proj.x > stageWidth + 5) {
                 return false;
             }
 
@@ -1981,6 +1999,18 @@ const GameEngine = {
         const topY = Math.floor(y);
         const bottomY = Math.floor(y + height - 0.01);
         return this.ladderTiles.has(`${centerX},${topY}`) ||
+            this.ladderTiles.has(`${centerX},${bottomY}`);
+    },
+
+    // はしごの最上部にいるか判定
+    isAtLadderTop(x, y, width, height) {
+        if (!this.ladderTiles || this.ladderTiles.size === 0) return false;
+        const centerX = Math.floor(x + width / 2);
+        const topY = Math.floor(y);
+        const bottomY = Math.floor(y + height - 0.01);
+
+        // 足元がはしごに乗っており、頭がはしごから出ている状態を「はしごの最上部」とする
+        return !this.ladderTiles.has(`${centerX},${topY}`) &&
             this.ladderTiles.has(`${centerX},${bottomY}`);
     },
 
@@ -2533,7 +2563,6 @@ const GameEngine = {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
-        const frameSpeed = 10; // アニメーション速度: 10フレームごとにスプライトを切り替え
 
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
@@ -2552,20 +2581,28 @@ const GameEngine = {
                         if (template && (template.type === 'item' || template.type === 'enemy' || template.type === 'player')) continue;
 
                         // マテリアル（ブロック）などはここで描画
-                        // アニメーション対応: 全フレームから現在のフレームを計算
                         const spriteSlots = template?.sprites || {};
                         const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
                         let frames = [];
+                        let speed = 5;
                         for (const slotName of slotNames) {
                             if (spriteSlots[slotName]?.frames?.length > 0) {
                                 frames = spriteSlots[slotName].frames;
+                                if (spriteSlots[slotName]?.speed !== undefined) {
+                                    speed = spriteSlots[slotName].speed;
+                                }
                                 break;
                             }
                         }
                         if (frames.length > 1) {
                             // 複数フレームがある場合はアニメーション
-                            const frameIndex = Math.floor(this.tileAnimationFrame / frameSpeed) % frames.length;
-                            spriteIdx = frames[frameIndex];
+                            const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
+                            if (interval !== Infinity) {
+                                const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                                spriteIdx = frames[frameIndex];
+                            } else {
+                                spriteIdx = frames[0];
+                            }
                         } else if (frames.length === 1) {
                             spriteIdx = frames[0];
                         }
@@ -2590,7 +2627,6 @@ const GameEngine = {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
-        const frameSpeed = 10;
 
         // ギミックブロック位置をセットに登録
         const gimmickPositions = new Set();
@@ -2633,15 +2669,24 @@ const GameEngine = {
                         const spriteSlots = template?.sprites || {};
                         const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
                         let frames = [];
+                        let speed = 5;
                         for (const slotName of slotNames) {
                             if (spriteSlots[slotName]?.frames?.length > 0) {
                                 frames = spriteSlots[slotName].frames;
+                                if (spriteSlots[slotName]?.speed !== undefined) {
+                                    speed = spriteSlots[slotName].speed;
+                                }
                                 break;
                             }
                         }
                         if (frames.length > 1) {
-                            const frameIndex = Math.floor(this.tileAnimationFrame / frameSpeed) % frames.length;
-                            spriteIdx = frames[frameIndex];
+                            const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
+                            if (interval !== Infinity) {
+                                const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
+                                spriteIdx = frames[frameIndex];
+                            } else {
+                                spriteIdx = frames[0];
+                            }
                         } else if (frames.length === 1) {
                             spriteIdx = frames[0];
                         }
