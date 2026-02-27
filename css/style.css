@@ -4764,7 +4764,7 @@ body {
 
 #app.dark-mode .config-save-btn {
     background: #2a2a45;
-    color: #a0b0d0;
+    color: #ffffff;
 }
 
 /* タイルテンプレートパレット */
@@ -4967,4 +4967,84 @@ body {
 
 #app.dark-mode ::-webkit-scrollbar-thumb {
     background: #252540;
+}
+
+/* --- PLAYアイコン内の十字・丸の色制御 --- */
+.play-icon-detail {
+    fill: white;
+}
+
+#app.dark-mode .play-icon-detail {
+    fill: #0c0c16;
+}
+
+/* --- STAGE画面: BGM選択ボタン・制限時間入力・設定selectのダークモード --- */
+#app.dark-mode .bgm-select-btn {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode .bgm-select-btn:hover {
+    border-color: #5070a0;
+}
+
+#app.dark-mode .time-control input[type="number"] {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode .time-control span {
+    color: #7080a0;
+}
+
+#app.dark-mode .setting-select {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode .bgm-label {
+    color: #7080a0;
+}
+
+/* --- ゲージ（5個）: active=明るく / 非active=暗く --- */
+#app.dark-mode .block-gauge-item {
+    background: #1a1a30;
+    border-color: #303050;
+}
+
+#app.dark-mode .block-gauge-item.active {
+    background: #5080c0;
+    border-color: #5080c0;
+}
+
+/* --- トグルスイッチ: ON=明るく --- */
+#app.dark-mode .toggle-slider {
+    background: #252540;
+}
+
+#app.dark-mode .toggle-slider::before {
+    background: #606880;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+#app.dark-mode .toggle-switch input:checked+.toggle-slider {
+    background: #4080c0;
+}
+
+#app.dark-mode .toggle-switch input:checked+.toggle-slider::before {
+    background: #e0e8f0;
+    box-shadow: 0 0 6px rgba(64, 128, 192, 0.4);
+}
+
+#app.dark-mode .toggle-label {
+    color: #8890a8;
+}
+
+/* --- 保存ボタン文字: 白 --- */
+#app.dark-mode .setting-save-btn {
+    background: #2a2a45;
+    color: #ffffff;
 }
