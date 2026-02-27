@@ -4885,45 +4885,6 @@ body {
     color: #8090b0;
 }
 
-/* --- 共通パネル・ポップアップ --- */
-#app.dark-mode .popup-overlay {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-#app.dark-mode .popup-content {
-    background: #14142a;
-    border-color: #303050;
-}
-
-#app.dark-mode .popup-header {
-    background: #1a1a30;
-    color: #b0b8d0;
-    border-bottom-color: #252540;
-}
-
-#app.dark-mode .popup-btn {
-    border-color: #303050;
-    color: #8090b0;
-}
-
-#app.dark-mode .popup-btn.primary {
-    background: #2a2a45;
-    color: #c0d0f0;
-}
-
-/* SE選択ポップアップ */
-#app.dark-mode .se-select-item {
-    border-bottom-color: #252540;
-    color: #b0b8d0;
-}
-
-#app.dark-mode .se-select-item.current {
-    background: #1a1a35;
-}
-
-#app.dark-mode .se-select-item .se-name {
-    color: #c0c8e0;
-}
 
 /* パネル閉じるボタン */
 #app.dark-mode .panel-close-btn {
@@ -5049,200 +5010,244 @@ body {
     color: #ffffff;
 }
 
-/* --- 設定モーダル（プレイヤー/てき/ブロック/アイテム） --- */
-#app.dark-mode .modal-overlay {
+/* --- 設定モーダル（プレイヤー/てき/ブロック/アイテム）--- */
+/* ※モーダルは #app の外に配置されるため body.dark-mode を使用 */
+body.dark-mode .modal-overlay {
     background: rgba(0, 0, 0, 0.75);
 }
 
-#app.dark-mode .modal-content {
+body.dark-mode .modal-content {
     background: #14142a;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
-#app.dark-mode .modal-header {
+body.dark-mode .modal-header {
     background: #1e1e38;
     color: #c0c8e0;
 }
 
-#app.dark-mode .modal-body {
+body.dark-mode .modal-body {
     background: #14142a;
     color: #b0b8d0;
 }
 
-#app.dark-mode .modal-footer {
+body.dark-mode .modal-footer {
     background: #14142a;
     border-top-color: #252540;
 }
 
-#app.dark-mode .modal-btn.ok-btn {
+body.dark-mode .modal-btn.ok-btn {
     background: #2a2a45;
     color: #ffffff;
 }
 
-#app.dark-mode .modal-btn.cancel-btn {
+body.dark-mode .modal-btn.cancel-btn {
     background: transparent;
     border-color: #303050;
     color: #8890a8;
 }
 
 /* スプライト登録枠（未登録時） */
-#app.dark-mode .sprite-select-btn {
+body.dark-mode .sprite-select-btn {
     background: #1a1a30;
     border-color: #303050;
     color: #506080;
 }
 
-#app.dark-mode .sprite-select-btn.has-sprite {
+body.dark-mode .sprite-select-btn.has-sprite {
     border-color: #4060a0;
 }
 
-#app.dark-mode .sprite-drop-slot {
+body.dark-mode .sprite-drop-slot {
     background: #1a1a30;
     border-color: #303050;
 }
 
-#app.dark-mode .sprite-drop-slot.has-sprite {
+body.dark-mode .sprite-drop-slot.has-sprite {
     border-color: #4060a0;
 }
 
-#app.dark-mode .slot-placeholder {
+body.dark-mode .slot-placeholder {
     color: #506080;
 }
 
 /* 軌道タイプなどの選択欄（config-select） */
-#app.dark-mode .config-select {
+body.dark-mode .config-select {
     background: #1a1a30;
     color: #c0c8e0;
     border-color: #303050;
 }
 
-#app.dark-mode .config-select option {
+body.dark-mode .config-select option {
     background: #1a1a30;
     color: #c0c8e0;
 }
 
 /* SE選択欄（selectタグ .se-select） */
-#app.dark-mode .se-select {
+body.dark-mode .se-select {
     background: #1a1a30;
     color: #c0c8e0;
     border-color: #303050;
 }
 
-#app.dark-mode .se-select option {
+body.dark-mode .se-select option {
     background: #1a1a30;
     color: #c0c8e0;
 }
 
 /* SEプレビューボタン */
-#app.dark-mode .se-preview-btn {
+body.dark-mode .se-preview-btn {
     background: #1a1a30;
     border-color: #303050;
     color: #7080a0;
 }
 
-#app.dark-mode .se-preview-btn:hover {
+body.dark-mode .se-preview-btn:hover {
     border-color: #5070a0;
     color: #a0b0d0;
 }
 
-#app.dark-mode .se-preview-btn:active {
+body.dark-mode .se-preview-btn:active {
     background: #252545;
 }
 
 /* 効果音ボタン */
-#app.dark-mode .sound-btn {
+body.dark-mode .sound-btn {
     background: #1a1a30;
     border-color: #303050;
     color: #8090a8;
 }
 
-#app.dark-mode .sound-btn:active {
+body.dark-mode .sound-btn:active {
     background: #2a2a45;
     color: #c0d0f0;
 }
 
-#app.dark-mode .sound-btn.has-sound {
+body.dark-mode .sound-btn.has-sound {
     background: #2a4860;
     color: #c0e0ff;
     border-color: #3a6890;
 }
 
 /* ラジオグループ */
-#app.dark-mode .radio-group label {
+body.dark-mode .radio-group label {
     color: #a0a8c0;
 }
 
 /* チェックボックスラベル */
-#app.dark-mode .checkbox-label {
+body.dark-mode .checkbox-label {
     color: #a0a8c0;
 }
 
 /* 設定ラベル */
-#app.dark-mode .config-label {
+body.dark-mode .config-label {
     color: #8890a8;
 }
 
 /* アニメーショングリッドのラベル */
-#app.dark-mode .anim-item span {
+body.dark-mode .anim-item span {
     color: #7080a0;
 }
 
 /* タイル設定パネルの「保存」ボタン（config-btn.primary） */
-#app.dark-mode .config-btn {
+body.dark-mode .config-btn {
     background: #1a1a30;
     border-color: #303050;
     color: #8090b0;
 }
 
-#app.dark-mode .config-btn.primary {
+body.dark-mode .config-btn.primary {
     background: #2a2a45;
     color: #ffffff;
     border-color: #3a3a5a;
 }
 
-#app.dark-mode .config-btn:active {
+body.dark-mode .config-btn:active {
     background: #2a2a45;
     color: #c0d0f0;
 }
 
 /* タイル設定パネルの保存ボタン（config-save-btn）- 文字を白に */
-#app.dark-mode .config-save-btn {
+body.dark-mode .config-save-btn {
     background: #2a2a45;
     color: #ffffff;
 }
 
 /* 設定セクション区切り */
-#app.dark-mode .config-section {
+body.dark-mode .config-section {
     border-color: #252540;
 }
 
 /* パラメータ行のラベル */
-#app.dark-mode .param-label {
+body.dark-mode .param-label {
     color: #8890a8;
 }
 
 /* パラメータ値表示 */
-#app.dark-mode .param-value {
+body.dark-mode .param-value {
     color: #a0b0d0;
 }
 
 /* パラメータセクションラベル */
-#app.dark-mode .param-section-label {
+body.dark-mode .param-section-label {
     color: #506080;
     border-top-color: #252540;
 }
 
 /* SE行のセクションラベル */
-#app.dark-mode .se-section-label {
+body.dark-mode .se-section-label {
     color: #506080;
     border-bottom-color: #252540;
 }
 
 /* シェアモーダル */
-#app.dark-mode .share-modal-content {
+body.dark-mode .share-modal-content {
     background: #14142a;
 }
 
-#app.dark-mode .share-modal-content h3 {
+body.dark-mode .share-modal-content h3 {
     color: #b0b8d0;
+}
+
+/* ポップアップ（スプライト選択・SE選択 — #app外） */
+body.dark-mode .popup-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .popup-content {
+    background: #14142a;
+    border-color: #303050;
+}
+
+body.dark-mode .popup-header {
+    background: #1a1a30;
+    color: #b0b8d0;
+    border-bottom-color: #252540;
+}
+
+body.dark-mode .popup-btn {
+    border-color: #303050;
+    color: #8090b0;
+}
+
+body.dark-mode .popup-btn.primary {
+    background: #2a2a45;
+    color: #c0d0f0;
+}
+
+body.dark-mode .popup-close {
+    color: #6a7090;
+}
+
+body.dark-mode .se-select-item {
+    border-bottom-color: #252540;
+    color: #b0b8d0;
+}
+
+body.dark-mode .se-select-item.current {
+    background: #1a1a35;
+}
+
+body.dark-mode .se-select-item .se-name {
+    color: #c0c8e0;
 }

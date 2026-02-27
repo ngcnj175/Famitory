@@ -331,6 +331,8 @@ const GameController = {
         if (!app) return;
 
         const isDark = app.classList.toggle('dark-mode');
+        // bodyにも付与（#app外のモーダル用）
+        document.body.classList.toggle('dark-mode', isDark);
 
         // localStorage に保存（再起動時も維持）
         localStorage.setItem('pgk_darkMode', isDark ? '1' : '0');
@@ -348,6 +350,7 @@ const GameController = {
             if (app) {
                 app.classList.add('dark-mode');
             }
+            document.body.classList.add('dark-mode');
         }
     },
 
