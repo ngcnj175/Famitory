@@ -14,7 +14,7 @@ const GameController = {
 
     // Startボタン長押し検出
     startPressTimer: null,
-    startLongPressThreshold: 800, // ミリ秒
+    startLongPressThreshold: 1200, // ミリ秒
 
     init() {
         this.initDpad();

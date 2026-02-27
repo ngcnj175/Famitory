@@ -2420,15 +2420,12 @@ const GameEngine = {
             const centerX = this.canvas.width / 2;
             const centerY = this.canvas.height / 2;
 
-            // 点滅（200ms周期）
-            const blinkOn = Math.floor(performance.now() / 200) % 2 === 0;
-            if (blinkOn) {
-                this.ctx.font = '16px Arial';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.fillText('RE:START', centerX, centerY);
-            }
+            // 常時点灯
+            this.ctx.font = '16px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillText('RE:START', centerX, centerY);
 
             // プログレスバー（progress > 0 の時のみ）
             if (this.restartProgress > 0) {
