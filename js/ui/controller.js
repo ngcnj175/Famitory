@@ -21,6 +21,7 @@ const GameController = {
         this.initActionButtons();
         this.initSystemButtons();
         this.initKeyboard();
+        this.restoreDarkMode();
     },
 
     initDpad() {
@@ -241,8 +242,75 @@ const GameController = {
         });
     },
 
+    // コナミコマンドシーケンス: ↑↑↓↓←→←→BA
+    konamiSequence: ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'],
+    konamiIndex: 0,
+    konamiTimer: null,
+
     press(button) {
         this.buttons[button] = true;
+
+        // コナミコマンド検出（PLAY画面のみ）
+        if (App.currentScreen === 'play') {
+            this.checkKonamiCode(button);
+        }
+    },
+
+    checkKonamiCode(button) {
+        // タイムアウトリセット
+        if (this.konamiTimer) {
+            clearTimeout(this.konamiTimer);
+        }
+
+        if (button === this.konamiSequence[this.konamiIndex]) {
+            this.konamiIndex++;
+
+            if (this.konamiIndex >= this.konamiSequence.length) {
+                // コナミコマンド成立！
+                this.konamiIndex = 0;
+                this.toggleDarkMode();
+                return;
+            }
+
+            // 3秒以内に次の入力がなければリセット
+            this.konamiTimer = setTimeout(() => {
+                this.konamiIndex = 0;
+            }, 3000);
+        } else {
+            // 間違えたらリセット（ただし最初の入力として再チェック）
+            this.konamiIndex = 0;
+            if (button === this.konamiSequence[0]) {
+                this.konamiIndex = 1;
+                this.konamiTimer = setTimeout(() => {
+                    this.konamiIndex = 0;
+                }, 3000);
+            }
+        }
+    },
+
+    toggleDarkMode() {
+        const playScreen = document.getElementById('play-screen');
+        if (!playScreen) return;
+
+        const isDark = playScreen.classList.toggle('dark-mode');
+
+        // localStorage に保存（再起動時も維持）
+        localStorage.setItem('pgk_darkMode', isDark ? '1' : '0');
+
+        // SE再生（隠しコマンド発動感）
+        if (typeof NesAudio !== 'undefined' && NesAudio.playSE) {
+            NesAudio.playSE('other_01');
+        }
+    },
+
+    // 起動時にダークモード復元
+    restoreDarkMode() {
+        if (localStorage.getItem('pgk_darkMode') === '1') {
+            const playScreen = document.getElementById('play-screen');
+            if (playScreen) {
+                playScreen.classList.add('dark-mode');
+            }
+        }
     },
 
     release(button) {

@@ -408,10 +408,10 @@ const StageEditor = {
             // ③ ライフ スプライト行 ＋ ライフ数（プレイヤーのみ）
             if (type === 'player') {
                 html += this.renderSpriteRow('life');
-                html += this.renderSlider('ライフ数', 'life', config.life ?? 3, 1, 10);
+                html += this.renderSlider('ライフ数', 'life', config.life ?? 3, 1, 5);
             } else {
                 // てきはライフスプライトなしでライフ数のみ
-                html += this.renderSlider('ライフ数', 'life', config.life ?? 1, 1, 10);
+                html += this.renderSlider('ライフ数', 'life', config.life ?? 1, 1, 5);
             }
 
             // ④ 武器

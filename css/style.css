@@ -4464,3 +4464,89 @@ body {
     font-weight: 800;
     color: #222;
 }
+
+/* ========================================
+   ダークモード（コナミコマンド発動時）
+   ======================================== */
+
+#play-screen {
+    transition: background 0.4s ease;
+}
+
+#play-screen.dark-mode {
+    background: #0a0a0f;
+}
+
+#play-screen.dark-mode #game-info {
+    background: transparent;
+}
+
+#play-screen.dark-mode #game-title {
+    color: #e0e0e0;
+    text-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
+}
+
+#play-screen.dark-mode #game-title:focus {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#play-screen.dark-mode .screen-title {
+    color: #556;
+    opacity: 0.8;
+}
+
+/* コントローラーエリア */
+#play-screen.dark-mode #controller-area {
+    background: #0a0a0f;
+}
+
+/* 十字キー */
+#play-screen.dark-mode #dpad-container {
+    background: radial-gradient(circle at 35% 35%,
+            rgba(40, 40, 50, 0.9) 0%,
+            rgba(25, 25, 35, 0.8) 50%,
+            rgba(15, 15, 25, 0.7) 100%);
+    box-shadow:
+        inset 1px 1px 4px rgba(80, 80, 120, 0.2),
+        inset -1px -1px 6px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+#play-screen.dark-mode .dpad-btn,
+#play-screen.dark-mode #dpad::before,
+#play-screen.dark-mode #dpad::after {
+    background: #1a1a2e;
+}
+
+#play-screen.dark-mode #dpad {
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6));
+}
+
+/* A/Bボタン */
+#play-screen.dark-mode .action-btn {
+    background: #1a1a2e;
+    color: #8090a0;
+    box-shadow:
+        0 3px 0 rgba(0, 0, 0, 0.5),
+        0 0 12px rgba(60, 80, 120, 0.15);
+}
+
+#play-screen.dark-mode .action-btn:active {
+    box-shadow: none;
+}
+
+/* Startボタン */
+#play-screen.dark-mode #btn-start {
+    background: #1a1a2e;
+    color: #6a7a8a;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+#play-screen.dark-mode #btn-start:active {
+    box-shadow: none;
+}
+
+/* リザルトオーバーレイ */
+#play-screen.dark-mode #result-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
