@@ -517,8 +517,11 @@ const StageEditor = {
             if (config.gimmick === 'spring') {
                 html += this.renderBlockGauge('はねる力', 'springPower', config.springPower ?? 3, 1, 5);
             }
-            html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
-            html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
+            // ギミック「なし」の時のみ当たり判定・耐久性を表示
+            if (!config.gimmick || config.gimmick === 'none') {
+                html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
+                html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
+            }
         } else if (type === 'item') {
             html += `
                 <div class="param-row">
@@ -863,7 +866,7 @@ const StageEditor = {
                     }
 
                     // itemType縺悟､画峩縺輔ｌ縺溷ｴ蜷医・UI繝ｪ繝輔Ξ繝・す繝･・医Γ繝・そ繝ｼ繧ｸ谺・・陦ｨ遉ｺ/髱櫁｡ｨ遉ｺ・・
-                    if (key === 'itemType') {
+                    if (key === 'itemType' || key === 'gimmick') {
                         this.renderConfigContent();
                         this.initConfigEvents();
                     }
