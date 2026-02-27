@@ -69,23 +69,31 @@ const GameController = {
             if (deg > -67.5 && deg <= -22.5) { // 右上
                 this.press('up');
                 this.press('right');
+                this.setDpadFeedback('press-up-right');
             } else if (deg > -112.5 && deg <= -67.5) { // 上
                 this.press('up');
+                this.setDpadFeedback('press-up');
             } else if (deg > -157.5 && deg <= -112.5) { // 左上
                 this.press('up');
                 this.press('left');
+                this.setDpadFeedback('press-up-left');
             } else if (deg > 157.5 || deg <= -157.5) { // 左
                 this.press('left');
+                this.setDpadFeedback('press-left');
             } else if (deg > 112.5 && deg <= 157.5) { // 左下
                 this.press('down');
                 this.press('left');
+                this.setDpadFeedback('press-down-left');
             } else if (deg > 67.5 && deg <= 112.5) { // 下
                 this.press('down');
+                this.setDpadFeedback('press-down');
             } else if (deg > 22.5 && deg <= 67.5) { // 右下
                 this.press('down');
                 this.press('right');
+                this.setDpadFeedback('press-down-right');
             } else { // 右
                 this.press('right');
+                this.setDpadFeedback('press-right');
             }
         };
 
@@ -123,6 +131,23 @@ const GameController = {
         this.release('down');
         this.release('left');
         this.release('right');
+        this.clearDpadFeedback();
+    },
+
+    // D-padフィードバック用クラス管理
+    dpadFeedbackClasses: ['press-up', 'press-down', 'press-left', 'press-right', 'press-up-right', 'press-up-left', 'press-down-right', 'press-down-left'],
+
+    setDpadFeedback(className) {
+        const dpad = document.getElementById('dpad');
+        if (!dpad) return;
+        this.dpadFeedbackClasses.forEach(c => dpad.classList.remove(c));
+        dpad.classList.add(className);
+    },
+
+    clearDpadFeedback() {
+        const dpad = document.getElementById('dpad');
+        if (!dpad) return;
+        this.dpadFeedbackClasses.forEach(c => dpad.classList.remove(c));
     },
 
     initActionButtons() {
