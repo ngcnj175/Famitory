@@ -4515,7 +4515,7 @@ body {
 #play-screen.dark-mode .dpad-btn,
 #play-screen.dark-mode #dpad::before,
 #play-screen.dark-mode #dpad::after {
-    background: #1a1a2e;
+    background: #2a2a45;
 }
 
 #play-screen.dark-mode #dpad {
@@ -4524,7 +4524,7 @@ body {
 
 /* A/Bボタン */
 #play-screen.dark-mode .action-btn {
-    background: #1a1a2e;
+    background: #2a2a45;
     color: #8090a0;
     box-shadow:
         0 3px 0 rgba(0, 0, 0, 0.5),
@@ -4537,7 +4537,7 @@ body {
 
 /* Startボタン */
 #play-screen.dark-mode #btn-start {
-    background: #1a1a2e;
+    background: #2a2a45;
     color: #6a7a8a;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
