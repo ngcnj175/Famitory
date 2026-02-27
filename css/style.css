@@ -4467,86 +4467,504 @@ body {
 
 /* ========================================
    ダークモード（コナミコマンド発動時）
+   全画面共通 + 画面別スタイル
    ======================================== */
 
-#play-screen {
-    transition: background 0.4s ease;
+/* --- 遷移アニメーション --- */
+#app,
+#header,
+.screen,
+#controller-area,
+#stage-settings-panel,
+#stage-settings-header,
+#stage-settings-content,
+#bgm-console-header,
+#tile-config-panel,
+#song-config-panel {
+    transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
-#play-screen.dark-mode {
+/* --- CSS変数オーバーライド（全体） --- */
+#app.dark-mode {
+    --bg-body: #0a0a0f;
+    --bg-device: #0e0e18;
+    --color-dark: #2a2a45;
+    --color-medium: #5a6070;
+    --color-light: #444a5a;
+    --text-dark: #c8ccd8;
+    --text-light: #e0e4f0;
+    --border-color: #252535;
+    --border-dark: #303045;
     background: #0a0a0f;
 }
 
-#play-screen.dark-mode #game-info {
+/* --- ヘッダー --- */
+#app.dark-mode #header {
+    background: #0c0c16;
+    border-bottom-color: #1e1e30;
+}
+
+#app.dark-mode .toolbar-icon {
+    color: #7a8098;
+}
+
+#app.dark-mode .toolbar-icon:active {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#app.dark-mode .nav-icon {
+    color: #3a3f55;
+}
+
+#app.dark-mode .nav-icon.active-nav {
+    color: #8aa0c0;
+}
+
+#app.dark-mode .icon-label {
+    color: inherit;
+}
+
+/* --- PLAY画面 --- */
+#app.dark-mode #play-screen {
+    background: #0a0a0f;
+}
+
+#app.dark-mode #game-info {
     background: transparent;
 }
 
-#play-screen.dark-mode #game-title {
-    color: #e0e0e0;
-    text-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
+#app.dark-mode #game-title {
+    color: #d0d4e0;
+    text-shadow: 0 0 8px rgba(100, 200, 255, 0.2);
 }
 
-#play-screen.dark-mode #game-title:focus {
-    background: rgba(255, 255, 255, 0.08);
+#app.dark-mode #game-title:focus {
+    background: rgba(255, 255, 255, 0.06);
 }
 
-#play-screen.dark-mode .screen-title {
-    color: #556;
-    opacity: 0.8;
+#app.dark-mode .screen-title {
+    color: #4a5060;
+    opacity: 0.9;
 }
 
-/* コントローラーエリア */
-#play-screen.dark-mode #controller-area {
+#app.dark-mode #controller-area {
     background: #0a0a0f;
 }
 
-/* 十字キー */
-#play-screen.dark-mode #dpad-container {
+#app.dark-mode #dpad-container {
     background: radial-gradient(circle at 35% 35%,
-            rgba(40, 40, 50, 0.9) 0%,
-            rgba(25, 25, 35, 0.8) 50%,
-            rgba(15, 15, 25, 0.7) 100%);
+            rgba(40, 40, 55, 0.9) 0%,
+            rgba(25, 25, 38, 0.8) 50%,
+            rgba(15, 15, 28, 0.7) 100%);
     box-shadow:
-        inset 1px 1px 4px rgba(80, 80, 120, 0.2),
+        inset 1px 1px 4px rgba(80, 80, 120, 0.15),
         inset -1px -1px 6px rgba(0, 0, 0, 0.4),
         0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-#play-screen.dark-mode .dpad-btn,
-#play-screen.dark-mode #dpad::before,
-#play-screen.dark-mode #dpad::after {
+#app.dark-mode .dpad-btn,
+#app.dark-mode #dpad::before,
+#app.dark-mode #dpad::after {
     background: #2a2a45;
 }
 
-#play-screen.dark-mode #dpad {
+#app.dark-mode #dpad {
     filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6));
 }
 
-/* A/Bボタン */
-#play-screen.dark-mode .action-btn {
+#app.dark-mode .action-btn {
     background: #2a2a45;
     color: #8090a0;
     box-shadow:
         0 3px 0 rgba(0, 0, 0, 0.5),
-        0 0 12px rgba(60, 80, 120, 0.15);
+        0 0 12px rgba(60, 80, 120, 0.12);
 }
 
-#play-screen.dark-mode .action-btn:active {
+#app.dark-mode .action-btn:active {
     box-shadow: none;
 }
 
-/* Startボタン */
-#play-screen.dark-mode #btn-start {
+#app.dark-mode #btn-start {
     background: #2a2a45;
     color: #6a7a8a;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
-#play-screen.dark-mode #btn-start:active {
+#app.dark-mode #btn-start:active {
     box-shadow: none;
 }
 
-/* リザルトオーバーレイ */
-#play-screen.dark-mode #result-overlay {
+#app.dark-mode #result-overlay {
     background: rgba(0, 0, 0, 0.85);
+}
+
+#app.dark-mode .result-container {
+    background: #14142a;
+    border-color: #303050;
+}
+
+#app.dark-mode .result-btn {
+    border-color: #303050;
+    color: #b0b8d0;
+}
+
+#app.dark-mode .result-btn:active {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- PIXEL画面 --- */
+#app.dark-mode #paint-screen {
+    background: #0e0e18;
+}
+
+#app.dark-mode #paint-content-wrapper,
+#app.dark-mode #stage-content-wrapper {
+    background: #0e0e18;
+}
+
+/* ギャラリー行（スプライト/タイル一覧） */
+#app.dark-mode .gallery-row {
+    background: #0e0e18;
+    border-color: #252535;
+}
+
+#app.dark-mode .gallery-add-btn {
+    background: #1a1a2e;
+    border-color: #303048;
+    color: #6a7090;
+}
+
+#app.dark-mode .gallery-add-btn:active {
+    background: #222240;
+}
+
+/* スプライトリスト */
+#app.dark-mode .sprite-item,
+#app.dark-mode .tile-item,
+#app.dark-mode .song-item {
+    border-color: #303048;
+    background: var(--bg-screen);
+}
+
+#app.dark-mode .sprite-item.active,
+#app.dark-mode .tile-item.active,
+#app.dark-mode .song-item.active {
+    border-color: #6080b0;
+}
+
+/* ツールバー（ペン等） */
+#app.dark-mode .paint-tool-btn {
+    background: transparent;
+    color: #5a6078;
+    border-color: #303048;
+}
+
+#app.dark-mode .paint-tool-btn.active {
+    background: #2a2a45;
+    color: #a0b0d0;
+}
+
+#app.dark-mode .paint-tool-btn:active {
+    background: #222240;
+}
+
+/* カラーパレット */
+#app.dark-mode #color-area {
+    background: #0e0e18;
+}
+
+#app.dark-mode .color-swatch {
+    border-color: #303048;
+}
+
+#app.dark-mode .color-swatch.active {
+    border-color: #6080b0;
+}
+
+/* --- STAGE画面 --- */
+#app.dark-mode #stage-screen {
+    background: #0e0e18;
+}
+
+#app.dark-mode #stage-settings-panel {
+    background: #12122a;
+    border-bottom-color: #252540;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#app.dark-mode #stage-settings-header {
+    background: #12122a;
+    color: #b0b8d0;
+}
+
+#app.dark-mode #stage-settings-panel.collapsed {
+    box-shadow: none;
+}
+
+#app.dark-mode #stage-settings-content {
+    background: #12122a;
+}
+
+#app.dark-mode .setting-row label {
+    color: #8890a8;
+}
+
+#app.dark-mode .setting-row input[type="text"],
+#app.dark-mode .setting-row select {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode .setting-row input[type="text"]:focus {
+    border-color: #5070a0;
+}
+
+#app.dark-mode .size-btn {
+    background: #1a1a30;
+    color: #8090b0;
+    border-color: #303050;
+}
+
+#app.dark-mode .size-btn:active {
+    background: #252545;
+}
+
+/* ステージ用ツールバー */
+#app.dark-mode .stage-tool-btn {
+    color: #506078;
+    border-color: #303048;
+}
+
+#app.dark-mode .stage-tool-btn.active {
+    background: #2a2a45;
+    color: #a0b0d0;
+}
+
+/* タイル設定パネル */
+#app.dark-mode #tile-config-panel {
+    background: #12122a;
+    border-top-color: #252540;
+}
+
+#app.dark-mode .config-row label {
+    color: #8890a8;
+}
+
+#app.dark-mode .config-type-label {
+    color: #a0a8c0;
+    border-bottom-color: #303050;
+}
+
+#app.dark-mode .config-select {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode .config-save-btn {
+    background: #2a2a45;
+    color: #a0b0d0;
+}
+
+/* タイルテンプレートパレット */
+#app.dark-mode #tile-template-palette {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* --- SONG画面 --- */
+#app.dark-mode #sound-screen {
+    background: #0e0e18;
+}
+
+/* BGMコンソールヘッダー */
+#app.dark-mode #bgm-console-header {
+    background: #0c0c16;
+    border-bottom-color: #1e1e30;
+}
+
+#app.dark-mode .console-lcd {
+    color: #a0a8c0;
+}
+
+#app.dark-mode .title-lcd {
+    color: #c0c8e0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#app.dark-mode .title-lcd:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#app.dark-mode .console-nav-btn {
+    border-color: #303050;
+    color: #7080a0;
+}
+
+#app.dark-mode .console-nav-btn:active {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#app.dark-mode .console-param .label {
+    color: #506080;
+}
+
+#app.dark-mode .value-lcd {
+    color: #a0b0d0;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* トラックパネル */
+#app.dark-mode #track-panel {
+    border-bottom-color: #252540;
+    background: #0e0e18;
+}
+
+#app.dark-mode .track-tab {
+    background: #14142a;
+    color: #8090a8;
+    border-color: #303050;
+}
+
+#app.dark-mode .track-tab.active {
+    background: #2a4838;
+    color: #c0e0d0;
+    border-color: #4a7c59;
+}
+
+/* サウンドコントロール（左ツール列） */
+#app.dark-mode .sound-ctrl-btn {
+    background: transparent;
+    color: #5a6078;
+    border-color: #303048;
+}
+
+#app.dark-mode .sound-ctrl-btn.active,
+#app.dark-mode .sound-ctrl-btn:active {
+    background: #2a2a45;
+    color: #a0b0d0;
+}
+
+/* メインエリア背景 */
+#app.dark-mode #sound-main-area {
+    background: #0e0e18;
+}
+
+/* ソング設定パネル */
+#app.dark-mode #song-config-panel {
+    background: #12122a;
+    border-top-color: #252540;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.6);
+}
+
+#app.dark-mode #song-config-panel .config-header {
+    background: #12122a;
+    border-bottom-color: #252540;
+    color: #b0b8d0;
+}
+
+#app.dark-mode #song-config-panel .header-btn {
+    background: #1a1a30;
+    border-color: #303050;
+    color: #8090b0;
+}
+
+#app.dark-mode #song-config-panel .config-row label {
+    color: #8890a8;
+}
+
+#app.dark-mode #song-config-panel .config-row input[type="text"] {
+    background: #1a1a30;
+    color: #c0c8e0;
+    border-color: #303050;
+}
+
+#app.dark-mode #song-config-panel .stepper-btn {
+    background: #1a1a30;
+    border-color: #303050;
+    color: #8090b0;
+}
+
+/* --- 共通パネル・ポップアップ --- */
+#app.dark-mode .popup-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+#app.dark-mode .popup-content {
+    background: #14142a;
+    border-color: #303050;
+}
+
+#app.dark-mode .popup-header {
+    background: #1a1a30;
+    color: #b0b8d0;
+    border-bottom-color: #252540;
+}
+
+#app.dark-mode .popup-btn {
+    border-color: #303050;
+    color: #8090b0;
+}
+
+#app.dark-mode .popup-btn.primary {
+    background: #2a2a45;
+    color: #c0d0f0;
+}
+
+/* SE選択ポップアップ */
+#app.dark-mode .se-select-item {
+    border-bottom-color: #252540;
+    color: #b0b8d0;
+}
+
+#app.dark-mode .se-select-item.current {
+    background: #1a1a35;
+}
+
+#app.dark-mode .se-select-item .se-name {
+    color: #c0c8e0;
+}
+
+/* パネル閉じるボタン */
+#app.dark-mode .panel-close-btn {
+    color: #6a7090;
+}
+
+/* パラメータスライダー */
+#app.dark-mode .param-slider {
+    background: #252540;
+}
+
+#app.dark-mode .param-slider::-webkit-slider-thumb {
+    background: #4060a0;
+}
+
+#app.dark-mode .sprite-speed {
+    background: #252540;
+}
+
+#app.dark-mode .sprite-speed::-webkit-slider-thumb {
+    background: #4060a0;
+}
+
+/* セーブトースト */
+#app.dark-mode #save-toast {
+    background: rgba(14, 14, 24, 0.95);
+}
+
+#app.dark-mode #save-toast .save-icon-large {
+    color: #6080a0;
+}
+
+#app.dark-mode #save-toast .save-msg-large {
+    color: #c0c8e0;
+}
+
+/* スクロールバー */
+#app.dark-mode ::-webkit-scrollbar-track {
+    background: #0e0e18;
+}
+
+#app.dark-mode ::-webkit-scrollbar-thumb {
+    background: #252540;
 }

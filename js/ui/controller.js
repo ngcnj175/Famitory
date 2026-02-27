@@ -327,10 +327,10 @@ const GameController = {
     },
 
     toggleDarkMode() {
-        const playScreen = document.getElementById('play-screen');
-        if (!playScreen) return;
+        const app = document.getElementById('app');
+        if (!app) return;
 
-        const isDark = playScreen.classList.toggle('dark-mode');
+        const isDark = app.classList.toggle('dark-mode');
 
         // localStorage に保存（再起動時も維持）
         localStorage.setItem('pgk_darkMode', isDark ? '1' : '0');
@@ -344,9 +344,9 @@ const GameController = {
     // 起動時にダークモード復元
     restoreDarkMode() {
         if (localStorage.getItem('pgk_darkMode') === '1') {
-            const playScreen = document.getElementById('play-screen');
-            if (playScreen) {
-                playScreen.classList.add('dark-mode');
+            const app = document.getElementById('app');
+            if (app) {
+                app.classList.add('dark-mode');
             }
         }
     },
