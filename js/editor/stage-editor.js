@@ -414,6 +414,40 @@ const StageEditor = {
                 html += this.renderSlider('ライフ数', 'life', config.life ?? 1, 1, 5);
             }
 
+            // てき専用: 特性セクション（武器より先に表示）
+            if (type === 'enemy') {
+                html += '<div class="param-section-label">特性</div>';
+                html += `
+                    <div class="param-row">
+                        <span class="param-label">てきの動き</span>
+                        <select class="param-select" data-key="move">
+                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>動かない</option>
+                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
+                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>ぴょんぴょん</option>
+                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>うろぴょん</option>
+                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>追いかけてくる</option>
+                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>とっしん</option>
+                        </select>
+                    </div>
+                `;
+                html += this.renderToggle('空中', 'isAerial', config.isAerial);
+                html += this.renderToggle('ボスてき', 'isBoss', config.isBoss);
+                html += `
+                    <div class="param-row">
+                        <span class="param-label">ドロップ</span>
+                        <select class="param-select" data-key="dropItem">
+                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>なし</option>
+                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>コイン</option>
+                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
+                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
+                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
+                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
+                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
+                        </select>
+                    </div>
+                `;
+            }
+
             // ④ 武器
             html += '<div class="param-section-label">武器</div>';
             // 飛び道具 スプライト行
@@ -465,39 +499,6 @@ const StageEditor = {
                 html += this.renderSeSelect('攻撃音', 'seAttack', config.seAttack ?? 5);
                 html += this.renderSeSelect('ダメージ音', 'seDamage', config.seDamage ?? 10);
                 html += this.renderSeSelect('ゲット音', 'seItemGet', config.seItemGet ?? 15);
-            }
-
-            // てき専用設定
-            if (type === 'enemy') {
-                html += `
-                    <div class="param-row">
-                        <span class="param-label">てきの動き</span>
-                        <select class="param-select" data-key="move">
-                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>動かない</option>
-                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
-                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>ぴょんぴょん</option>
-                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>うろぴょん</option>
-                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>追いかけてくる</option>
-                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>とっしん</option>
-                        </select>
-                    </div>
-                `;
-                html += this.renderToggle('空中', 'isAerial', config.isAerial);
-                html += this.renderToggle('ボスてき', 'isBoss', config.isBoss);
-                html += `
-                    <div class="param-row">
-                        <span class="param-label">ドロップ</span>
-                        <select class="param-select" data-key="dropItem">
-                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>なし</option>
-                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>コイン</option>
-                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
-                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
-                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
-                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
-                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
-                        </select>
-                    </div>
-                `;
             }
         } else if (type === 'material') {
             html += `
