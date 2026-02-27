@@ -49,6 +49,10 @@ const GameEngine = {
     bossDefeatPhase: null,     // 'silence', 'clear', null (撃破演出)
     bossDefeatTimer: 0,        // 撃破演出タイマー
 
+    // リスタート長押しUI
+    restartBlink: false,
+    restartProgress: 0,
+
     init() {
         this.canvas = document.getElementById('game-canvas');
         if (!this.canvas) return;
@@ -2400,7 +2404,7 @@ const GameEngine = {
         }
 
         // PAUSE表示
-        if (this.isPaused) {
+        if (this.isPaused && !this.restartBlink) {
             const centerX = this.canvas.width / 2;
             const centerY = this.canvas.height / 2;
 
@@ -2409,6 +2413,38 @@ const GameEngine = {
             this.ctx.textBaseline = 'middle';
             this.ctx.fillStyle = '#ffffff';
             this.ctx.fillText('PAUSE', centerX, centerY);
+        }
+
+        // RE:START 長押しUI
+        if (this.restartBlink) {
+            const centerX = this.canvas.width / 2;
+            const centerY = this.canvas.height / 2;
+
+            // 点滅（200ms周期）
+            const blinkOn = Math.floor(performance.now() / 200) % 2 === 0;
+            if (blinkOn) {
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.fillText('RE:START', centerX, centerY);
+            }
+
+            // プログレスバー（progress > 0 の時のみ）
+            if (this.restartProgress > 0) {
+                const barWidth = 80;
+                const barHeight = 4;
+                const barX = centerX - barWidth / 2;
+                const barY = centerY + 14;
+
+                // バー背景
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+                this.ctx.fillRect(barX, barY, barWidth, barHeight);
+
+                // バー進捗
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.fillRect(barX, barY, barWidth * this.restartProgress, barHeight);
+            }
         }
 
         // タイマー表示（右上）

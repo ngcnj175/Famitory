@@ -177,23 +177,61 @@ const GameController = {
     },
 
     onStartPress() {
-        // 長押しタイマー開始
-        this.startPressTimer = setTimeout(() => {
-            // 長押し: ゲームをリスタート
+        this.startPressTime = performance.now();
+        this.startHolding = true;
+
+        // フレームごとに進捗を更新
+        const updateHold = () => {
+            if (!this.startHolding) return;
+
+            const elapsed = performance.now() - this.startPressTime;
+            const threshold = this.startLongPressThreshold; // 800ms
+
             if (typeof GameEngine !== 'undefined') {
-                GameEngine.restart();
+                if (elapsed >= 200) {
+                    // 0.2秒後: RE:START 点滅開始
+                    GameEngine.restartBlink = true;
+                }
+                if (elapsed >= 500) {
+                    // 0.5秒後: バー進捗（500ms~800msを0~1に正規化）
+                    GameEngine.restartProgress = Math.min((elapsed - 500) / (threshold - 500), 1.0);
+                } else {
+                    GameEngine.restartProgress = 0;
+                }
             }
-            this.startPressTimer = null;
-        }, this.startLongPressThreshold);
+
+            if (elapsed >= threshold) {
+                // 長押し完了: リスタート
+                this.startHolding = false;
+                if (typeof GameEngine !== 'undefined') {
+                    GameEngine.restartBlink = false;
+                    GameEngine.restartProgress = 0;
+                    GameEngine.restart();
+                }
+                return;
+            }
+
+            requestAnimationFrame(updateHold);
+        };
+
+        requestAnimationFrame(updateHold);
     },
 
     onStartRelease() {
-        // タイマーがまだ実行中 = 短押し
-        if (this.startPressTimer) {
-            clearTimeout(this.startPressTimer);
-            this.startPressTimer = null;
+        if (!this.startHolding && !this.startPressTime) return;
 
-            // 短押し: トグル動作（開始/一時停止/再開）
+        const elapsed = this.startPressTime ? performance.now() - this.startPressTime : 0;
+        this.startHolding = false;
+        this.startPressTime = null;
+
+        // UI状態をリセット
+        if (typeof GameEngine !== 'undefined') {
+            GameEngine.restartBlink = false;
+            GameEngine.restartProgress = 0;
+        }
+
+        // 0.2秒未満 = 短押し: トグル動作
+        if (elapsed < 200) {
             if (typeof GameEngine !== 'undefined') {
                 GameEngine.togglePause();
             }
