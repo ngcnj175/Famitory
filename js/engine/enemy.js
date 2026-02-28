@@ -32,7 +32,9 @@ class Enemy {
 
         // 物理パラメータ（config値を反映）
         const speedConfig = template?.config?.speed ?? 5;
+        const jumpConfig = template?.config?.jumpPower ?? 10;
         this.moveSpeed = 0.03 + (speedConfig / 10) * 0.05; // 敵は少し遅め
+        this.jumpPower = -(0.2 + (jumpConfig / 20) * 0.3); // 1=-0.215, 10=-0.35, 20=-0.5
         this.gravity = 0.02;
         this.maxFallSpeed = 0.4;
 
@@ -52,6 +54,8 @@ class Enemy {
         // 追いかけ状態
         this.isChasing = false;
         this.detectionRange = 6; // 検知距離（6タイル）
+        this.chasePauseTimer = 0; // 追いかけ中の休憩タイマー
+        this.chasePaused = false; // 休憩中フラグ
 
         // 空中上下移動用
         this.floatDirection = 1; // 1=下, -1=上
@@ -158,7 +162,7 @@ class Enemy {
                 // その場ジャンプ
                 this.vx = 0;
                 if (this.onGround && Math.random() < 0.02) {
-                    this.vy = -0.3;
+                    this.vy = this.jumpPower;
                     this.onGround = false;
                 }
                 break;
@@ -178,7 +182,7 @@ class Enemy {
                 if (this.onGround) {
                     this.vx = 0;
                     if (Math.random() < 0.02) {
-                        this.vy = -0.3;
+                        this.vy = this.jumpPower;
                         this.vx = this.facingRight ? this.moveSpeed * 2 : -this.moveSpeed * 2;
                         this.onGround = false;
                     }
@@ -187,8 +191,8 @@ class Enemy {
             case 'chase':
                 // 追いかけてくる（定期的にジャンプ）
                 this.chaseWithReturn(engine);
-                if (this.isChasing && this.onGround && Math.random() < 0.02) {
-                    this.vy = -0.3;
+                if (this.isChasing && !this.chasePaused && this.onGround && Math.random() < 0.02) {
+                    this.vy = this.jumpPower;
                     this.onGround = false;
                 }
                 break;
@@ -370,6 +374,27 @@ class Enemy {
         if (distance < this.detectionRange) {
             // プレイヤー発見
             this.isChasing = true;
+
+            // 休憩タイマー管理（約2秒追跡 → 約1秒停止を繰り返す）
+            this.chasePauseTimer++;
+            if (this.chasePaused) {
+                // 休憩中（約60フレーム = 1秒）
+                this.vx = 0;
+                if (this.chasePauseTimer >= 60) {
+                    this.chasePaused = false;
+                    this.chasePauseTimer = 0;
+                }
+                return;
+            } else {
+                // 追跡中（約120フレーム = 2秒）
+                if (this.chasePauseTimer >= 120) {
+                    this.chasePaused = true;
+                    this.chasePauseTimer = 0;
+                    this.vx = 0;
+                    return;
+                }
+            }
+
             if (Math.abs(dx) > 0.5) {
                 this.vx = dx > 0 ? this.moveSpeed : -this.moveSpeed;
                 this.facingRight = dx > 0;
@@ -378,6 +403,8 @@ class Enemy {
             }
         } else if (this.isChasing) {
             // 見失った → 元の位置へ戻る
+            this.chasePauseTimer = 0;
+            this.chasePaused = false;
             this.returnToOrigin();
         } else {
             this.vx = 0;

@@ -1115,7 +1115,7 @@ const GameEngine = {
     },
 
     update() {
-        // ボス演出シーケンス処理
+        // ボス演出シーケンス処理（BGM演出のみ、ゲームは止めない）
         if (this.bossSequencePhase) {
             this.bossSequenceTimer++;
             if (this.bossSequencePhase === 'fadeout') {
@@ -1129,31 +1129,11 @@ const GameEngine = {
                 // 無音（1秒=60フレーム）
                 if (this.bossSequenceTimer >= 60) {
                     this.playBgm('boss');
-                    if (this.bossEnemy) {
-                        this.bossEnemy.frozen = false; // ボス活性化
-                    }
                     this.bossSequencePhase = null;
                     this.bossSequenceTimer = 0;
                 }
             }
-            // シーケンス中もプレイヤーと敵を更新（ボスはfrozenで動かないが、deathTimerは更新される）
-            if (this.player) {
-                this.player.update(this);
-                const viewWidth = this.canvas.width / this.TILE_SIZE;
-                const viewHeight = this.canvas.height / this.TILE_SIZE;
-                this.camera.x = this.player.x - viewWidth / 2 + 0.5;
-                this.camera.y = this.player.y - viewHeight / 2 + 0.5;
-                const stage = App.projectData.stage;
-                this.camera.x = Math.max(0, Math.min(this.camera.x, stage.width - viewWidth));
-                this.camera.y = Math.max(0, Math.min(this.camera.y, stage.height - viewHeight));
-            }
-            // 敵も更新
-            this.enemies.forEach(enemy => enemy.update(this));
-            // アイテムも更新（重力など）
-            this.updateItems();
-
-            this.checkClearCondition();
-            return;
+            // ゲーム更新はreturnせず継続する
         }
 
         // ボス撃破シーケンス処理
@@ -1232,8 +1212,9 @@ const GameEngine = {
             );
 
             if (nextBoss) {
-                // ボス出現！シーケンス開始
+                // ボス出現！BGMシーケンス開始＆即座に活性化
                 console.log('Boss encountered!');
+                nextBoss.frozen = false; // ボス即活性化（ゲームは止めない）
                 this.bossEnemy = nextBoss;
                 this.bossSpawned = true;
                 this.bossSequencePhase = 'fadeout';
@@ -1414,8 +1395,8 @@ const GameEngine = {
             const cx = 0.5;
             const cy = 0.5;
 
-            // 壁との衝突
-            if (this.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
+            // 壁との衝突（近接はブロックを貫通）
+            if (shotType !== 'melee' && this.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
                 if (shotType === 'pinball' && proj.bounceCount < 4) {
                     // ピンポン: 反射
                     // 壁のどちら側に当たったか判定して反射
@@ -1463,10 +1444,10 @@ const GameEngine = {
                             if (enemy.lives <= 0) {
                                 this.addScore(100);
                             }
-                            if (shotType !== 'pinball' && shotType !== 'boomerang') {
+                            if (shotType !== 'pinball' && shotType !== 'boomerang' && shotType !== 'melee') {
                                 return false;
                             }
-                            // ピンポン・ブーメランは貫通
+                            // ピンポン・ブーメラン・近接は貫通（消えない）
                         }
                     }
                 }
@@ -1477,7 +1458,10 @@ const GameEngine = {
                 if (this.projectileHits(proj, this.player)) {
                     const fromRight = proj.vx > 0;
                     this.player.takeDamage(fromRight);
-                    return false;
+                    if (shotType !== 'melee') {
+                        return false;
+                    }
+                    // 近接は消えない（durationで消滅）
                 }
             }
 
