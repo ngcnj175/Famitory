@@ -11,13 +11,13 @@ class Enemy {
         this.vx = 0;
         this.vy = 0;
 
-        // 当たり判定サイズ（スプライトサイズに応じて変更）
-        // 32x32スプライトは1.6x1.6、16x16は0.8x0.8
+        // 当たり判定サイズ（スプライト描画サイズと一致させる）
+        // 32x32スプライトは2.0x2.0、16x16は1.0x1.0
         const idleSpriteIdx = template?.sprites?.idle?.frames?.[0];
         const sprite = App.projectData?.sprites?.[idleSpriteIdx];
         const spriteSize = sprite?.size || 1;
-        this.width = spriteSize === 2 ? 1.6 : 0.8;
-        this.height = spriteSize === 2 ? 1.6 : 0.8;
+        this.width = spriteSize === 2 ? 2.0 : 1.0;
+        this.height = spriteSize === 2 ? 2.0 : 1.0;
 
         this.behavior = behavior;
         this.facingRight = false; // 敵はデフォルトで左向き（プレイヤーと向き合う）
@@ -661,7 +661,7 @@ class Enemy {
                 bounceCount: 0
             });
         } else if (shotType === 'melee') {
-            // 近接: 目の前に1タイル表示
+            // 近接: 目の前に1タイル表示（ownerEnemyで追従）
             engine.projectiles.push({
                 x: this.x + (this.facingRight ? 1 : -1),
                 y: this.y,
@@ -671,6 +671,7 @@ class Enemy {
                 templateIdx: this.templateIdx,
                 animationSlot: 'shot',
                 owner: 'enemy',
+                ownerEnemy: this,
                 maxRange: 999,
                 startX: this.x, startY: this.y,
                 facingRight: this.facingRight,
@@ -803,8 +804,9 @@ class Enemy {
     render(ctx, tileSize, camera) {
         if (!this.template) return;
 
-        const screenX = (this.x - camera.x) * tileSize;
-        const screenY = (this.y - camera.y) * tileSize;
+        // 当たり判定の中心座標（下端基準）- Playerと同じ方式
+        const hitboxCenterX = this.x + this.width / 2;
+        const hitboxBottom = this.y + this.height;
 
         const spriteSlot = this.getSpriteSlot();
         const frames = this.template?.sprites?.[spriteSlot]?.frames || this.template?.sprites?.idle?.frames || [];
@@ -819,18 +821,15 @@ class Enemy {
             const renderSize = tileSize * tileCount;
             const pixelSize = renderSize / dimension;
 
-            // 32x32スプライトの描画オフセット調整
-            // 衝突判定は高さ1.6（底面はY+1.6）
-            // 描画は高さ2.0（底面はY+オフセット+2.0）
-            // 底面を合わせるため: オフセット = 1.6 - 2.0 = -0.4
-            const yOffset = spriteSize === 2 ? -0.4 * tileSize : 0;
-            const adjustedScreenY = screenY + yOffset;
+            // スプライトを当たり判定に対して下端寄せ＆横軸中央寄せで描画
+            const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
+            const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
             if (this.isDying) {
                 ctx.save();
-                ctx.translate(screenX + renderSize / 2, adjustedScreenY + renderSize / 2);
+                ctx.translate(spriteDrawX + renderSize / 2, spriteDrawY + renderSize / 2);
                 ctx.scale(1, -1);
-                ctx.translate(-(screenX + renderSize / 2), -(adjustedScreenY + renderSize / 2));
+                ctx.translate(-(spriteDrawX + renderSize / 2), -(spriteDrawY + renderSize / 2));
             }
 
             const flipX = !this.facingRight;
@@ -845,8 +844,8 @@ class Enemy {
                         } else {
                             ctx.fillStyle = palette[colorIndex];
                         }
-                        const drawX = flipX ? screenX + (dimension - 1 - x) * pixelSize : screenX + x * pixelSize;
-                        ctx.fillRect(drawX, adjustedScreenY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                        const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
+                        ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                     }
                 }
             }

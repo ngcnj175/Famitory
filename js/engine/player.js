@@ -11,13 +11,13 @@ class Player {
         this.vx = 0;
         this.vy = 0;
 
-        // 当たり判定サイズ（スプライトサイズに応じて変更）
-        // 32x32スプライトは1.6x1.6、16x16は0.8x0.8
+        // 当たり判定サイズ（スプライト描画サイズと一致させる）
+        // 32x32スプライトは2.0x2.0、16x16は1.0x1.0
         const idleSpriteIdx = template?.sprites?.idle?.frames?.[0];
         const sprite = App.projectData?.sprites?.[idleSpriteIdx];
         const spriteSize = sprite?.size || 1;
-        this.width = spriteSize === 2 ? 1.6 : 0.8;
-        this.height = spriteSize === 2 ? 1.6 : 0.8;
+        this.width = spriteSize === 2 ? 2.0 : 1.0;
+        this.height = spriteSize === 2 ? 2.0 : 1.0;
 
         this.onGround = false;
         this.onLadder = false;
