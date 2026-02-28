@@ -2815,6 +2815,10 @@ const GameEngine = {
         // Web Audio初期化
         if (!this.bgmAudioCtx) {
             this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // BGM専用マスターゲイン（SE対比で音量を下げる）
+            this.bgmMasterGain = this.bgmAudioCtx.createGain();
+            this.bgmMasterGain.gain.value = 0.8; // 20%ダウン
+            this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
         }
         // iOSでsuspendedの場合にresume
         if (this.bgmAudioCtx.state === 'suspended') {
@@ -2960,7 +2964,7 @@ const GameEngine = {
 
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(ctx.destination);
+                gain.connect(this.bgmMasterGain);
                 noise.start();
                 noise.stop(ctx.currentTime + actualDuration);
 
@@ -2971,15 +2975,48 @@ const GameEngine = {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
-            // tone に応じた波形タイプ設定
-            if (waveType === 'triangle') {
+            // tone 6 = Tremolo（Square専用: 1オクターブ上と高速切替）
+            if (waveType === 'square' && tone === 6) {
+                osc.type = 'square';
+                const freq2 = freq * 2;
+                const tremoloRate = 30;
+                const numCycles = Math.ceil(tremoloRate * duration);
+                const cycleTime = 1 / tremoloRate;
+                for (let i = 0; i < numCycles; i++) {
+                    const t = ctx.currentTime + i * cycleTime;
+                    osc.frequency.setValueAtTime(i % 2 === 0 ? freq : freq2, t);
+                }
+            } else if (waveType === 'square') {
+                // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
+                if (tone >= 3 && tone <= 5) {
+                    // Sharp: 12.5% duty cycle via PeriodicWave
+                    const cacheKey = 'bgm_pulse_0.125';
+                    if (!this._bgmWaveCache) this._bgmWaveCache = {};
+                    if (!this._bgmWaveCache[cacheKey]) {
+                        const n = 4096;
+                        const real = new Float32Array(n);
+                        const imag = new Float32Array(n);
+                        const duty = 0.125;
+                        for (let i = 1; i < n; i++) {
+                            imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
+                        }
+                        this._bgmWaveCache[cacheKey] = ctx.createPeriodicWave(real, imag);
+                    }
+                    osc.setPeriodicWave(this._bgmWaveCache[cacheKey]);
+                } else {
+                    osc.type = 'square';
+                }
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            } else if (waveType === 'triangle') {
+                // tone に応じた波形タイプ設定
                 if (tone === 1) osc.type = 'sine';
                 else if (tone === 2) osc.type = 'sawtooth';
                 else osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
             } else {
-                osc.type = waveType; // square
+                osc.type = waveType;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
             }
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
             // 音量設定（toneによるバリエーション）
             let volume = 0.2; // 全波形タイプで統一
@@ -3005,7 +3042,7 @@ const GameEngine = {
             }
 
             osc.connect(gain);
-            gain.connect(ctx.destination);
+            gain.connect(this.bgmMasterGain);
             osc.start();
             osc.stop(ctx.currentTime + duration);
 
