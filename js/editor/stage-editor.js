@@ -3023,6 +3023,23 @@ const StageEditor = {
         stage.layers.bg = newBg;
         stage.layers.collision = newCollision;
 
+        // エンティティのY座標もシフト（レイヤーと同じオフセットを適用）
+        if (stage.entities && Array.isArray(stage.entities) && heightDiff !== 0) {
+            stage.entities.forEach(e => {
+                e.y += heightDiff;
+            });
+            // 縮小時に範囲外になったエンティティを削除
+            if (heightDiff < 0) {
+                stage.entities = stage.entities.filter(e =>
+                    e.y >= 0 && e.y < newHeight && e.x >= 0 && e.x < newWidth
+                );
+            }
+        }
+        // 横縮小時に範囲外のエンティティを削除
+        if (newWidth < oldWidth && stage.entities) {
+            stage.entities = stage.entities.filter(e => e.x >= 0 && e.x < newWidth);
+        }
+
         // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ菴咲ｽｮ繧貞ｷｦ荳九°繧芽｡ｨ遉ｺ縺吶ｋ繧医≧縺ｫ險ｭ螳・
         // 邵ｦ・・・会ｼ壹せ繝・・繧ｸ縺ｮ荳狗ｫｯ縺後く繝｣繝ｳ繝舌せ荳狗ｫｯ縺ｫ譚･繧九ｈ縺・↓
         this.canvasScrollX = 0;

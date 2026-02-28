@@ -452,8 +452,8 @@ const GameEngine = {
                             this.items.push({
                                 x: x,
                                 y: y,
-                                width: 0.8,
-                                height: 0.8,
+                                width: 1,
+                                height: 1,
                                 template: template,
                                 templateIdx: templateIdx,
                                 spriteIdx: spriteIdx,
@@ -1782,8 +1782,8 @@ const GameEngine = {
         const item = {
             x: spawnX,
             y: spawnY,
-            width: 0.8,
-            height: 0.8,
+            width: 1,
+            height: 1,
             template: itemTemplate,
             templateIdx: templateIdx,
             spriteIdx: spriteIdx,
