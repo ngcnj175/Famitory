@@ -1376,14 +1376,36 @@ const GameEngine = {
                         proj.facingRight = proj.ownerEnemy.facingRight;
                     }
                     break;
+                case 'orbit':
+                    // 回転: オーナーの周りを半径2タイルで時計回りに周回
+                    {
+                        let ownerX, ownerY;
+                        if (proj.owner === 'player' && this.player) {
+                            ownerX = this.player.x + this.player.width / 2;
+                            ownerY = this.player.y + this.player.height / 2;
+                        } else if (proj.owner === 'enemy' && proj.ownerEnemy) {
+                            ownerX = proj.ownerEnemy.x + proj.ownerEnemy.width / 2;
+                            ownerY = proj.ownerEnemy.y + proj.ownerEnemy.height / 2;
+                        } else {
+                            ownerX = proj.startX;
+                            ownerY = proj.startY;
+                        }
+                        const orbitRadius = 2.0;
+                        const orbitSpeed = 0.05; // ラジアン/フレーム
+                        if (proj.orbitAngle === undefined) proj.orbitAngle = 0;
+                        proj.orbitAngle += orbitSpeed;
+                        proj.x = ownerX + Math.cos(proj.orbitAngle) * orbitRadius - 0.25;
+                        proj.y = ownerY + Math.sin(proj.orbitAngle) * orbitRadius - 0.25;
+                    }
+                    break;
                 default:
                     // straight, spread: 通常移動
                     proj.x += proj.vx;
                     proj.y += proj.vy;
             }
 
-            // 飛距離チェック（ブーメラン以外）
-            if (shotType !== 'boomerang') {
+            // 飛距離チェック（ブーメラン・近接・回転以外）
+            if (shotType !== 'boomerang' && shotType !== 'melee' && shotType !== 'orbit') {
                 const dx = proj.x - proj.startX;
                 const dy = proj.y - (proj.startY ?? proj.startX);
                 const distance = Math.sqrt(dx * dx + dy * dy);
@@ -1395,21 +1417,18 @@ const GameEngine = {
             const cx = 0.5;
             const cy = 0.5;
 
-            // 壁との衝突（近接はブロックを貫通）
-            if (shotType !== 'melee' && this.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
+            // 壁との衝突（近接・回転はブロックを貫通）
+            if (shotType !== 'melee' && shotType !== 'orbit' && this.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
                 if (shotType === 'pinball' && proj.bounceCount < 4) {
                     // ピンポン: 反射
-                    // 壁のどちら側に当たったか判定して反射
                     const tileX = Math.floor(proj.x + cx);
                     const tileY = Math.floor(proj.y + cy);
                     const prevX = proj.x - proj.vx;
                     const prevY = proj.y - proj.vy;
 
-                    // X方向から衝突
                     if (this.getCollision(tileX, Math.floor(prevY + cy)) === 1) {
                         proj.vx = -proj.vx;
                     }
-                    // Y方向から衝突
                     if (this.getCollision(Math.floor(prevX + cx), tileY) === 1) {
                         proj.vy = -proj.vy;
                     }
@@ -1417,8 +1436,7 @@ const GameEngine = {
                     proj.x += proj.vx;
                     proj.y += proj.vy;
                 } else if (shotType === 'boomerang') {
-                    // ブーメラン: 壁にダメージを与えて反転
-                    this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
+                    // ブーメラン: 壁で反転
                     if (!proj.returning) {
                         proj.returning = true;
                         proj.vx = -proj.vx;
@@ -1426,8 +1444,7 @@ const GameEngine = {
                         return false;
                     }
                 } else {
-                    // 通常: 壁にダメージ
-                    this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
+                    // 通常: 壁に当たったら消滅
                     return false;
                 }
             }

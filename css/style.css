@@ -5125,7 +5125,7 @@ body.dark-mode .sprite-slot:not(:has(canvas))::before {
     color: #506080;
 }
 
-/* 軌道タイプなどの選択欄（config-select / param-select） */
+/* 軌道などの選択欄（config-select / param-select） */
 body.dark-mode .config-select,
 body.dark-mode .param-select,
 body.dark-mode .param-input {

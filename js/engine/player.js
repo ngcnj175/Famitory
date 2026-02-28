@@ -421,6 +421,24 @@ class Player {
                     shotType: shotType,
                     bounceCount: 0
                 });
+            } else if (shotType === 'orbit') {
+                // 回転: オーナーの周りを周回
+                engine.projectiles.push({
+                    x: startX, y: startY,
+                    vx: 0, vy: 0,
+                    width: 0.5, height: 0.5,
+                    spriteIdx: shotSprite,
+                    templateIdx: this.templateIdx,
+                    animationSlot: 'shot',
+                    owner: 'player',
+                    maxRange: 999,
+                    startX: startX, startY: startY,
+                    facingRight: this.facingRight,
+                    shotType: shotType,
+                    duration: 200, // 約3.3秒
+                    bounceCount: 0,
+                    orbitAngle: 0
+                });
             } else {
                 // その他: 通常の単発発射
                 engine.projectiles.push({

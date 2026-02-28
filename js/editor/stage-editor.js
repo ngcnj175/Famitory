@@ -453,10 +453,10 @@ const StageEditor = {
             // 飛び道具 スプライト行
             html += this.renderSpriteRow('shot');
 
-            // ⑤ 軌道タイプ（旧攻撃タイプ）
+            // ⑤ 軌道
             html += `
                 <div class="param-row">
-                    <span class="param-label">軌道タイプ</span>
+                    <span class="param-label">軌道</span>
                     <select class="param-select" data-key="shotType">
                         <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>近接</option>
                         <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>ストレート</option>
@@ -465,6 +465,7 @@ const StageEditor = {
                         <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>拡散</option>
                         <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>ブーメラン</option>
                         <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>ピンボール</option>
+                        <option value="orbit" ${config.shotType === 'orbit' ? 'selected' : ''}>回転</option>
                     </select>
                 </div>
             `;
