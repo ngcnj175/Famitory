@@ -2144,12 +2144,15 @@ const StageEditor = {
         this.pasteData = { tiles, entities: JSON.parse(JSON.stringify(entities)) };
 
         // 画面中央付近に配置
+        // canvasScrollX, Y は負の値をとる。例: スクロールで右に移動=canvasScrollXはマイナス
+        // tileSizeはそのまま画面上のピクセル相当
         const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
         const scrollY = Math.floor(-(this.canvasScrollY || 0) / this.tileSize);
 
+        // STAGEの表示画面の大きさを元に、現在のスクロール位置から見てだいたい画面内になるように
         this.pasteOffset = {
-            x: scrollX + 4,
-            y: scrollY + 4
+            x: Math.max(0, scrollX + 2),
+            y: Math.max(0, scrollY + 2)
         };
 
         this.currentTool = 'paste';
