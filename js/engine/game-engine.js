@@ -688,19 +688,21 @@ const GameEngine = {
             const viewHeight = this.canvas.height / this.TILE_SIZE;
             const bottomEdge = Math.max(App.projectData.stage.height, this.camera.y + viewHeight);
 
-            // 画面外（ステージ下端またはカメラ下端）に落下した場合
-            if (this.player.y > bottomEdge + 1 && !this.player.isDying) {
-                // 落下死として扱う
-                this.player.isDying = true;
-                this.player.deathFlashPhase = false; // 点滅や跳ね上がりなしでただ落ちる
-                this.player.deathTimer = 0;          // 死亡タイマー開始し、後ほどゲームオーバー発動
-                this.player.playSE('damage');        // 落下音
+            // 画面外（ステージ下端またはカメラ下端）に完全に落下した場合
+            // プレイヤーが画面から完全に消えるよう、+3 タイル分待つ
+            if (this.player.y > bottomEdge + 3) {
+                if (!this.gameOverPending) {
+                    console.log('GAME OVER pending (Fell)! Player y:', this.player.y, 'bottomEdge:', bottomEdge);
+                    this.gameOverPending = true;
+                    this.gameOverWaitTimer = 30; // 0.5秒間、画面外に完全に消えた状態を保ってからワイプ開始
+                    this.player.playSE('damage'); // 落下音
+                }
             }
 
-            // 死亡しきった場合（完全に画面外に落下したか、やられて消滅したか）のGAME OVER処理
+            // 敵にやられて死亡し、その飛び上がり・落下演出が完了した場合のGAME OVER処理
             if (this.player && this.player.isDying && this.player.deathTimer > 120) {
                 if (!this.gameOverPending) {
-                    console.log('GAME OVER pending! Player y:', this.player.y, 'bottomEdge:', bottomEdge);
+                    console.log('GAME OVER pending (Died)! timer:', this.player.deathTimer);
                     this.gameOverPending = true;
                     this.gameOverWaitTimer = 0; // ただちにワイプ開始
                 }
@@ -2856,7 +2858,7 @@ const GameEngine = {
             return 440 * Math.pow(2, semitone / 12);
         };
 
-        const playNote = (freq, waveType, duration, pitch, trackIdx, tone, trackVolume = 0.8) => {
+        const playNote = (freq, waveType, duration, pitch, trackIdx, tone, trackVolume = 0.8, trackPan = 0.0) => {
             const ctx = this.bgmAudioCtx;
 
             // 前の音を停止（同時発音数1制限）
@@ -2970,6 +2972,11 @@ const GameEngine = {
                 }
 
                 const gain = ctx.createGain();
+
+                // パンポット
+                const panner = ctx.createStereoPanner();
+                panner.pan.value = trackPan;
+
                 gain.gain.setValueAtTime(0.01, ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(drumVol, ctx.currentTime + attackTime);
 
@@ -2985,7 +2992,9 @@ const GameEngine = {
 
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(this.bgmMasterGain);
+                gain.connect(panner);
+                panner.connect(this.bgmMasterGain);
+
                 noise.start();
                 noise.stop(ctx.currentTime + actualDuration);
 
@@ -2995,6 +3004,8 @@ const GameEngine = {
 
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+            const panner = ctx.createStereoPanner();
+            panner.pan.value = trackPan;
 
             // tone 6 = Tremolo（Square専用: 1オクターブ上と高速切替）
             if (waveType === 'square' && tone === 6) {
@@ -3043,6 +3054,8 @@ const GameEngine = {
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
 
                     osc.connect(gain);
+                    gain.connect(panner);
+                    panner.connect(this.bgmMasterGain);
                     osc.start();
                     osc.stop(ctx.currentTime + Math.min(duration, 0.15));
                     return; // ここで完了
@@ -3069,7 +3082,7 @@ const GameEngine = {
             const isFadeIn = (tone === 2 || tone === 5);
 
             if (isShort) {
-                // Short: 短くスタッカート
+                // Short: 短くスタッカート気味
                 gain.gain.setValueAtTime(volume, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration * 0.5);
             } else if (isFadeIn) {
@@ -3079,19 +3092,19 @@ const GameEngine = {
                 gain.gain.setValueAtTime(volume, ctx.currentTime + duration * 0.9);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
             } else {
-                // Normal
+                // Normal: 通常のエンベロープ
                 gain.gain.setValueAtTime(volume, ctx.currentTime);
-                const sustainTime = duration * 0.8;
-                gain.gain.setValueAtTime(volume, ctx.currentTime + sustainTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+                gain.gain.setValueAtTime(volume, ctx.currentTime + Math.max(0, duration - 0.05));
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + duration);
             }
 
             osc.connect(gain);
-            gain.connect(this.bgmMasterGain);
+            gain.connect(panner);
+            panner.connect(this.bgmMasterGain);
             osc.start();
-            osc.stop(ctx.currentTime + duration);
+            osc.stop(ctx.currentTime + duration + 0.05);
 
-            activeNodes[trackIdx] = osc;
+            activeNodes[trackIdx] = { stop: () => { try { osc.stop(); } catch (e) { } } };
         };
 
         // BGM再生ループ
