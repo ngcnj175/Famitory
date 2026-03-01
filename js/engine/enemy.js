@@ -645,8 +645,11 @@ class Enemy {
         // 速度設定: shotSpeed 1（0.06）～5（0.2）
         const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
         const baseSpeed = 0.06 + (shotSpeedConfig - 1) * 0.035; // 1=0.06, 3=0.13, 5=0.2
-        const startX = this.x + (this.facingRight ? this.width : -0.2);
-        const startY = this.y + this.height / 2 - 0.25;
+
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        const startX = cx - 0.5;
+        const startY = cy - 0.5;
 
         if (shotType === 'spread') {
             // 拡散: 4方向発射
@@ -672,9 +675,9 @@ class Enemy {
                 });
             });
         } else if (shotType === 'drop') {
-            // 鳥のフン: 真下に落ちる
+            // 真下に落下
             engine.projectiles.push({
-                x: this.x + this.width / 2 - 0.25, y: this.y + this.height,
+                x: cx - 0.5, y: cy - 0.5,
                 vx: 0, vy: baseSpeed,
                 width: 0.5, height: 0.5,
                 spriteIdx: shotSprite,
@@ -688,10 +691,10 @@ class Enemy {
                 bounceCount: 0
             });
         } else if (shotType === 'melee') {
-            // 近接: 目の前に1タイル表示（ownerEnemyで追従）
+            // 近接: 目の前に表示（ownerEnemyで追従）
             engine.projectiles.push({
-                x: this.x + (this.facingRight ? 1 : -1),
-                y: this.y,
+                x: this.x + (this.facingRight ? this.width : -1),
+                y: this.y + this.height / 2 - 0.5,
                 vx: 0, vy: 0,
                 width: 1, height: 1,
                 spriteIdx: shotSprite,

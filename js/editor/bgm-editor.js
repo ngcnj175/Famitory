@@ -2813,14 +2813,15 @@ const SoundEditor = {
         // 画面中央付近に配置（現在のスクロール位置基準）
         const scrollStep = Math.floor(this.scrollX / this.cellSize);
         // 音程はC4付近または画面中央
-        // スクロールYは下方向正だが、ピッチは上方向正 (0-71)
-        // 表示範囲の下端ピッチ = scrollY / cellSize
-        const bottomPitch = Math.floor(this.scrollY / this.cellSize);
-        const centerPitch = bottomPitch + 4; // 画面内に収まるように少し上にオフセット
+        // スクロールYは上端からのピクセル数。Pitch 71が一番上(y=0)
+        // 画面上端のピッチ = 71 - Math.floor(scrollY / cellSize)
+        const topPitch = 71 - Math.floor(this.scrollY / this.cellSize);
+        // コピーした内容の高さ(Pitch幅)を考慮して少し下（Pitchは小さい方が下）にオフセット
+        const pastePitchOffset = topPitch - 4 - Math.floor((this.pasteData.height || 1) / 2);
 
         this.pasteOffset = {
             step: Math.max(0, scrollStep + 2),
-            pitch: Math.max(0, Math.min(71, centerPitch))
+            pitch: Math.max(0, Math.min(71, pastePitchOffset))
         };
 
         this.currentTool = 'paste';

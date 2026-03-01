@@ -348,8 +348,14 @@ class Player {
             // 速度設定: shotSpeed 1（0.1）～5（0.35）
             const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
             const baseSpeed = 0.1 + (shotSpeedConfig - 1) * 0.0625; // 1=0.1, 3=0.225, 5=0.35
-            const startX = this.x + (this.facingRight ? this.width : -0.2);
-            const startY = this.y + this.height / 2 - 0.25;
+            // プロジェクタイルの論理サイズは 0.5x0.5、描画されるスプライトサイズは 1.0x1.0（通常）であるため、
+            // 描画時にスプライトの中心がキャラクターの中心と一致するように補正する。
+            const cx = this.x + this.width / 2;
+            const cy = this.y + this.height / 2;
+
+            // 描画の中心に合わせるため、1x1サイズのスプライトの左上座標を(cx - 0.5, cy - 0.5)とする
+            const startX = cx - 0.5;
+            const startY = cy - 0.5;
 
             if (shotType === 'spread') {
                 // 拡散: 4方向発射（交互に＋と✕パターン）
@@ -375,9 +381,9 @@ class Player {
                     });
                 });
             } else if (shotType === 'drop') {
-                // 鳥のフン: 真下に落ちる
+                // 真下に落下
                 engine.projectiles.push({
-                    x: this.x + this.width / 2 - 0.25, y: this.y + this.height,
+                    x: cx - 0.5, y: cy - 0.5, // プレイヤーの中心から落下させる
                     vx: 0, vy: baseSpeed,
                     width: 0.5, height: 0.5,
                     spriteIdx: shotSprite,
@@ -391,10 +397,10 @@ class Player {
                     bounceCount: 0
                 });
             } else if (shotType === 'melee') {
-                //近接: 目の前に1タイル表示（射程関係なし）
+                //近接: 目の前に表示（射程関係なし）
                 engine.projectiles.push({
-                    x: this.x + (this.facingRight ? 1 : -1),
-                    y: this.y,
+                    x: this.x + (this.facingRight ? this.width : -1), // プレイヤーサイズ考慮
+                    y: this.y + this.height / 2 - 0.5, // 上下中央付近
                     vx: 0, vy: 0,
                     width: 1, height: 1, // 判定大きめ
                     spriteIdx: shotSprite,

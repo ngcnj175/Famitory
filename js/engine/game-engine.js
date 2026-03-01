@@ -683,20 +683,17 @@ const GameEngine = {
         this.render();
 
         // プレイヤー落下チェック（画面外に出たらゲームオーバーへ）
-        // titleStateがplayingの時のみ判定
-        // デバッグ: 毎フレームログ出力
         if (this.titleState === 'playing' && this.player) {
-            // 30フレームごとにログ出力（多すぎるのを防ぐ）
-            if (this.tileAnimationFrame % 30 === 0) {
-                console.log('Player y:', this.player.y, 'Stage height:', App.projectData.stage.height);
-            }
-            // +0.5に変更: ステージ下端を少し超えたらゲームオーバー
-            if (this.player.y > App.projectData.stage.height + 0.5) {
-                // 落下演出のため少し待機してからゲームオーバー
+            // カメラの最下端、またはステージ最下端のどちらか大きい方を基準にする
+            const viewHeight = this.canvas.height / this.TILE_SIZE;
+            const bottomEdge = Math.max(App.projectData.stage.height, this.camera.y + viewHeight);
+
+            // 下端を完全に超え、画面外に消えてからゲームオーバー発火
+            if (this.player.y > bottomEdge + 2) {
                 if (!this.gameOverPending) {
-                    console.log('GAME OVER pending! Player y:', this.player.y, 'Stage height:', App.projectData.stage.height);
+                    console.log('GAME OVER pending! Player y:', this.player.y, 'bottomEdge:', bottomEdge);
                     this.gameOverPending = true;
-                    this.gameOverWaitTimer = 60; // 約1秒待機
+                    this.gameOverWaitTimer = 30; // 0.5秒待機してワイプ開始
                 }
             }
         }
@@ -896,6 +893,11 @@ const GameEngine = {
             }
         });
 
+        // 3.5. プロジェクタイル (武器をプレイヤー/敵の奥に描画)
+        this.projectiles.forEach(proj => {
+            this.renderProjectileOrItem(proj);
+        });
+
         // 4. エネミー（生存中のみ、死亡中はFGの後で描画）
         this.enemies.forEach(enemy => {
             // 死亡中の敵は後で描画（FGレイヤーの手前に表示するため）
@@ -934,11 +936,6 @@ const GameEngine = {
         if (this.player && this.player.isDead && this.player.isDying) {
             this.player.render(this.ctx, this.TILE_SIZE, this.camera);
         }
-
-        // 9. プロジェクタイル
-        this.projectiles.forEach(proj => {
-            this.renderProjectileOrItem(proj);
-        });
 
         // 10. パーティクル
         this.renderParticles();
@@ -1369,14 +1366,12 @@ const GameEngine = {
                 case 'melee':
                     // 近接: オーナー（プレイヤー/敵）に追従
                     if (proj.owner === 'player' && this.player) {
-                        const direction = this.player.facingRight ? 1 : -1;
-                        proj.x = this.player.x + direction;
-                        proj.y = this.player.y;
+                        proj.x = this.player.x + (this.player.facingRight ? this.player.width : -1);
+                        proj.y = this.player.y + this.player.height / 2 - 0.5;
                         proj.facingRight = this.player.facingRight;
                     } else if (proj.owner === 'enemy' && proj.ownerEnemy) {
-                        const direction = proj.ownerEnemy.facingRight ? 1 : -1;
-                        proj.x = proj.ownerEnemy.x + direction;
-                        proj.y = proj.ownerEnemy.y;
+                        proj.x = proj.ownerEnemy.x + (proj.ownerEnemy.facingRight ? proj.ownerEnemy.width : -1);
+                        proj.y = proj.ownerEnemy.y + proj.ownerEnemy.height / 2 - 0.5;
                         proj.facingRight = proj.ownerEnemy.facingRight;
                     }
                     break;
@@ -1391,15 +1386,15 @@ const GameEngine = {
                             ownerX = proj.ownerEnemy.x + proj.ownerEnemy.width / 2;
                             ownerY = proj.ownerEnemy.y + proj.ownerEnemy.height / 2;
                         } else {
-                            ownerX = proj.startX;
-                            ownerY = proj.startY;
+                            ownerX = proj.startX + 0.5;
+                            ownerY = proj.startY + 0.5;
                         }
                         const orbitRadius = 2.0;
                         const orbitSpeed = 0.05; // ラジアン/フレーム
                         if (proj.orbitAngle === undefined) proj.orbitAngle = 0;
                         proj.orbitAngle += orbitSpeed;
-                        proj.x = ownerX + Math.cos(proj.orbitAngle) * orbitRadius - 0.25;
-                        proj.y = ownerY + Math.sin(proj.orbitAngle) * orbitRadius - 0.25;
+                        proj.x = ownerX + Math.cos(proj.orbitAngle) * orbitRadius - 0.5;
+                        proj.y = ownerY + Math.sin(proj.orbitAngle) * orbitRadius - 0.5;
                     }
                     break;
                 default:
@@ -2821,7 +2816,7 @@ const GameEngine = {
             this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
             // BGM専用マスターゲイン（SE対比で音量を下げる）
             this.bgmMasterGain = this.bgmAudioCtx.createGain();
-            this.bgmMasterGain.gain.value = 0.64; // さらに20%ダウン（0.8 * 0.8）
+            this.bgmMasterGain.gain.value = 1.0; // ゲームプレイ時とSONG画面の音量を同じ（100%）に統一
             this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
 
         }
@@ -2843,7 +2838,7 @@ const GameEngine = {
             return 440 * Math.pow(2, semitone / 12);
         };
 
-        const playNote = (freq, waveType, duration, pitch, trackIdx, tone) => {
+        const playNote = (freq, waveType, duration, pitch, trackIdx, tone, trackVolume = 0.8) => {
             const ctx = this.bgmAudioCtx;
 
             // 前の音を停止（同時発音数1制限）
@@ -2901,6 +2896,9 @@ const GameEngine = {
                 const noteInOct = pitch % 12;
                 filterFreq *= (1 + noteInOct * 0.02);
                 if (!isRoll) decayTime *= (1 + noteInOct * 0.015);
+
+                // トラック音量を適用
+                drumVol *= trackVolume;
 
                 // NES APU 15-bit LFSR風ノイズ生成
                 const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
@@ -3024,7 +3022,7 @@ const GameEngine = {
             }
 
             // 音量設定（toneによるバリエーション）
-            let volume = 0.2; // 全波形タイプで統一
+            let volume = 0.25 * trackVolume; // トラック固有音量を反映 (最大0.25)
             const isShort = (tone === 1 || tone === 4);
             const isFadeIn = (tone === 2 || tone === 5);
 
@@ -3064,11 +3062,12 @@ const GameEngine = {
             if (this.isPaused) return;
 
             song.tracks.forEach((track, trackIdx) => {
+                const trackVolume = (track.volume !== undefined ? track.volume : 80) / 100; // 0.0 - 1.0 (default 0.8)
                 track.notes.forEach(note => {
                     if (note.step === step) {
                         const freq = getFrequency(note.pitch);
                         const tone = track.tone || 0;
-                        playNote(freq, trackTypes[trackIdx], stepDuration * note.length, note.pitch, trackIdx, tone);
+                        playNote(freq, trackTypes[trackIdx], stepDuration * note.length, note.pitch, trackIdx, tone, trackVolume);
                     }
                 });
             });
