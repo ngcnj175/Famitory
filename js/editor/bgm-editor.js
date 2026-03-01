@@ -294,6 +294,7 @@ const SoundEditor = {
 
                 if (!wasTarget || hasDraggedBpm) {
                     if (hasDraggedBpm && this.isPlaying) {
+                        // ドラッグで値が変わった場合のみ再開
                         this.stop();
                         this.play();
                     }
@@ -365,6 +366,7 @@ const SoundEditor = {
 
                 if (!wasTarget || hasDraggedBar) {
                     if (hasDraggedBar && this.isPlaying) {
+                        // ドラッグで値が変わった場合のみ再開
                         this.stop();
                         this.play();
                     }
@@ -960,10 +962,20 @@ const SoundEditor = {
             return;
         }
 
-        // iOS: confirmダイアログ後にAudioContextが壊れるため再作成
+        // --- Web Audio API 初期化 ---
         this.resetAudioContext();
 
-        // 削除実行
+        // ページ復帰時にsuspendedになっていればresumeするリスナーを登録（1回のみ）
+        if (!this._visibilityListenerAdded) {
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            });
+            this._visibilityListenerAdded = true;
+        }
+
+        // --- パレット読み込み ---
         this.songs.splice(this.currentSongIdx, 1);
 
         // インデックス調整（末尾を削除した場合は一つ前へ）

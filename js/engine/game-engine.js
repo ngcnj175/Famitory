@@ -1131,6 +1131,10 @@ const GameEngine = {
                     this.playBgm('boss');
                     this.bossSequencePhase = null;
                     this.bossSequenceTimer = 0;
+                    // ボスの動きを解禁
+                    if (this.bossEnemy) {
+                        this.bossEnemy.frozen = false;
+                    }
                 }
             }
             // ゲーム更新はreturnせず継続する
@@ -1212,9 +1216,9 @@ const GameEngine = {
             );
 
             if (nextBoss) {
-                // ボス出現！BGMシーケンス開始＆即座に活性化
+                // ボス出現！BGMシーケンス開始
                 console.log('Boss encountered!');
-                nextBoss.frozen = false; // ボス即活性化（ゲームは止めない）
+                // nextBoss.frozen = false; // ボス即活性化（ゲームは止めない） // REMOVED
                 this.bossEnemy = nextBoss;
                 this.bossSpawned = true;
                 this.bossSequencePhase = 'fadeout';
@@ -2254,7 +2258,7 @@ const GameEngine = {
         const key = `${tileX},${tileY}`;
 
         // 元データは変更せず、破壊済みリストに追加
-        // stage.layers.fg[tileY][tileX] = -1; 
+        // stage.layers.fg[tileY][tileX] = -1;
         this.destroyedTiles.add(key);
 
         this.breakableTiles.delete(key);
@@ -2817,12 +2821,23 @@ const GameEngine = {
             this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
             // BGM専用マスターゲイン（SE対比で音量を下げる）
             this.bgmMasterGain = this.bgmAudioCtx.createGain();
-            this.bgmMasterGain.gain.value = 0.8; // 20%ダウン
+            this.bgmMasterGain.gain.value = 0.64; // さらに20%ダウン（0.8 * 0.8）
             this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
+
         }
         // iOSでsuspendedの場合にresume
         if (this.bgmAudioCtx.state === 'suspended') {
             this.bgmAudioCtx.resume();
+        }
+
+        // ページ復帰時にsuspendedになっていればresumeするリスナーを登録（1回のみ）
+        if (!this._visibilityListenerAdded) {
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && this.bgmAudioCtx && this.bgmAudioCtx.state === 'suspended') {
+                    this.bgmAudioCtx.resume();
+                }
+            });
+            this._visibilityListenerAdded = true;
         }
 
         const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];

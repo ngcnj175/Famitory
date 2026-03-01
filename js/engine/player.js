@@ -287,6 +287,12 @@ class Player {
             }
 
             this._jumpKeyWasPressed = GameController.isPressed('a');
+
+            // はしご上でのBキー攻撃（最上部に限らず全体で許可するか、今回は「一番上」の仕様に沿って判定）
+            if (atLadderTop && GameController.isPressed('b') && this.shotMaxRange > 0 && this.attackCooldown <= 0) {
+                this.attack(engine);
+            }
+
             return; // はしご上での基本処理終了
         }
 
