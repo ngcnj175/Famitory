@@ -194,6 +194,23 @@ const App = {
         // PC向け：マウスドラッグでのスクロールを有効化
         this.enableDragScroll();
 
+        // iOS/Safari向けのグローバルなAudioContext復帰処理（ユーザーインタラクション時に発火）
+        const resumeAudioContexts = () => {
+            if (typeof GameEngine !== 'undefined') {
+                if (GameEngine.bgmAudioCtx && GameEngine.bgmAudioCtx.state === 'suspended') {
+                    GameEngine.bgmAudioCtx.resume();
+                }
+                if (GameEngine.audioCtx && GameEngine.audioCtx.state === 'suspended') {
+                    GameEngine.audioCtx.resume();
+                }
+            }
+            if (typeof SoundEditor !== 'undefined' && SoundEditor.audioCtx && SoundEditor.audioCtx.state === 'suspended') {
+                SoundEditor.audioCtx.resume();
+            }
+        };
+        document.addEventListener('touchstart', resumeAudioContexts, { passive: true });
+        document.addEventListener('mousedown', resumeAudioContexts);
+
         console.log('FAMITORY initialized!');
     },
 

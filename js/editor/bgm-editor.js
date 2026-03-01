@@ -218,10 +218,16 @@ const SoundEditor = {
         const numOkBtn = document.getElementById('number-input-ok');
         const numCancelBtn = document.getElementById('number-input-cancel');
         if (numModal && numOkBtn && numCancelBtn) {
-            numOkBtn.addEventListener('click', () => {
+            numOkBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                numOkBtn.blur();
+                if (document.activeElement) document.activeElement.blur();
+
                 if (this.onNumberInputCallback) {
                     const val = document.getElementById('number-input-value').value;
-                    this.onNumberInputCallback(val);
+                    const callback = this.onNumberInputCallback;
+                    this.onNumberInputCallback = null; // コールバックを確実に1度だけでクリア
+                    callback(val);
                 }
                 numModal.classList.add('hidden');
                 // iOS: User gesture (click) resumes AudioContext
@@ -229,7 +235,12 @@ const SoundEditor = {
                     this.audioCtx.resume();
                 }
             });
-            numCancelBtn.addEventListener('click', () => {
+            numCancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                numCancelBtn.blur();
+                if (document.activeElement) document.activeElement.blur();
+
+                this.onNumberInputCallback = null; // クリア
                 numModal.classList.add('hidden');
                 // iOS: Ensure resume even on cancel if needed
                 if (this.audioCtx && this.audioCtx.state === 'suspended') {
@@ -244,12 +255,16 @@ const SoundEditor = {
         });
 
         // モーダル保存ボタン
-        document.getElementById('song-name-save')?.addEventListener('click', () => {
+        document.getElementById('song-name-save')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.activeElement?.blur();
             this.saveSongName();
         });
 
         // モーダルキャンセルボタン
-        document.getElementById('song-name-cancel')?.addEventListener('click', () => {
+        document.getElementById('song-name-cancel')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.activeElement?.blur();
             this.closeSongNameModal();
         });
 
@@ -289,8 +304,10 @@ const SoundEditor = {
             };
 
             const onEndBpm = (e) => {
-                const wasTarget = e.target === bpmDisplay || bpmDisplay.contains(e.target);
+                if (!isDraggingBpm) return;
                 isDraggingBpm = false;
+
+                const wasTarget = e.target === bpmDisplay || bpmDisplay.contains(e.target);
 
                 if (!wasTarget || hasDraggedBpm) {
                     if (hasDraggedBpm && this.isPlaying) {
@@ -298,6 +315,7 @@ const SoundEditor = {
                         this.stop();
                         this.play();
                     }
+                    hasDraggedBpm = false;
                     return;
                 }
 
@@ -361,8 +379,10 @@ const SoundEditor = {
             };
 
             const onEndBar = (e) => {
-                const wasTarget = e.target === barDisplay || barDisplay.contains(e.target);
+                if (!isDraggingBar) return;
                 isDraggingBar = false;
+
+                const wasTarget = e.target === barDisplay || barDisplay.contains(e.target);
 
                 if (!wasTarget || hasDraggedBar) {
                     if (hasDraggedBar && this.isPlaying) {
@@ -370,6 +390,7 @@ const SoundEditor = {
                         this.stop();
                         this.play();
                     }
+                    hasDraggedBar = false;
                     return;
                 }
 
@@ -964,16 +985,6 @@ const SoundEditor = {
 
         // --- Web Audio API 初期化 ---
         this.resetAudioContext();
-
-        // ページ復帰時にsuspendedになっていればresumeするリスナーを登録（1回のみ）
-        if (!this._visibilityListenerAdded) {
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && this.audioCtx && this.audioCtx.state === 'suspended') {
-                    this.audioCtx.resume();
-                }
-            });
-            this._visibilityListenerAdded = true;
-        }
 
         // --- パレット読み込み ---
         this.songs.splice(this.currentSongIdx, 1);
@@ -2779,6 +2790,11 @@ const SoundEditor = {
             notes: notes
         };
 
+        // コピー後、選択を解除する
+        this.isSelecting = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
+
         // alert(`${notes.length} 個のノートをコピーしました`);
         this.render();
     },
@@ -2798,12 +2814,9 @@ const SoundEditor = {
         const scrollStep = Math.floor(this.scrollX / this.cellSize);
         // 音程はC4付近または画面中央
         // スクロールYは下方向正だが、ピッチは上方向正 (0-71)
-        // scrollY=0 のとき、下端は見えている。
-        // ピッチの表示は下から上に 0..71。
-        // cellSize=20。canvasHeight=320。
         // 表示範囲の下端ピッチ = scrollY / cellSize
         const bottomPitch = Math.floor(this.scrollY / this.cellSize);
-        const centerPitch = bottomPitch + 8; // 画面の真ん中あたり
+        const centerPitch = bottomPitch + 4; // 画面内に収まるように少し上にオフセット
 
         this.pasteOffset = {
             step: Math.max(0, scrollStep + 2),

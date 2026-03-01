@@ -1957,10 +1957,12 @@ const SpriteEditor = {
         this.pasteMode = true;
         this.selectionMode = false;
         this.pasteData = JSON.parse(JSON.stringify(this.rangeClipboard));
-        // 2×2右下にオフセットして配置
+        // スクロール位置に応じて配置（例：画面左上から+2ずらした位置）
+        const offsetX = Math.floor((this.viewportOffsetX || 0) / this.pixelSize);
+        const offsetY = Math.floor((this.viewportOffsetY || 0) / this.pixelSize);
         this.pasteOffset = {
-            x: 2,
-            y: 2
+            x: Math.max(0, offsetX + 2),
+            y: Math.max(0, offsetY + 2)
         };
         this.currentTool = 'paste';
         document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
@@ -2058,11 +2060,12 @@ const SpriteEditor = {
         }
         this.rangeClipboard = data;
 
-        // ユーザーにお知らせ
-        // ユーザーにお知らせ
-        // alert('選択範囲をコピーしました');
+        // コピー後、選択を解除する
+        this.isSelecting = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
 
-        // 選択モードは維持する
+        // 選択モードをペーストモードまたはそのまま待機させる処理へ
         this.render();
     },
 

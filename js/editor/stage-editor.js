@@ -2110,6 +2110,12 @@ const StageEditor = {
 
         this.rangeClipboard = { tiles, entities };
         // alert removed
+
+        // コピー後、選択を解除する
+        this.isSelecting = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
+
         this.render();
     },
 
@@ -2137,13 +2143,13 @@ const StageEditor = {
         this.selectionMode = false;
         this.pasteData = { tiles, entities: JSON.parse(JSON.stringify(entities)) };
 
-        // 逕ｻ髱｢荳ｭ螟ｮ莉倩ｿ代↓驟咲ｽｮ
+        // 画面中央付近に配置
         const scrollX = Math.floor(-(this.canvasScrollX || 0) / this.tileSize);
         const scrollY = Math.floor(-(this.canvasScrollY || 0) / this.tileSize);
 
         this.pasteOffset = {
-            x: scrollX + 2,
-            y: scrollY + 2
+            x: scrollX + 4,
+            y: scrollY + 4
         };
 
         this.currentTool = 'paste';

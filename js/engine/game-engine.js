@@ -2825,19 +2825,9 @@ const GameEngine = {
             this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
 
         }
-        // iOSでsuspendedの場合にresume
+        // iOSでsuspendedの場合にresume（ユーザーインタラクション時にグローバルで再開する方針へ変更）
         if (this.bgmAudioCtx.state === 'suspended') {
             this.bgmAudioCtx.resume();
-        }
-
-        // ページ復帰時にsuspendedになっていればresumeするリスナーを登録（1回のみ）
-        if (!this._visibilityListenerAdded) {
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && this.bgmAudioCtx && this.bgmAudioCtx.state === 'suspended') {
-                    this.bgmAudioCtx.resume();
-                }
-            });
-            this._visibilityListenerAdded = true;
         }
 
         const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
