@@ -688,12 +688,21 @@ const GameEngine = {
             const viewHeight = this.canvas.height / this.TILE_SIZE;
             const bottomEdge = Math.max(App.projectData.stage.height, this.camera.y + viewHeight);
 
-            // 下端を完全に超え、画面外に消えてからゲームオーバー発火
-            if (this.player.y > bottomEdge + 2) {
+            // 画面外（ステージ下端またはカメラ下端）に落下した場合
+            if (this.player.y > bottomEdge + 1 && !this.player.isDying) {
+                // 落下死として扱う
+                this.player.isDying = true;
+                this.player.deathFlashPhase = false; // 点滅や跳ね上がりなしでただ落ちる
+                this.player.deathTimer = 0;          // 死亡タイマー開始し、後ほどゲームオーバー発動
+                this.player.playSE('damage');        // 落下音
+            }
+
+            // 死亡しきった場合（完全に画面外に落下したか、やられて消滅したか）のGAME OVER処理
+            if (this.player && this.player.isDying && this.player.deathTimer > 120) {
                 if (!this.gameOverPending) {
                     console.log('GAME OVER pending! Player y:', this.player.y, 'bottomEdge:', bottomEdge);
                     this.gameOverPending = true;
-                    this.gameOverWaitTimer = 30; // 0.5秒待機してワイプ開始
+                    this.gameOverWaitTimer = 0; // ただちにワイプ開始
                 }
             }
         }
@@ -893,9 +902,11 @@ const GameEngine = {
             }
         });
 
-        // 3.5. プロジェクタイル (武器をプレイヤー/敵の奥に描画)
+        // 3.5. プロジェクタイル (武器をプレイヤー/敵の奥に描画) - 近接と回転以外
         this.projectiles.forEach(proj => {
-            this.renderProjectileOrItem(proj);
+            if (proj.shotType !== 'melee' && proj.shotType !== 'orbit') {
+                this.renderProjectileOrItem(proj);
+            }
         });
 
         // 4. エネミー（生存中のみ、死亡中はFGの後で描画）
@@ -924,6 +935,13 @@ const GameEngine = {
         if (stage.layers.fg) {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
         }
+
+        // 7. 特殊プロジェクタイル (近接と回転は一番手前、FGブロックよりも前面)
+        this.projectiles.forEach(proj => {
+            if (proj.shotType === 'melee' || proj.shotType === 'orbit') {
+                this.renderProjectileOrItem(proj);
+            }
+        });
 
         // 8. 死亡中の敵（FGレイヤーより手前に表示）
         this.enemies.forEach(enemy => {
@@ -3014,6 +3032,21 @@ const GameEngine = {
                 // tone に応じた波形タイプ設定
                 if (tone === 1) osc.type = 'sine';
                 else if (tone === 2) osc.type = 'sawtooth';
+                else if (tone === 3) {
+                    // Kickトーン (ピッチ下降)
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.25, ctx.currentTime + duration);
+
+                    // 短い音にする
+                    gain.gain.setValueAtTime(0.5 * trackVol, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
+
+                    osc.connect(gain);
+                    osc.start();
+                    osc.stop(ctx.currentTime + Math.min(duration, 0.15));
+                    return; // ここで完了
+                }
                 else osc.type = 'triangle';
                 osc.frequency.setValueAtTime(freq, ctx.currentTime);
             } else {
@@ -3021,8 +3054,17 @@ const GameEngine = {
                 osc.frequency.setValueAtTime(freq, ctx.currentTime);
             }
 
+            // トラック固有音量（0.0〜1.0）
+            const trackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
+            const baseVol = 0.2;
+            let volumeScale = 1.0;
+
             // 音量設定（toneによるバリエーション）
-            let volume = 0.25 * trackVolume; // トラック固有音量を反映 (最大0.25)
+            if (waveType === 'triangle' && tone === 2) {
+                volumeScale = 0.6; // Sawtooth
+            }
+            let volume = baseVol * trackVol * volumeScale;
+
             const isShort = (tone === 1 || tone === 4);
             const isFadeIn = (tone === 2 || tone === 5);
 
@@ -3062,7 +3104,7 @@ const GameEngine = {
             if (this.isPaused) return;
 
             song.tracks.forEach((track, trackIdx) => {
-                const trackVolume = (track.volume !== undefined ? track.volume : 80) / 100; // 0.0 - 1.0 (default 0.8)
+                const trackVolume = track.volume !== undefined ? track.volume : 0.8;
                 track.notes.forEach(note => {
                     if (note.step === step) {
                         const freq = getFrequency(note.pitch);

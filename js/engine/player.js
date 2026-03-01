@@ -354,8 +354,15 @@ class Player {
             const cy = this.y + this.height / 2;
 
             // 描画の中心に合わせるため、1x1サイズのスプライトの左上座標を(cx - 0.5, cy - 0.5)とする
-            const startX = cx - 0.5;
-            const startY = cy - 0.5;
+            let startX = cx - 0.5;
+            let startY = cy - 0.5;
+
+            // 武器タイプによって発射位置をずらす
+            if (['straight', 'arc', 'boomerang', 'pinball'].includes(shotType)) {
+                startX += (this.facingRight ? 1 : -1);
+            } else if (shotType === 'drop') {
+                startY += 1;
+            }
 
             if (shotType === 'spread') {
                 // 拡散: 4方向発射（交互に＋と✕パターン）
@@ -383,7 +390,7 @@ class Player {
             } else if (shotType === 'drop') {
                 // 真下に落下
                 engine.projectiles.push({
-                    x: cx - 0.5, y: cy - 0.5, // プレイヤーの中心から落下させる
+                    x: startX, y: startY,
                     vx: 0, vy: baseSpeed,
                     width: 0.5, height: 0.5,
                     spriteIdx: shotSprite,

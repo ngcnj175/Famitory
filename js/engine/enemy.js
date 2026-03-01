@@ -648,8 +648,15 @@ class Enemy {
 
         const cx = this.x + this.width / 2;
         const cy = this.y + this.height / 2;
-        const startX = cx - 0.5;
-        const startY = cy - 0.5;
+        let startX = cx - 0.5;
+        let startY = cy - 0.5;
+
+        // 武器タイプによって発射位置をずらす
+        if (['straight', 'arc', 'boomerang', 'pinball'].includes(shotType)) {
+            startX += (this.facingRight ? 1 : -1);
+        } else if (shotType === 'drop') {
+            startY += 1;
+        }
 
         if (shotType === 'spread') {
             // 拡散: 4方向発射
@@ -677,7 +684,7 @@ class Enemy {
         } else if (shotType === 'drop') {
             // 真下に落下
             engine.projectiles.push({
-                x: cx - 0.5, y: cy - 0.5,
+                x: startX, y: startY,
                 vx: 0, vy: baseSpeed,
                 width: 0.5, height: 0.5,
                 spriteIdx: shotSprite,
