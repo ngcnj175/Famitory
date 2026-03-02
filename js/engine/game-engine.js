@@ -2919,6 +2919,7 @@ const GameEngine = {
 
                 // トラック音量を適用
                 drumVol *= trackVolume;
+                drumVol = Math.max(0.0001, drumVol);
 
                 // NES APU 15-bit LFSR風ノイズ生成
                 const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
@@ -3050,7 +3051,7 @@ const GameEngine = {
                     osc.frequency.exponentialRampToValueAtTime(freq * 0.25, ctx.currentTime + duration);
 
                     // 短い音にする
-                    gain.gain.setValueAtTime(0.5 * trackVol, ctx.currentTime);
+                    gain.gain.setValueAtTime(Math.max(0.0001, 0.5 * trackVol), ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
 
                     osc.connect(gain);
@@ -3077,6 +3078,7 @@ const GameEngine = {
                 volumeScale = 0.6; // Sawtooth
             }
             let volume = baseVol * trackVol * volumeScale;
+            volume = Math.max(0.0001, volume); // 0以下の値による例外発生を防ぐ
 
             const isShort = (tone === 1 || tone === 4);
             const isFadeIn = (tone === 2 || tone === 5);

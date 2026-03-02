@@ -1050,38 +1050,61 @@ const SoundEditor = {
 
     // ========== プレイヤーパネル ==========
     initPlayerPanel() {
-        // DEL (UNDO) - 通常タップ: 直前のノート削除、長押し: トラック全削除
+        // DEL (UNDO) - タップ: 直前のノート削除
         const delBtn = document.getElementById('sound-del-btn');
         if (delBtn) {
-            let longPressTimer = null;
-            let isLongPress = false;
+            delBtn.addEventListener('click', () => {
+                this.deleteLastNote();
+            });
+        }
 
-            const startLongPress = () => {
-                isLongPress = false;
-                longPressTimer = setTimeout(() => {
-                    isLongPress = true;
+        // ERASER
+        const eraserBtn = document.getElementById('sound-eraser-btn');
+        if (eraserBtn) {
+            let eraserLongPressTimer = null;
+            let eraserIsLongPress = false;
+
+            const startEraserLongPress = () => {
+                eraserIsLongPress = false;
+                eraserLongPressTimer = setTimeout(() => {
+                    eraserIsLongPress = true;
                     this.clearCurrentTrack();
                 }, 800);
             };
 
-            const cancelLongPress = () => {
-                if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
+            const cancelEraserLongPress = () => {
+                if (eraserLongPressTimer) {
+                    clearTimeout(eraserLongPressTimer);
+                    eraserLongPressTimer = null;
                 }
             };
 
-            delBtn.addEventListener('mousedown', startLongPress);
-            delBtn.addEventListener('mouseup', cancelLongPress);
-            delBtn.addEventListener('mouseleave', cancelLongPress);
-            delBtn.addEventListener('touchstart', startLongPress, { passive: true });
-            delBtn.addEventListener('touchend', cancelLongPress);
-            delBtn.addEventListener('touchcancel', cancelLongPress);
+            eraserBtn.addEventListener('mousedown', startEraserLongPress);
+            eraserBtn.addEventListener('mouseup', cancelEraserLongPress);
+            eraserBtn.addEventListener('mouseleave', cancelEraserLongPress);
+            eraserBtn.addEventListener('touchstart', startEraserLongPress, { passive: true });
+            eraserBtn.addEventListener('touchend', cancelEraserLongPress);
+            eraserBtn.addEventListener('touchcancel', cancelEraserLongPress);
 
-            delBtn.addEventListener('click', () => {
-                if (!isLongPress) {
-                    this.deleteLastNote();
+            eraserBtn.addEventListener('click', () => {
+                if (eraserIsLongPress) return;
+
+                // 選択範囲がある場合、範囲内を一括削除して終了
+                if (this.currentTool === 'select' && this.selectionStart && this.selectionEnd) {
+                    this.deleteSelection();
+                    return;
                 }
+
+                this.currentTool = 'eraser';
+                this.selectionMode = false;
+                this.pasteMode = false;
+                this.selectionStart = null;
+                this.selectionEnd = null;
+                this.pasteData = null;
+
+                document.querySelectorAll('#sound-controls .sound-ctrl-btn').forEach(b => b.classList.remove('active'));
+                eraserBtn.classList.add('active');
+                this.render();
             });
         }
 
@@ -1441,7 +1464,7 @@ const SoundEditor = {
             }
 
             // TremoloはSQUARE Standard系なので音量120%増
-            gain.gain.value = 0.0502 * track.volume;
+            gain.gain.value = Math.max(0.0001, 0.0502 * track.volume);
 
             osc.connect(gain);
             osc.start();
@@ -1489,7 +1512,7 @@ const SoundEditor = {
             if (trackType === 'triangle' && tone === 2) {
                 volumeScale = 0.6; // Sawtooth
             }
-            gain.gain.value = baseVol * track.volume * volumeScale;
+            gain.gain.value = Math.max(0.0001, baseVol * track.volume * volumeScale);
 
             osc.connect(gain);
             osc.start();
@@ -1541,7 +1564,7 @@ const SoundEditor = {
         osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(freq * 0.25, this.audioCtx.currentTime + duration);
 
-        gain.gain.setValueAtTime(0.5 * volume, this.audioCtx.currentTime);
+        gain.gain.setValueAtTime(Math.max(0.0001, 0.5 * volume), this.audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
 
         osc.connect(gain);
@@ -1576,9 +1599,10 @@ const SoundEditor = {
         }
 
         // TremoloはSQUARE Standard系なので音量120%増
-        gain.gain.setValueAtTime(0.0502 * volume, this.audioCtx.currentTime);
+        const safeVolume = Math.max(0.0001, 0.0502 * volume);
+        gain.gain.setValueAtTime(safeVolume, this.audioCtx.currentTime);
         const sustainTime = duration * 0.8;
-        gain.gain.setValueAtTime(0.0502 * volume, this.audioCtx.currentTime + sustainTime);
+        gain.gain.setValueAtTime(safeVolume, this.audioCtx.currentTime + sustainTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
 
         osc.connect(gain);
@@ -1647,7 +1671,8 @@ const SoundEditor = {
 
         // 全トラック統一の基本音量
         const baseVol = 0.2;
-        const volume = baseVol * track.volume * volumeScale;
+        let volume = baseVol * track.volume * volumeScale;
+        volume = Math.max(0.0001, volume);
 
         // エンベロープ設定
         const isShort = (tone === 1 || tone === 4); // Standard Short or Sharp Short
@@ -1746,7 +1771,8 @@ const SoundEditor = {
 
         // 全トラック統一の基本音量
         const baseVol = 0.2;
-        const volume = baseVol * track.volume * volumeScale;
+        let volume = baseVol * track.volume * volumeScale;
+        volume = Math.max(0.0001, volume);
 
         // エンベロープ設定
         const isShort = (tone === 1 || tone === 4); // Standard Short or Sharp Short
@@ -2343,6 +2369,22 @@ const SoundEditor = {
             }
             if (moved) hasMoved = true;
 
+            // 消しゴムモード
+            if (this.currentTool === 'eraser') {
+                const { step, pitch } = getStepPitch(pos);
+                const exNote = this.findNoteAt(step, pitch);
+                if (exNote) {
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const idx = track.notes.indexOf(exNote);
+                    if (idx >= 0) {
+                        track.notes.splice(idx, 1);
+                        this.render();
+                    }
+                }
+                return;
+            }
+
             // 選択モード
             if (this.currentTool === 'select') {
                 const { step, pitch } = getStepPitch(pos);
@@ -2480,6 +2522,21 @@ const SoundEditor = {
                     return;
                 }
 
+                // 消しゴムモード：タップした場所のノートを削除
+                if (this.currentTool === 'eraser') {
+                    const exNote = this.findNoteAt(step, pitch);
+                    if (exNote) {
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        const idx = track.notes.indexOf(exNote);
+                        if (idx >= 0) {
+                            track.notes.splice(idx, 1);
+                            this.render();
+                        }
+                    }
+                    return;
+                }
+
                 // ノートがあるかチェック
                 const note = this.findNoteAt(step, pitch);
 
@@ -2549,6 +2606,21 @@ const SoundEditor = {
             if (this.currentTool === 'paste') {
                 this.pasteDragStart = { step, pitch };
                 this.render();
+                return;
+            }
+
+            // 消しゴムモード：タップした場所のノートを削除
+            if (this.currentTool === 'eraser') {
+                const exNote = this.findNoteAt(step, pitch);
+                if (exNote) {
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const idx = track.notes.indexOf(exNote);
+                    if (idx >= 0) {
+                        track.notes.splice(idx, 1);
+                        this.render();
+                    }
+                }
                 return;
             }
 
@@ -2758,6 +2830,27 @@ const SoundEditor = {
             b.classList.toggle('active', b.dataset.tool === 'select');
         });
 
+        this.render();
+    },
+
+    deleteSelection() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+        const song = this.getCurrentSong();
+        const track = song.tracks[this.currentTrack];
+
+        const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+        const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+        const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+        const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+
+        track.notes = track.notes.filter(n => {
+            const inRange = n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch;
+            return !inRange;
+        });
+
+        this.isSelecting = false;
+        this.selectionStart = null;
+        this.selectionEnd = null;
         this.render();
     },
 
