@@ -61,7 +61,7 @@ const App = {
             version: 1,
             meta: {
                 name: 'NEW GAME',
-                author: '',
+                author: 'You',
                 locked: false,
                 createdAt: Date.now()
             },
@@ -435,6 +435,7 @@ const App = {
                 this.projectData = data;
                 this.migrateProjectData(); // データ移行
                 this.isPlayOnlyMode = true;
+                this.playOnlyGameId = gameId; // いいね用にIDを保持
                 console.log('Project loaded from Firebase (play-only mode)');
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
@@ -582,6 +583,27 @@ const App = {
                 btn.style.display = 'none';
             }
         });
+
+        // いいね表示を有効化
+        this.showLikeDisplay();
+    },
+
+    // いいね数表示
+    async showLikeDisplay() {
+        const likeDisplay = document.getElementById('like-display');
+        const likeCount = document.getElementById('like-count');
+        if (!likeDisplay || !likeCount) return;
+
+        const gameId = this.playOnlyGameId;
+        if (!gameId) return;
+
+        likeDisplay.classList.remove('hidden');
+
+        // Firebaseからいいね数を取得
+        if (typeof Share !== 'undefined') {
+            const likes = await Share.getLikes(gameId);
+            likeCount.textContent = likes;
+        }
     },
 
     initMenu() {
@@ -653,42 +675,10 @@ const App = {
         const shareBtn = document.getElementById('share-icon-btn');
         // 共有イベントは一度だけバインド
         this.bindShareSimpleEvents();
-        shareBtn?.addEventListener('click', async () => {
+        shareBtn?.addEventListener('click', () => {
             this.projectData.palette = this.nesPalette.slice();
-            this._shareUrl = null;
-            this._shareLoading = true;
+            // ダイアログを開くだけ（アップロードはしない）
             document.getElementById('share-dialog').classList.remove('hidden');
-
-            // iOS対応: モーダルを開いた時点でFirebase保存とURL生成
-            console.log('[Share] Starting URL generation...');
-            console.log('[Share] Share defined:', typeof Share !== 'undefined');
-            console.log('[Share] firebaseDB:', !!window.firebaseDB);
-
-            if (typeof Share !== 'undefined' && window.firebaseDB) {
-                try {
-                    const id = await Share.saveGame(this.projectData);
-                    console.log('[Share] saveGame returned id:', id);
-                    if (id) {
-                        const url = Share.createShortUrl(id);
-                        this._shareUrl = url;
-                        console.log('[Share] URL prepared:', url);
-                        this.showToast('共有URLを生成しました');
-                    } else {
-                        console.error('[Share] saveGame returned null');
-                        this._shareUrl = null;
-                        this.showToast('URL生成に失敗しました');
-                    }
-                } catch (e) {
-                    console.error('[Share] save error:', e);
-                    this._shareUrl = null;
-                    this.showToast('URL生成でエラーが発生しました');
-                }
-            } else {
-                console.error('[Share] No cloud connection. Share:', typeof Share, 'firebaseDB:', !!window.firebaseDB);
-                this._shareUrl = null;
-                this.showToast('クラウド接続がありません');
-            }
-            this._shareLoading = false;
         });
 
         // 共有ダイアログのイベント初期化（使わないがエラー防止で残すか、削除するか）
@@ -715,13 +705,25 @@ const App = {
                 this.projectData.meta.name = e.target.value;
             }
         });
+
+        // 作成者名編集
+        const authorInput = document.getElementById('game-author');
+        authorInput?.addEventListener('change', (e) => {
+            if (this.projectData) {
+                this.projectData.meta.author = e.target.value || 'You';
+            }
+        });
     },
 
     updateGameInfo() {
         const titleInput = document.getElementById('game-title');
+        const authorInput = document.getElementById('game-author');
 
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
+        }
+        if (authorInput && this.projectData) {
+            authorInput.value = this.projectData.meta.author || 'You';
         }
     },
 
@@ -1441,17 +1443,98 @@ const App = {
             return success;
         };
 
-        // URLコピー（事前生成されたURLを使用）
+        // --- 固定URL: 確認→保存→共有の共通処理 ---
+        const ensureShareUrl = async () => {
+            if (typeof Share === 'undefined' || !window.firebaseDB) {
+                this.showToast('クラウド接続がありません');
+                return null;
+            }
+
+            const existingId = this.projectData.meta.shareId;
+            const isUpdate = !!existingId;
+
+            // 確認ダイアログ
+            const msg = isUpdate
+                ? '公開中の作品を更新しますか？'
+                : 'この作品を公開しますか？';
+
+            return new Promise((resolve) => {
+                // カスタム確認ダイアログ
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10001;';
+
+                const modal = document.createElement('div');
+                modal.style.cssText = 'background:white;padding:24px;border-radius:16px;text-align:center;max-width:280px;width:85%;';
+
+                const msgEl = document.createElement('p');
+                msgEl.style.cssText = 'margin:0 0 20px 0;font-size:16px;font-weight:bold;color:#333;';
+                msgEl.textContent = msg;
+
+                const btnContainer = document.createElement('div');
+                btnContainer.style.cssText = 'display:flex;gap:16px;justify-content:center;';
+
+                const yesBtn = document.createElement('button');
+                yesBtn.textContent = 'はい';
+                yesBtn.className = 'modal-action-btn primary';
+
+                const noBtn = document.createElement('button');
+                noBtn.textContent = isUpdate ? 'そのまま' : 'いいえ';
+                noBtn.className = 'modal-action-btn cancel';
+
+                btnContainer.appendChild(yesBtn);
+                btnContainer.appendChild(noBtn);
+                modal.appendChild(msgEl);
+                modal.appendChild(btnContainer);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                const closeModal = () => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                };
+
+                yesBtn.onclick = async () => {
+                    closeModal();
+                    this.showToast('公開中...');
+                    try {
+                        const id = await Share.saveGame(this.projectData, existingId || null);
+                        if (id) {
+                            this.projectData.meta.shareId = id;
+                            // ローカルにも保存
+                            Storage.save('currentProject', this.projectData);
+                            if (this.currentProjectName) {
+                                Storage.saveProject(this.currentProjectName, this.projectData);
+                            }
+                            const url = Share.createShortUrl(id);
+                            this.showToast(isUpdate ? '作品を更新しました' : '作品を公開しました');
+                            resolve(url);
+                        } else {
+                            this.showToast('公開に失敗しました');
+                            resolve(null);
+                        }
+                    } catch (e) {
+                        this.showToast('エラーが発生しました');
+                        resolve(null);
+                    }
+                };
+
+                noBtn.onclick = () => {
+                    closeModal();
+                    if (isUpdate && existingId) {
+                        // 更新せずに既存URLを返す
+                        resolve(Share.createShortUrl(existingId));
+                    } else {
+                        resolve(null);
+                    }
+                };
+            });
+        };
+
+        // URLコピー
         copyUrlBtn.onclick = async () => {
-            if (this._shareLoading) {
-                this.showToast('URL生成中です…少しお待ちください');
-                return;
-            }
-            const url = this._shareUrl;
-            if (!url) {
-                this.showToast('URLが生成されていません。共有画面を開き直してください');
-                return;
-            }
+            const url = await ensureShareUrl();
+            if (!url) return;
             const success = await copyToClipboard(url);
             if (success) {
                 this.showToast('URLを コピーしました');
@@ -1461,16 +1544,9 @@ const App = {
         };
 
         // X
-        xBtn.onclick = () => {
-            if (this._shareLoading) {
-                this.showToast('URL生成中です…少しお待ちください');
-                return;
-            }
-            const url = this._shareUrl;
-            if (!url) {
-                this.showToast('URLが生成されていません。共有画面を開き直してください');
-                return;
-            }
+        xBtn.onclick = async () => {
+            const url = await ensureShareUrl();
+            if (!url) return;
             const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #FAMITORY`;
             const twitterUrl = Share.createTwitterUrl(url, text);
             window.location.href = twitterUrl;
@@ -1478,15 +1554,8 @@ const App = {
 
         // Discord
         discordBtn.onclick = async () => {
-            if (this._shareLoading) {
-                this.showToast('URL生成中です…少しお待ちください');
-                return;
-            }
-            const url = this._shareUrl;
-            if (!url) {
-                this.showToast('URLが生成されていません。共有画面を開き直してください');
-                return;
-            }
+            const url = await ensureShareUrl();
+            if (!url) return;
             const text = `FAMITORYでゲームを作ったよ!\n${url}`;
             const success = await copyToClipboard(text);
             if (success) {

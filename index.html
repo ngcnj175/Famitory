@@ -95,6 +95,16 @@
             <!-- ゲーム情報（編集可能） -->
             <div id="game-info">
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル">
+                <div id="game-author-row">
+                    <span class="author-prefix">by</span>
+                    <input type="text" id="game-author" value="You" placeholder="なまえ">
+                </div>
+            </div>
+
+            <!-- いいね表示（プレイオンリー時のみ） -->
+            <div id="like-display" class="hidden">
+                <img src="Images/like_icon.png" alt="like" class="like-icon-img">
+                <span id="like-count">0</span>
             </div>
 
             <!-- ゲームビューポート -->
@@ -132,7 +142,7 @@
             <!-- リザルト画面オーバーレイ -->
             <div id="result-overlay" class="hidden">
                 <div class="result-container">
-                    <h2 id="result-title">STAGE CLEAR</h2>
+                    <div class="modal-header-simple" id="result-title">STAGE CLEAR</div>
                     <div id="result-score-container">
                         <div class="result-score-row">
                             <span class="result-label">SCORE</span>
@@ -143,26 +153,18 @@
                             <span id="result-highscore-value">000000</span>
                         </div>
                     </div>
-                    <div class="result-actions">
-                        <button id="result-share-btn" class="result-btn share-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
-                            </svg>
+                    <div class="modal-footer-actions result-actions">
+                        <button id="result-like-btn" class="modal-action-btn hidden"
+                            style="background:#f5c400;color:#333;box-shadow:0 4px 0 #c49d00;">
+                            👍 いいね！
+                        </button>
+                        <button id="result-share-btn" class="modal-action-btn">
                             スコアを共有
                         </button>
-                        <button id="result-retry-btn" class="result-btn retry-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
-                            </svg>
+                        <button id="result-retry-btn" class="modal-action-btn primary">
                             もう一度
                         </button>
-                        <button id="result-edit-btn" class="result-btn edit-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                            </svg>
+                        <button id="result-edit-btn" class="modal-action-btn cancel">
                             編集に戻る
                         </button>
                     </div>
