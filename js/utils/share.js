@@ -36,8 +36,16 @@ const Share = {
 
             if (existingId) {
                 // 上書き保存（likes等の既存フィールドは維持）
-                await window.firebaseDB.ref('games/' + id).update(record);
-                console.log('Game updated with existing ID:', id);
+                try {
+                    await window.firebaseDB.ref('games/' + id).update(record);
+                    console.log('Game updated with existing ID:', id);
+                } catch (e) {
+                    console.warn('Failed to update, trying set instead:', e);
+                    // likesを0で初期化して新規保存（万が一レコードが消えていた場合等）
+                    record.likes = 0;
+                    await window.firebaseDB.ref('games/' + id).set(record);
+                    console.log('Game saved using set (fallback) with existing ID:', id);
+                }
             } else {
                 // 新規保存（likesを0で初期化）
                 record.likes = 0;

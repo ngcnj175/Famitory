@@ -584,6 +584,35 @@ const App = {
             }
         });
 
+        // プレイモードを示すため不要なメニューを非表示
+        const navBtnContainer = document.querySelector('.toolbar-nav');
+        if (navBtnContainer) {
+            navBtnContainer.innerHTML = `
+                <button class="toolbar-icon nav-icon active-nav">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                    </svg>
+                    <span class="icon-label">NEW</span>
+                </button>
+            `;
+            const newBtn = navBtnContainer.querySelector('button');
+            newBtn.addEventListener('click', () => {
+                window.location.href = window.location.pathname; // URLパラメータなしでリロード
+            });
+        }
+
+        // タイトルと作成者名を編集不可に
+        const titleInput = document.getElementById('game-title');
+        const authorInput = document.getElementById('game-author');
+        if (titleInput) {
+            titleInput.readOnly = true;
+            titleInput.style.pointerEvents = 'none';
+        }
+        if (authorInput) {
+            authorInput.readOnly = true;
+            authorInput.style.pointerEvents = 'none';
+        }
+
         // いいね表示を有効化
         this.showLikeDisplay();
     },
@@ -1510,7 +1539,7 @@ const App = {
                             this.showToast(isUpdate ? '作品を更新しました' : '作品を公開しました');
                             resolve(url);
                         } else {
-                            this.showToast('公開に失敗しました');
+                            this.showToast('公開に失敗しました。時間をおいて試してください。');
                             resolve(null);
                         }
                     } catch (e) {

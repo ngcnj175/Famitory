@@ -3167,14 +3167,49 @@ const GameEngine = {
         const editBtn = document.getElementById('result-edit-btn');
         const overlay = document.getElementById('result-overlay');
 
+        const likeBtn = document.getElementById('result-like-btn');
+
         if (shareBtn) {
             shareBtn.addEventListener('click', () => {
                 if (App.projectData) {
-                    Share.openDialog(App.projectData, {
+                    App.projectData.palette = App.nesPalette.slice();
+                    Share.currentShareData = {
                         score: this.score,
-                        title: App.projectData.meta?.title || 'Game',
+                        title: App.projectData.meta?.name || 'Game',
                         isNewRecord: this.newHighScore
-                    });
+                    };
+                    document.getElementById('share-dialog').classList.remove('hidden');
+                }
+            });
+        }
+
+        if (likeBtn) {
+            likeBtn.addEventListener('click', async () => {
+                const gameId = App.playOnlyGameId;
+                if (!gameId) return;
+
+                // localStorageで「いいね」済みかチェック
+                const likedKey = 'pgk_liked_' + gameId;
+                if (localStorage.getItem(likedKey)) {
+                    App.showToast('すでに「いいね！」しています');
+                    return;
+                }
+
+                // UI反映（先行して）
+                const originalText = likeBtn.textContent;
+                likeBtn.textContent = '送信中...';
+
+                const success = await Share.addLike(gameId);
+                if (success) {
+                    localStorage.setItem(likedKey, '1');
+                    likeBtn.textContent = '✓ いいねしました！';
+                    likeBtn.style.background = '#e6b800'; // 少し暗く
+                    App.showToast('「いいね！」しました');
+                    // 右上のカウントも更新
+                    App.showLikeDisplay();
+                } else {
+                    likeBtn.textContent = originalText;
+                    App.showToast('エラーが発生しました');
                 }
             });
         }
@@ -3204,7 +3239,8 @@ const GameEngine = {
         const scoreVal = document.getElementById('result-score-value');
         const highVal = document.getElementById('result-highscore-value');
         const shareBtn = document.getElementById('result-share-btn');
-        const title = document.getElementById('result-title');
+        const editBtn = document.getElementById('result-edit-btn');
+        const likeBtn = document.getElementById('result-like-btn');
 
         if (!overlay) return;
 
@@ -3227,6 +3263,24 @@ const GameEngine = {
         } else {
             if (scoreContainer) scoreContainer.classList.add('hidden');
             if (shareBtn) shareBtn.classList.add('hidden');
+        }
+
+        // プレイオンリーモードの場合の表示制御
+        if (App.isPlayOnlyMode) {
+            if (editBtn) editBtn.classList.add('hidden');
+            if (likeBtn) likeBtn.classList.remove('hidden');
+
+            // すでにいいね済みならテキストを変更
+            const gameId = App.playOnlyGameId;
+            if (gameId && localStorage.getItem('pgk_liked_' + gameId)) {
+                if (likeBtn) {
+                    likeBtn.textContent = '✓ いいねしました！';
+                    likeBtn.style.background = '#e6b800';
+                }
+            }
+        } else {
+            if (editBtn) editBtn.classList.remove('hidden');
+            if (likeBtn) likeBtn.classList.add('hidden');
         }
 
         overlay.classList.remove('hidden');
