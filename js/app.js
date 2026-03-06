@@ -1507,7 +1507,7 @@ const App = {
                 yesBtn.className = 'modal-action-btn primary';
 
                 const noBtn = document.createElement('button');
-                noBtn.textContent = isUpdate ? 'そのまま' : 'いいえ';
+                noBtn.textContent = 'そのまま';
                 noBtn.className = 'modal-action-btn cancel';
 
                 btnContainer.appendChild(yesBtn);
@@ -1550,12 +1550,8 @@ const App = {
 
                 noBtn.onclick = () => {
                     closeModal();
-                    if (isUpdate && existingId) {
-                        // 更新せずに既存URLを返す
-                        resolve(Share.createShortUrl(existingId));
-                    } else {
-                        resolve(null);
-                    }
+                    // 発行せず戻る（既存URL更新時もそのまま発行処理をキャンセル）
+                    resolve(null);
                 };
             });
         };
