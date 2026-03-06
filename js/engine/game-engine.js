@@ -3241,6 +3241,7 @@ const GameEngine = {
         const shareBtn = document.getElementById('result-share-btn');
         const editBtn = document.getElementById('result-edit-btn');
         const likeBtn = document.getElementById('result-like-btn');
+        const title = document.getElementById('result-title');
 
         if (!overlay) return;
 
