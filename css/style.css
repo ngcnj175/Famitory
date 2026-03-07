@@ -163,7 +163,8 @@ body {
 /* いいね数表示エリアコンテナ (320px幅のキャンパス端に合わせるための中間層) */
 #like-container {
     width: 320px;
-    margin: 4px auto 0;
+    margin: 0 auto 8px;
+    /* ゲーム画面との間隔を空け、少し上に寄せる */
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -247,14 +248,11 @@ body {
 
 /* ゲームビューポート */
 #game-viewport {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2px 8px 8px;
-    /* 上部パディングを詰めて、いいねエリアとの距離を調整 */
-    margin-top: 0;
-    /* マージンは container で持つので 0 に調整 */
+    padding: 0 8px 8px;
+    /* 上部パディングをゼロにしていいねエリアとの距離を管理 */
 }
 
 
