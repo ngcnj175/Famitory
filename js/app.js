@@ -572,8 +572,12 @@ const App = {
     applyPlayOnlyMode() {
         // ヘッダーのファイルツールバーを非表示
         const toolbarFile = document.getElementById('toolbar-file');
+        const header = document.getElementById('header');
         if (toolbarFile) {
             toolbarFile.style.display = 'none';
+        }
+        if (header) {
+            header.style.borderBottom = 'none'; // PCプレビュー等の枠線を消す
         }
         // ナビゲーションでプレイ以外を非表示
         const navBtns = document.querySelectorAll('.nav-icon');
@@ -586,8 +590,9 @@ const App = {
         // プレイモードを示すため不要なメニューを非表示
         const navBtnContainer = document.querySelector('.toolbar-nav');
         if (navBtnContainer) {
+            navBtnContainer.style.border = 'none'; // 枠線を消す
             navBtnContainer.innerHTML = `
-                <button class="toolbar-icon nav-icon active-nav">
+                <button class="toolbar-icon nav-icon active-nav" style="border:none; background:transparent;">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
                     </svg>
@@ -601,17 +606,22 @@ const App = {
         }
 
         // タイトルと作成者名を編集不可に
+        const gameInfo = document.getElementById('game-info');
         const titleInput = document.getElementById('game-title');
         const authorInput = document.getElementById('game-author');
+        if (gameInfo) {
+            gameInfo.setAttribute('data-play-only', 'true');
+        }
         if (titleInput) {
             titleInput.readOnly = true;
             titleInput.style.pointerEvents = 'none';
+            titleInput.style.border = 'none';
         }
         if (authorInput) {
             authorInput.readOnly = true;
             authorInput.style.pointerEvents = 'none';
+            authorInput.style.border = 'none';
         }
-
         // いいね表示を有効化
         this.showLikeDisplay();
     },

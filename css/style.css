@@ -143,6 +143,12 @@ body {
     opacity: 0.6;
 }
 
+/* プレイ画面ではタイトルロゴを消して縦スペースを確保 */
+#play-screen .screen-title {
+    display: none;
+}
+
+
 /* ========================================
    繝励Ξ繧､逕ｻ髱｢
    ======================================== */
@@ -152,33 +158,37 @@ body {
     position: relative;
 }
 
-/* いいね数表示（画面右上の装飾） */
+/* いいね数表示（ゲーム画面右上に固定） */
 #like-display {
     position: absolute;
-    top: 10px;
-    right: 12px;
+    top: 4px;
+    right: 4px;
     display: flex;
     align-items: center;
     gap: 4px;
     padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
     font-family: monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     color: #444;
-    z-index: 10;
+    z-index: 20;
+    pointer-events: none;
 }
 
 .like-icon-img {
-    width: 20px;
-    height: 20px;
-    image-rendering: pixelated;
+    width: 16px;
+    height: 16px;
+    image-rendering: auto;
+    /* SVGなのでpixelatedを解除 */
 }
 
 #like-count {
-    margin-top: 1px;
+    line-height: 1;
 }
+
 
 /* 繧ｲ繝ｼ繝�諠��ｱ�医ち繧､繝医Ν陦ｨ遉ｺ�� */
 #game-info {
@@ -207,14 +217,32 @@ body {
     border-radius: 4px;
 }
 
+/* クリエイター名欄の枠を消す (PCプレビュー対策) */
+#game-title[readonly],
+#game-author[readonly] {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#game-info[data-play-only="true"] {
+    pointer-events: none;
+}
+
+
 /* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
 #game-viewport {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    padding: 4px 8px;
+    /* 上下のパディングを詰め、STARTボタンがはみ出さないように */
+    position: relative;
+    /* いいねボタンの基準 */
 }
+
 
 #game-canvas {
     background: var(--bg-screen);
