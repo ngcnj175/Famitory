@@ -25,7 +25,9 @@ const Share = {
             const encoded = this.encode(data);
 
             const record = {
-                data: encoded
+                data: encoded,
+                updatedAt: Date.now(),
+                lastAccessed: Date.now()
             };
             // 初回のみ createdAt を設定
             if (!existingId) {
