@@ -101,14 +101,17 @@
                 </div>
             </div>
 
-            <!-- ゲームビューポート -->
-            <div id="game-viewport">
-                <canvas id="game-canvas"></canvas>
-                <!-- いいね表示（プレイオンリー時のみ、ゲーム画面右上に絶対配置） -->
+            <!-- いいね表示エリア（作成者名とゲーム画面の間に配置） -->
+            <div id="like-container">
                 <div id="like-display" class="hidden">
                     <img src="./Images/like_icon.svg" alt="like" class="like-icon-img">
                     <span id="like-count">0</span>
                 </div>
+            </div>
+
+            <!-- ゲームビューポート -->
+            <div id="game-viewport">
+                <canvas id="game-canvas"></canvas>
             </div>
 
             <div class="screen-title">FAMITORY</div>

@@ -160,13 +160,20 @@ body {
     position: relative;
 }
 
-/* いいね数表示（ゲーム画面の右上外側に配置） */
+/* いいね数表示エリアコンテナ (320px幅のキャンパス端に合わせるための中間層) */
+#like-container {
+    width: 320px;
+    margin: 4px auto 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 24px;
+    position: relative;
+    z-index: 20;
+}
+
+/* いいね数表示 */
 #like-display {
-    position: absolute;
-    top: -16px;
-    /* キャンバスのすぐ上 */
-    right: 28px;
-    /* キャンパスの右端に合わせる（375px幅、320pxキャンバス想定） */
     display: flex;
     align-items: center;
     gap: 4px;
@@ -178,7 +185,6 @@ body {
     font-size: 16px;
     font-weight: bold;
     color: #444;
-    z-index: 20;
     pointer-events: auto;
     box-shadow: none;
 }
@@ -245,11 +251,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    /* クリエイターモードと同じ 8px に戻す */
-    margin-top: 10px;
-    position: relative;
-    /* いいねボタンの基準にする */
+    padding: 2px 8px 8px;
+    /* 上部パディングを詰めて、いいねエリアとの距離を調整 */
+    margin-top: 0;
+    /* マージンは container で持つので 0 に調整 */
 }
 
 
