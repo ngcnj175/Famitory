@@ -440,8 +440,7 @@ const App = {
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
                 }
-                // URLからパラメータを削除
-                history.replaceState(null, '', window.location.pathname);
+                // URLパラメータ維持（リロード時にもPlayerモードを維持するため削除しない）
                 this.applyPlayOnlyMode();
                 // 各エディタをリフレッシュ
                 this.refreshCurrentScreen();
@@ -1523,29 +1522,30 @@ const App = {
                     }
                 };
 
-                yesBtn.onclick = async () => {
+                yesBtn.onclick = () => {
                     closeModal();
+
+                    const shareId = existingId || Share.generateShortId();
+                    const url = Share.createShortUrl(shareId);
+
+                    // クリップボードAPIの非同期実行制限を回避するため、先にURLをresolve
+                    resolve(url);
+
                     this.showToast('公開中...');
-                    try {
-                        const id = await Share.saveGame(this.projectData, existingId || null);
+                    Share.saveGame(this.projectData, existingId || null, shareId).then((id) => {
                         if (id) {
                             this.projectData.meta.shareId = id;
-                            // ローカルにも保存
                             Storage.save('currentProject', this.projectData);
                             if (this.currentProjectName) {
                                 Storage.saveProject(this.currentProjectName, this.projectData);
                             }
-                            const url = Share.createShortUrl(id);
                             this.showToast(isUpdate ? '作品を更新しました' : '作品を公開しました');
-                            resolve(url);
                         } else {
                             this.showToast('公開に失敗しました。時間をおいて試してください。');
-                            resolve(null);
                         }
-                    } catch (e) {
+                    }).catch((e) => {
                         this.showToast('エラーが発生しました');
-                        resolve(null);
-                    }
+                    });
                 };
 
                 noBtn.onclick = () => {

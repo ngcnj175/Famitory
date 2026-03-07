@@ -13,15 +13,15 @@ const Share = {
         return id;
     },
 
-    // Firebaseにゲームデータを保存（existingIdがあれば上書き）
-    async saveGame(data, existingId = null) {
+    // Firebaseにゲームデータを保存（existingIdがあれば上書き、forcedIdがあればそのIDで新規保存）
+    async saveGame(data, existingId = null, forcedId = null) {
         if (!window.firebaseDB) {
             console.error('Firebase not initialized');
             return null;
         }
 
         try {
-            const id = existingId || this.generateShortId();
+            const id = existingId || forcedId || this.generateShortId();
             const encoded = this.encode(data);
 
             const record = {
