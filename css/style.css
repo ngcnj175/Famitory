@@ -149,6 +149,35 @@ body {
 
 #play-screen {
     background: var(--bg-device);
+    position: relative;
+}
+
+/* いいね数表示（画面右上の装飾） */
+#like-display {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #444;
+    z-index: 10;
+}
+
+.like-icon-img {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+}
+
+#like-count {
+    margin-top: 1px;
 }
 
 /* 繧ｲ繝ｼ繝�諠��ｱ�医ち繧､繝医Ν陦ｨ遉ｺ�� */
