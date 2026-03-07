@@ -143,9 +143,11 @@ body {
     opacity: 0.6;
 }
 
-/* プレイ画面ではタイトルロゴを消して縦スペースを確保 */
+/* プレイ画面でのスペーシング調整（クリエイターモードと極力合わせる） */
 #play-screen .screen-title {
-    display: none;
+    /* タイトルロゴ自体の高さを維持し、スクショの位置ズレを防ぐ */
+    visibility: visible;
+    margin-top: 2px;
 }
 
 
@@ -158,31 +160,34 @@ body {
     position: relative;
 }
 
-/* いいね数表示（ゲーム画面右上に固定） */
+/* いいね数表示（PC/スマホ共通：ゲーム画面の外側、右上に固定） */
 #like-display {
     position: absolute;
-    top: 4px;
-    right: 4px;
+    top: -30px;
+    /* キャンバスの外（上）へ */
+    right: 0px;
+    /* キャンバスの右端に合わせる */
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    padding: 4px 8px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
     font-family: monospace;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     color: #444;
     z-index: 20;
-    pointer-events: none;
+    pointer-events: auto;
+    /* ボタンとして機能する可能性があるのでautoに戻す */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .like-icon-img {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     image-rendering: auto;
-    /* SVGなのでpixelatedを解除 */
 }
 
 #like-count {
@@ -190,7 +195,7 @@ body {
 }
 
 
-/* 繧ｲ繝ｼ繝�諠��ｱ�医ち繧､繝医Ν陦ｨ遉ｺ�� */
+/* 繧ｲ繝ｼ繝諠ｱ医ち繧､繝医Ν陦ｨ遉ｺ */
 #game-info {
     padding: 8px 16px 2px;
     display: flex;
@@ -217,13 +222,16 @@ body {
     border-radius: 4px;
 }
 
-/* クリエイター名欄の枠を消す (PCプレビュー対策) */
+/* クリエイター名欄の枠を消す (PC・スマホ共通) */
 #game-title[readonly],
-#game-author[readonly] {
+#game-author[readonly],
+#game-info[data-play-only="true"] input {
     border: none !important;
     outline: none !important;
     background: transparent !important;
     box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 #game-info[data-play-only="true"] {
@@ -231,16 +239,18 @@ body {
 }
 
 
-/* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
+
+/* ゲームビューポート */
 #game-viewport {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 8px;
-    /* 上下のパディングを詰め、STARTボタンがはみ出さないように */
+    padding: 8px;
+    /* クリエイターモードと同じ 8px に戻す */
+    margin-top: 10px;
+    /* いいね表示のスペース分 */
     position: relative;
-    /* いいねボタンの基準 */
 }
 
 
