@@ -163,8 +163,8 @@ body {
 /* いいね数表示エリアコンテナ (320px幅のキャンパス端に合わせるための中間層) */
 #like-container {
     width: 320px;
-    margin: 0 auto 8px;
-    /* ゲーム画面との間隔を空け、少し上に寄せる */
+    margin: 0 auto 14px;
+    /* 指定通りさらに上に移動させ、ゲーム画面との空間をしっかりと設ける */
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -251,7 +251,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 8px 8px;
+    padding: 6px 8px 8px;
+    /* 上部に少し空間を追加 */
     /* 上部パディングをゼロにしていいねエリアとの距離を管理 */
 }
 

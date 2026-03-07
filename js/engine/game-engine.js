@@ -227,11 +227,14 @@ const GameEngine = {
 
         // 2倍表示でフィット
         const scale = 2;
-        const viewTilesX = Math.floor(maxWidth / (this.TILE_SIZE * scale));
-        const viewTilesY = Math.floor(maxHeight / (this.TILE_SIZE * scale));
+        const viewTilesX = Math.floor(maxWidth / (16 * scale));
+        const viewTilesY = Math.floor(maxHeight / (16 * scale));
 
-        this.canvas.width = viewTilesX * this.TILE_SIZE * scale;
-        this.canvas.height = viewTilesY * this.TILE_SIZE * scale;
+        // 常に正方形（スクエア）な画面を維持して黒帯を解消
+        const squareTiles = Math.min(viewTilesX, viewTilesY);
+
+        this.canvas.width = squareTiles * 16 * scale;
+        this.canvas.height = squareTiles * 16 * scale;
 
         this.TILE_SIZE = 16 * scale; // 2倍スケール
     },
