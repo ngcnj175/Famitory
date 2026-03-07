@@ -163,30 +163,30 @@ body {
 /* いいね数表示（PC/スマホ共通：ゲーム画面の外側、右上に固定） */
 #like-display {
     position: absolute;
-    top: -30px;
-    /* キャンバスの外（上）へ */
-    right: 0px;
-    /* キャンバスの右端に合わせる */
+    top: -26px;
+    /* 以前より少し下げて文字ラインに合わせる */
+    right: 4px;
+    /* 右端から少し内側へ */
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
     font-family: monospace;
-    font-size: 14px;
+    font-size: 16px;
+    /* 文字を少し大きく */
     font-weight: bold;
     color: #444;
     z-index: 20;
     pointer-events: auto;
-    /* ボタンとして機能する可能性があるのでautoに戻す */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .like-icon-img {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     image-rendering: auto;
 }
 
