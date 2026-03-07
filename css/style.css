@@ -160,13 +160,11 @@ body {
     position: relative;
 }
 
-/* いいね数表示（PC/スマホ共通：ゲーム画面の外側、右上に固定） */
+/* いいね数表示（構造を game-info 内へ変更し、位置を安定化） */
 #like-display {
     position: absolute;
-    top: -32px;
-    /* さらに上へ移動し、名前のラインに合わせる */
-    right: 10px;
-    /* さらに左へ移動し、キャンバス端より少し内側に寄せる */
+    bottom: 6px;
+    right: 8px;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -176,7 +174,6 @@ body {
     border-radius: 0;
     font-family: monospace;
     font-size: 16px;
-    /* 文字を少し大きく */
     font-weight: bold;
     color: #444;
     z-index: 20;
@@ -202,6 +199,8 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 0px;
+    position: relative;
+    /* いいねボタンの基準にする */
 }
 
 #game-title {
@@ -249,8 +248,6 @@ body {
     padding: 8px;
     /* クリエイターモードと同じ 8px に戻す */
     margin-top: 10px;
-    /* いいね表示のスペース分 */
-    position: relative;
 }
 
 
