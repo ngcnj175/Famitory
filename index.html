@@ -99,16 +99,16 @@
                     <span class="author-prefix">by</span>
                     <input type="text" id="game-author" value="You" placeholder="なまえ">
                 </div>
-                <!-- いいね表示（プレイオンリー時のみ、位置を安定させるためここへ移動） -->
-                <div id="like-display" class="hidden">
-                    <img src="./Images/like_icon.svg" alt="like" class="like-icon-img">
-                    <span id="like-count">0</span>
-                </div>
             </div>
 
             <!-- ゲームビューポート -->
             <div id="game-viewport">
                 <canvas id="game-canvas"></canvas>
+                <!-- いいね表示（プレイオンリー時のみ、ゲーム画面右上に絶対配置） -->
+                <div id="like-display" class="hidden">
+                    <img src="./Images/like_icon.svg" alt="like" class="like-icon-img">
+                    <span id="like-count">0</span>
+                </div>
             </div>
 
             <div class="screen-title">FAMITORY</div>
