@@ -163,10 +163,10 @@ body {
 /* いいね数表示（PC/スマホ共通：ゲーム画面の外側、右上に固定） */
 #like-display {
     position: absolute;
-    top: -26px;
-    /* 以前より少し下げて文字ラインに合わせる */
-    right: 4px;
-    /* 右端から少し内側へ */
+    top: -32px;
+    /* さらに上へ移動し、名前のラインに合わせる */
+    right: 10px;
+    /* さらに左へ移動し、キャンバス端より少し内側に寄せる */
     display: flex;
     align-items: center;
     gap: 4px;
