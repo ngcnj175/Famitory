@@ -163,13 +163,13 @@ body {
 /* いいね数表示エリアコンテナ (320px幅のキャンパス端に合わせるための中間層) */
 #like-container {
     width: 320px;
-    margin: 8px auto 0;
-    /* 上に少し空間をあける */
+    margin: 4px auto 0;
+    /* マージンを詰めてゲーム画面の高さを稼ぐ */
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    height: 32px;
-    /* 高さを確保して、その中で位置調整 */
+    height: 24px;
+    /* 高さを縮小 */
     position: relative;
     z-index: 20;
 }
@@ -182,13 +182,15 @@ body {
     background: transparent;
     border: none;
     padding: 0;
-    margin-top: -8px;
-    /* コンテナの中で上に寄せる */
+    margin-top: -4px;
+    /* さらに上に寄せる */
     border-radius: 0;
     font-family: monospace;
-    font-size: 16px;
+    font-size: 14px;
+    /* 少し小さくしてコンパクトに */
     font-weight: bold;
-    color: #444;
+    color: #666;
+    /* 少し薄く */
     pointer-events: auto;
     box-shadow: none;
 }
@@ -252,12 +254,12 @@ body {
 /* ゲームビューポート */
 #game-viewport {
     flex: 1;
-    /* スペースを確保するために戻す */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 8px;
-    /* パディングを整理 */
+    padding: 8px;
+    /* v2.8.8と同じ設定に戻す */
+    overflow: hidden;
 }
 
 
@@ -267,7 +269,7 @@ body {
     border-radius: 0;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    aspect-ratio: 1 / 1;
+    /* aspect-ratioを削除して黒帯（内部的な余白）を解消 */
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
