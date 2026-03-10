@@ -1395,7 +1395,9 @@ const App = {
         modal.onclick = (e) => { if (e.target === modal) close(); };
     },
 
-    // 公開確認→Firebase保存/更新→actionFn(url) を実行するヘルパー
+    // 公開確認→actionFn(url)→Firebase保存 の順で実行するヘルパー
+    // iOS Safari ではユーザージェスチャー直後でないとクリップボードAPIが使えないため、
+    // Firebase保存（ネットワーク通信）より先に actionFn を実行する
     async _publishAndShare(actionFn) {
         if (this._shareLoading) {
             this.showToast('処理中です…少しお待ちください');
@@ -1404,18 +1406,25 @@ const App = {
 
         const isFirstTime = !this.projectData?.meta?.shareId;
 
+        // URLを事前に確定（初回はIDを先に生成、2回目以降は既存IDを使い回す）
+        const shareId = this.projectData.meta?.shareId || Share.generateShortId();
+        const url = Share.createShortUrl(shareId);
+
         this._showPublishConfirm(isFirstTime, async () => {
+            // --- ユーザージェスチャー直後（「はい」タップ） ---
+            // クリップボードコピーや window.open はここで実行しないとiOSで失敗する
+            await actionFn(url);
+
+            // --- 以降はバックグラウンドでFirebase保存 ---
             if (!window.firebaseDB || typeof Share === 'undefined') {
                 this.showToast('クラウド接続がありません');
                 return;
             }
 
             this._shareLoading = true;
-            this.showToast(isFirstTime ? 'URL を発行中...' : '更新中...');
 
             try {
-                const existingId = this.projectData.meta.shareId || null;
-                const id = await Share.saveOrUpdateGame(existingId, this.projectData);
+                const id = await Share.saveOrUpdateGame(shareId, this.projectData, !isFirstTime);
 
                 if (!id) {
                     this.showToast('保存に失敗しました');
@@ -1423,20 +1432,17 @@ const App = {
                     return;
                 }
 
-                // shareId をプロジェクトデータに保存してローカルにも書き込む
                 this.projectData.meta.shareId = id;
                 if (this.currentProjectName) {
                     Storage.saveProject(this.currentProjectName, this.projectData);
                 }
 
-                const url = Share.createShortUrl(id);
                 this._shareUrl = url;
                 this._updateShareStatus();
-
-                actionFn(url);
+                this.showToast(isFirstTime ? '公開しました' : '更新しました');
             } catch (e) {
                 console.error('[Share] _publishAndShare error:', e);
-                this.showToast('エラーが発生しました');
+                this.showToast('保存でエラーが発生しました');
             } finally {
                 this._shareLoading = false;
             }

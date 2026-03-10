@@ -15,12 +15,14 @@ const Share = {
 
     // Firebaseにゲームデータを保存（新規作成）
     async saveGame(data) {
-        return this.saveOrUpdateGame(null, data);
+        const id = this.generateShortId();
+        return this.saveOrUpdateGame(id, data, false);
     },
 
     // Firebaseにゲームデータを保存または上書き
-    // existingId が null/undefined の場合は新規IDを発行、ある場合は同IDで上書き
-    async saveOrUpdateGame(existingId, data) {
+    // id: 保存先のID（呼び出し元で事前に確定させる）
+    // isUpdate: true→既存データを上書き(.update)  false→新規作成(.set)
+    async saveOrUpdateGame(id, data, isUpdate) {
         if (!window.firebaseDB) {
             console.error('Firebase not initialized');
             return null;
@@ -29,18 +31,14 @@ const Share = {
         try {
             const encoded = this.encode(data);
 
-            if (existingId) {
-                // 既存IDへ上書き（createdAtは保持し、updatedAtを更新）
-                await window.firebaseDB.ref('games/' + existingId).update({
+            if (isUpdate) {
+                await window.firebaseDB.ref('games/' + id).update({
                     data: encoded,
                     updatedAt: Date.now(),
                     lastAccessed: Date.now()
                 });
-                console.log('Game updated with ID:', existingId);
-                return existingId;
+                console.log('Game updated with ID:', id);
             } else {
-                // 新規ID発行して保存
-                const id = this.generateShortId();
                 await window.firebaseDB.ref('games/' + id).set({
                     data: encoded,
                     createdAt: Date.now(),
@@ -48,8 +46,8 @@ const Share = {
                     lastAccessed: Date.now()
                 });
                 console.log('Game created with ID:', id);
-                return id;
             }
+            return id;
         } catch (e) {
             console.error('Failed to save/update game:', e);
             return null;
