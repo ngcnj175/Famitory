@@ -61,7 +61,7 @@ const App = {
             version: 1,
             meta: {
                 name: 'NEW GAME',
-                author: 'You',
+                author: '',
                 locked: false,
                 createdAt: Date.now()
             },
@@ -435,12 +435,12 @@ const App = {
                 this.projectData = data;
                 this.migrateProjectData(); // データ移行
                 this.isPlayOnlyMode = true;
-                this.playOnlyGameId = gameId; // いいね用にIDを保持
                 console.log('Project loaded from Firebase (play-only mode)');
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
                 }
-                // URLパラメータ維持（リロード時にもPlayerモードを維持するため削除しない）
+                // URLからパラメータを削除
+                history.replaceState(null, '', window.location.pathname);
                 this.applyPlayOnlyMode();
                 // 各エディタをリフレッシュ
                 this.refreshCurrentScreen();
@@ -582,57 +582,6 @@ const App = {
                 btn.style.display = 'none';
             }
         });
-
-        // プレイモードを示すため不要なメニューを非表示
-        const navBtnContainer = document.querySelector('.toolbar-nav');
-        if (navBtnContainer) {
-            navBtnContainer.innerHTML = `
-                <button class="toolbar-icon nav-icon active-nav" style="border:none; background:transparent; box-shadow:none;">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-                    </svg>
-                    <span class="icon-label">NEW</span>
-                </button>
-            `;
-            const newBtn = navBtnContainer.querySelector('button');
-            newBtn.addEventListener('click', () => {
-                window.location.href = window.location.pathname; // URLパラメータなしでリロード
-            });
-        }
-
-        // タイトルと作成者名を編集不可に
-        const gameInfo = document.getElementById('game-info');
-        const titleInput = document.getElementById('game-title');
-        const authorInput = document.getElementById('game-author');
-        if (gameInfo) {
-            gameInfo.setAttribute('data-play-only', 'true');
-        }
-        if (titleInput) {
-            titleInput.readOnly = true;
-        }
-        if (authorInput) {
-            authorInput.readOnly = true;
-        }
-        // いいね表示を有効化
-        this.showLikeDisplay();
-    },
-
-    // いいね数表示
-    async showLikeDisplay() {
-        const likeDisplay = document.getElementById('like-display');
-        const likeCount = document.getElementById('like-count');
-        if (!likeDisplay || !likeCount) return;
-
-        const gameId = this.playOnlyGameId;
-        if (!gameId) return;
-
-        likeDisplay.classList.remove('hidden');
-
-        // Firebaseからいいね数を取得
-        if (typeof Share !== 'undefined') {
-            const likes = await Share.getLikes(gameId);
-            likeCount.textContent = likes;
-        }
     },
 
     initMenu() {
@@ -706,12 +655,15 @@ const App = {
         this.bindShareSimpleEvents();
         shareBtn?.addEventListener('click', () => {
             this.projectData.palette = this.nesPalette.slice();
-            // ダイアログを開くだけ（アップロードはしない）
-            document.getElementById('share-dialog').classList.remove('hidden');
-        });
+            this._shareLoading = false;
 
-        // 共有ダイアログのイベント初期化（使わないがエラー防止で残すか、削除するか）
-        // Share.initDialogEvents(); // 新しいバインドを使うのでコメントアウト
+            // 既存の公開IDがあればURLをセット（ただし Firebase保存は行わない）
+            const existingId = this.projectData?.meta?.shareId;
+            this._shareUrl = existingId ? Share.createShortUrl(existingId) : null;
+
+            document.getElementById('share-dialog').classList.remove('hidden');
+            this._updateShareStatus();
+        });
 
 
         // ナビゲーション切り替え
@@ -734,25 +686,13 @@ const App = {
                 this.projectData.meta.name = e.target.value;
             }
         });
-
-        // 作成者名編集
-        const authorInput = document.getElementById('game-author');
-        authorInput?.addEventListener('change', (e) => {
-            if (this.projectData) {
-                this.projectData.meta.author = e.target.value || 'You';
-            }
-        });
     },
 
     updateGameInfo() {
         const titleInput = document.getElementById('game-title');
-        const authorInput = document.getElementById('game-author');
 
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
-        }
-        if (authorInput && this.projectData) {
-            authorInput.value = this.projectData.meta.author || 'You';
         }
     },
 
@@ -1417,6 +1357,92 @@ const App = {
         };
     },
 
+    // 共有ダイアログの公開ステータスバッジを更新
+    _updateShareStatus() {
+        const badge = document.getElementById('share-status');
+        if (!badge) return;
+        const hasShareId = !!(this.projectData?.meta?.shareId);
+        badge.classList.toggle('hidden', !hasShareId);
+    },
+
+    // 公開確認ダイアログを表示し、OKされたら onConfirm を呼ぶ
+    _showPublishConfirm(isFirstTime, onConfirm) {
+        const modal = document.getElementById('publish-confirm-modal');
+        const msgEl = document.getElementById('publish-confirm-msg');
+        const subEl = document.getElementById('publish-confirm-sub');
+        const okBtn = document.getElementById('publish-confirm-ok');
+        const cancelBtn = document.getElementById('publish-confirm-cancel');
+        if (!modal || !okBtn || !cancelBtn) return;
+
+        msgEl.textContent = isFirstTime
+            ? 'この作品を公開しますか？'
+            : '公開中の作品を更新しますか？';
+        subEl.textContent = isFirstTime
+            ? 'URLが発行され、だれでもプレイできるようになります'
+            : '現在の内容で上書き保存されます';
+
+        modal.classList.remove('hidden');
+
+        const close = () => {
+            modal.classList.add('hidden');
+            okBtn.onclick = null;
+            cancelBtn.onclick = null;
+            modal.onclick = null;
+        };
+
+        okBtn.onclick = () => { close(); onConfirm(); };
+        cancelBtn.onclick = close;
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+    },
+
+    // 公開確認→Firebase保存/更新→actionFn(url) を実行するヘルパー
+    async _publishAndShare(actionFn) {
+        if (this._shareLoading) {
+            this.showToast('処理中です…少しお待ちください');
+            return;
+        }
+
+        const isFirstTime = !this.projectData?.meta?.shareId;
+
+        this._showPublishConfirm(isFirstTime, async () => {
+            if (!window.firebaseDB || typeof Share === 'undefined') {
+                this.showToast('クラウド接続がありません');
+                return;
+            }
+
+            this._shareLoading = true;
+            this.showToast(isFirstTime ? 'URL を発行中...' : '更新中...');
+
+            try {
+                const existingId = this.projectData.meta.shareId || null;
+                const id = await Share.saveOrUpdateGame(existingId, this.projectData);
+
+                if (!id) {
+                    this.showToast('保存に失敗しました');
+                    this._shareLoading = false;
+                    return;
+                }
+
+                // shareId をプロジェクトデータに保存してローカルにも書き込む
+                this.projectData.meta.shareId = id;
+                if (this.currentProjectName) {
+                    Storage.saveProject(this.currentProjectName, this.projectData);
+                }
+
+                const url = Share.createShortUrl(id);
+                this._shareUrl = url;
+                this._updateShareStatus();
+
+                actionFn(url);
+            } catch (e) {
+                console.error('[Share] _publishAndShare error:', e);
+                this.showToast('エラーが発生しました');
+            } finally {
+                this._shareLoading = false;
+            }
+        });
+    },
+
     // シェアモーダル簡易版イベント
     bindShareSimpleEvents() {
         const copyUrlBtn = document.getElementById('copy-url-btn');
@@ -1472,123 +1498,38 @@ const App = {
             return success;
         };
 
-        // --- 固定URL: 確認→保存→共有の共通処理 ---
-        const ensureShareUrl = async () => {
-            if (typeof Share === 'undefined' || !window.firebaseDB) {
-                this.showToast('クラウド接続がありません');
-                return null;
-            }
-
-            const existingId = this.projectData.meta.shareId;
-            const isUpdate = !!existingId;
-
-            // 確認ダイアログ
-            const msg = isUpdate
-                ? '公開中の作品を更新しますか？'
-                : 'この作品を公開しますか？';
-
-            return new Promise((resolve) => {
-                // カスタム確認ダイアログ
-                const overlay = document.createElement('div');
-                overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10001;';
-
-                const modal = document.createElement('div');
-                modal.style.cssText = 'background:white;padding:24px;border-radius:16px;text-align:center;max-width:280px;width:85%;';
-
-                const msgEl = document.createElement('p');
-                msgEl.style.cssText = 'margin:0 0 20px 0;font-size:16px;font-weight:bold;color:#333;';
-                msgEl.textContent = msg;
-
-                const btnContainer = document.createElement('div');
-                btnContainer.style.cssText = 'display:flex;gap:16px;justify-content:center;';
-
-                const yesBtn = document.createElement('button');
-                yesBtn.textContent = 'はい';
-                yesBtn.className = 'modal-action-btn primary';
-
-                const noBtn = document.createElement('button');
-                noBtn.textContent = 'そのまま';
-                noBtn.className = 'modal-action-btn cancel';
-
-                btnContainer.appendChild(yesBtn);
-                btnContainer.appendChild(noBtn);
-                modal.appendChild(msgEl);
-                modal.appendChild(btnContainer);
-                overlay.appendChild(modal);
-                document.body.appendChild(overlay);
-
-                const closeModal = () => {
-                    if (document.body.contains(overlay)) {
-                        document.body.removeChild(overlay);
-                    }
-                };
-
-                yesBtn.onclick = () => {
-                    closeModal();
-
-                    const shareId = existingId || Share.generateShortId();
-                    const url = Share.createShortUrl(shareId);
-
-                    // クリップボードAPIの非同期実行制限を回避するため、先にURLをresolve
-                    resolve(url);
-
-                    this.showToast('公開中...');
-                    Share.saveGame(this.projectData, existingId || null, shareId).then((id) => {
-                        if (id) {
-                            this.projectData.meta.shareId = id;
-                            Storage.save('currentProject', this.projectData);
-                            if (this.currentProjectName) {
-                                Storage.saveProject(this.currentProjectName, this.projectData);
-                            }
-                            this.showToast(isUpdate ? '作品を更新しました' : '作品を公開しました');
-                        } else {
-                            this.showToast('公開に失敗しました。時間をおいて試してください。');
-                        }
-                    }).catch((e) => {
-                        this.showToast('エラーが発生しました');
-                    });
-                };
-
-                noBtn.onclick = () => {
-                    closeModal();
-                    // 発行せず戻る（既存URL更新時もそのまま発行処理をキャンセル）
-                    resolve(null);
-                };
+        // URLコピー → 公開確認 → コピー実行
+        copyUrlBtn.onclick = () => {
+            this._publishAndShare(async (url) => {
+                const success = await copyToClipboard(url);
+                if (success) {
+                    this.showToast('URLを コピーしました');
+                } else {
+                    this.showToast('コピーに失敗しました');
+                }
             });
         };
 
-        // URLコピー
-        copyUrlBtn.onclick = async () => {
-            const url = await ensureShareUrl();
-            if (!url) return;
-            const success = await copyToClipboard(url);
-            if (success) {
-                this.showToast('URLを コピーしました');
-            } else {
-                this.showToast('コピーに失敗しました');
-            }
+        // X に投稿 → 公開確認 → Twitter URL へ遷移
+        xBtn.onclick = () => {
+            this._publishAndShare((url) => {
+                const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #FAMITORY`;
+                const twitterUrl = Share.createTwitterUrl(url, text);
+                window.open(twitterUrl, '_blank');
+            });
         };
 
-        // X
-        xBtn.onclick = async () => {
-            const url = await ensureShareUrl();
-            if (!url) return;
-            const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #FAMITORY`;
-            const twitterUrl = Share.createTwitterUrl(url, text);
-            window.location.href = twitterUrl;
-        };
-
-        // Discord
-        discordBtn.onclick = async () => {
-            const url = await ensureShareUrl();
-            if (!url) return;
-            const text = `FAMITORYでゲームを作ったよ!\n${url}`;
-            const success = await copyToClipboard(text);
-            if (success) {
-                this.showToast('Discord用に コピーしました');
-            } else {
-                this.showToast('コピーに失敗しました');
-            }
+        // Discord → 公開確認 → テキスト+URLをクリップボードへ
+        discordBtn.onclick = () => {
+            this._publishAndShare(async (url) => {
+                const text = `FAMITORYでゲームを作ったよ!\n${url}`;
+                const success = await copyToClipboard(text);
+                if (success) {
+                    this.showToast('Discord用に コピーしました');
+                } else {
+                    this.showToast('コピーに失敗しました');
+                }
+            });
         };
 
         // 書き出し

@@ -281,9 +281,6 @@ const GameController = {
         };
 
         document.addEventListener('keydown', (e) => {
-            // 入力中（input, textarea）はゲームのキー操作を無効にする
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
             const btn = keyMap[e.code];
             if (btn && App.currentScreen === 'play') {
                 e.preventDefault();
@@ -300,8 +297,6 @@ const GameController = {
         });
 
         document.addEventListener('keyup', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
             const btn = keyMap[e.code];
             if (btn) {
                 e.preventDefault();

@@ -13,49 +13,45 @@ const Share = {
         return id;
     },
 
-    // Firebaseにゲームデータを保存（existingIdがあれば上書き、forcedIdがあればそのIDで新規保存）
-    async saveGame(data, existingId = null, forcedId = null) {
+    // Firebaseにゲームデータを保存（新規作成）
+    async saveGame(data) {
+        return this.saveOrUpdateGame(null, data);
+    },
+
+    // Firebaseにゲームデータを保存または上書き
+    // existingId が null/undefined の場合は新規IDを発行、ある場合は同IDで上書き
+    async saveOrUpdateGame(existingId, data) {
         if (!window.firebaseDB) {
             console.error('Firebase not initialized');
             return null;
         }
 
         try {
-            const id = existingId || forcedId || this.generateShortId();
             const encoded = this.encode(data);
 
-            const record = {
-                data: encoded,
-                updatedAt: Date.now(),
-                lastAccessed: Date.now()
-            };
-            // 初回のみ createdAt を設定
-            if (!existingId) {
-                record.createdAt = Date.now();
-            }
-
             if (existingId) {
-                // 上書き保存（likes等の既存フィールドは維持）
-                try {
-                    await window.firebaseDB.ref('games/' + id).update(record);
-                    console.log('Game updated with existing ID:', id);
-                } catch (e) {
-                    console.warn('Failed to update, trying set instead:', e);
-                    // likesを0で初期化して新規保存（万が一レコードが消えていた場合等）
-                    record.likes = 0;
-                    await window.firebaseDB.ref('games/' + id).set(record);
-                    console.log('Game saved using set (fallback) with existing ID:', id);
-                }
+                // 既存IDへ上書き（createdAtは保持し、updatedAtを更新）
+                await window.firebaseDB.ref('games/' + existingId).update({
+                    data: encoded,
+                    updatedAt: Date.now(),
+                    lastAccessed: Date.now()
+                });
+                console.log('Game updated with ID:', existingId);
+                return existingId;
             } else {
-                // 新規保存（likesを0で初期化）
-                record.likes = 0;
-                await window.firebaseDB.ref('games/' + id).set(record);
-                console.log('Game saved with new ID:', id);
+                // 新規ID発行して保存
+                const id = this.generateShortId();
+                await window.firebaseDB.ref('games/' + id).set({
+                    data: encoded,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    lastAccessed: Date.now()
+                });
+                console.log('Game created with ID:', id);
+                return id;
             }
-
-            return id;
         } catch (e) {
-            console.error('Failed to save game:', e);
+            console.error('Failed to save/update game:', e);
             return null;
         }
     },
@@ -280,31 +276,6 @@ const Share = {
                     this.closeDialog();
                 }
             });
-        }
-    },
-
-    // いいね数を取得
-    async getLikes(id) {
-        if (!window.firebaseDB || !id) return 0;
-        try {
-            const snapshot = await window.firebaseDB.ref('games/' + id + '/likes').once('value');
-            return snapshot.val() || 0;
-        } catch (e) {
-            console.warn('Failed to get likes:', e);
-            return 0;
-        }
-    },
-
-    // いいねを追加（トランザクション +1）
-    async addLike(id) {
-        if (!window.firebaseDB || !id) return false;
-        try {
-            const ref = window.firebaseDB.ref('games/' + id + '/likes');
-            await ref.transaction(current => (current || 0) + 1);
-            return true;
-        } catch (e) {
-            console.warn('Failed to add like:', e);
-            return false;
         }
     }
 };

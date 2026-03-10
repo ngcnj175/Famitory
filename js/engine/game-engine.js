@@ -221,18 +221,19 @@ const GameEngine = {
         const container = document.getElementById('game-viewport');
         if (!container) return;
 
+        const stage = App.projectData.stage;
         const maxWidth = container.clientWidth - 16;
         const maxHeight = container.clientHeight - 16;
 
+        // 2倍表示でフィット
         const scale = 2;
-        const baseTileSize = 16;
-        const viewTilesX = Math.floor(maxWidth / (baseTileSize * scale));
-        const viewTilesY = Math.floor(maxHeight / (baseTileSize * scale));
+        const viewTilesX = Math.floor(maxWidth / (this.TILE_SIZE * scale));
+        const viewTilesY = Math.floor(maxHeight / (this.TILE_SIZE * scale));
 
-        this.canvas.width = viewTilesX * baseTileSize * scale;
-        this.canvas.height = viewTilesY * baseTileSize * scale;
+        this.canvas.width = viewTilesX * this.TILE_SIZE * scale;
+        this.canvas.height = viewTilesY * this.TILE_SIZE * scale;
 
-        this.TILE_SIZE = baseTileSize * scale;
+        this.TILE_SIZE = 16 * scale; // 2倍スケール
     },
 
     initGame() {
@@ -2918,7 +2919,6 @@ const GameEngine = {
 
                 // トラック音量を適用
                 drumVol *= trackVolume;
-                drumVol = Math.max(0.0001, drumVol);
 
                 // NES APU 15-bit LFSR風ノイズ生成
                 const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
@@ -3050,7 +3050,7 @@ const GameEngine = {
                     osc.frequency.exponentialRampToValueAtTime(freq * 0.25, ctx.currentTime + duration);
 
                     // 短い音にする
-                    gain.gain.setValueAtTime(Math.max(0.0001, 0.5 * trackVol), ctx.currentTime);
+                    gain.gain.setValueAtTime(0.5 * trackVol, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
 
                     osc.connect(gain);
@@ -3077,7 +3077,6 @@ const GameEngine = {
                 volumeScale = 0.6; // Sawtooth
             }
             let volume = baseVol * trackVol * volumeScale;
-            volume = Math.max(0.0001, volume); // 0以下の値による例外発生を防ぐ
 
             const isShort = (tone === 1 || tone === 4);
             const isFadeIn = (tone === 2 || tone === 5);
@@ -3166,49 +3165,14 @@ const GameEngine = {
         const editBtn = document.getElementById('result-edit-btn');
         const overlay = document.getElementById('result-overlay');
 
-        const likeBtn = document.getElementById('result-like-btn');
-
         if (shareBtn) {
             shareBtn.addEventListener('click', () => {
                 if (App.projectData) {
-                    App.projectData.palette = App.nesPalette.slice();
-                    Share.currentShareData = {
+                    Share.openDialog(App.projectData, {
                         score: this.score,
-                        title: App.projectData.meta?.name || 'Game',
+                        title: App.projectData.meta?.title || 'Game',
                         isNewRecord: this.newHighScore
-                    };
-                    document.getElementById('share-dialog').classList.remove('hidden');
-                }
-            });
-        }
-
-        if (likeBtn) {
-            likeBtn.addEventListener('click', async () => {
-                const gameId = App.playOnlyGameId;
-                if (!gameId) return;
-
-                // localStorageで「いいね」済みかチェック
-                const likedKey = 'pgk_liked_' + gameId;
-                if (localStorage.getItem(likedKey)) {
-                    App.showToast('すでに「いいね！」しています');
-                    return;
-                }
-
-                // UI反映（先行して）
-                const originalText = likeBtn.textContent;
-                likeBtn.textContent = '送信中...';
-
-                const success = await Share.addLike(gameId);
-                if (success) {
-                    localStorage.setItem(likedKey, '1');
-                    likeBtn.textContent = '✓ いいねしました！';
-                    likeBtn.style.background = '#e6b800'; // 少し暗く
-                    App.showToast('「いいね！」しました');
-                    // 右上のカウントも更新
-                    App.showLikeDisplay();
-                } else {
-                    likeBtn.textContent = originalText;
-                    App.showToast('エラーが発生しました');
+                    });
                 }
             });
         }
@@ -3238,8 +3202,6 @@ const GameEngine = {
         const scoreVal = document.getElementById('result-score-value');
         const highVal = document.getElementById('result-highscore-value');
         const shareBtn = document.getElementById('result-share-btn');
-        const editBtn = document.getElementById('result-edit-btn');
-        const likeBtn = document.getElementById('result-like-btn');
         const title = document.getElementById('result-title');
 
         if (!overlay) return;
@@ -3263,24 +3225,6 @@ const GameEngine = {
         } else {
             if (scoreContainer) scoreContainer.classList.add('hidden');
             if (shareBtn) shareBtn.classList.add('hidden');
-        }
-
-        // プレイオンリーモードの場合の表示制御
-        if (App.isPlayOnlyMode) {
-            if (editBtn) editBtn.classList.add('hidden');
-            if (likeBtn) likeBtn.classList.remove('hidden');
-
-            // すでにいいね済みならテキストを変更
-            const gameId = App.playOnlyGameId;
-            if (gameId && localStorage.getItem('pgk_liked_' + gameId)) {
-                if (likeBtn) {
-                    likeBtn.textContent = '✓ いいねしました！';
-                    likeBtn.style.background = '#e6b800';
-                }
-            }
-        } else {
-            if (editBtn) editBtn.classList.remove('hidden');
-            if (likeBtn) likeBtn.classList.add('hidden');
         }
 
         overlay.classList.remove('hidden');
