@@ -2899,6 +2899,11 @@ const StageEditor = {
                     }
                 }
 
+                const authorInput = document.getElementById('stage-author-input');
+                if (authorInput && App.projectData.meta) {
+                    App.projectData.meta.author = authorInput.value || 'You';
+                }
+
                 // 繧ｵ繧､繧ｺ螟画峩
                 const newWidth = this.pendingAreaW * 16;
                 const newHeight = this.pendingAreaH * 16;
@@ -2913,6 +2918,7 @@ const StageEditor = {
                 }
 
                 // 險ｭ螳壹ヱ繝阪Ν繧帝哩縺倥ｋ
+                App.updateGameInfo();
                 panel.classList.add('collapsed');
             });
         }
@@ -2931,6 +2937,9 @@ const StageEditor = {
 
         // 蜷榊燕・医せ繝・・繧ｸ蜷阪∪縺溘・繝励Ο繧ｸ繧ｧ繧ｯ繝亥錐・・
         if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
+
+        const authorInput = document.getElementById('stage-author-input');
+        if (authorInput) authorInput.value = App.projectData.meta?.author || 'You';
 
         // 繧ｵ繧､繧ｺ
         this.pendingAreaW = Math.floor(stage.width / 16);

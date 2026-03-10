@@ -139,7 +139,7 @@ body {
     font-weight: 600;
     letter-spacing: 2px;
     color: var(--text-muted);
-    padding: 4px 0;
+    padding: 2px 0;
     opacity: 0.6;
 }
 
@@ -153,11 +153,11 @@ body {
 
 /* 繧ｲ繝ｼ繝�諠��ｱ�医ち繧､繝医Ν陦ｨ遉ｺ�� */
 #game-info {
-    padding: 12px 16px 4px;
+    padding: 12px 16px 2px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
 }
 
 #game-title {
@@ -176,6 +176,40 @@ body {
 #game-title:focus {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
+}
+
+#game-author-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+}
+
+.game-author-by {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-style: italic;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+#game-author {
+    font-size: 11px;
+    color: var(--text-muted);
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 2px 4px;
+    text-align: center;
+    width: auto;
+    max-width: 140px;
+    font-weight: 500;
+}
+
+#game-author:focus {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
 }
 
 /* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
@@ -4630,6 +4664,18 @@ body {
 }
 
 #app.dark-mode #game-title:focus {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#app.dark-mode .game-author-by {
+    color: #6070a0;
+}
+
+#app.dark-mode #game-author {
+    color: #8890b0;
+}
+
+#app.dark-mode #game-author:focus {
     background: rgba(255, 255, 255, 0.06);
 }
 

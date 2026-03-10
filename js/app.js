@@ -680,19 +680,30 @@ const App = {
 
         // タイトル編集
         const titleInput = document.getElementById('game-title');
-
         titleInput?.addEventListener('change', (e) => {
             if (this.projectData) {
                 this.projectData.meta.name = e.target.value;
+            }
+        });
+
+        // 作成者名編集
+        const authorInput = document.getElementById('game-author');
+        authorInput?.addEventListener('change', (e) => {
+            if (this.projectData) {
+                this.projectData.meta.author = e.target.value;
             }
         });
     },
 
     updateGameInfo() {
         const titleInput = document.getElementById('game-title');
+        const authorInput = document.getElementById('game-author');
 
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
+        }
+        if (authorInput && this.projectData) {
+            authorInput.value = this.projectData.meta.author || 'You';
         }
     },
 

@@ -95,6 +95,10 @@
             <!-- ゲーム情報（編集可能） -->
             <div id="game-info">
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル">
+                <div id="game-author-row">
+                    <span class="game-author-by">by</span>
+                    <input type="text" id="game-author" value="You" placeholder="なまえ">
+                </div>
             </div>
 
             <!-- ゲームビューポート -->
@@ -289,6 +293,11 @@
                     <div class="setting-row">
                         <label>ステージタイトル</label>
                         <input type="text" id="stage-name-input" placeholder="NEW GAME">
+                    </div>
+                    <!-- 作成者名 -->
+                    <div class="setting-row">
+                        <label>作成者名</label>
+                        <input type="text" id="stage-author-input" placeholder="You">
                     </div>
                     <!-- ステージサイズ（縦横2行レイアウト） -->
                     <div class="setting-row setting-row-size">
