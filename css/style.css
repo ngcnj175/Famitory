@@ -206,7 +206,7 @@ body {
 
 #game-likes-display {
     position: absolute;
-    right: 8px;
+    right: 20px;
     display: flex;
     align-items: center;
     gap: 3px;
