@@ -179,15 +179,16 @@ body {
 }
 
 #game-sub-row {
+    position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 
 #game-author {
-    flex: 1;
-    min-width: 0;
+    width: 50%;
     font-size: 11px;
     color: var(--text-muted);
     border: none;
@@ -204,10 +205,11 @@ body {
 }
 
 #game-likes-display {
+    position: absolute;
+    right: 8px;
     display: flex;
     align-items: center;
     gap: 3px;
-    flex-shrink: 0;
     opacity: 0.55;
 }
 
