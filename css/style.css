@@ -178,6 +178,17 @@ body {
     border-radius: 4px;
 }
 
+#game-title.readonly,
+#game-author.readonly {
+    cursor: default;
+    pointer-events: none;
+}
+
+#game-title.readonly:focus,
+#game-author.readonly:focus {
+    background: transparent;
+}
+
 #game-sub-row {
     position: relative;
     display: flex;
@@ -3174,6 +3185,10 @@ body {
     background: transparent;
     color: var(--color-medium);
     border: 1px solid var(--border-color);
+}
+
+.edit-btn.hidden {
+    display: none;
 }
 
 /* いいねエリア（リザルト画面） */

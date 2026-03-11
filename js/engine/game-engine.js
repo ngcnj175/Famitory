@@ -3255,6 +3255,12 @@ const GameEngine = {
             }
         }
 
+        // プレイヤーモードでは「編集に戻る」を非表示
+        const editBtn = document.getElementById('result-edit-btn');
+        if (editBtn) {
+            editBtn.classList.toggle('hidden', App.isPlayOnlyMode);
+        }
+
         overlay.classList.remove('hidden');
     }
 };

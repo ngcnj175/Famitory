@@ -570,18 +570,19 @@ const App = {
 
     // プレイ専用モードのUI適用
     applyPlayOnlyMode() {
-        // ヘッダーのファイルツールバーを非表示
         const toolbarFile = document.getElementById('toolbar-file');
-        if (toolbarFile) {
-            toolbarFile.style.display = 'none';
-        }
-        // ナビゲーションでプレイ以外を非表示
+        if (toolbarFile) toolbarFile.style.display = 'none';
+
         const navBtns = document.querySelectorAll('.nav-icon');
         navBtns.forEach(btn => {
-            if (btn.id !== 'nav-play-btn') {
-                btn.style.display = 'none';
-            }
+            if (btn.id !== 'nav-play-btn') btn.style.display = 'none';
         });
+
+        // タイトル・作成者を編集不可に
+        const titleInput = document.getElementById('game-title');
+        const authorInput = document.getElementById('game-author');
+        if (titleInput) { titleInput.readOnly = true; titleInput.classList.add('readonly'); }
+        if (authorInput) { authorInput.readOnly = true; authorInput.classList.add('readonly'); }
     },
 
     initMenu() {
