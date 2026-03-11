@@ -433,17 +433,17 @@ const App = {
             const data = await Share.loadGame(gameId);
             if (data) {
                 this.projectData = data;
-                this.migrateProjectData(); // データ移行
+                this.migrateProjectData();
                 this.isPlayOnlyMode = true;
+                this._sharedGameId = gameId;
                 console.log('Project loaded from Firebase (play-only mode)');
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
                 }
-                // URLからパラメータを削除
                 history.replaceState(null, '', window.location.pathname);
                 this.applyPlayOnlyMode();
-                // 各エディタをリフレッシュ
                 this.refreshCurrentScreen();
+                this.fetchAndShowLikes(gameId);
             } else {
                 console.warn('Failed to load game:', gameId);
             }
@@ -705,6 +705,38 @@ const App = {
         if (authorInput && this.projectData) {
             authorInput.value = this.projectData.meta.author || 'You';
         }
+
+        // shareIdがあればいいね数を取得・表示
+        const gid = this._sharedGameId || this.projectData?.meta?.shareId;
+        if (gid) {
+            this.fetchAndShowLikes(gid);
+        } else {
+            this.updateLikesDisplay(0);
+        }
+    },
+
+    // いいね数を取得してプレイ画面に表示
+    async fetchAndShowLikes(gameId) {
+        const count = await Share.getLikes(gameId);
+        this._likesCount = count;
+        this.updateLikesDisplay(count);
+    },
+
+    // いいね数の表示を更新
+    updateLikesDisplay(count) {
+        const display = document.getElementById('game-likes-display');
+        const countEl = document.getElementById('game-likes-count');
+        if (!display || !countEl) return;
+
+        if (count > 0 || this._sharedGameId) {
+            countEl.textContent = count;
+            display.classList.remove('hidden');
+        } else {
+            display.classList.add('hidden');
+        }
+
+        const resultCount = document.getElementById('result-like-count');
+        if (resultCount) resultCount.textContent = count;
     },
 
     switchScreen(screenName) {

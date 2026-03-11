@@ -3191,6 +3191,19 @@ const GameEngine = {
                 App.switchScreen('stage');
             });
         }
+
+        const likeBtn = document.getElementById('result-like-btn');
+        if (likeBtn) {
+            likeBtn.addEventListener('click', async () => {
+                const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
+                if (!gameId || likeBtn.classList.contains('liked')) return;
+
+                likeBtn.classList.add('liked');
+                const newCount = await Share.addLike(gameId);
+                App._likesCount = newCount;
+                App.updateLikesDisplay(newCount);
+            });
+        }
     },
 
     // リザルト画面表示
@@ -3225,6 +3238,21 @@ const GameEngine = {
         } else {
             if (scoreContainer) scoreContainer.classList.add('hidden');
             if (shareBtn) shareBtn.classList.add('hidden');
+        }
+
+        // いいねエリア表示（公開URLから開いた場合のみ）
+        const likeArea = document.getElementById('result-like-area');
+        const likeBtn = document.getElementById('result-like-btn');
+        const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
+        if (likeArea) {
+            if (gameId) {
+                likeArea.classList.remove('hidden');
+                if (likeBtn) likeBtn.classList.remove('liked');
+                const countEl = document.getElementById('result-like-count');
+                if (countEl) countEl.textContent = App._likesCount || 0;
+            } else {
+                likeArea.classList.add('hidden');
+            }
         }
 
         overlay.classList.remove('hidden');

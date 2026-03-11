@@ -95,9 +95,12 @@
             <!-- ゲーム情報（編集可能） -->
             <div id="game-info">
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル">
-                <div id="game-author-row">
-                    <span class="game-author-by">by</span>
+                <div id="game-sub-row">
                     <input type="text" id="game-author" value="You" placeholder="なまえ">
+                    <div id="game-likes-display" class="hidden">
+                        <img src="images/like_icon.svg" alt="like" class="like-icon-small">
+                        <span id="game-likes-count">0</span>
+                    </div>
                 </div>
             </div>
 
@@ -147,6 +150,14 @@
                             <span id="result-highscore-value">000000</span>
                         </div>
                     </div>
+                    <div id="result-like-area" class="hidden">
+                        <button id="result-like-btn" class="result-like-btn">
+                            <img src="images/like_icon.svg" alt="like" class="like-icon-result">
+                            <span>いいね！</span>
+                            <span id="result-like-count" class="result-like-count">0</span>
+                        </button>
+                    </div>
+
                     <div class="result-actions">
                         <button id="result-share-btn" class="result-btn share-btn">
                             <svg viewBox="0 0 24 24" fill="currentColor">

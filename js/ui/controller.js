@@ -280,14 +280,20 @@ const GameController = {
             'Space': 'a'
         };
 
+        const isTyping = () => {
+            const tag = document.activeElement?.tagName;
+            return tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+        };
+
         document.addEventListener('keydown', (e) => {
+            if (isTyping()) return;
+
             const btn = keyMap[e.code];
             if (btn && App.currentScreen === 'play') {
                 e.preventDefault();
                 this.press(btn);
             }
 
-            // Enterキー = Startボタン
             if (e.code === 'Enter' && App.currentScreen === 'play') {
                 e.preventDefault();
                 if (typeof GameEngine !== 'undefined') {
@@ -297,6 +303,8 @@ const GameController = {
         });
 
         document.addEventListener('keyup', (e) => {
+            if (isTyping()) return;
+
             const btn = keyMap[e.code];
             if (btn) {
                 e.preventDefault();

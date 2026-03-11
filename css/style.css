@@ -178,23 +178,16 @@ body {
     border-radius: 4px;
 }
 
-#game-author-row {
+#game-sub-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-}
-
-.game-author-by {
-    font-size: 11px;
-    color: var(--text-muted);
-    opacity: 0.7;
-    font-style: italic;
-    user-select: none;
-    flex-shrink: 0;
+    width: 100%;
+    padding: 0 4px;
 }
 
 #game-author {
+    flex: 1;
+    min-width: 0;
     font-size: 11px;
     color: var(--text-muted);
     border: none;
@@ -202,14 +195,37 @@ body {
     outline: none;
     padding: 2px 4px;
     text-align: center;
-    width: auto;
-    max-width: 140px;
     font-weight: 500;
 }
 
 #game-author:focus {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
+}
+
+#game-likes-display {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+    opacity: 0.55;
+}
+
+#game-likes-display.hidden {
+    display: none;
+}
+
+.like-icon-small {
+    width: 12px;
+    height: 12px;
+    image-rendering: pixelated;
+}
+
+#game-likes-count {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1;
 }
 
 /* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
@@ -3158,6 +3174,57 @@ body {
     border: 1px solid var(--border-color);
 }
 
+/* いいねエリア（リザルト画面） */
+#result-like-area {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+#result-like-area.hidden {
+    display: none;
+}
+
+.result-like-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 24px;
+    background: transparent;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+
+.result-like-btn:active {
+    transform: scale(0.95);
+}
+
+.result-like-btn.liked {
+    background: #fff0f0;
+    border-color: #e57373;
+    color: #d32f2f;
+}
+
+.like-icon-result {
+    width: 18px;
+    height: 18px;
+    image-rendering: pixelated;
+}
+
+.result-like-btn.liked .like-icon-result {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(90%) saturate(2000%) hue-rotate(340deg);
+}
+
+.result-like-count {
+    font-size: 13px;
+    min-width: 1em;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -4667,16 +4734,31 @@ body {
     background: rgba(255, 255, 255, 0.06);
 }
 
-#app.dark-mode .game-author-by {
-    color: #6070a0;
-}
-
 #app.dark-mode #game-author {
     color: #8890b0;
 }
 
 #app.dark-mode #game-author:focus {
     background: rgba(255, 255, 255, 0.06);
+}
+
+#app.dark-mode #game-likes-count {
+    color: #6878a0;
+}
+
+#app.dark-mode .like-icon-small {
+    filter: brightness(0) invert(0.5);
+}
+
+#app.dark-mode .result-like-btn {
+    border-color: #303050;
+    color: #b0b8d0;
+}
+
+#app.dark-mode .result-like-btn.liked {
+    background: rgba(211, 47, 47, 0.15);
+    border-color: #c62828;
+    color: #ef5350;
 }
 
 #app.dark-mode .screen-title {

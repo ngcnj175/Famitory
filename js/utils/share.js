@@ -275,5 +275,30 @@ const Share = {
                 }
             });
         }
+    },
+
+    // いいね数を取得
+    async getLikes(gameId) {
+        if (!window.firebaseDB || !gameId) return 0;
+        try {
+            const snap = await window.firebaseDB.ref('games/' + gameId + '/likes').once('value');
+            return snap.val() || 0;
+        } catch (e) {
+            console.warn('[Share] getLikes failed:', e);
+            return 0;
+        }
+    },
+
+    // いいねを1追加（トランザクションで安全にインクリメント）
+    async addLike(gameId) {
+        if (!window.firebaseDB || !gameId) return 0;
+        try {
+            const ref = window.firebaseDB.ref('games/' + gameId + '/likes');
+            const result = await ref.transaction(current => (current || 0) + 1);
+            return result.snapshot.val() || 0;
+        } catch (e) {
+            console.warn('[Share] addLike failed:', e);
+            return 0;
+        }
     }
 };
