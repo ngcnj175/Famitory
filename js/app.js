@@ -447,7 +447,7 @@ const App = {
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
                 }
-                history.replaceState(null, '', window.location.pathname);
+                // history.replaceState(null, '', window.location.pathname);
                 this.applyPlayOnlyMode();
                 this.refreshCurrentScreen();
                 this.fetchAndShowLikes(gameId);
@@ -469,7 +469,7 @@ const App = {
                     if (this.projectData.palette) {
                         this.nesPalette = this.projectData.palette;
                     }
-                    history.replaceState(null, '', window.location.pathname);
+                    // history.replaceState(null, '', window.location.pathname);
                     this.applyPlayOnlyMode();
                 }
             } catch (e) {
@@ -784,13 +784,9 @@ const App = {
         const countEl = document.getElementById('game-likes-count');
         if (!display || !countEl) return;
 
-        const gid = this._sharedGameId || this.projectData?.meta?.shareId;
-        if (count > 0 || gid) {
-            countEl.textContent = count;
-            display.classList.remove('hidden');
-        } else {
-            display.classList.add('hidden');
-        }
+        // 常に表示する
+        countEl.textContent = count;
+        display.classList.remove('hidden');
 
         const resultCount = document.getElementById('result-like-count');
         if (resultCount) resultCount.textContent = count;
@@ -1026,6 +1022,11 @@ const App = {
             this.projectData = data;
             this.currentProjectName = name;
 
+            // ローカルプロジェクトを開いたときも共有状態をリセット
+            this._sharedGameId = null;
+            this._likesCount = 0;
+            this.isPlayOnlyMode = false;
+            
             // パレット復元
             if (this.projectData.palette) {
                 this.nesPalette = this.projectData.palette;
@@ -1132,6 +1133,16 @@ const App = {
             this.projectData = this.createDefaultProject();
             this.projectData.meta.name = name;
             this.currentProjectName = name;
+
+            // 発行済みデータを開いた状態からNEWした場合のリセット処理
+            this._sharedGameId = null;
+            this._likesCount = 0;
+            this.isPlayOnlyMode = false;
+            
+            // クリエイターモードUIへの復帰
+            document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
+                btn.classList.remove('locked');
+            });
 
             Storage.saveProject(name, this.projectData);
             Storage.save('currentProject', this.projectData);
