@@ -107,6 +107,16 @@ body {
     background: var(--border-color);
 }
 
+/* グレーアウト（プレイヤーモードでロック中） */
+.toolbar-icon.locked {
+    opacity: 0.3;
+    pointer-events: auto;
+}
+
+.toolbar-icon.locked:active {
+    background: transparent;
+}
+
 /* 繝翫ン繧｢繧､繧ｳ繝ｳ�郁埋繧ｰ繝ｬ繝ｼ縲√い繧ｯ繝�ぅ繝悶�縺ｿ豼�￥�� */
 .nav-icon {
     color: var(--color-light);
@@ -179,14 +189,31 @@ body {
 }
 
 #game-title.readonly,
-#game-author.readonly {
+#game-author.readonly,
+#game-title[readonly],
+#game-author[readonly] {
     cursor: default;
     pointer-events: none;
 }
 
 #game-title.readonly:focus,
-#game-author.readonly:focus {
+#game-author.readonly:focus,
+#game-title[readonly]:focus,
+#game-author[readonly]:focus {
     background: transparent;
+}
+
+/* エディットキー表示フィールド（ステージ設定パネル内） */
+#stage-editkey-display {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px dashed var(--color-light);
+    color: var(--text-dark);
+    -webkit-user-select: all;
+    user-select: all;
+    cursor: default;
+    font-family: monospace;
+    letter-spacing: 2px;
+    text-align: center;
 }
 
 #game-sub-row {

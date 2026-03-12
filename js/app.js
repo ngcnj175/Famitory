@@ -84,6 +84,16 @@ const App = {
     // デフォルトパレット（パステル）
     nesPalette: null, // initで設定
 
+    // エディットキー生成（8文字英数字）
+    generateEditKey() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let key = '';
+        for (let i = 0; i < 8; i++) {
+            key += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return key;
+    },
+
     // デフォルトプロジェクト
     createDefaultProject() {
         return {
@@ -92,7 +102,8 @@ const App = {
                 name: 'NEW GAME',
                 author: '',
                 locked: false,
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                editKey: this.generateEditKey()
             },
             palette: this.nesPalette.slice(0, 16),
             sprites: [this.createEmptySprite()],
@@ -469,6 +480,11 @@ const App = {
 
     // データ構造のマイグレーション（エンティティ分離）
     migrateProjectData() {
+        // editKey がなければ自動生成（v2.8.8以前のデータ対応）
+        if (this.projectData.meta && !this.projectData.meta.editKey) {
+            this.projectData.meta.editKey = this.generateEditKey();
+        }
+
         const stage = this.projectData.stage;
         if (!stage) return;
 
@@ -532,21 +548,86 @@ const App = {
         }
     },
 
-    // プレイ専用モードのUI適用
+    // プレイ専用モードのUI適用（ヘッダーはクリエイターと同じ配置、許可外はグレーアウト）
     applyPlayOnlyMode() {
-        const toolbarFile = document.getElementById('toolbar-file');
-        if (toolbarFile) toolbarFile.style.display = 'none';
-
-        const navBtns = document.querySelectorAll('.nav-icon');
-        navBtns.forEach(btn => {
-            if (btn.id !== 'nav-play-btn') btn.style.display = 'none';
+        // ファイルツールバー: NEW / SHARE のみ有効、OPEN / SAVE はグレーアウト
+        const lockedFileIds = ['load-icon-btn', 'save-icon-btn'];
+        lockedFileIds.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.classList.add('locked');
         });
 
-        // タイトル・作成者を編集不可に
-        const titleInput = document.getElementById('game-title');
-        const authorInput = document.getElementById('game-author');
-        if (titleInput) { titleInput.readOnly = true; titleInput.classList.add('readonly'); }
-        if (authorInput) { authorInput.readOnly = true; authorInput.classList.add('readonly'); }
+        // ナビゲーション: PLAY のみ有効、PIXEL / STAGE / SONG はグレーアウト
+        const lockedNavIds = ['nav-paint-btn', 'nav-stage-btn', 'nav-sound-btn'];
+        lockedNavIds.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.classList.add('locked');
+        });
+    },
+
+    // グレーアウト解除（クリエイターモードへ移行）
+    unlockCreatorMode() {
+        this.isPlayOnlyMode = false;
+        // 全ボタンの locked を解除
+        document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
+            btn.classList.remove('locked');
+        });
+        this.showToast('編集モードに切り替わりました');
+        // 現在の画面をリフレッシュ
+        this.refreshCurrentScreen();
+    },
+
+    // エディットキー入力モーダルを表示
+    showEditKeyModal() {
+        const modal = document.getElementById('editkey-modal');
+        const input = document.getElementById('editkey-input');
+        const error = document.getElementById('editkey-error');
+        if (!modal || !input) return;
+
+        input.value = '';
+        if (error) error.classList.add('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+    },
+
+    // エディットキー認証イベント初期化
+    initEditKeyModal() {
+        const modal = document.getElementById('editkey-modal');
+        const input = document.getElementById('editkey-input');
+        const okBtn = document.getElementById('editkey-ok');
+        const cancelBtn = document.getElementById('editkey-cancel');
+        const error = document.getElementById('editkey-error');
+        if (!modal) return;
+
+        const verify = () => {
+            const inputKey = input?.value?.trim();
+            const correctKey = this.projectData?.meta?.editKey;
+
+            // editKeyが未設定（旧データ）の場合はそのまま解除
+            if (!correctKey) {
+                modal.classList.add('hidden');
+                this.unlockCreatorMode();
+                return;
+            }
+
+            if (inputKey === correctKey) {
+                modal.classList.add('hidden');
+                this.unlockCreatorMode();
+            } else {
+                if (error) error.classList.remove('hidden');
+            }
+        };
+
+        okBtn?.addEventListener('click', verify);
+        cancelBtn?.addEventListener('click', () => modal.classList.add('hidden'));
+        // Enter キーでも認証
+        input?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verify();
+        });
+        // 背景クリックで閉じる
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
     },
 
     initMenu() {
@@ -631,11 +712,16 @@ const App = {
         });
 
 
-        // ナビゲーション切り替え
+        // ナビゲーション切り替え（グレーアウト時はエディットキーモーダルを表示）
         const screens = ['play', 'paint', 'stage', 'sound'];
         screens.forEach(screen => {
             const btn = document.getElementById(`nav-${screen}-btn`);
             btn?.addEventListener('click', () => {
+                // グレーアウト中はエディットキーモーダルを表示
+                if (btn.classList.contains('locked')) {
+                    this.showEditKeyModal();
+                    return;
+                }
                 this.switchScreen(screen);
                 // アイコンのアクティブ状態更新
                 document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
@@ -643,21 +729,24 @@ const App = {
             });
         });
 
-        // タイトル編集
-        const titleInput = document.getElementById('game-title');
-        titleInput?.addEventListener('change', (e) => {
-            if (this.projectData) {
-                this.projectData.meta.name = e.target.value;
-            }
+        // ファイルツールバーのグレーアウトボタンにもエディットキーモーダルを設定
+        ['load-icon-btn', 'save-icon-btn'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            // 既存のイベントの前にキャプチャフェーズで割り込み
+            btn.addEventListener('click', (e) => {
+                if (btn.classList.contains('locked')) {
+                    e.stopImmediatePropagation();
+                    this.showEditKeyModal();
+                }
+            }, true); // captureフェーズ
         });
 
-        // 作成者名編集
-        const authorInput = document.getElementById('game-author');
-        authorInput?.addEventListener('change', (e) => {
-            if (this.projectData) {
-                this.projectData.meta.author = e.target.value;
-            }
-        });
+        // エディットキーモーダル初期化
+        this.initEditKeyModal();
+
+        // タイトル・作成者名はPLAY画面では常に読み取り専用
+        // （編集はステージ設定パネルでのみ行う）
     },
 
     updateGameInfo() {
@@ -666,12 +755,14 @@ const App = {
 
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
+            titleInput.readOnly = true;
         }
         if (authorInput && this.projectData) {
             authorInput.value = this.projectData.meta.author || 'You';
+            authorInput.readOnly = true;
         }
 
-        // shareIdがあればいいね数を取得・表示
+        // shareIdがあればいいね数を取得・表示（モード問わず常に表示）
         const gid = this._sharedGameId || this.projectData?.meta?.shareId;
         if (gid) {
             this.fetchAndShowLikes(gid);
@@ -687,13 +778,14 @@ const App = {
         this.updateLikesDisplay(count);
     },
 
-    // いいね数の表示を更新
+    // いいね数の表示を更新（クリエイター／プレイヤー問わず表示）
     updateLikesDisplay(count) {
         const display = document.getElementById('game-likes-display');
         const countEl = document.getElementById('game-likes-count');
         if (!display || !countEl) return;
 
-        if (count > 0 || this._sharedGameId) {
+        const gid = this._sharedGameId || this.projectData?.meta?.shareId;
+        if (count > 0 || gid) {
             countEl.textContent = count;
             display.classList.remove('hidden');
         } else {

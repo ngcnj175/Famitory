@@ -92,11 +92,11 @@
         <!-- ========== ゲーム画面 ========== -->
         <div id="play-screen" class="screen active">
 
-            <!-- ゲーム情報（編集可能） -->
+            <!-- ゲーム情報（読み取り専用、編集はステージ設定で） -->
             <div id="game-info">
-                <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル">
+                <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
                 <div id="game-sub-row">
-                    <input type="text" id="game-author" value="You" placeholder="なまえ">
+                    <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
                     <div id="game-likes-display" class="hidden">
                         <img src="images/like_icon.svg" alt="like" class="like-icon-small">
                         <span id="game-likes-count">0</span>
@@ -309,6 +309,11 @@
                     <div class="setting-row">
                         <label>作成者名</label>
                         <input type="text" id="stage-author-input" placeholder="You">
+                    </div>
+                    <!-- エディットキー -->
+                    <div class="setting-row">
+                        <label>エディットキー</label>
+                        <input type="text" id="stage-editkey-display" readonly>
                     </div>
                     <!-- ステージサイズ（縦横2行レイアウト） -->
                     <div class="setting-row setting-row-size">
@@ -1215,6 +1220,25 @@
             <div class="modal-footer-actions">
                 <button class="modal-action-btn primary" id="save-as-ok-btn">セーブ</button>
                 <button class="modal-action-btn cancel" id="save-as-cancel-btn">やめる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- エディットキー入力モーダル -->
+    <div id="editkey-modal" class="modal-overlay hidden">
+        <div class="modal-content modal-small">
+            <div class="modal-header">エディットキー入力</div>
+            <div class="modal-body">
+                <p style="font-size:12px;color:#8888aa;margin-bottom:12px;">このゲームを編集するにはエディットキーが必要です</p>
+                <input type="text" id="editkey-input" placeholder="8桁のキーを入力"
+                    maxlength="8" autocomplete="off" style="width:100%;padding:10px;font-size:16px;text-align:center;letter-spacing:4px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;">
+                <p id="editkey-error" class="hidden" style="color:#ff6b6b;font-size:12px;margin-top:8px;text-align:center;">
+                    キーが一致しません
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="editkey-cancel">キャンセル</button>
+                <button class="modal-btn ok-btn" id="editkey-ok">認証</button>
             </div>
         </div>
     </div>

@@ -2938,6 +2938,10 @@ const StageEditor = {
         const authorInput = document.getElementById('stage-author-input');
         if (authorInput) authorInput.value = App.projectData.meta?.author || 'You';
 
+        // エディットキー表示
+        const editKeyDisplay = document.getElementById('stage-editkey-display');
+        if (editKeyDisplay) editKeyDisplay.value = App.projectData.meta?.editKey || '';
+
         // 繧ｵ繧､繧ｺ
         this.pendingAreaW = Math.floor(stage.width / 16);
         this.pendingAreaH = Math.floor(stage.height / 16);
