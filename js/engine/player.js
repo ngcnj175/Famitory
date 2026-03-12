@@ -560,48 +560,6 @@ class Player {
         }
     }
 
-    createDeathParticles() {
-        this.deathParticles = [];
-        const frames = this.template?.sprites?.idle?.frames || [];
-        const spriteIdx = frames[0];
-        const sprite = App.projectData.sprites[spriteIdx];
-        if (!sprite) return;
-
-        const palette = App.nesPalette;
-        for (let py = 0; py < 16; py += 4) {
-            for (let px = 0; px < 16; px += 4) {
-                let color = null;
-                for (let dy = 0; dy < 4 && !color; dy++) {
-                    for (let dx = 0; dx < 4 && !color; dx++) {
-                        const ci = sprite.data[py + dy]?.[px + dx];
-                        if (ci >= 0) color = palette[ci];
-                    }
-                }
-                if (color) {
-                    this.deathParticles.push({
-                        x: this.x + px / 16,
-                        y: this.y + py / 16,
-                        vx: (Math.random() - 0.5) * 0.1,
-                        vy: -Math.random() * 0.15 - 0.05,
-                        color: color,
-                        size: 4,
-                        life: 90 + Math.random() * 30
-                    });
-                }
-            }
-        }
-    }
-
-    updateDeathParticles() {
-        this.deathParticles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.01;
-            p.life--;
-        });
-        this.deathParticles = this.deathParticles.filter(p => p.life > 0);
-    }
-
     handleHorizontalCollision(engine) {
         const left = Math.floor(this.x);
         const right = Math.floor(this.x + this.width);

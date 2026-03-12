@@ -2,6 +2,35 @@
  * PixelGameKit - メインアプリケーション
  */
 
+// デフォルトSEリスト（createDefaultProject と migrateProjectData で共用）
+const DEFAULT_SOUNDS = [
+    { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
+    { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
+    { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
+    { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
+    { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
+    { id: 5, name: '攻撃_01', type: 'attack_01' },
+    { id: 6, name: '攻撃_02', type: 'attack_02' },
+    { id: 7, name: '攻撃_03', type: 'attack_03' },
+    { id: 8, name: '攻撃_04', type: 'attack_04' },
+    { id: 9, name: '攻撃_05', type: 'attack_05' },
+    { id: 10, name: 'ダメージ_01', type: 'damage_01' },
+    { id: 11, name: 'ダメージ_02', type: 'damage_02' },
+    { id: 12, name: 'ダメージ_03', type: 'damage_03' },
+    { id: 13, name: 'ダメージ_04', type: 'damage_04' },
+    { id: 14, name: 'ダメージ_05', type: 'damage_05' },
+    { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
+    { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
+    { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
+    { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
+    { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
+    { id: 20, name: 'その他_01(決定)', type: 'other_01' },
+    { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
+    { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
+    { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
+    { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
+];
+
 // グローバル状態
 const App = {
     currentScreen: 'play',
@@ -101,39 +130,7 @@ const App = {
                     noise: []
                 }
             },
-            // プリセットSE
-            sounds: [
-                // ジャンプ系
-                { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-                { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-                { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-                { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-                { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-                // 攻撃系
-                { id: 5, name: '攻撃_01', type: 'attack_01' },
-                { id: 6, name: '攻撃_02', type: 'attack_02' },
-                { id: 7, name: '攻撃_03', type: 'attack_03' },
-                { id: 8, name: '攻撃_04', type: 'attack_04' },
-                { id: 9, name: '攻撃_05', type: 'attack_05' },
-                // ダメージ系
-                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-                // ゲット系
-                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-                // その他
-                { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-                { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-                { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-                { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-                { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
-            ]
+            sounds: DEFAULT_SOUNDS.map(s => ({ ...s }))
         };
     },
 
@@ -232,7 +229,6 @@ const App = {
             app.style.maxWidth = '';
             app.style.marginTop = '';
             document.body.style.overflow = 'hidden';
-            document.body.style.display = '';
             document.body.style.display = '';
             document.body.style.justifyContent = '';
             document.body.style.alignItems = '';
@@ -517,39 +513,7 @@ const App = {
 
         // SEリストの拡張とマイグレーション
         if (this.projectData.sounds && this.projectData.sounds.length <= 5) {
-            // 1. 新しいサウンドリストで上書き
-            this.projectData.sounds = [
-                // ジャンプ系
-                { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-                { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-                { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-                { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-                { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-                // 攻撃系
-                { id: 5, name: '攻撃_01', type: 'attack_01' },
-                { id: 6, name: '攻撃_02', type: 'attack_02' },
-                { id: 7, name: '攻撃_03', type: 'attack_03' },
-                { id: 8, name: '攻撃_04', type: 'attack_04' },
-                { id: 9, name: '攻撃_05', type: 'attack_05' },
-                // ダメージ系
-                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-                // ゲット系
-                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-                // その他
-                { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-                { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-                { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-                { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-                { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
-            ];
+            this.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
 
             // 2. テンプレート設定のマイグレーション（IDの振り直し）
             if (this.projectData.templates) {
@@ -963,116 +927,6 @@ const App = {
         });
     },
 
-    // プロジェクトリストを表示（OPEN用）
-    showProjectList() {
-        const modal = document.getElementById('project-list-modal');
-        const listContainer = document.getElementById('project-list');
-        const closeBtn = document.getElementById('project-list-close');
-
-        if (!modal || !listContainer) return;
-
-        // リスト描画
-        const renderList = () => {
-            listContainer.innerHTML = '';
-            const list = Storage.getProjectList();
-
-            // 更新日時順（新しい順）
-            list.sort((a, b) => b.updatedAt - a.updatedAt);
-
-            if (list.length === 0) {
-                listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">保存されたプロジェクトはありません</div>';
-                return;
-            }
-
-            list.forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'project-item';
-                if (p.name === this.currentProjectName) {
-                    item.classList.add('active');
-                }
-
-                const dateStr = new Date(p.updatedAt).toLocaleString('ja-JP');
-
-                const info = document.createElement('div');
-                info.className = 'project-info';
-                info.innerHTML = `
-                    <div class="project-name">${p.name}</div>
-                    <div class="project-date">${dateStr}</div>
-                `;
-
-                const actions = document.createElement('div');
-                actions.className = 'project-actions';
-
-                // 開くボタン
-                const openBtn = document.createElement('button');
-                openBtn.className = 'project-btn primary';
-                openBtn.textContent = '開く';
-                openBtn.onclick = () => {
-                    if (this.currentProjectName && this.currentProjectName !== p.name) {
-                        if (!confirm('現在のプロジェクトを閉じて、選択したプロジェクトを開きますか？\n（未保存の変更は失われます）')) return;
-                    }
-                    this.loadProject(p.name);
-                    modal.classList.add('hidden');
-                };
-
-                // 複製ボタン
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'project-btn';
-                copyBtn.textContent = '複製';
-                copyBtn.onclick = () => {
-                    const newName = prompt(`「${p.name}」の複製を作成します。\n新しいプロジェクト名を入力してください:`, p.name + ' のコピー');
-                    if (newName) {
-                        if (Storage.projectExists(newName)) {
-                            alert('その名前は既に使用されています');
-                            return;
-                        }
-                        if (Storage.duplicateProject(p.name, newName)) {
-                            renderList(); // リスト更新
-                        } else {
-                            alert('複製に失敗しました');
-                        }
-                    }
-                };
-
-                // 削除ボタン
-                const delBtn = document.createElement('button');
-                delBtn.className = 'project-btn danger';
-                delBtn.textContent = '削除';
-                delBtn.onclick = () => {
-                    if (confirm(`「${p.name}」を削除してもよろしいですか？\nこの操作は取り消せません。`)) {
-                        Storage.deleteProject(p.name);
-                        renderList(); // リスト更新
-                        if (this.currentProjectName === p.name) {
-                            this.currentProjectName = null; // 現在開いているものを削除した場合
-                        }
-                    }
-                };
-
-                actions.appendChild(openBtn);
-                actions.appendChild(copyBtn);
-                actions.appendChild(delBtn);
-
-                item.appendChild(info);
-                item.appendChild(actions);
-                listContainer.appendChild(item);
-            });
-        };
-
-        renderList();
-        modal.classList.remove('hidden');
-
-        // イベントバインド（一度だけにする制御が必要だが、簡易的に毎回上書きまた除去）
-        const closeHandler = () => {
-            modal.classList.add('hidden');
-        };
-        closeBtn.onclick = closeHandler;
-
-        // モーダル外クリック
-        modal.onclick = (e) => {
-            if (e.target === modal) closeHandler();
-        };
-    },
-
     // プロジェクトをロードして反映
     loadProject(name) {
         const data = Storage.loadProject(name);
@@ -1094,33 +948,6 @@ const App = {
         } else {
             alert('プロジェクトの読み込みに失敗しました');
         }
-    },
-
-    // シェアモーダルのイベントバインド（Export/Import用）
-    bindShareModalEvents() {
-        const exportBtn = document.getElementById('export-btn');
-        const importBtn = document.getElementById('import-btn');
-        const fileInput = document.getElementById('import-file-input');
-
-        // 書き出し
-        exportBtn.onclick = () => {
-            const name = this.currentProjectName || this.projectData.meta.name || 'MyGame';
-            this.exportProject(name);
-        };
-
-        // 読み込み（ファイル選択）
-        importBtn.onclick = () => {
-            fileInput.click();
-        };
-
-        // ファイル選択時
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                this.importProject(file);
-            }
-            e.target.value = '';
-        };
     },
 
     // プロジェクト書き出し（旧ダウンロード）
@@ -1186,9 +1013,6 @@ const App = {
         if (!modal) return;
 
         // 初期化
-        const now = new Date();
-        const defaultName = '新しいゲーム ' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
-        input.value = "NEW GAME"; // defaultNameを使わず固定にするか、日時を入れるか。ユーザー要望は初期値「NEW GAME」
         input.value = "NEW GAME";
 
         modal.classList.remove('hidden');
@@ -1292,9 +1116,6 @@ const App = {
                 const d = new Date(p.updatedAt);
                 const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
 
-                // 文字数が多ければスクロール対象にする... というロジックは廃止し、render後の幅判定に委ねる
-                // const isLong = p.name.length > 12;
-
                 item.innerHTML = `
                     <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
                     <div class="list-item-content">
@@ -1347,7 +1168,6 @@ const App = {
         };
 
         selectedName = null;
-        selectedName = null;
         modal.classList.remove('hidden');
 
         // モーダルが表示されてから描画しないと幅が取れないため、微小遅延させるか直後に呼ぶ
@@ -1385,15 +1205,12 @@ const App = {
 
         deleteBtn.onclick = () => {
             if (!selectedName) return;
-            // 削除確認もシンプルに
-            // if (confirm(`「${selectedName}」を けしますか？`)) {
             Storage.deleteProject(selectedName);
             if (this.currentProjectName === selectedName) {
                 this.currentProjectName = null;
             }
             selectedName = null;
             renderList();
-            // }
         };
 
         modal.onclick = (e) => {
@@ -1656,9 +1473,7 @@ const App = {
         // 現在のデータをコピー
         const newData = JSON.parse(JSON.stringify(this.projectData));
 
-        // メタデータ更新
-        // タイトルは変更しない（仕様）
-        // newData.meta.name = newName; 
+        // メタデータ更新（タイトルは変更しない仕様）
         newData.meta.updatedAt = Date.now();
 
         // 内部変数更新

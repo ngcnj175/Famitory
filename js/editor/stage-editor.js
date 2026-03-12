@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PixelGameKit - 繧ｹ繝・・繧ｸ繧ｨ繝・ぅ繧ｿ v4・郁ｩｳ邏ｰ險ｭ螳壹ヱ繝阪Ν蟇ｾ蠢懶ｼ・
  */
 
@@ -75,8 +75,6 @@ const StageEditor = {
 
     // ========== 繝・・繝ｫ繝舌・ ==========
     initTools() {
-        // 驥崎､・Μ繧ｹ繝翫・髦ｲ豁｢
-        // // if (this.toolsInitialized) return;
         this.toolsInitialized = true;
 
         // 繧ｹ繝・・繧ｸ逕ｻ髱｢蟆ら畑縺ｮ繝・・繝ｫ繝懊ち繝ｳ繧帝∈謚・
@@ -1089,7 +1087,6 @@ const StageEditor = {
 
         list.querySelectorAll('.se-preview-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // e.preventDefault();
                 e.stopPropagation();
                 const idx = parseInt(btn.dataset.seIndex);
                 this.playSePreview(idx);

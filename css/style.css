@@ -2885,22 +2885,6 @@ body {
     color: #aaa;
 }
 
-.share-url-container {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-#share-url-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid var(--border-dark);
-    border-radius: 4px;
-    background: var(--bg-darker);
-    color: var(--color-light);
-    font-size: 12px;
-}
-
 .share-btn {
     display: flex;
     align-items: center;

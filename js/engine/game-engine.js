@@ -364,7 +364,6 @@ const GameEngine = {
 
                 if (isCovered) {
                     enemy.frozen = true;
-                    // console.log('Enemy frozen at', ex, ey, '(covered)');
                 }
             }
         });
@@ -373,7 +372,6 @@ const GameEngine = {
         this.projectiles = [];
         this.items = [];
         this.particles = []; // パーティクルシステム
-        this.breakableTiles = new Map(); // 耐久度管理 (key: "x,y", value: life)
         this.breakableTiles = new Map(); // 耐久度管理 (key: "x,y", value: life)
         this.destroyedTiles = new Set(); // 破壊されたタイルの一時管理 (key: "x,y")
 
@@ -1235,7 +1233,6 @@ const GameEngine = {
             if (nextBoss) {
                 // ボス出現！BGMシーケンス開始
                 console.log('Boss encountered!');
-                // nextBoss.frozen = false; // ボス即活性化（ゲームは止めない） // REMOVED
                 this.bossEnemy = nextBoss;
                 this.bossSpawned = true;
                 this.bossSequencePhase = 'fadeout';
@@ -2262,9 +2259,6 @@ const GameEngine = {
 
         if (currentLife <= 0) {
             this.destroyTile(tileX, tileY, tileId);
-        } else {
-            // ダメージ音（SE設定があれば詳細化可、ここでは共通音）
-            // this.player.playSE('damage');
         }
     },
 
@@ -2273,7 +2267,6 @@ const GameEngine = {
         const key = `${tileX},${tileY}`;
 
         // 元データは変更せず、破壊済みリストに追加
-        // stage.layers.fg[tileY][tileX] = -1;
         this.destroyedTiles.add(key);
 
         this.breakableTiles.delete(key);
@@ -2502,7 +2495,6 @@ const GameEngine = {
         // スコア表示（中央上）
         if (App.projectData.stage.showScore) {
             const scoreText = this.score.toString().padStart(6, '0');
-            // const hiText = `HI: ${this.highScore.toString().padStart(6, '0')}`; // スペースがあれば表示
 
             this.ctx.font = 'bold 16px Arial';
             this.ctx.textAlign = 'center';

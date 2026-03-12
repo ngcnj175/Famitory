@@ -14,7 +14,6 @@ const urlsToCache = [
     './js/engine/player.js',
     './js/engine/enemy.js',
     './js/ui/controller.js',
-    './js/ui/toolbar.js',
     './manifest.json'
 ];
 
