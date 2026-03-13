@@ -2931,11 +2931,19 @@ const StageEditor = {
         const transparentSelect = document.getElementById('stage-transparent-index');
         const timeMin = document.getElementById('stage-time-min');
         const timeSec = document.getElementById('stage-time-sec');
-
-        // 蜷榊燕・医せ繝・・繧ｸ蜷阪∪縺溘・繝励Ο繧ｸ繧ｧ繧ｯ繝亥錐・・
-        if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
-
         const authorInput = document.getElementById('stage-author-input');
+
+        // 入力欄の現在値を projectData に反映（背景色変更時など他設定の更新で上書きされないように）
+        if (nameInput) {
+            stage.name = nameInput.value;
+            if (App.projectData.meta) App.projectData.meta.name = nameInput.value || 'NEW GAME';
+        }
+        if (authorInput && App.projectData.meta) {
+            App.projectData.meta.author = authorInput.value || 'You';
+        }
+
+        // ステージタイトル・作成者名の表示
+        if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
         if (authorInput) authorInput.value = App.projectData.meta?.author || 'You';
 
         // エディットキー表示
