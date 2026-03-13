@@ -644,13 +644,15 @@ const App = {
             this.showSimpleProjectList();
         });
 
-        // 保存（SAVE） - 長押し対応
+        // 保存（SAVE） - 長押し対応（プレイヤーモードではエディットキー入力モーダルを表示）
         const saveBtn = document.getElementById('save-icon-btn');
         if (saveBtn) {
             let pressTimer;
             const startPress = (e) => {
                 // 右クリック等は無視
                 if (e.type === 'mousedown' && e.button !== 0) return;
+                // プレイヤーモード（locked）では長押しタイマーを開始しない
+                if (saveBtn.classList.contains('locked')) return;
 
                 pressTimer = setTimeout(() => {
                     pressTimer = null;
@@ -667,6 +669,15 @@ const App = {
             };
 
             const endPress = (e) => {
+                // プレイヤーモードではエディットキー入力モーダルを表示（SAVEは実行しない）
+                if (saveBtn.classList.contains('locked')) {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null;
+                    }
+                    this.showEditKeyModal();
+                    return;
+                }
                 if (pressTimer) {
                     // タイマーが残っている＝短押し
                     clearTimeout(pressTimer);
