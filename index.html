@@ -97,13 +97,15 @@
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
                 <div id="game-sub-row">
                     <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                </div>
+                <div id="game-info-bottom">
+                    <div id="game-remix-info" class="hidden">
+                        Remix of <span id="game-original-title"></span> by <span class="remix-link" id="game-original-author"></span>
+                    </div>
                     <div id="game-likes-display" class="hidden">
                         <img src="images/like_icon.svg" alt="like" class="like-icon-small">
                         <span id="game-likes-count">0</span>
                     </div>
-                </div>
-                <div id="game-remix-info" class="hidden">
-                    Remix of <span id="game-original-title"></span> by <span class="remix-link" id="game-original-author"></span>
                 </div>
             </div>
 
@@ -1042,6 +1044,11 @@
         <div class="modal-content share-modal-content">
             <h3 class="modal-title-simple">ゲームを共有</h3>
 
+            <div class="setting-row" style="margin: 12px 24px; justify-content: flex-start; gap: 8px;">
+                <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
+                <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;">リミックスOK</label>
+            </div>
+
             <!-- 公開ステータスバッジ（公開済みのとき表示） -->
             <div id="share-status" class="share-status hidden">
                 <span class="share-status-dot"></span>
@@ -1060,11 +1067,6 @@
                 <button id="share-discord-btn" class="share-simple-btn">
                     Discord に とうこう
                 </button>
-            </div>
-
-            <div class="setting-row" style="margin: 12px 24px; justify-content: flex-start; gap: 8px;">
-                <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
-                <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;">リミックスOK（改変可能にする）</label>
             </div>
 
             <hr class="share-divider">

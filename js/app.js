@@ -787,12 +787,13 @@ const App = {
             this.updateLikesDisplay(0);
         }
 
-        // リミックス元（原作者）情報の表示
+        // リミックス元（原作者）情報の表示（リミックス元がない場合は非表示、原作の行は空欄）
         const remixInfoDisplay = document.getElementById('game-remix-info');
         const origTitle = document.getElementById('game-original-title');
         const origAuthor = document.getElementById('game-original-author');
 
-        if (remixInfoDisplay && origTitle && origAuthor && this.projectData?.meta?.originalAuthor) {
+        const hasRemixSource = !!(this.projectData?.meta?.originalAuthor);
+        if (remixInfoDisplay && origTitle && origAuthor && hasRemixSource) {
             origTitle.textContent = this.projectData.meta.originalTitle || 'Unknown';
             origAuthor.textContent = this.projectData.meta.originalAuthor;
             remixInfoDisplay.classList.remove('hidden');
@@ -1173,6 +1174,11 @@ const App = {
             this.projectData = this.createDefaultProject();
             this.projectData.meta.name = name;
             this.currentProjectName = name;
+
+            // リミックス元はクリア（NEWから新規作成した場合は独立した作品として扱う）
+            delete this.projectData.meta.originalAuthor;
+            delete this.projectData.meta.originalTitle;
+            delete this.projectData.meta.originalShareId;
 
             // 発行済みデータを開いた状態からNEWした場合のリセット処理
             this._sharedGameId = null;

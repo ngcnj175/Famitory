@@ -584,6 +584,21 @@ const GameEngine = {
 
         // STAGE CLEAR演出中
         if (this.titleState === 'clear') {
+            // クリエイターモード: リザルト表示をスキップし、即PUSH STARTへ（switchScreen→showPreviewで初期化）
+            if (window.App && !window.App.isPlayOnlyMode) {
+                this.stop();
+                this.hasStarted = false;
+                this.titleState = 'title';
+                this.clearTimer = 0;
+                const overlay = document.getElementById('result-overlay');
+                if (overlay) overlay.classList.add('hidden');
+                window.App.switchScreen('play');
+                document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
+                const navPlayBtn = document.getElementById('nav-play-btn');
+                if (navPlayBtn) navPlayBtn.classList.add('active-nav');
+                return;
+            }
+
             this.clearTimer++;
 
             // プレイヤーの喜びジャンプ（最初の30フレームで発動）
@@ -604,13 +619,6 @@ const GameEngine = {
 
             // フェーズ終了: 210フレーム（2秒テキスト + 0.5秒暗転 + 1秒待機）後にリザルトへ
             if (this.clearTimer >= 210) {
-                // クリップエイターモードならリザルトをスキップしてPLAY画面に戻る
-                if (window.App && !window.App.isPlayOnlyMode) {
-                    this.stop();
-                    window.App.switchScreen('play');
-                    return;
-                }
-
                 this.titleState = 'result';
                 this.renderResultScreen();
                 return;
@@ -622,6 +630,24 @@ const GameEngine = {
 
         // GAME OVER演出中（ワイプ閉じ→GAME OVER→PUSH START）
         if (this.titleState === 'gameover') {
+            // クリエイターモード: リザルト表示をスキップし、即PUSH STARTへ
+            if (window.App && !window.App.isPlayOnlyMode) {
+                this.stop();
+                this.hasStarted = false;
+                this.titleState = 'title';
+                this.gameOverTimer = 0;
+                this.gameOverPending = false;
+                const overlay = document.getElementById('result-overlay');
+                if (overlay) overlay.classList.add('hidden');
+                window.App.switchScreen('play');
+                const navPlayBtn = document.getElementById('nav-play-btn');
+                if (navPlayBtn) {
+                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
+                    navPlayBtn.classList.add('active-nav');
+                }
+                return;
+            }
+
             this.gameOverTimer++;
 
             // フェーズ1: 閉じるワイプ（0-30フレーム）
@@ -634,13 +660,6 @@ const GameEngine = {
             }
             // フェーズ3: リザルトへ
             else {
-                // クリエイターモードならリザルトスキップ
-                if (window.App && !window.App.isPlayOnlyMode) {
-                    this.stop();
-                    window.App.switchScreen('play');
-                    return;
-                }
-
                 this.titleState = 'result';
                 this.renderResultScreen(); // DOM表示
                 // リザルト中はループ停止（またはresultステートでループ継続して描画のみ？）
@@ -3228,20 +3247,15 @@ const GameEngine = {
                     App.unlockCreatorMode();
                     App.switchScreen('stage');
                     
-                    // ストレージに「Remix」など別名で保存
-                    const newName = `${App.projectData.meta.name || 'Game'} (Remix)`;
-                    App.projectData.meta.name = newName;
-                    App.currentProjectName = newName;
+                    // ストレージに保存（タイトルはそのまま）
+                    const name = App.projectData.meta.name || 'Game';
+                    App.currentProjectName = name;
                     
                     if (typeof Storage !== 'undefined') {
-                        Storage.saveProject(newName, App.projectData);
+                        Storage.saveProject(name, App.projectData);
                         Storage.save('currentProject', App.projectData);
                     }
                     App.updateGameInfo();
-                    
-                    if (App.showToast) {
-                        App.showToast('リミックスを開始します！');
-                    }
                 }
             });
         }

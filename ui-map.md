@@ -162,13 +162,13 @@
 | U160 | STAR | ステージ設定モーダル | index.html | 991 |
 | U161 | デフォルト | ステージ設定モーダル | index.html | 977 |
 | U162 | スプライトを選択 | スプライト選択モーダル | index.html | 1028 |
-| U163 | ゲームを共有 | 共有ダイアログ | index.html | 1043 |
-| U164 | 公開中 | 共有ダイアログ | index.html | 1048 |
-| U165 | URL をコピー | 共有ダイアログ | index.html | 1052 |
-| U166 | ✓ コピーしました | 共有ダイアログ | index.html | 1055 |
-| U167 | X に とうこう | 共有ダイアログ | index.html | 1058 |
-| U168 | Discord に とうこう | 共有ダイアログ | index.html | 1061 |
-| U169 | リミックスOK（改変可能にする） | 共有ダイアログ | index.html | 1067 |
+| U163 | ゲームを共有 | 共有ダイアログ | index.html | 1045 |
+| U164 | 公開中 | 共有ダイアログ | index.html | 1056 |
+| U165 | URL をコピー | 共有ダイアログ | index.html | 1060 |
+| U166 | ✓ コピーしました | 共有ダイアログ | index.html | 1062 |
+| U167 | X に とうこう | 共有ダイアログ | index.html | 1065 |
+| U168 | Discord に とうこう | 共有ダイアログ | index.html | 1068 |
+| U169 | リミックスOK | 共有ダイアログ | index.html | 1050 |
 | U170 | データを移動 | 共有ダイアログ | index.html | 1071 |
 | U171 | そとに だす | 共有ダイアログ | index.html | 1074 |
 | U172 | もちこむ | 共有ダイアログ | index.html | 1077 |
@@ -241,7 +241,6 @@
 | U239 | サバイバルモードでは制限時間を設定してください | （alert） | game-engine.js | 85 |
 | U240 | STAGE CLEAR! | リザルト画面 | game-engine.js | 3278 |
 | U241 | GAME OVER | リザルト画面 | game-engine.js | 3281 |
-| U242 | リミックスを開始します！ | （トースト） | game-engine.js | 3243 |
 | U243 | スプライトを登録してください | （alert） | stage-editor.js | 1355 |
 | U244 | このタイルを削除しますか？ | （confirm） | stage-editor.js | 1549 |
 | U245 | ステージエディタの反転機能は未実装です | （alert） | stage-editor.js | 2211 |

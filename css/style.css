@@ -237,11 +237,24 @@ body {
     font-weight: 500;
 }
 
+#game-info-bottom {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 18px;
+}
+
 #game-remix-info {
     font-size: 9px;
     color: var(--color-medium);
     margin-top: 0px;
     text-align: center;
+}
+
+#game-remix-info.hidden {
+    display: none;
 }
 
 #game-remix-info .remix-link {
