@@ -604,6 +604,13 @@ const GameEngine = {
 
             // フェーズ終了: 210フレーム（2秒テキスト + 0.5秒暗転 + 1秒待機）後にリザルトへ
             if (this.clearTimer >= 210) {
+                // クリップエイターモードならリザルトをスキップしてPLAY画面に戻る
+                if (window.App && !window.App.isPlayOnlyMode) {
+                    this.stop();
+                    window.App.switchScreen('play');
+                    return;
+                }
+
                 this.titleState = 'result';
                 this.renderResultScreen();
                 return;
@@ -627,6 +634,13 @@ const GameEngine = {
             }
             // フェーズ3: リザルトへ
             else {
+                // クリエイターモードならリザルトスキップ
+                if (window.App && !window.App.isPlayOnlyMode) {
+                    this.stop();
+                    window.App.switchScreen('play');
+                    return;
+                }
+
                 this.titleState = 'result';
                 this.renderResultScreen(); // DOM表示
                 // リザルト中はループ停止（またはresultステートでループ継続して描画のみ？）
@@ -3184,6 +3198,54 @@ const GameEngine = {
             });
         }
 
+        const remixBtn = document.getElementById('result-remix-btn');
+        if (remixBtn) {
+            remixBtn.addEventListener('click', () => {
+                if (overlay) overlay.classList.add('hidden');
+                this.stop();
+
+                // リミックス処理の実行
+                if (App.projectData) {
+                    App.isPlayOnlyMode = false;
+                    
+                    // 原作者情報の待避（すでにoriginalAuthorがある場合は上書きしない）
+                    if (!App.projectData.meta.originalAuthor) {
+                        App.projectData.meta.originalAuthor = App.projectData.meta.author || 'Unknown';
+                        App.projectData.meta.originalTitle = App.projectData.meta.name || 'Unknown';
+                        App.projectData.meta.originalShareId = App.projectData.meta.shareId || App._sharedGameId || '';
+                    }
+
+                    // 現在の作者・IDリセット
+                    App.projectData.meta.author = 'You';
+                    App.projectData.meta.shareId = null;
+                    App._sharedGameId = null;
+                    App._likesCount = 0;
+                    
+                    // 新しいエディットキーを発行
+                    App.projectData.meta.editKey = App.generateEditKey();
+                    
+                    // UIロック解除と画面更新
+                    App.unlockCreatorMode();
+                    App.switchScreen('stage');
+                    
+                    // ストレージに「Remix」など別名で保存
+                    const newName = `${App.projectData.meta.name || 'Game'} (Remix)`;
+                    App.projectData.meta.name = newName;
+                    App.currentProjectName = newName;
+                    
+                    if (typeof Storage !== 'undefined') {
+                        Storage.saveProject(newName, App.projectData);
+                        Storage.save('currentProject', App.projectData);
+                    }
+                    App.updateGameInfo();
+                    
+                    if (App.showToast) {
+                        App.showToast('リミックスを開始します！');
+                    }
+                }
+            });
+        }
+
         const likeBtn = document.getElementById('result-like-btn');
         if (likeBtn) {
             likeBtn.addEventListener('click', async () => {
@@ -3234,6 +3296,23 @@ const GameEngine = {
 
         // いいねエリア表示（公開URLから開いた場合のみ）
         const likeArea = document.getElementById('result-like-area');
+        if (App._sharedGameId && App.isPlayOnlyMode) {
+            if (likeArea) likeArea.classList.remove('hidden');
+            const likeCount = document.getElementById('result-like-count');
+            if (likeCount) likeCount.textContent = App._likesCount || 0;
+        } else {
+            if (likeArea) likeArea.classList.add('hidden');
+        }
+
+        // リミックスボタンの出し分け (プレイヤーモード かつ remixOK の時のみ表示)
+        const remixBtn = document.getElementById('result-remix-btn');
+        if (remixBtn) {
+            if (App.isPlayOnlyMode && App.projectData?.meta?.remixOK) {
+                remixBtn.classList.remove('hidden');
+            } else {
+                remixBtn.classList.add('hidden');
+            }
+        }
         const likeBtn = document.getElementById('result-like-btn');
         const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
         if (likeArea) {

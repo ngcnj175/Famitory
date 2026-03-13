@@ -707,6 +707,12 @@ const App = {
             const existingId = this.projectData?.meta?.shareId;
             this._shareUrl = existingId ? Share.createShortUrl(existingId) : null;
 
+            // Remix OKのチェック状態復元
+            const remixOkCheckbox = document.getElementById('share-remix-ok');
+            if (remixOkCheckbox) {
+                remixOkCheckbox.checked = !!this.projectData?.meta?.remixOK;
+            }
+
             document.getElementById('share-dialog').classList.remove('hidden');
             this._updateShareStatus();
         });
@@ -768,6 +774,29 @@ const App = {
             this.fetchAndShowLikes(gid);
         } else {
             this.updateLikesDisplay(0);
+        }
+
+        // リミックス元（原作者）情報の表示
+        const remixInfoDisplay = document.getElementById('game-remix-info');
+        const origTitle = document.getElementById('game-original-title');
+        const origAuthor = document.getElementById('game-original-author');
+
+        if (remixInfoDisplay && origTitle && origAuthor && this.projectData?.meta?.originalAuthor) {
+            origTitle.textContent = this.projectData.meta.originalTitle || 'Unknown';
+            origAuthor.textContent = this.projectData.meta.originalAuthor;
+            remixInfoDisplay.classList.remove('hidden');
+
+            const origShareId = this.projectData.meta.originalShareId;
+            if (origShareId) {
+                origAuthor.onclick = () => {
+                    const url = Share.createShortUrl(origShareId);
+                    window.open(url, '_blank');
+                };
+            } else {
+                origAuthor.onclick = null;
+            }
+        } else if (remixInfoDisplay) {
+            remixInfoDisplay.classList.add('hidden');
         }
     },
 
@@ -1138,6 +1167,7 @@ const App = {
             this._sharedGameId = null;
             this._likesCount = 0;
             this.isPlayOnlyMode = false;
+            this.updateLikesDisplay(0);
             
             // クリエイターモードUIへの復帰
             document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
@@ -1388,6 +1418,12 @@ const App = {
             this._shareLoading = true;
 
             try {
+                // 保存前にリミックスOKフラグを更新
+                const remixOkCheckbox = document.getElementById('share-remix-ok');
+                if (remixOkCheckbox) {
+                    this.projectData.meta.remixOK = remixOkCheckbox.checked;
+                }
+
                 const id = await Share.saveOrUpdateGame(shareId, this.projectData, !isFirstTime);
 
                 if (!id) {
@@ -1507,6 +1543,19 @@ const App = {
             const name = this.currentProjectName || this.projectData.meta.name || 'MyGame';
             this.exportProject(name);
         };
+
+        // リミックスOKチェックボックス変更
+        const remixOkCheckbox = document.getElementById('share-remix-ok');
+        if (remixOkCheckbox) {
+            remixOkCheckbox.addEventListener('change', (e) => {
+                if (this.projectData) {
+                    this.projectData.meta.remixOK = e.target.checked;
+                    if (this.currentProjectName) {
+                        Storage.saveProject(this.currentProjectName, this.projectData);
+                    }
+                }
+            });
+        }
 
         // 読み込み
         importBtn.onclick = () => {
