@@ -1349,6 +1349,11 @@ const GameEngine = {
                         return;
                     }
 
+                    // ボム: 画面上の全敵に1ダメージ＋爆発音
+                    if (item.itemType === 'bomb') {
+                        this.damageAllEnemiesOnScreen(1);
+                        if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
+                    }
                     this.player.collectItem(item.itemType);
                     // クリアアイテムカウント
                     if (item.itemType === 'clear') {
@@ -1360,6 +1365,7 @@ const GameEngine = {
                     if (item.itemType === 'coin') pts = 50;
                     if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                     if (item.itemType === 'weapon') pts = 200;
+                    if (item.itemType === 'bomb') pts = 100;
                     if (item.itemType === 'key') pts = 50;
                     if (item.itemType === 'clear') pts = 1000;
                     this.addScore(pts);
@@ -1655,6 +1661,11 @@ const GameEngine = {
                     return;
                 }
 
+                // ボム: 画面上の全敵に1ダメージ＋爆発音
+                if (item.itemType === 'bomb') {
+                    this.damageAllEnemiesOnScreen(1);
+                    if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
+                }
                 this.player.collectItem(item.itemType);
 
                 // CLEARアイテムの場合、取得数をカウント
@@ -1672,9 +1683,30 @@ const GameEngine = {
                 if (item.itemType === 'coin') pts = 50;  // コイン
                 if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                 if (item.itemType === 'weapon') pts = 200;
+                if (item.itemType === 'bomb') pts = 100;
                 if (item.itemType === 'key') pts = 50;
                 if (item.itemType === 'clear') pts = 1000;
                 this.addScore(pts);
+            }
+        });
+    },
+
+    // 画面上の全敵にダメージ（ボム用）
+    damageAllEnemiesOnScreen(damage) {
+        const viewWidth = this.canvas.width / this.TILE_SIZE;
+        const viewHeight = this.canvas.height / this.TILE_SIZE;
+        const left = this.camera.x;
+        const right = this.camera.x + viewWidth;
+        const top = this.camera.y;
+        const bottom = this.camera.y + viewHeight;
+        this.enemies.forEach(enemy => {
+            if (enemy.isDying) return;
+            const inView = enemy.x >= left && enemy.x < right && enemy.y >= top && enemy.y < bottom;
+            if (inView) {
+                for (let i = 0; i < damage; i++) {
+                    const fromRight = this.player && this.player.x > enemy.x;
+                    enemy.takeDamage(fromRight);
+                }
             }
         });
     },

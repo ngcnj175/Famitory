@@ -536,6 +536,9 @@ class Player {
                 this.hasWeapon = true;
                 this.playSE('itemGet');
                 break;
+            case 'bomb':
+                // ボム: 画面上の全敵に1ダメージ＋爆発音はgame-engineで処理
+                break;
             case 'key':
                 // カギ取得
                 this.hasKey = true;

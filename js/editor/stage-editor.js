@@ -440,6 +440,7 @@ const StageEditor = {
                             <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                             <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
                             <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
+                            <option value="bomb" ${config.dropItem === 'bomb' ? 'selected' : ''}>ボム</option>
                             <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                         </select>
                     </div>
@@ -532,6 +533,7 @@ const StageEditor = {
                         <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
                         <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>
                         <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>武器</option>
+                        <option value="bomb" ${config.itemType === 'bomb' ? 'selected' : ''}>ボム</option>
                         <option value="key" ${config.itemType === 'key' ? 'selected' : ''}>カギ</option>
                         <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>イースターエッグ</option>
                     </select>

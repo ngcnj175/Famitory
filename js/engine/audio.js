@@ -631,6 +631,31 @@ const NesAudio = {
     playSE_damage() { this.playSE_damage_01(); },
     playSE_itemGet() { this.playSE_itemGet_01(); },
 
+    // SE: 爆発音「ドゥクンッ」- ファミコン風
+    playSE_explosion() {
+        this.ensureContext();
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        }
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.12);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+        source.start();
+        source.stop(this.ctx.currentTime + 0.12);
+    },
+
     // SE: 敵を倒す（短い「ポン」音）- v2.0.1オリジナル
     playSE_enemyDefeat() {
         const osc = this.ctx.createOscillator();
