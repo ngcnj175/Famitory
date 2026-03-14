@@ -584,23 +584,6 @@ const GameEngine = {
 
         // STAGE CLEAR演出中
         if (this.titleState === 'clear') {
-            const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
-            // クリエイターモード: リザルト表示をスキップし、即PUSH STARTへ
-            if (app && !app.isPlayOnlyMode) {
-                this.stop();
-                this.hasStarted = false;
-                this.titleState = 'title';
-                this.clearTimer = 0;
-                const overlay = document.getElementById('result-overlay');
-                if (overlay) overlay.classList.add('hidden');
-                app.switchScreen('play');
-                if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-                document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-                const navPlayBtn = document.getElementById('nav-play-btn');
-                if (navPlayBtn) navPlayBtn.classList.add('active-nav');
-                return;
-            }
-
             this.clearTimer++;
 
             // プレイヤーの喜びジャンプ（最初の30フレームで発動）
@@ -619,8 +602,23 @@ const GameEngine = {
             // STAGE CLEARテキストと暗転エフェクト
             this.renderClearEffect();
 
-            // フェーズ終了: 210フレーム後にリザルトへ（クリエイターモードはrenderResultScreen内でスキップ）
+            // フェーズ終了: 210フレーム後にリザルトへ（クリエイターモードはSTAGE CLEAR表示後、リザルトをスキップしてPUSH STARTへ）
             if (this.clearTimer >= 210) {
+                const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
+                if (app && !app.isPlayOnlyMode) {
+                    this.stop();
+                    this.hasStarted = false;
+                    this.titleState = 'title';
+                    this.clearTimer = 0;
+                    const overlay = document.getElementById('result-overlay');
+                    if (overlay) overlay.classList.add('hidden');
+                    app.switchScreen('play');
+                    if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
+                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
+                    const navPlayBtn = document.getElementById('nav-play-btn');
+                    if (navPlayBtn) navPlayBtn.classList.add('active-nav');
+                    return;
+                }
                 this.titleState = 'result';
                 this.renderResultScreen();
                 return;
@@ -632,24 +630,6 @@ const GameEngine = {
 
         // GAME OVER演出中（ワイプ閉じ→GAME OVER→PUSH START）
         if (this.titleState === 'gameover') {
-            const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
-            // クリエイターモード: リザルト表示をスキップし、即PUSH STARTへ
-            if (app && !app.isPlayOnlyMode) {
-                this.stop();
-                this.hasStarted = false;
-                this.titleState = 'title';
-                this.gameOverTimer = 0;
-                this.gameOverPending = false;
-                const overlay = document.getElementById('result-overlay');
-                if (overlay) overlay.classList.add('hidden');
-                app.switchScreen('play');
-                if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-                document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-                const navPlayBtn = document.getElementById('nav-play-btn');
-                if (navPlayBtn) navPlayBtn.classList.add('active-nav');
-                return;
-            }
-
             this.gameOverTimer++;
 
             // フェーズ1: 閉じるワイプ（0-30フレーム）
@@ -660,8 +640,24 @@ const GameEngine = {
             else if (this.gameOverTimer <= 150) {
                 this.renderGameOverText();
             }
-            // フェーズ3: リザルトへ
+            // フェーズ3: リザルトへ（クリエイターモードはGAME OVER表示後、リザルトをスキップしてPUSH STARTへ）
             else {
+                const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
+                if (app && !app.isPlayOnlyMode) {
+                    this.stop();
+                    this.hasStarted = false;
+                    this.titleState = 'title';
+                    this.gameOverTimer = 0;
+                    this.gameOverPending = false;
+                    const overlay = document.getElementById('result-overlay');
+                    if (overlay) overlay.classList.add('hidden');
+                    app.switchScreen('play');
+                    if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
+                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
+                    const navPlayBtn = document.getElementById('nav-play-btn');
+                    if (navPlayBtn) navPlayBtn.classList.add('active-nav');
+                    return;
+                }
                 this.titleState = 'result';
                 this.renderResultScreen(); // DOM表示
                 // リザルト中はループ停止（またはresultステートでループ継続して描画のみ？）
@@ -749,23 +745,6 @@ const GameEngine = {
         if (this.gameOverPending && this.titleState === 'playing') {
             this.gameOverWaitTimer--;
             if (this.gameOverWaitTimer <= 0) {
-                const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
-                // クリエイターモード: ゲームオーバー演出・リザルトをスキップし、即PUSH STARTへ
-                if (app && !app.isPlayOnlyMode) {
-                    this.stop();
-                    this.hasStarted = false;
-                    this.titleState = 'title';
-                    this.gameOverTimer = 0;
-                    this.gameOverPending = false;
-                    const overlay = document.getElementById('result-overlay');
-                    if (overlay) overlay.classList.add('hidden');
-                    app.switchScreen('play');
-                    if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-                    const navPlayBtn = document.getElementById('nav-play-btn');
-                    if (navPlayBtn) navPlayBtn.classList.add('active-nav');
-                    return;
-                }
                 console.log('GAME OVER triggered!');
                 this.titleState = 'gameover';
                 this.gameOverTimer = 0;
