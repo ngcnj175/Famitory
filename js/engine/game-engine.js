@@ -715,12 +715,14 @@ const GameEngine = {
 
         // プレイヤー落下チェック（画面外に出たらゲームオーバーへ）
         if (this.titleState === 'playing' && this.player) {
-            // カメラの最下端、またはステージ最下端のどちらか大きい方を基準にする
+            const stage = App.projectData.stage;
             const viewHeight = this.canvas.height / this.TILE_SIZE;
-            const bottomEdge = Math.max(App.projectData.stage.height, this.camera.y + viewHeight);
+            const cameraBottom = this.camera.y + viewHeight;
+            const stageBottom = stage?.height ?? 16;
+            // 画面下端とステージ下端のうち、上側（小さい方）を基準に検出＝画面外に落ちたら即GAME OVER
+            const bottomEdge = Math.min(stageBottom, cameraBottom);
 
             // 画面外（ステージ下端またはカメラ下端）に完全に落下した場合
-            // プレイヤーが画面から完全に消えるよう、+3 タイル分待つ
             if (this.player.y > bottomEdge + 3) {
                 if (!this.gameOverPending) {
                     console.log('GAME OVER pending (Fell)! Player y:', this.player.y, 'bottomEdge:', bottomEdge);
