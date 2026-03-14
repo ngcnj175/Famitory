@@ -841,6 +841,13 @@ const App = {
             s.classList.toggle('active', s.id === screenName + '-screen');
         });
 
+        // ナビアイコンのアクティブ状態を同期（play/paint/stage/sound）
+        const navBtn = document.getElementById(`nav-${screenName}-btn`);
+        if (navBtn) {
+            document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
+            navBtn.classList.add('active-nav');
+        }
+
         // 各画面の初期化/更新
         this.refreshCurrentScreen();
     },
