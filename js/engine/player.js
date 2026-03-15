@@ -547,6 +547,55 @@ class Player {
         }
     }
 
+    // 変身: 指定テンプレートに切り替え
+    transform(newTemplateIdx) {
+        const templates = App.projectData?.templates || [];
+        const newTemplate = templates[newTemplateIdx];
+        if (!newTemplate || newTemplate.type !== 'player') return;
+
+        this.template = newTemplate;
+        this.templateIdx = newTemplateIdx;
+
+        // サイズ再計算
+        const idleSpriteIdx = newTemplate.sprites?.idle?.frames?.[0];
+        const sprite = App.projectData?.sprites?.[idleSpriteIdx];
+        const spriteSize = sprite?.size || 1;
+        this.width = spriteSize === 2 ? 2.0 : 1.0;
+        this.height = spriteSize === 2 ? 2.0 : 1.0;
+
+        // 物理パラメータ
+        const speedConfig = newTemplate.config?.speed ?? 5;
+        const jumpConfig = newTemplate.config?.jumpPower ?? 10;
+        this.moveSpeed = 0.05 + (speedConfig / 10) * 0.1;
+        this.jumpPower = -0.2 - (jumpConfig / 20) * 0.3;
+
+        // ライフ（現在値を維持、最大値は新テンプレートに合わせる）
+        const newMaxLives = newTemplate.config?.life ?? 3;
+        this.maxLives = newMaxLives;
+        this.lives = Math.min(this.lives, newMaxLives);
+
+        // 武器（持っていれば維持、新フォームが武器持ちなら付与）
+        this.hasWeapon = this.hasWeapon || (newTemplate.config?.weaponFromStart ?? true);
+
+        // その他
+        this.shotMaxRange = (newTemplate.config?.shotMaxRange || 0) * 2;
+        this.wJumpEnabled = newTemplate.config?.wJump || false;
+
+        // SE
+        this.seJump = newTemplate.config?.seJump ?? 0;
+        this.seAttack = newTemplate.config?.seAttack ?? 5;
+        this.seDamage = newTemplate.config?.seDamage ?? 10;
+        this.seItemGet = newTemplate.config?.seItemGet ?? 15;
+        this.seEnemyDefeat = newTemplate.config?.seEnemyDefeat ?? 24;
+
+        // アニメーションリセット
+        this.animFrame = 0;
+        this.animTimer = 0;
+        this.state = 'idle';
+
+        this.playSE('itemGet');
+    }
+
     die() {
         this.isDead = true;
         this.isDying = true;

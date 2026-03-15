@@ -120,6 +120,7 @@
 | U118 | WALK | プレイヤー設定モーダル | index.html | 763 |
 | U119 | JUMP | プレイヤー設定モーダル | index.html | 764 |
 | U120 | ATTACK | プレイヤー設定モーダル | index.html | 765 |
+| U120a | 変身アイテム | タイル設定パネル（変身プレイヤー用） | stage-editor.js | 379 |
 | U121 | SHOT | プレイヤー設定モーダル | index.html | 766 |
 | U122 | LIFE表示 | プレイヤー設定モーダル | index.html | 770 |
 | U123 | LIFE数 | プレイヤー設定モーダル | index.html | 772 |

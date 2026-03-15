@@ -249,6 +249,9 @@ const GameEngine = {
         let playerPos = null;
         const enemyPositions = [];
 
+        // 基本プレイヤー: テンプレート配列内の最初の player
+        const basePlayerIdx = templates.findIndex(t => t.type === 'player');
+
         // スプライトIDからテンプレートを検索するマップ（旧形式互換）
         const spriteToTemplate = {};
         templates.forEach((template, index) => {
@@ -274,13 +277,20 @@ const GameEngine = {
         };
 
         // ステージ上のタイルからプレイヤー・エネミーを検索
+        // 変身アイテム用（プレイヤーentityのうち基本以外）
+        const transformItemPositions = [];
+
         // 1. Entities配列から検索（推奨）
         if (stage.entities) {
             stage.entities.forEach(ent => {
                 const template = templates[ent.templateId];
                 if (template) {
-                    if (template.type === 'player' && !playerPos) {
-                        playerPos = { x: ent.x, y: ent.y, template, templateIdx: ent.templateId };
+                    if (template.type === 'player') {
+                        if (basePlayerIdx >= 0 && ent.templateId === basePlayerIdx && !playerPos) {
+                            playerPos = { x: ent.x, y: ent.y, template, templateIdx: ent.templateId };
+                        } else if (basePlayerIdx >= 0 && ent.templateId !== basePlayerIdx) {
+                            transformItemPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId });
+                        }
                     } else if (template.type === 'enemy') {
                         enemyPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId, behavior: template.config?.move || 'idle' });
                     }
@@ -295,8 +305,12 @@ const GameEngine = {
                     if (tileId >= 0) {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
                         if (template) {
-                            if (template.type === 'player' && !playerPos) {
-                                playerPos = { x, y, template, templateIdx };
+                            if (template.type === 'player') {
+                                if (basePlayerIdx >= 0 && templateIdx === basePlayerIdx && !playerPos) {
+                                    playerPos = { x, y, template, templateIdx };
+                                } else if (basePlayerIdx >= 0 && templateIdx !== basePlayerIdx) {
+                                    transformItemPositions.push({ x, y, template, templateIdx });
+                                }
                             } else if (template.type === 'enemy') {
                                 enemyPositions.push({ x, y, template, templateIdx, behavior: template.config?.move || 'idle' });
                             }
@@ -399,6 +413,30 @@ const GameEngine = {
         // ステージ上のアイテムを検索
         // 重複防止用のSet（座標をキーとして使用）
         const processedItemPositions = new Set();
+
+        // 0. 変身アイテム（変身プレイヤーentity）を追加
+        const processedTransformPositions = new Set();
+        transformItemPositions.forEach(pos => {
+            const posKey = `${Math.floor(pos.x)},${Math.floor(pos.y)}`;
+            if (processedTransformPositions.has(posKey)) return;
+            processedTransformPositions.add(posKey);
+            processedItemPositions.add(posKey);
+            const spriteIdx = pos.template.sprites?.transformItem?.frames?.[0]
+                ?? pos.template.sprites?.idle?.frames?.[0]
+                ?? pos.template.sprites?.main?.frames?.[0];
+            this.items.push({
+                x: pos.x,
+                y: pos.y,
+                width: 1,
+                height: 1,
+                template: pos.template,
+                templateIdx: pos.templateIdx,
+                spriteIdx: spriteIdx,
+                itemType: 'transform',
+                transformTarget: pos.templateIdx,
+                collected: false
+            });
+        });
 
         // 1. Entities配列から（優先）
         if (stage.entities) {
@@ -1354,7 +1392,12 @@ const GameEngine = {
                         this.damageAllEnemiesOnScreen(1);
                         if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
                     }
-                    this.player.collectItem(item.itemType);
+                    // 変身: プレイヤー設定を切り替え
+                    if (item.itemType === 'transform') {
+                        this.player.transform(item.transformTarget);
+                    } else {
+                        this.player.collectItem(item.itemType);
+                    }
                     // クリアアイテムカウント
                     if (item.itemType === 'clear') {
                         this.collectedClearItems = (this.collectedClearItems || 0) + 1;
@@ -1366,6 +1409,7 @@ const GameEngine = {
                     if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                     if (item.itemType === 'weapon') pts = 200;
                     if (item.itemType === 'bomb') pts = 100;
+                    if (item.itemType === 'transform') pts = 200;
                     if (item.itemType === 'key') pts = 50;
                     if (item.itemType === 'clear') pts = 1000;
                     this.addScore(pts);
@@ -1666,7 +1710,12 @@ const GameEngine = {
                     this.damageAllEnemiesOnScreen(1);
                     if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
                 }
-                this.player.collectItem(item.itemType);
+                // 変身: プレイヤー設定を切り替え
+                if (item.itemType === 'transform') {
+                    this.player.transform(item.transformTarget);
+                } else {
+                    this.player.collectItem(item.itemType);
+                }
 
                 // CLEARアイテムの場合、取得数をカウント
                 if (item.itemType === 'clear') {
@@ -1684,6 +1733,7 @@ const GameEngine = {
                 if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
                 if (item.itemType === 'weapon') pts = 200;
                 if (item.itemType === 'bomb') pts = 100;
+                if (item.itemType === 'transform') pts = 200;
                 if (item.itemType === 'key') pts = 50;
                 if (item.itemType === 'clear') pts = 1000;
                 this.addScore(pts);

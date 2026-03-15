@@ -338,8 +338,13 @@ const StageEditor = {
         const type = this.editingTemplate.type;
 
         if (type === 'player' || type === 'enemy') {
-            // スプライトセクション: 立ち・歩き・のぼる・ジャンプ・攻撃 のみ
-            const baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack'];
+            // スプライトセクション: 立ち・歩き・のぼる・ジャンプ・攻撃（プレイヤー変身時は変身アイテムを攻撃の下に追加）
+            const basePlayerIdx = (App.projectData.templates || []).findIndex(t => t.type === 'player');
+            const isBasePlayer = type === 'player' && this.editingIndex === basePlayerIdx;
+            let baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack'];
+            if (type === 'player' && !isBasePlayer) {
+                baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack', 'transformItem'];
+            }
             let spriteHtml = '';
             baseSprites.forEach(key => {
                 spriteHtml += this.renderSpriteRow(key);
@@ -370,7 +375,8 @@ const StageEditor = {
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
         const labels = {
             idle: '立ち', walk: '歩き', climb: 'のぼる', jump: 'ジャンプ',
-            attack: '攻撃', shot: '見た目', life: 'ライフ', main: '見た目'
+            attack: '攻撃', shot: '見た目', life: 'ライフ', main: '見た目',
+            transformItem: '変身アイテム'
         };
 
         return `
@@ -2492,12 +2498,21 @@ const StageEditor = {
         const templates = App.projectData.templates || [];
         const sprites = App.projectData.sprites;
         const palette = App.nesPalette;
+        const basePlayerIdx = templates.findIndex(t => t.type === 'player');
 
         stage.entities.forEach(entity => {
             const template = templates[entity.templateId];
             if (!template) return;
 
-            const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+            // 変身プレイヤー: 変身アイテムのスプライトを表示
+            let spriteIdx;
+            if (template.type === 'player' && basePlayerIdx >= 0 && entity.templateId !== basePlayerIdx) {
+                spriteIdx = template.sprites?.transformItem?.frames?.[0]
+                    ?? template.sprites?.idle?.frames?.[0]
+                    ?? template.sprites?.main?.frames?.[0];
+            } else {
+                spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
+            }
             const sprite = sprites[spriteIdx];
             if (sprite) {
                 // 謨ｵ縺ｯ蟾ｦ蜷代″縺ｫ蜿崎ｻ｢縺励※謠冗判
@@ -2513,6 +2528,7 @@ const StageEditor = {
         const sprites = App.projectData.sprites;
         const templates = App.projectData.templates || [];
         const palette = App.nesPalette;
+        const basePlayerIdx = templates.findIndex(t => t.type === 'player');
 
         this.ctx.globalAlpha = alpha;
 
@@ -2525,9 +2541,16 @@ const StageEditor = {
 
                 let sprite;
                 if (tileId >= 100) {
-                    // 繝・Φ繝励Ξ繝ｼ繝・D繝吶・繧ｹ・域眠蠖｢蠑擾ｼ・
                     const template = templates[tileId - 100];
-                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                    const templateIdx = tileId - 100;
+                    let spriteIdx;
+                    if (template?.type === 'player' && basePlayerIdx >= 0 && templateIdx !== basePlayerIdx) {
+                        spriteIdx = template?.sprites?.transformItem?.frames?.[0]
+                            ?? template?.sprites?.idle?.frames?.[0]
+                            ?? template?.sprites?.main?.frames?.[0];
+                    } else {
+                        spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+                    }
                     sprite = sprites[spriteIdx];
                 } else if (tileId >= 0 && tileId < sprites.length) {
                     // 繧ｹ繝励Λ繧､繝・D繝吶・繧ｹ・域立蠖｢蠑擾ｼ・ 莠呈鋤諤ｧ
