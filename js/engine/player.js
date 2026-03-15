@@ -299,13 +299,12 @@ class Player {
         // ジャンプ処理
         if (GameController.isPressed('a')) {
             if (this.onGround) {
-                // 通常ジャンプ
+                // 通常ジャンプ（キーを新たに押した時のみSE再生＝頭上ブロックで連打防止）
                 this.vy = this.jumpPower;
                 this.onGround = false;
                 this.hasDoubleJumped = false;
                 this.canDoubleJump = this.wJumpEnabled;
-                // SE再生
-                this.playSE('jump');
+                if (!this._jumpKeyWasPressed) this.playSE('jump');
             } else if (this.wJumpEnabled && this.canDoubleJump && !this.hasDoubleJumped && !this._jumpKeyWasPressed) {
                 // 2段ジャンプ
                 this.vy = this.jumpPower;

@@ -765,7 +765,6 @@ const GameEngine = {
                     console.log('GAME OVER pending (Fell)! playerBottom:', playerBottom, 'stageBottom:', stageBottom, 'viewBottom:', viewBottom);
                     this.gameOverPending = true;
                     this.gameOverWaitTimer = 30; // 0.5秒間、画面外に完全に消えた状態を保ってからワイプ開始
-                    this.player.playSE('damage'); // 落下音
                 }
             }
 
