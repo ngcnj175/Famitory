@@ -2946,7 +2946,7 @@ const StageEditor = {
         }
     },
 
-    updateStageSettingsUI() {
+    updateStageSettingsUI(preserveFormState = false) {
         const stage = App.projectData.stage;
 
         const nameInput = document.getElementById('stage-name-input');
@@ -2975,9 +2975,11 @@ const StageEditor = {
         const editKeyDisplay = document.getElementById('stage-editkey-display');
         if (editKeyDisplay) editKeyDisplay.value = App.projectData.meta?.editKey || '';
 
-        // 繧ｵ繧､繧ｺ
-        this.pendingAreaW = Math.floor(stage.width / 16);
-        this.pendingAreaH = Math.floor(stage.height / 16);
+        // ステージサイズ（preserveFormState時は現在のUI値を保持）
+        if (!preserveFormState) {
+            this.pendingAreaW = Math.floor(stage.width / 16);
+            this.pendingAreaH = Math.floor(stage.height / 16);
+        }
         if (areaWValue) areaWValue.textContent = this.pendingAreaW;
         if (areaHValue) areaHValue.textContent = this.pendingAreaH;
 
@@ -3000,10 +3002,9 @@ const StageEditor = {
             }
         }
 
-        // 繧ｹ繧ｳ繧｢陦ｨ遉ｺ險ｭ螳・
+        // スコア表示（preserveFormState時は現在のチェック状態を保持）
         const showScoreCheck = document.getElementById('stage-show-score');
-        if (showScoreCheck) {
-            // 繝・ヵ繧ｩ繝ｫ繝医・true・・ndefined縺ｮ蝣ｴ蜷医ｂtrue・・
+        if (showScoreCheck && !preserveFormState) {
             showScoreCheck.checked = stage.showScore !== false;
         }
 
@@ -3359,7 +3360,7 @@ const StageEditor = {
 
         modal.querySelector('#cp-ok').addEventListener('click', () => {
             App.projectData.stage.bgColor = hexInput.value;
-            this.updateStageSettingsUI();
+            this.updateStageSettingsUI(true); // フォーム状態を保持（ステージサイズ・スコア表示を上書きしない）
             this.initTemplateList();
             this.initSpriteGallery();
             this.render();

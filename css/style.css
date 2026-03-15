@@ -3259,9 +3259,11 @@ body {
 }
 
 .result-like-btn.liked {
-    background: #fff0f0;
-    border-color: #e57373;
-    color: #d32f2f;
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    cursor: default;
+    pointer-events: none;
 }
 
 .like-icon-result {
@@ -3271,7 +3273,7 @@ body {
 }
 
 .result-like-btn.liked .like-icon-result {
-    filter: brightness(0) saturate(100%) invert(28%) sepia(90%) saturate(2000%) hue-rotate(340deg);
+    filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(500%) hue-rotate(100deg);
 }
 
 .result-like-count {
@@ -4810,9 +4812,9 @@ body {
 }
 
 #app.dark-mode .result-like-btn.liked {
-    background: rgba(211, 47, 47, 0.15);
-    border-color: #c62828;
-    color: #ef5350;
+    background: rgba(76, 175, 80, 0.25);
+    border-color: #66bb6a;
+    color: #81c784;
 }
 
 #app.dark-mode .screen-title {

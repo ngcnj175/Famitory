@@ -443,6 +443,7 @@ const App = {
                 this.migrateProjectData();
                 this.isPlayOnlyMode = true;
                 this._sharedGameId = gameId;
+                this._hasLikedThisSession = false;
                 console.log('Project loaded from Firebase (play-only mode)');
                 if (this.projectData.palette) {
                     this.nesPalette = this.projectData.palette;
@@ -465,6 +466,7 @@ const App = {
                 if (data) {
                     this.projectData = data;
                     this.isPlayOnlyMode = true;
+                    this._hasLikedThisSession = false;
                     console.log('Project loaded from URL hash (play-only mode)');
                     if (this.projectData.palette) {
                         this.nesPalette = this.projectData.palette;
@@ -1073,6 +1075,7 @@ const App = {
             // ローカルプロジェクトを開いたときも共有状態をリセット
             this._sharedGameId = null;
             this._likesCount = 0;
+            this._hasLikedThisSession = false;
             this.isPlayOnlyMode = false;
             
             // パレット復元
@@ -1190,6 +1193,7 @@ const App = {
             // 発行済みデータを開いた状態からNEWした場合のリセット処理
             this._sharedGameId = null;
             this._likesCount = 0;
+            this._hasLikedThisSession = false;
             this.isPlayOnlyMode = false;
             this.updateLikesDisplay(0);
             

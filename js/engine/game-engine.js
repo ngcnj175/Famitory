@@ -998,14 +998,19 @@ const GameEngine = {
             enemy.render(this.ctx, this.TILE_SIZE, this.camera);
         });
 
-        // 5. プレイヤー（死亡落下中はFGレイヤーの後で描画するためスキップ）
-        if (this.player && !(this.player.isDead && this.player.isDying)) {
+        // 5. プレイヤー（クリア演出中はFGレイヤー後に描画するためスキップ、死亡落下中もスキップ）
+        if (this.player && !(this.player.isDead && this.player.isDying) && this.titleState !== 'clear') {
             this.player.render(this.ctx, this.TILE_SIZE, this.camera);
         }
 
         // 6. FGレイヤー (当たり判定ありのブロック - プレイヤー/敵より手前)
         if (stage.layers.fg) {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
+        }
+
+        // 6.5. クリア演出中のプレイヤー（喜びジャンプを前景に表示）
+        if (this.titleState === 'clear' && this.player && !this.player.isDead) {
+            this.player.render(this.ctx, this.TILE_SIZE, this.camera);
         }
 
         // 7. 特殊プロジェクタイル (近接と回転は一番手前、FGブロックよりも前面)
@@ -3322,7 +3327,8 @@ const GameEngine = {
                     App.projectData.meta.shareId = null;
                     App._sharedGameId = null;
                     App._likesCount = 0;
-                    
+                    App._hasLikedThisSession = false;
+
                     // 新しいエディットキーを発行
                     App.projectData.meta.editKey = App.generateEditKey();
                     
@@ -3347,9 +3353,11 @@ const GameEngine = {
         if (likeBtn) {
             likeBtn.addEventListener('click', async () => {
                 const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
-                if (!gameId || likeBtn.classList.contains('liked')) return;
+                if (!gameId || likeBtn.classList.contains('liked') || App._hasLikedThisSession) return;
 
                 likeBtn.classList.add('liked');
+                likeBtn.disabled = true;
+                App._hasLikedThisSession = true;
                 const newCount = await Share.addLike(gameId);
                 App._likesCount = newCount;
                 App.updateLikesDisplay(newCount);
@@ -3435,7 +3443,15 @@ const GameEngine = {
         if (likeArea) {
             if (gameId) {
                 likeArea.classList.remove('hidden');
-                if (likeBtn) likeBtn.classList.remove('liked');
+                if (likeBtn) {
+                    if (App._hasLikedThisSession) {
+                        likeBtn.classList.add('liked');
+                        likeBtn.disabled = true;
+                    } else {
+                        likeBtn.classList.remove('liked');
+                        likeBtn.disabled = false;
+                    }
+                }
                 const countEl = document.getElementById('result-like-count');
                 if (countEl) countEl.textContent = App._likesCount || 0;
             } else {
