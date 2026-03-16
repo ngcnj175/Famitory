@@ -2994,7 +2994,7 @@ const GameEngine = {
                         drumVol = 0.9; decayTime = 0.14;
                         useShortNoise = false; pitchEnvDown = true;
                         attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
-                    case 2: // Tight Snare — シャープ、タイト（変更なし）
+                    case 2: // Tight Snare — シャープ、タイト
                         filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
                         drumVol = 0.5; decayTime = 0.13;
                         useShortNoise = false; pitchEnvDown = false;
@@ -3130,17 +3130,6 @@ const GameEngine = {
                     const t = ctx.currentTime + i * cycleTime;
                     osc.frequency.setValueAtTime(i % 2 === 0 ? freq : freq2, t);
                 }
-                const trackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
-                gain.gain.setValueAtTime(0.05 * trackVol, ctx.currentTime);
-                gain.gain.setValueAtTime(0.05 * trackVol, ctx.currentTime + duration - 0.05);
-                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(panner);
-                panner.connect(this.bgmMasterGain);
-                osc.start();
-                osc.stop(ctx.currentTime + duration + 0.05);
-                activeNodes[trackIdx] = osc;
-                return;
             } else if (waveType === 'square') {
                 // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
                 if (tone >= 3 && tone <= 5) {
@@ -3192,7 +3181,7 @@ const GameEngine = {
 
             // トラック固有音量（0.0〜1.0）
             const trackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
-            let volume = 0.12;
+            let volume = 0.12; 
 
             if (waveType === 'square') {
                 switch(tone) {

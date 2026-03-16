@@ -1857,7 +1857,7 @@ const SoundEditor = {
                 drumVol = 0.9 * volume; decayTime = 0.14;
                 useShortNoise = false; pitchEnvDown = true;
                 attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
-            case 2: // Tight Snare — シャープ、タイト
+            case 2: // Tight Snare — シャープ、タイト（変更なし）
                 filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
                 drumVol = 0.5 * volume; decayTime = 0.13;
                 useShortNoise = false; pitchEnvDown = false;
