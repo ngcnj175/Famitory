@@ -258,7 +258,7 @@ class Enemy {
                 const checkYJump = this.floatDirection > 0
                     ? Math.floor(this.y + this.height + 0.1)
                     : Math.floor(this.y - 0.1);
-                if (engine.getCollision(Math.floor(this.x + this.width / 2), checkYJump) === 1) {
+                if (this.checkTileCollision(engine, Math.floor(this.x + this.width / 2), checkYJump) === 1) {
                     this.floatDirection *= -1;
                 }
 
@@ -282,7 +282,7 @@ class Enemy {
 
                     // 壁判定
                     const checkXJP = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
-                    if (engine.getCollision(checkXJP, Math.floor(this.y + this.height / 2)) === 1) {
+                    if (this.checkTileCollision(engine, checkXJP, Math.floor(this.y + this.height / 2)) === 1) {
                         this.facingRight = !this.facingRight;
                     }
 
@@ -300,7 +300,7 @@ class Enemy {
                     this.vx = 0;
                     const diveDistY = this.y - this.originY;
                     const floorCheck = Math.floor(this.y + this.height + 0.1);
-                    if (diveDistY < diveMaxRange && engine.getCollision(Math.floor(this.x + this.width / 2), floorCheck) !== 1) {
+                    if (diveDistY < diveMaxRange && this.checkTileCollision(engine, Math.floor(this.x + this.width / 2), floorCheck) !== 1) {
                         this.vy = diveSpeed;
                     } else {
                         this.isDiving = false;
@@ -353,14 +353,14 @@ class Enemy {
 
         // 空中モードでない場合のみ崖判定
         if (!this.isAerial && this.onGround) {
-            if (engine.getCollision(checkX, footY) === 0) {
+            if (this.checkTileCollision(engine, checkX, footY) === 0) {
                 this.facingRight = !this.facingRight;
             }
         }
 
         // 壁判定
         const wallY = Math.floor(this.y + this.height / 2);
-        if (engine.getCollision(checkX, wallY) === 1) {
+        if (this.checkTileCollision(engine, checkX, wallY) === 1) {
             this.facingRight = !this.facingRight;
         }
 
@@ -516,7 +516,7 @@ class Enemy {
                 const rushDir = this.facingRight ? 1 : -1;
                 const rushDist = Math.abs(this.x - this.rushStartX);
                 const wallCheck = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
-                if (rushDist < rushMaxDist && engine.getCollision(wallCheck, Math.floor(this.y + this.height / 2)) !== 1) {
+                if (rushDist < rushMaxDist && this.checkTileCollision(engine, wallCheck, Math.floor(this.y + this.height / 2)) !== 1) {
                     this.vx = rushDir * rushSpeed;
                 } else {
                     this.vx = 0;
@@ -571,7 +571,7 @@ class Enemy {
                 const rushDir = this.facingRight ? 1 : -1;
                 const rushDist = Math.abs(this.x - this.rushStartX);
                 const wallCheck = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
-                if (rushDist < rushMaxDist && engine.getCollision(wallCheck, Math.floor(this.y + this.height / 2)) !== 1) {
+                if (rushDist < rushMaxDist && this.checkTileCollision(engine, wallCheck, Math.floor(this.y + this.height / 2)) !== 1) {
                     this.vx = rushDir * rushSpeed;
                     this.vy = 0;
                 } else {
@@ -888,6 +888,25 @@ class Enemy {
                 }
             }
         }
+    }
+
+    // 静的マップおよびギミックブロックを考慮して壁・床判定を行うヘルパー
+    checkTileCollision(engine, tx, ty) {
+        // 通常の地形判定
+        const normalCol = engine.getCollision(tx, ty);
+        if (normalCol === 1) return 1;
+
+        // ギミックブロックの判定
+        if (engine.gimmickBlocks) {
+            for (const block of engine.gimmickBlocks) {
+                if (block.state === 'falling') continue;
+                // ブロックの当たり判定（移動中は小数が含まれる可能性があるためfloorでタイル座標を取る）
+                if (Math.floor(block.x) === tx && Math.floor(block.y) === ty) {
+                    return 1;
+                }
+            }
+        }
+        return 0; // 衝突なし
     }
 
     render(ctx, tileSize, camera) {
