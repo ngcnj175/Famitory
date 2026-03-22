@@ -1050,38 +1050,11 @@ const SoundEditor = {
 
     // ========== プレイヤーパネル ==========
     initPlayerPanel() {
-        // DEL (UNDO) - 通常タップ: 直前のノート削除、長押し: トラック全削除
+        // 戻る（旧DEL） - タップ: 直前のノート削除
         const delBtn = document.getElementById('sound-del-btn');
         if (delBtn) {
-            let longPressTimer = null;
-            let isLongPress = false;
-
-            const startLongPress = () => {
-                isLongPress = false;
-                longPressTimer = setTimeout(() => {
-                    isLongPress = true;
-                    this.clearCurrentTrack();
-                }, 800);
-            };
-
-            const cancelLongPress = () => {
-                if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
-                }
-            };
-
-            delBtn.addEventListener('mousedown', startLongPress);
-            delBtn.addEventListener('mouseup', cancelLongPress);
-            delBtn.addEventListener('mouseleave', cancelLongPress);
-            delBtn.addEventListener('touchstart', startLongPress, { passive: true });
-            delBtn.addEventListener('touchend', cancelLongPress);
-            delBtn.addEventListener('touchcancel', cancelLongPress);
-
             delBtn.addEventListener('click', () => {
-                if (!isLongPress) {
-                    this.deleteLastNote();
-                }
+                this.deleteLastNote();
             });
         }
 
@@ -1204,6 +1177,54 @@ const SoundEditor = {
                 penBtn.classList.add('active');
 
                 this.render();
+            });
+        }
+
+        // 消しゴム（クリック: 消しゴムモード切替、長押し: トラック全削除）
+        const eraserBtn = document.getElementById('sound-eraser-btn');
+        if (eraserBtn) {
+            let longPressTimer = null;
+            let isLongPress = false;
+
+            const startLongPress = () => {
+                isLongPress = false;
+                longPressTimer = setTimeout(() => {
+                    isLongPress = true;
+                    this.clearCurrentTrack();
+                }, 800);
+            };
+
+            const cancelLongPress = () => {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            };
+
+            eraserBtn.addEventListener('mousedown', startLongPress);
+            eraserBtn.addEventListener('mouseup', cancelLongPress);
+            eraserBtn.addEventListener('mouseleave', cancelLongPress);
+            eraserBtn.addEventListener('touchstart', startLongPress, { passive: true });
+            eraserBtn.addEventListener('touchend', cancelLongPress);
+            eraserBtn.addEventListener('touchcancel', cancelLongPress);
+
+            eraserBtn.addEventListener('click', () => {
+                if (!isLongPress) {
+                    // 消しゴムモードに切り替え
+                    this.currentTool = 'eraser';
+                    this.selectionMode = false;
+                    this.pasteMode = false;
+                    this.selectionStart = null;
+                    this.selectionEnd = null;
+                    this.pasteData = null;
+
+                    // ボタンのアクティブ状態を更新
+                    const allBtns = document.querySelectorAll('#sound-controls .sound-ctrl-btn');
+                    allBtns.forEach(b => b.classList.remove('active'));
+                    eraserBtn.classList.add('active');
+
+                    this.render();
+                }
             });
         }
     },

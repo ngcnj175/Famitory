@@ -95,10 +95,11 @@
 | U093 | STEP | サウンド画面 | index.html | 613 |
 | U094 | PLAY/STOP | サウンド画面 | index.html | 623 |
 | U095 | STEP REC | サウンド画面 | index.html | 628 |
-| U096 | DEL (Long: Clear) | サウンド画面 | index.html | 636 |
+| U096 | 戻る | サウンド画面 | index.html | 640 |
 | U097 | REST | サウンド画面 | index.html | 642 |
 | U098 | TIE | サウンド画面 | index.html | 648 |
-| U099 | ペン（入力モード） | サウンド画面 | index.html | 654 |
+| U099 | ペン（入力モード） | サウンド画面 | index.html | 663 |
+| U277 | 消しゴム (Long: Clear) | サウンド画面 | index.html | 669 |
 | U100 | 選択 | サウンド画面 | index.html | 664 |
 | U101 | コピー | サウンド画面 | index.html | 670 |
 | U102 | ペースト | サウンド画面 | index.html | 676 |
