@@ -2948,7 +2948,7 @@ const GameEngine = {
             this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
             // BGM専用マスターゲイン（SE対比で音量を下げる）
             this.bgmMasterGain = this.bgmAudioCtx.createGain();
-            this.bgmMasterGain.gain.value = 1.0; // ゲームプレイ時とSONG画面の音量を同じ（100%）に統一
+            this.bgmMasterGain.gain.value = 0.75; // ゲームプレイ時のBGM音量
             this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
 
         }
@@ -2991,33 +2991,33 @@ const GameEngine = {
                 switch (octave) {
                     case 1: // Low Kick — 丸く、空気感のある「ボッ」
                         filterType = 'lowpass'; filterFreq = 120; filterQ = 1.5;
-                        drumVol = 0.45; decayTime = 0.14;
+                        drumVol = 0.9; decayTime = 0.14;
                         useShortNoise = false; pitchEnvDown = true;
                         attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
-                    case 2: // Tight Snare — シャープ、タイト（変更なし）
+                    case 2: // Tight Snare — シャープ、タイト
                         filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
-                        drumVol = 0.35; decayTime = 0.13;
+                        drumVol = 0.5; decayTime = 0.13;
                         useShortNoise = false; pitchEnvDown = false;
                         attackTime = 0.002; holdTime = 0.00; isRoll = false; break;
                     case 3: // Open Snare / Clap — 自然なスネア感「タンッ」
                         filterType = 'bandpass'; filterFreq = 2200; filterQ = 0.6;
-                        drumVol = 0.32; decayTime = 0.22;
+                        drumVol = 0.3; decayTime = 0.22;
                         useShortNoise = false; pitchEnvDown = false;
                         attackTime = 0.003; holdTime = 0.015; isRoll = false; break;
                     case 4: // Closed Hi-Hat — ホワイトノイズ寄り、極短「サッ」
                         filterType = 'highpass'; filterFreq = 7000; filterQ = 0.5;
-                        drumVol = 0.22; decayTime = 0.05;
+                        drumVol = 0.3; decayTime = 0.05;
                         useShortNoise = false; pitchEnvDown = false;
                         attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
                     case 5: // Open Hi-Hat — ホワイトノイズ寄り、広がり「サー」
                         filterType = 'highpass'; filterFreq = 5000; filterQ = 0.5;
-                        drumVol = 0.25; decayTime = 0.25;
+                        drumVol = 0.3; decayTime = 0.25;
                         useShortNoise = false; pitchEnvDown = false;
                         attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
                     case 6: // Noise Roll — 連続ロール「タタタタタ」
                     default:
                         filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
-                        drumVol = 0.22; // 音量を少し弱く (元の0.28から低下)
+                        drumVol = 0.3;
                         isRoll = (duration > 0.15);
                         decayTime = isRoll ? duration : 0.15;
                         useShortNoise = false; pitchEnvDown = false;
@@ -3181,7 +3181,22 @@ const GameEngine = {
 
             // トラック固有音量（0.0〜1.0）
             const trackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
-            const baseVol = 0.2;
+            // tone別の基本音量
+            let baseVol;
+            if (waveType === 'square') {
+                switch (tone) {
+                    case 0: baseVol = 0.12; break; // Standard
+                    case 1: baseVol = 0.15; break; // Standard (Short)
+                    case 2: baseVol = 0.15; break; // Standard (FadeIn)
+                    case 3: baseVol = 0.25; break; // Sharp
+                    case 4: baseVol = 0.3; break;  // Sharp (Short)
+                    case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
+                    case 6: baseVol = 0.05; break; // Tremolo
+                    default: baseVol = 0.12; break;
+                }
+            } else {
+                baseVol = 0.2; // Triangle等はそのまま
+            }
             let volumeScale = 1.0;
 
             // 音量設定（toneによるバリエーション）
