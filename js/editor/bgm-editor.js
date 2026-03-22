@@ -2462,6 +2462,22 @@ const SoundEditor = {
                 return;
             }
 
+            // 消しゴムモード (ストロークで削除)
+            if (this.currentTool === 'eraser') {
+                const { step, pitch } = getStepPitch(pos);
+                const existingNote = this.findNoteAt(step, pitch);
+                if (existingNote) {
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const idx = track.notes.indexOf(existingNote);
+                    if (idx >= 0) {
+                        track.notes.splice(idx, 1);
+                        this.render();
+                    }
+                }
+                return;
+            }
+
             // 長押しドラッグ中ならノート移動
             if (isLongPress && draggingNote) {
                 const { step, pitch } = getStepPitch(pos);
@@ -2543,6 +2559,21 @@ const SoundEditor = {
                     return;
                 }
 
+                // 消しゴムモード：タッチした瞬間に削除
+                if (this.currentTool === 'eraser') {
+                    const note = this.findNoteAt(step, pitch);
+                    if (note) {
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        const idx = track.notes.indexOf(note);
+                        if (idx >= 0) {
+                            track.notes.splice(idx, 1);
+                            this.render();
+                        }
+                    }
+                    return;
+                }
+
                 // ノートがあるかチェック
                 const note = this.findNoteAt(step, pitch);
 
@@ -2612,6 +2643,21 @@ const SoundEditor = {
             if (this.currentTool === 'paste') {
                 this.pasteDragStart = { step, pitch };
                 this.render();
+                return;
+            }
+
+            // 消しゴムモード：クリックした瞬間に削除
+            if (this.currentTool === 'eraser') {
+                const note = this.findNoteAt(step, pitch);
+                if (note) {
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const idx = track.notes.indexOf(note);
+                    if (idx >= 0) {
+                        track.notes.splice(idx, 1);
+                        this.render();
+                    }
+                }
                 return;
             }
 
