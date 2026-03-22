@@ -1686,6 +1686,52 @@ const StageEditor = {
         }
     },
 
+    // --- オートスクロール関数 ---
+    stopAutoScroll() {
+        if (this.autoScrollDelayTimer) {
+            clearTimeout(this.autoScrollDelayTimer);
+            this.autoScrollDelayTimer = null;
+        }
+        if (this.autoScrollTimer) {
+            clearInterval(this.autoScrollTimer);
+            this.autoScrollTimer = null;
+        }
+    },
+
+    startAutoScroll(dx, dy) {
+        this.autoScrollX = dx;
+        this.autoScrollY = dy;
+        if (this.autoScrollTimer || this.autoScrollDelayTimer) return;
+
+        this.autoScrollDelayTimer = setTimeout(() => {
+            this.autoScrollDelayTimer = null;
+            this.autoScrollTimer = setInterval(() => {
+                const stage = App.projectData?.stage;
+                if (!stage || (!this.selectionMode && !this.pasteMode)) {
+                    this.stopAutoScroll();
+                    return;
+                }
+
+                const maxScrollX = Math.max(0, (stage.width - 16) * this.tileSize);
+                const maxScrollY = Math.max(0, (stage.height - 16) * this.tileSize);
+                
+                const oldX = this.canvasScrollX;
+                const oldY = this.canvasScrollY;
+
+                // dx, dy が正ならカーソルは右/下端にある -> 表示領域を右/下に動かす = canvasScrollX/Y は負の方向に減る
+                this.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.canvasScrollX - this.autoScrollX));
+                this.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.canvasScrollY - this.autoScrollY));
+
+                if (this.canvasScrollX === oldX && this.canvasScrollY === oldY) return;
+
+                if (this.lastPointerEvent && this.handleAutoScrollMove) {
+                    this.handleAutoScrollMove(this.lastPointerEvent);
+                }
+                this.render();
+            }, 30);
+        }, 300);
+    },
+
     // ========== 繧ｭ繝｣繝ｳ繝舌せ ==========
     initCanvasEvents() {
         if (!this.canvas) return;
@@ -1817,6 +1863,36 @@ const StageEditor = {
             this.processPixel(e);
         };
 
+        const checkAutoScroll = (e) => {
+            if (this.currentTool !== 'select' && this.currentTool !== 'paste') {
+                this.stopAutoScroll();
+                return;
+            }
+
+            const rect = this.canvas.getBoundingClientRect();
+            const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+            const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+            
+            if (clientX === undefined || clientY === undefined) return;
+
+            const edgeSize = 30;
+            const scrollSpeed = 15;
+            let dx = 0;
+            let dy = 0;
+
+            if (clientX < rect.left + edgeSize) dx = -scrollSpeed;
+            else if (clientX > rect.right - edgeSize) dx = scrollSpeed;
+
+            if (clientY < rect.top + edgeSize) dy = -scrollSpeed;
+            else if (clientY > rect.bottom - edgeSize) dy = scrollSpeed;
+
+            if (dx !== 0 || dy !== 0) {
+                this.startAutoScroll(dx, dy);
+            } else {
+                this.stopAutoScroll();
+            }
+        };
+
         const handleMove = (e) => {
             if (isPanning && e.touches && e.touches.length >= 2) {
                 // 2譛ｬ謖・ヱ繝ｳ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
@@ -1830,6 +1906,8 @@ const StageEditor = {
 
             if (!isDrawing) return;
             hasMoved = true;
+            this.lastPointerEvent = e;
+            checkAutoScroll(e);
 
             const { x, y } = this.getTileFromEvent(e);
 
@@ -1873,6 +1951,9 @@ const StageEditor = {
         };
 
         const handleEnd = () => {
+            this.stopAutoScroll();
+            this.lastPointerEvent = null;
+
             if (isPanning) {
                 isPanning = false;
                 return;
@@ -1899,6 +1980,9 @@ const StageEditor = {
                 return;
             }
         };
+
+        // handleAutoScrollMove を this に紐づけて setInterval から呼べるようにする
+        this.handleAutoScrollMove = handleMove;
 
         this.canvas.addEventListener('mousedown', handleStart);
         this.canvas.addEventListener('mousemove', handleMove);
