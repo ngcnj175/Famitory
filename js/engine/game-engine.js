@@ -2948,7 +2948,7 @@ const GameEngine = {
             this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
             // BGM専用マスターゲイン（SE対比で音量を下げる）
             this.bgmMasterGain = this.bgmAudioCtx.createGain();
-            this.bgmMasterGain.gain.value = 0.75; // ゲームプレイ時のBGM音量
+            this.bgmMasterGain.gain.value = 0.65; // ゲームプレイ時のBGM音量
             this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
 
         }
@@ -3189,7 +3189,7 @@ const GameEngine = {
                     case 1: baseVol = 0.15; break; // Standard (Short)
                     case 2: baseVol = 0.15; break; // Standard (FadeIn)
                     case 3: baseVol = 0.25; break; // Sharp
-                    case 4: baseVol = 0.3; break;  // Sharp (Short)
+                    case 4: baseVol = 0.35; break; // Sharp (Short)
                     case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
                     case 6: baseVol = 0.05; break; // Tremolo
                     default: baseVol = 0.12; break;
