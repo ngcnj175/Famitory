@@ -221,6 +221,12 @@ class Enemy {
         this.handleHorizontalCollision(engine);
         this.y += this.vy;
         this.handleVerticalCollision(engine);
+
+        // ギミックブロックに乗っている場合、ブロックと一緒に移動
+        if (this.ridingGimmickBlock) {
+            this.x += this.ridingGimmickBlock.vx;
+            this.y = this.ridingGimmickBlock.y - this.height;
+        }
     }
 
     // ========== 空中モード ==========
@@ -853,6 +859,33 @@ class Enemy {
                 this.y = bottom - this.height;
                 this.vy = 0;
                 this.onGround = true;
+            }
+        }
+
+        // ギミックブロックとの衝突チェック（落下中のみ）
+        if (this.vy >= 0 && engine.gimmickBlocks) {
+            for (const block of engine.gimmickBlocks) {
+                // 落下中のブロックはすり抜ける
+                if (block.state === 'falling') continue;
+
+                // ブロックの上に乗っているか判定
+                const enemyBottom = this.y + this.height;
+                const enemyLeft = this.x;
+                const enemyRight = this.x + this.width;
+                const blockTop = block.y;
+                const blockLeft = block.x;
+                const blockRight = block.x + 1;
+
+                // 横方向に重なっていて、足元がブロック上面付近
+                if (enemyRight > blockLeft && enemyLeft < blockRight &&
+                    enemyBottom >= blockTop && enemyBottom < blockTop + 1.0 &&
+                    this.vy >= 0) {
+                    this.y = blockTop - this.height;
+                    this.vy = 0;
+                    this.onGround = true;
+                    this.ridingGimmickBlock = block;
+                    break;
+                }
             }
         }
     }

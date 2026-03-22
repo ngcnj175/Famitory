@@ -699,7 +699,7 @@ class Player {
 
                 // 横方向に重なっていて、足元がブロック上面付近
                 if (playerRight > blockLeft && playerLeft < blockRight &&
-                    playerBottom >= blockTop && playerBottom < blockTop + 0.3 &&
+                    playerBottom >= blockTop && playerBottom < blockTop + 1.0 &&
                     this.vy >= 0) {
                     this.y = blockTop - this.height;
                     this.vy = 0;
