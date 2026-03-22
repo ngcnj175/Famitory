@@ -2250,6 +2250,10 @@ const SoundEditor = {
 
         // --- オートスクロール関数 ---
         const stopAutoScroll = () => {
+            if (this.autoScrollDelayTimer) {
+                clearTimeout(this.autoScrollDelayTimer);
+                this.autoScrollDelayTimer = null;
+            }
             if (this.autoScrollTimer) {
                 clearInterval(this.autoScrollTimer);
                 this.autoScrollTimer = null;
@@ -2259,29 +2263,33 @@ const SoundEditor = {
         const startAutoScroll = (dx, dy, eventUpdater) => {
             this.autoScrollX = dx;
             this.autoScrollY = dy;
-            if (this.autoScrollTimer) return;
+            if (this.autoScrollTimer || this.autoScrollDelayTimer) return;
 
-            this.autoScrollTimer = setInterval(() => {
-                if (!isDragging) {
-                    stopAutoScroll();
-                    return;
-                }
+            // 300ms待ってからスクロール開始
+            this.autoScrollDelayTimer = setTimeout(() => {
+                this.autoScrollDelayTimer = null;
+                this.autoScrollTimer = setInterval(() => {
+                    if (!isDragging) {
+                        stopAutoScroll();
+                        return;
+                    }
 
-                const maxScrollY = 72 * this.cellSize - this.canvas.height;
-                const oldX = this.scrollX;
-                const oldY = this.scrollY;
+                    const maxScrollY = 72 * this.cellSize - this.canvas.height;
+                    const oldX = this.scrollX;
+                    const oldY = this.scrollY;
 
-                this.scrollX = Math.max(0, this.scrollX + this.autoScrollX);
-                this.scrollY = Math.max(0, Math.min(maxScrollY, this.scrollY + this.autoScrollY));
+                    this.scrollX = Math.max(0, this.scrollX + this.autoScrollX);
+                    this.scrollY = Math.max(0, Math.min(maxScrollY, this.scrollY + this.autoScrollY));
 
-                if (this.scrollX === oldX && this.scrollY === oldY) return;
+                    if (this.scrollX === oldX && this.scrollY === oldY) return;
 
-                // 座標更新のために直前のイベントで再処理
-                if (this.lastPointerEvent) {
-                    eventUpdater(this.lastPointerEvent);
-                }
-                this.render();
-            }, 30);
+                    // 座標更新のために直前のイベントで再処理
+                    if (this.lastPointerEvent) {
+                        eventUpdater(this.lastPointerEvent);
+                    }
+                    this.render();
+                }, 30);
+            }, 300);
         };
 
         const checkAutoScroll = (clientX, clientY, eventUpdater) => {

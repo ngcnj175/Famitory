@@ -1531,37 +1531,45 @@ const SpriteEditor = {
     startAutoScroll(dx, dy) {
         this.autoScrollX = dx;
         this.autoScrollY = dy;
-        if (this.autoScrollTimer) return;
+        if (this.autoScrollTimer || this.autoScrollDelayTimer) return;
 
-        this.autoScrollTimer = setInterval(() => {
-            const dimension = this.getCurrentSpriteDimension();
-            // 32x32以外や描画停止時は終了
-            if (dimension !== 32 || (!this.isSelecting && !this.isMovingSelection && !this.pasteMode)) {
-                this.stopAutoScroll();
-                return;
-            }
+        // 300ms待ってからスクロール開始
+        this.autoScrollDelayTimer = setTimeout(() => {
+            this.autoScrollDelayTimer = null;
+            this.autoScrollTimer = setInterval(() => {
+                const dimension = this.getCurrentSpriteDimension();
+                // 32x32以外や描画停止時は終了
+                if (dimension !== 32 || (!this.isSelecting && !this.isMovingSelection && !this.pasteMode)) {
+                    this.stopAutoScroll();
+                    return;
+                }
 
-            // スクロール実行
-            const oldX = this.viewportOffsetX;
-            const oldY = this.viewportOffsetY;
-            const maxScroll = Math.max(0, dimension * this.pixelSize - this.canvas.width);
+                // スクロール実行
+                const oldX = this.viewportOffsetX;
+                const oldY = this.viewportOffsetY;
+                const maxScroll = Math.max(0, dimension * this.pixelSize - this.canvas.width);
 
-            this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + this.autoScrollX));
-            this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + this.autoScrollY));
+                this.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.viewportOffsetX + this.autoScrollX));
+                this.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.viewportOffsetY + this.autoScrollY));
 
-            if (this.viewportOffsetX === oldX && this.viewportOffsetY === oldY) return;
+                if (this.viewportOffsetX === oldX && this.viewportOffsetY === oldY) return;
 
-            // 座標更新のために直前のイベントで再処理
-            if (this.lastPointerEvent) {
-                // onPointerMoveを再呼び出し（再帰ガードが必要かもだが、autoScrollTimerからの呼び出しは非同期なのでOK）
-                // ただし onPointerMove 内でまた startAutoScroll が呼ばれるが、Timerがあれば無視されるのでOK
-                this.onPointerMove(this.lastPointerEvent);
-            }
-            this.render();
-        }, 30);
+                // 座標更新のために直前のイベントで再処理
+                if (this.lastPointerEvent) {
+                    // onPointerMoveを再呼び出し（再帰ガードが必要かもだが、autoScrollTimerからの呼び出しは非同期なのでOK）
+                    // ただし onPointerMove 内でまた startAutoScroll が呼ばれるが、Timerがあれば無視されるのでOK
+                    this.onPointerMove(this.lastPointerEvent);
+                }
+                this.render();
+            }, 30);
+        }, 300);
     },
 
     stopAutoScroll() {
+        if (this.autoScrollDelayTimer) {
+            clearTimeout(this.autoScrollDelayTimer);
+            this.autoScrollDelayTimer = null;
+        }
         if (this.autoScrollTimer) {
             clearInterval(this.autoScrollTimer);
             this.autoScrollTimer = null;
