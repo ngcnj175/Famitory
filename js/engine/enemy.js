@@ -828,6 +828,7 @@ class Enemy {
         if (this.isDying) return;
 
         this.onGround = false;
+        this.ridingGimmickBlock = null; // 毎フレーム初期化（ジャンプや落下を可能にするため）
         const left = Math.floor(this.x);
         const right = Math.floor(this.x + this.width - 0.01);
         const top = Math.floor(this.y);
