@@ -1559,6 +1559,7 @@ const GameEngine = {
                     // ダメージ無敵中はスキップ
                 } else {
                     for (const enemy of this.enemies) {
+                        if (enemy.frozen) continue; // フリーズ中（ボス出現等）は無敵
                         if (!enemy.isDying && this.projectileHits(proj, enemy)) {
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
@@ -1754,7 +1755,7 @@ const GameEngine = {
         const top = this.camera.y;
         const bottom = this.camera.y + viewHeight;
         this.enemies.forEach(enemy => {
-            if (enemy.isDying) return;
+            if (enemy.isDying || enemy.frozen) return; // フリーズ中（ボス出現等）は無敵
             const inView = enemy.x >= left && enemy.x < right && enemy.y >= top && enemy.y < bottom;
             if (inView) {
                 for (let i = 0; i < damage; i++) {
@@ -1769,7 +1770,7 @@ const GameEngine = {
         if (!this.player || this.player.isDead) return;
 
         this.enemies.forEach((enemy, index) => {
-            if (enemy.isDying) return;
+            if (enemy.isDying || enemy.frozen) return; // フリーズ中（ボス出現等）は無敵とし接触処理をスキップ
 
             if (this.player.collidesWith(enemy)) {
                 // スターパワー中は敵即死
