@@ -2586,13 +2586,14 @@ const SoundEditor = {
                 const note = this.findNoteAt(step, pitch);
 
                 if (note) {
-                    // 長押し検出開始（既存ノートの移動用）
+                    // 長押し検出開始（既存ノートの移動用 兼 再生位置シーク用）
                     originalStep = note.step;
                     originalPitch = note.pitch;
                     longPressTimer = setTimeout(() => {
                         isLongPress = true;
                         draggingNote = note;
-                    }, 300);
+                        this.seekToStep(step);
+                    }, 400);
                 } else {
                     // 空セル: 遅延してノート作成（2本指パン誤入力防止）
                     pendingInputData = { step, pitch, pos };
@@ -2613,6 +2614,19 @@ const SoundEditor = {
                             const { note: noteName, octave } = this.pitchToNote(pendingInputData.pitch);
                             this.playNote(noteName, octave);
                             this.render();
+
+                            // 長押しでシークとみなしノート作成をキャンセル
+                            longPressTimer = setTimeout(() => {
+                                if (isCreatingNote && creatingNote && creatingNote.length === 1 && !hasMoved) {
+                                    const track = song.tracks[this.currentTrack];
+                                    const idx = track.notes.indexOf(creatingNote);
+                                    if (idx >= 0) track.notes.splice(idx, 1);
+                                    
+                                    isCreatingNote = false;
+                                    creatingNote = null;
+                                    this.seekToStep(step);
+                                }
+                            }, 350);
                         }
                         pendingInputTimer = null;
                         pendingInputData = null;
@@ -2673,13 +2687,14 @@ const SoundEditor = {
             const note = this.findNoteAt(step, pitch);
 
             if (note) {
-                // 長押し検出開始（既存ノートの移動用）
+                // 長押し検出開始（既存ノートの移動用 兼 再生位置シーク用）
                 originalStep = note.step;
                 originalPitch = note.pitch;
                 longPressTimer = setTimeout(() => {
                     isLongPress = true;
                     draggingNote = note;
-                }, 300);
+                    this.seekToStep(step);
+                }, 400);
             } else {
                 // 空セル: 新規ノート作成（ドラッグで長さ設定）
                 // 鉛筆ツール以外では作成しない
@@ -2694,6 +2709,19 @@ const SoundEditor = {
                 const { note: noteName, octave } = this.pitchToNote(pitch);
                 this.playNote(noteName, octave);
                 this.render();
+
+                // 長押しでシークとみなしノート作成をキャンセル
+                longPressTimer = setTimeout(() => {
+                    if (isCreatingNote && creatingNote && creatingNote.length === 1 && !hasMoved) {
+                        const track = song.tracks[this.currentTrack];
+                        const idx = track.notes.indexOf(creatingNote);
+                        if (idx >= 0) track.notes.splice(idx, 1);
+                        
+                        isCreatingNote = false;
+                        creatingNote = null;
+                        this.seekToStep(step);
+                    }
+                }, 400);
             }
         });
 
@@ -3037,6 +3065,22 @@ const SoundEditor = {
         }
     },
 
+    seekToStep(step) {
+        const song = this.getCurrentSong();
+        if (step >= 0 && step < song.bars) {
+            const wasPlaying = this.isPlaying;
+            if (wasPlaying) {
+                this.pause(); 
+                this.currentStep = step;
+                this.play();  
+            } else {
+                this.currentStep = step;
+                this.isPaused = true;
+                this.render();
+            }
+        }
+    },
+
     // ========== 再生 ==========
     play() {
         if (this.isPlaying) return;
@@ -3280,10 +3324,14 @@ const SoundEditor = {
             }
         }
 
-        // 現在位置（再生中のみ表示、ビビッドグリーン / ステップ録音中は赤）
-        if (this.isPlaying || this.isStepRecording) {
-            const x = this.currentStep * this.cellSize - this.scrollX;
-            this.ctx.strokeStyle = this.isStepRecording ? '#FF0000' : '#00FF00';
+        // 現在位置
+        const x = this.currentStep * this.cellSize - this.scrollX;
+        let strokeColor = '#00FF00'; // 再生時
+        if (this.isStepRecording) strokeColor = '#FF0000';
+        else if (!this.isPlaying) strokeColor = 'rgba(0, 255, 0, 0.5)'; // 停止中/一時停止中
+
+        if (x >= 0 && x <= this.canvas.width) {
+            this.ctx.strokeStyle = strokeColor;
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
             this.ctx.moveTo(x, 0);
