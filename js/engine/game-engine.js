@@ -1140,6 +1140,9 @@ const GameEngine = {
 
                 if (obj.animationSlot && spriteSlots[obj.animationSlot]?.frames?.length > 0) {
                     frames = spriteSlots[obj.animationSlot].frames;
+                } else if (obj.itemType === 'transform' && spriteSlots['transformItem']?.frames?.length > 0) {
+                    // 変身アイテムはtransformItemスロットを優先
+                    frames = spriteSlots['transformItem'].frames;
                 } else {
                     // 指定がない場合は全スロットから検索
                     const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];

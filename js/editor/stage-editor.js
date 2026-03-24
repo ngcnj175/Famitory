@@ -1425,13 +1425,21 @@ const StageEditor = {
             goal: '🏁'
         };
 
+        const basePlayerIdx = this.templates.findIndex(t => t.type === 'player');
+
         this.templates.forEach((template, index) => {
             const div = document.createElement('div');
             div.className = 'tile-item' + (this.selectedTemplate === index ? ' selected' : '');
 
-            // 繧ｵ繝繝阪う繝ｫ・・DLE縺ｾ縺溘・繝｡繧､繝ｳ・・
-            const frames = template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
-            const speed = template.sprites?.idle?.speed || template.sprites?.main?.speed || 8;
+            // 変身プレイヤーの場合はtransformItemスロットを優先
+            let frames, speed;
+            if (template.type === 'player' && basePlayerIdx >= 0 && index !== basePlayerIdx) {
+                frames = template.sprites?.transformItem?.frames || template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
+                speed = template.sprites?.transformItem?.speed || template.sprites?.idle?.speed || template.sprites?.main?.speed || 8;
+            } else {
+                frames = template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
+                speed = template.sprites?.idle?.speed || template.sprites?.main?.speed || 8;
+            }
 
             if (frames.length > 0) {
                 const miniCanvas = document.createElement('canvas');
