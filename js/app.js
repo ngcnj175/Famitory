@@ -552,8 +552,8 @@ const App = {
 
     // プレイ専用モードのUI適用（ヘッダーはクリエイターと同じ配置、許可外はグレーアウト）
     applyPlayOnlyMode() {
-        // ファイルツールバー: NEW / SHARE のみ有効、OPEN / SAVE はグレーアウト
-        const lockedFileIds = ['load-icon-btn', 'save-icon-btn'];
+        // ファイルツールバー: NEW のみ有効、OPEN / SAVE / SHARE はグレーアウト
+        const lockedFileIds = ['load-icon-btn', 'save-icon-btn', 'share-icon-btn'];
         lockedFileIds.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.classList.add('locked');
@@ -749,7 +749,7 @@ const App = {
         });
 
         // ファイルツールバーのグレーアウトボタンにもエディットキーモーダルを設定
-        ['load-icon-btn', 'save-icon-btn'].forEach(id => {
+        ['load-icon-btn', 'save-icon-btn', 'share-icon-btn'].forEach(id => {
             const btn = document.getElementById(id);
             if (!btn) return;
             // 既存のイベントの前にキャプチャフェーズで割り込み
@@ -775,10 +775,25 @@ const App = {
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
             titleInput.readOnly = true;
+            // クリエイターモードではタップでポップアップ編集
+            if (!this.isPlayOnlyMode) {
+                titleInput.style.cursor = 'pointer';
+                titleInput.onclick = () => this.openTextEditPopup('title');
+            } else {
+                titleInput.style.cursor = 'default';
+                titleInput.onclick = null;
+            }
         }
         if (authorInput && this.projectData) {
             authorInput.value = this.projectData.meta.author || 'You';
             authorInput.readOnly = true;
+            if (!this.isPlayOnlyMode) {
+                authorInput.style.cursor = 'pointer';
+                authorInput.onclick = () => this.openTextEditPopup('author');
+            } else {
+                authorInput.style.cursor = 'default';
+                authorInput.onclick = null;
+            }
         }
 
         // shareIdがあればいいね数を取得・表示（モード問わず常に表示）
@@ -801,16 +816,77 @@ const App = {
             remixInfoDisplay.classList.remove('hidden');
 
             const origShareId = this.projectData.meta.originalShareId;
-            if (origShareId) {
-                origAuthor.onclick = () => {
+            const remixLinkWrap = document.getElementById('remix-link-wrap');
+            if (origShareId && remixLinkWrap) {
+                remixLinkWrap.onclick = () => {
                     const url = Share.createShortUrl(origShareId);
                     window.open(url, '_blank');
                 };
-            } else {
-                origAuthor.onclick = null;
+            } else if (remixLinkWrap) {
+                remixLinkWrap.onclick = null;
             }
         } else if (remixInfoDisplay) {
             remixInfoDisplay.classList.add('hidden');
+        }
+    },
+
+    // テキスト編集ポップアップ（タイトル/作成者名共用）
+    _textEditField: null,
+
+    openTextEditPopup(field) {
+        const popup = document.getElementById('text-edit-popup');
+        const input = document.getElementById('text-edit-input');
+        const title = document.getElementById('text-edit-popup-title');
+        if (!popup || !input || !title) return;
+
+        this._textEditField = field;
+
+        if (field === 'title') {
+            title.textContent = 'タイトル変更';
+            input.value = this.projectData.meta.name || '';
+            input.placeholder = 'ゲームタイトルを入力';
+        } else {
+            title.textContent = 'なまえ変更';
+            input.value = this.projectData.meta.author || '';
+            input.placeholder = 'なまえを入力';
+        }
+
+        popup.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+
+        // イベントバインド（毎回上書きで多重防止）
+        document.getElementById('text-edit-save').onclick = () => this.saveTextEdit();
+        document.getElementById('text-edit-cancel').onclick = () => this.closeTextEditPopup();
+    },
+
+    closeTextEditPopup() {
+        const popup = document.getElementById('text-edit-popup');
+        if (popup) popup.classList.add('hidden');
+        this._textEditField = null;
+    },
+
+    saveTextEdit() {
+        const input = document.getElementById('text-edit-input');
+        if (!input) return;
+
+        const newValue = input.value.trim().substring(0, 20);
+        if (!newValue) {
+            this.closeTextEditPopup();
+            return;
+        }
+
+        if (this._textEditField === 'title') {
+            this.projectData.meta.name = newValue;
+        } else if (this._textEditField === 'author') {
+            this.projectData.meta.author = newValue;
+        }
+
+        this.closeTextEditPopup();
+        this.updateGameInfo();
+
+        // ステージ設定パネルの表示も同期
+        if (typeof StageEditor !== 'undefined') {
+            StageEditor.updateStageSettingsUI?.();
         }
     },
 
@@ -1102,9 +1178,17 @@ const App = {
         const data = JSON.stringify(this.projectData, null, 2);
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
+        
+        // yyyy-mm-dd形式の日付を取得
+        const date = new Date();
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${filename}.json`;
+        a.download = `Famitory_${filename}_${dateStr}.json`;
         a.click();
         URL.revokeObjectURL(url);
     },
@@ -1547,16 +1631,36 @@ const App = {
         // X に投稿 → 公開確認 → Twitter URL へ遷移
         xBtn.onclick = () => {
             this._publishAndShare((url) => {
-                const text = `「${this.projectData.meta.name || 'Game'}」であそぼう！ #FAMITORY`;
-                const twitterUrl = Share.createTwitterUrl(url, text);
-                window.open(twitterUrl, '_blank');
+                const gameName = this.projectData.meta.name || 'Game';
+                let text;
+                if (this.isPlayOnlyMode) {
+                    // プレイヤーモード（従来）: テキストとURLを別パラメータで渡す
+                    text = `「${gameName}」であそぼう！ #FAMITORY`;
+                    const twitterUrl = Share.createTwitterUrl(url, text);
+                    window.open(twitterUrl, '_blank');
+                } else {
+                    // クリエイターモード: テキスト内にURLを含むためtextのみで投稿
+                    const hashTag = gameName.replace(/\s/g, '');
+                    text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                    window.open(twitterUrl, '_blank');
+                }
             });
         };
 
         // Discord → 公開確認 → テキスト+URLをクリップボードへ
         discordBtn.onclick = () => {
             this._publishAndShare(async (url) => {
-                const text = `FAMITORYでゲームを作ったよ!\n${url}`;
+                const gameName = this.projectData.meta.name || 'Game';
+                let text;
+                if (this.isPlayOnlyMode) {
+                    // プレイヤーモード（従来）
+                    text = `FAMITORYでゲームを作ったよ!\n${url}`;
+                } else {
+                    // クリエイターモード
+                    const hashTag = gameName.replace(/\s/g, '');
+                    text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                }
                 const success = await copyToClipboard(text);
                 if (success) {
                     this.showToast('Discord用に コピーしました');

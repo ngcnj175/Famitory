@@ -100,7 +100,7 @@
                 </div>
                 <div id="game-info-bottom">
                     <div id="game-remix-info" class="hidden">
-                        Remix of <span id="game-original-title"></span> by <span class="remix-link" id="game-original-author"></span>
+                        Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
                     </div>
                     <div id="game-likes-display" class="hidden">
                         <img src="images/like_icon.svg" alt="like" class="like-icon-small">
@@ -572,6 +572,23 @@
                     <button class="type-select-item" data-type="enemy">てき</button>
                     <button class="type-select-item" data-type="material">ブロック・背景</button>
                     <button class="type-select-item" data-type="item">アイテム</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- テキスト編集ポップアップ（タイトル/作成者名共用） -->
+        <div id="text-edit-popup" class="popup-overlay hidden">
+            <div class="popup-content song-name-content">
+                <div class="popup-header">
+                    <span class="popup-title" id="text-edit-popup-title">編集</span>
+                    <button id="text-edit-cancel" class="popup-close">✕</button>
+                </div>
+                <div class="popup-body" style="padding: 16px; display: flex; justify-content: center;">
+                    <input type="text" id="text-edit-input" maxlength="20" placeholder=""
+                        style="width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div class="popup-actions">
+                    <button id="text-edit-save" class="popup-btn primary">保存</button>
                 </div>
             </div>
         </div>
