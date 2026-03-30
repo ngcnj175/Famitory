@@ -1200,7 +1200,7 @@ const SpriteEditor = {
 
         // 32x32 -> 16x16 の場合、警告
         if (currentSize === 2) {
-            if (!confirm('サイズを縮小すると、16x16サイズに収まらないデータは削除されます。\nよろしいですか？')) {
+            if (!confirm('縮小すると細かい情報が失われます。続行しますか？')) {
                 return;
             }
         }
@@ -1212,11 +1212,24 @@ const SpriteEditor = {
         // 新しいデータ配列を作成
         const newData = App.create2DArray(newDim, newDim, -1);
 
-        // データをコピー（縮小の場合は左上のみ、拡大の場合は左上に配置）
-        const copyDim = Math.min(currentDim, newDim);
-        for (let y = 0; y < copyDim; y++) {
-            for (let x = 0; x < copyDim; x++) {
-                newData[y][x] = sprite.data[y][x];
+        // データを変換
+        if (currentSize === 1 && newSize === 2) {
+            // 16x16 -> 32x32 (200%拡大)
+            for (let y = 0; y < currentDim; y++) {
+                for (let x = 0; x < currentDim; x++) {
+                    const color = sprite.data[y][x];
+                    newData[y * 2][x * 2] = color;
+                    newData[y * 2 + 1][x * 2] = color;
+                    newData[y * 2][x * 2 + 1] = color;
+                    newData[y * 2 + 1][x * 2 + 1] = color;
+                }
+            }
+        } else if (currentSize === 2 && newSize === 1) {
+            // 32x32 -> 16x16 (ダウンサンプリング)
+            for (let y = 0; y < newDim; y++) {
+                for (let x = 0; x < newDim; x++) {
+                    newData[y][x] = sprite.data[y * 2][x * 2];
+                }
             }
         }
 
