@@ -5540,3 +5540,115 @@ body.dark-mode .se-select-item.current {
 body.dark-mode .se-select-item .se-name {
     color: #c0c8e0;
 }
+
+/* ========================================
+   数値コピー＆ペースト ポップアップ
+   ======================================== */
+
+.numcopy-section {
+    margin-bottom: 12px;
+}
+
+.numcopy-section:last-child {
+    margin-bottom: 0;
+}
+
+.numcopy-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.numcopy-track-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.numcopy-track-btn {
+    flex: 1;
+    padding: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f5f5f5;
+    color: #888;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.numcopy-track-btn.active {
+    background: var(--color-dark, #4a4a4a);
+    color: #fff;
+    border-color: var(--color-dark, #4a4a4a);
+}
+
+.numcopy-all-btn {
+    font-size: 11px;
+}
+
+.numcopy-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.numcopy-drag-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding: 6px 10px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--text-dark, #333);
+    cursor: ns-resize;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.numcopy-separator {
+    font-size: 14px;
+    color: #888;
+}
+
+.numcopy-unit {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+}
+
+/* ダークモード */
+body.dark-mode .numcopy-label {
+    color: #8888aa;
+}
+
+body.dark-mode .numcopy-track-btn {
+    background: #2a2a44;
+    border-color: #444466;
+    color: #8888aa;
+}
+
+body.dark-mode .numcopy-track-btn.active {
+    background: #5566cc;
+    border-color: #5566cc;
+    color: #fff;
+}
+
+body.dark-mode .numcopy-drag-value {
+    background: #1a1a2e;
+    border-color: #444466;
+    color: #e0e0f0;
+}
+
+body.dark-mode .numcopy-separator,
+body.dark-mode .numcopy-unit {
+    color: #8888aa;
+}

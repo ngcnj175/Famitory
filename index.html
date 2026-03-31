@@ -610,6 +610,50 @@
             </div>
         </div>
 
+        <!-- 数値コピー＆ペースト ポップアップ -->
+        <div id="numcopy-popup" class="popup-overlay hidden">
+            <div class="popup-content song-name-content">
+                <div class="popup-header">
+                    <span class="popup-title">コピー＆ペースト</span>
+                    <button id="numcopy-cancel" class="popup-close">✕</button>
+                </div>
+                <div class="popup-body" style="padding: 12px;">
+                    <!-- トラック選択 -->
+                    <div class="numcopy-section">
+                        <label class="numcopy-label">トラック</label>
+                        <div class="numcopy-track-btns">
+                            <button class="numcopy-track-btn" data-track="0">1</button>
+                            <button class="numcopy-track-btn" data-track="1">2</button>
+                            <button class="numcopy-track-btn" data-track="2">3</button>
+                            <button class="numcopy-track-btn" data-track="3">4</button>
+                            <button class="numcopy-track-btn numcopy-all-btn" id="numcopy-all-btn">ALL</button>
+                        </div>
+                    </div>
+                    <!-- コピー範囲 -->
+                    <div class="numcopy-section">
+                        <label class="numcopy-label">コピー範囲</label>
+                        <div class="numcopy-range">
+                            <span class="numcopy-drag-value" id="numcopy-from">0</span>
+                            <span class="numcopy-separator">～</span>
+                            <span class="numcopy-drag-value" id="numcopy-to">15</span>
+                            <span class="numcopy-unit">STEP</span>
+                        </div>
+                    </div>
+                    <!-- ペースト先 -->
+                    <div class="numcopy-section">
+                        <label class="numcopy-label">ペースト先</label>
+                        <div class="numcopy-range">
+                            <span class="numcopy-drag-value" id="numcopy-paste-at">0</span>
+                            <span class="numcopy-unit">STEP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button id="numcopy-exec" class="popup-btn primary">実行</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ========== サウンド画面 ========== -->
         <div id="sound-screen" class="screen">
 

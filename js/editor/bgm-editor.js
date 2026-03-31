@@ -1104,10 +1104,50 @@ const SoundEditor = {
             });
         }
 
-        // COPY（選択範囲をコピー）
+        // COPY（選択範囲をコピー / 長押しで数値指定ポップアップ）
         const copyBtn = document.getElementById('sound-copy-btn');
         if (copyBtn) {
-            copyBtn.addEventListener('click', () => this.copySelection());
+            let copyPressTimer = null;
+            let copyLongPressed = false;
+
+            const onCopyStart = (e) => {
+                copyLongPressed = false;
+                copyPressTimer = setTimeout(() => {
+                    copyPressTimer = null;
+                    copyLongPressed = true;
+                    this.openNumCopyPopup();
+                }, 800);
+            };
+
+            const onCopyEnd = (e) => {
+                if (copyPressTimer) {
+                    clearTimeout(copyPressTimer);
+                    copyPressTimer = null;
+                }
+                if (!copyLongPressed) {
+                    this.copySelection();
+                }
+            };
+
+            const onCopyCancel = () => {
+                if (copyPressTimer) {
+                    clearTimeout(copyPressTimer);
+                    copyPressTimer = null;
+                }
+            };
+
+            copyBtn.addEventListener('mousedown', onCopyStart);
+            copyBtn.addEventListener('mouseup', onCopyEnd);
+            copyBtn.addEventListener('mouseleave', onCopyCancel);
+            copyBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                onCopyStart(e);
+            }, { passive: false });
+            copyBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                onCopyEnd(e);
+            });
+            copyBtn.addEventListener('touchcancel', onCopyCancel);
         }
 
         // PASTE（コピーした範囲をペースト）
@@ -3338,5 +3378,221 @@ const SoundEditor = {
             this.ctx.lineTo(x, this.canvas.height);
             this.ctx.stroke();
         }
+    },
+
+    // ========== 数値コピー＆ペースト ポップアップ ==========
+
+    _numcopyTracks: [],       // 選択中のトラックインデックス
+    _numcopyDragCleanup: [],  // ドラッグイベント解除用
+
+    openNumCopyPopup() {
+        const popup = document.getElementById('numcopy-popup');
+        if (!popup) return;
+
+        const song = this.getCurrentSong();
+
+        // デフォルト値設定
+        this._numcopyTracks = [this.currentTrack];
+        document.getElementById('numcopy-from').textContent = '0';
+        document.getElementById('numcopy-to').textContent = String(song.bars - 1);
+        document.getElementById('numcopy-paste-at').textContent = '0';
+
+        // トラックボタン状態リセット
+        document.querySelectorAll('.numcopy-track-btn').forEach(btn => {
+            const trackIdx = btn.dataset.track;
+            if (trackIdx !== undefined) {
+                btn.classList.toggle('active', parseInt(trackIdx) === this.currentTrack);
+            } else {
+                // ALLボタン
+                btn.classList.remove('active');
+            }
+        });
+
+        // 再生中なら一時停止
+        if (this.isPlaying) {
+            this._wasPlayingBeforeNumcopy = true;
+            this.pause();
+        } else {
+            this._wasPlayingBeforeNumcopy = false;
+        }
+
+        popup.classList.remove('hidden');
+
+        // イベントバインド
+        this._initNumCopyEvents();
+    },
+
+    closeNumCopyPopup() {
+        const popup = document.getElementById('numcopy-popup');
+        if (popup) popup.classList.add('hidden');
+
+        // ドラッグイベント解除
+        this._numcopyDragCleanup.forEach(fn => fn());
+        this._numcopyDragCleanup = [];
+    },
+
+    _initNumCopyEvents() {
+        // ドラッグイベント解除用リスト初期化
+        this._numcopyDragCleanup.forEach(fn => fn());
+        this._numcopyDragCleanup = [];
+
+        // トラックボタン
+        document.querySelectorAll('.numcopy-track-btn[data-track]').forEach(btn => {
+            btn.onclick = () => {
+                const idx = parseInt(btn.dataset.track);
+                btn.classList.toggle('active');
+                // _numcopyTracks 再構築
+                this._numcopyTracks = [];
+                document.querySelectorAll('.numcopy-track-btn[data-track].active').forEach(b => {
+                    this._numcopyTracks.push(parseInt(b.dataset.track));
+                });
+                // ALLボタン状態同期
+                const allBtn = document.getElementById('numcopy-all-btn');
+                if (allBtn) allBtn.classList.toggle('active', this._numcopyTracks.length === 4);
+            };
+        });
+
+        // ALLボタン
+        const allBtn = document.getElementById('numcopy-all-btn');
+        if (allBtn) {
+            allBtn.onclick = () => {
+                const isAllActive = this._numcopyTracks.length === 4;
+                document.querySelectorAll('.numcopy-track-btn[data-track]').forEach(btn => {
+                    btn.classList.toggle('active', !isAllActive);
+                });
+                this._numcopyTracks = isAllActive ? [] : [0, 1, 2, 3];
+                allBtn.classList.toggle('active', !isAllActive);
+            };
+        }
+
+        // ドラッグ数値操作（3つの要素に適用）
+        const song = this.getCurrentSong();
+        this._setupNumCopyDrag('numcopy-from', 0, 255);
+        this._setupNumCopyDrag('numcopy-to', 0, 255);
+        this._setupNumCopyDrag('numcopy-paste-at', 0, 255);
+
+        // 実行ボタン
+        document.getElementById('numcopy-exec').onclick = () => this.execNumCopy();
+
+        // キャンセルボタン
+        document.getElementById('numcopy-cancel').onclick = () => this.closeNumCopyPopup();
+    },
+
+    // ドラッグ数値操作のセットアップ（BPM/BARと同じパターン）
+    _setupNumCopyDrag(elementId, min, max) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+
+        let isDragging = false;
+        let startY = 0;
+        let startValue = 0;
+        let hasDragged = false;
+
+        const onStart = (e) => {
+            isDragging = true;
+            hasDragged = false;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startY = clientY;
+            startValue = parseInt(el.textContent) || 0;
+            e.preventDefault();
+        };
+
+        const onMove = (e) => {
+            if (!isDragging) return;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const delta = Math.round((startY - clientY) / 8);
+            if (Math.abs(delta) > 0) {
+                hasDragged = true;
+                const newVal = Math.max(min, Math.min(max, startValue + delta));
+                el.textContent = String(newVal);
+            }
+        };
+
+        const onEnd = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            if (!hasDragged) {
+                // タップ → 直接入力
+                const current = parseInt(el.textContent) || 0;
+                const input = prompt('値を入力', current);
+                if (input !== null) {
+                    const val = parseInt(input);
+                    if (!isNaN(val)) {
+                        el.textContent = String(Math.max(min, Math.min(max, val)));
+                    }
+                }
+            }
+        };
+
+        el.addEventListener('mousedown', onStart);
+        el.addEventListener('touchstart', onStart, { passive: false });
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchend', onEnd);
+
+        // クリーンアップ関数を登録
+        this._numcopyDragCleanup.push(() => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchend', onEnd);
+        });
+    },
+
+    // 数値指定コピー＆ペースト実行
+    execNumCopy() {
+        const song = this.getCurrentSong();
+        const tracks = this._numcopyTracks;
+
+        if (tracks.length === 0) {
+            alert('トラックを選択してください');
+            return;
+        }
+
+        const fromStep = parseInt(document.getElementById('numcopy-from').textContent) || 0;
+        const toStep = parseInt(document.getElementById('numcopy-to').textContent) || 0;
+        const pasteAt = parseInt(document.getElementById('numcopy-paste-at').textContent) || 0;
+
+        if (fromStep > toStep) {
+            alert('コピー範囲が不正です');
+            return;
+        }
+
+        const copyLength = toStep - fromStep + 1;
+        let maxPastedStep = 0;
+
+        tracks.forEach(trackIdx => {
+            const track = song.tracks[trackIdx];
+            if (!track) return;
+
+            // コピー範囲のノートを収集（相対位置で保存）
+            const copiedNotes = track.notes
+                .filter(n => n.step >= fromStep && n.step <= toStep)
+                .map(n => ({ ...n, step: n.step - fromStep }));
+
+            // ペースト先の範囲内の既存ノートを削除（上書き）
+            const pasteEnd = pasteAt + copyLength - 1;
+            track.notes = track.notes.filter(n => n.step < pasteAt || n.step > pasteEnd);
+
+            // ペースト
+            copiedNotes.forEach(note => {
+                const newStep = pasteAt + note.step;
+                track.notes.push({ ...note, step: newStep });
+                // ノートの終了位置を考慮
+                const noteEnd = newStep + (note.length || 1);
+                if (noteEnd > maxPastedStep) maxPastedStep = noteEnd;
+            });
+        });
+
+        // STEP数(bars)を超える場合は自動拡張
+        if (maxPastedStep > song.bars) {
+            song.bars = maxPastedStep;
+            this.updateConsoleDisplay();
+        }
+
+        this.closeNumCopyPopup();
+        this.render();
     }
 };
