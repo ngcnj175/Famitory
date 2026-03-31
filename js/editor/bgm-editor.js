@@ -3395,7 +3395,7 @@ const SoundEditor = {
         this._numcopyTracks = [this.currentTrack];
         document.getElementById('numcopy-from').textContent = '0';
         document.getElementById('numcopy-to').textContent = String(song.bars - 1);
-        document.getElementById('numcopy-paste-at').textContent = '0';
+        document.getElementById('numcopy-paste-at').textContent = String(song.bars);
 
         // トラックボタン状態リセット
         document.querySelectorAll('.numcopy-track-btn').forEach(btn => {
