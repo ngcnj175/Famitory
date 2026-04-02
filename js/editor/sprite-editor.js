@@ -62,6 +62,14 @@ const SpriteEditor = {
     guideAdjustData: null,     // 調整中の2本指操作用データ
     guideRotation: 0,          // 回転角度（ラジアン）
 
+    // プレビュー機能
+    previewFrames: [],
+    previewCurrentFrame: 0,
+    previewMode: 1,          // 1=単体, 9=3x3
+    previewPlaying: false,
+    previewSpeed: 3,         // 1-5
+    previewTimer: null,
+
     init() {
         this.canvas = document.getElementById('paint-canvas');
         if (!this.canvas) return;
@@ -69,11 +77,12 @@ const SpriteEditor = {
         this.ctx = this.canvas.getContext('2d');
 
         this.initColorPalette();
-        this.initAddColorButton(); // ＋ボタンのイベント設定（1回だけ）
+        this.initAddColorButton();
         this.initTools();
         this.initSpriteGallery();
         this.initCanvasEvents();
         this.initPresetDialogEvents();
+        this.initPreview();
     },
 
     refresh() {
@@ -712,7 +721,7 @@ const SpriteEditor = {
         App.projectData.sprites.forEach((sprite, index) => {
             const div = document.createElement('div');
             div.className = 'sprite-item' + (index === this.currentSprite ? ' selected' : '');
-            // div.draggable = true; // PCでのドラッグスクロールと競合するため無効化
+            div.draggable = true;
             div.dataset.index = index;
 
             const miniCanvas = document.createElement('canvas');
@@ -2472,6 +2481,252 @@ const SpriteEditor = {
                 }
             }
         });
+    }
+,
+
+    // ========== プレビュー機能 ==========
+
+    initPreview() {
+        const canvas = document.getElementById('preview-canvas');
+        if (!canvas) return;
+
+        // プレビューキャンバスをD&Dターゲットに設定
+        canvas.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+        canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const idx = e.dataTransfer.getData('text/plain');
+            if (idx !== '') {
+                this.addPreviewFrame(parseInt(idx));
+            }
+        });
+
+        // スプライトリストのdragstartイベント（委譲）
+        const spriteList = document.getElementById('sprite-list');
+        if (spriteList) {
+            spriteList.addEventListener('dragstart', (e) => {
+                const item = e.target.closest('.sprite-item');
+                if (item) {
+                    e.dataTransfer.setData('text/plain', item.dataset.index);
+                    e.dataTransfer.effectAllowed = 'copy';
+                }
+            });
+        }
+
+        // モード切替
+        document.getElementById('preview-mode-btn')?.addEventListener('click', () => {
+            this.togglePreviewMode();
+        });
+
+        // CLEARボタン（タップ=現フレーム削除、長押し=全クリア）
+        const clearBtn = document.getElementById('preview-clear-btn');
+        if (clearBtn) {
+            let clearTimer = null;
+            let clearLong = false;
+
+            const startClear = () => {
+                clearLong = false;
+                clearTimer = setTimeout(() => {
+                    clearTimer = null;
+                    clearLong = true;
+                    this.clearAllPreviewFrames();
+                }, 800);
+            };
+            const endClear = () => {
+                if (clearTimer) {
+                    clearTimeout(clearTimer);
+                    clearTimer = null;
+                }
+                if (!clearLong) this.clearPreviewFrame();
+            };
+            const cancelClear = () => {
+                if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+            };
+
+            clearBtn.addEventListener('mousedown', startClear);
+            clearBtn.addEventListener('mouseup', endClear);
+            clearBtn.addEventListener('mouseleave', cancelClear);
+            clearBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startClear(); }, { passive: false });
+            clearBtn.addEventListener('touchend', (e) => { e.preventDefault(); endClear(); });
+            clearBtn.addEventListener('touchcancel', cancelClear);
+        }
+
+        // トランスポート
+        document.getElementById('preview-prev-btn')?.addEventListener('click', () => this.previewPrev());
+        document.getElementById('preview-next-btn')?.addEventListener('click', () => this.previewNext());
+        document.getElementById('preview-play-btn')?.addEventListener('click', () => {
+            if (this.previewPlaying) this.previewStop(); else this.previewPlay();
+        });
+
+        // スピードゲージ
+        document.querySelectorAll('.preview-speed-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const level = parseInt(dot.dataset.level);
+                this.setPreviewSpeed(level);
+            });
+        });
+
+        this.renderPreview();
+    },
+
+    addPreviewFrame(spriteIdx) {
+        if (spriteIdx < 0 || spriteIdx >= App.projectData.sprites.length) return;
+        this.previewFrames.push(spriteIdx);
+        this.previewCurrentFrame = this.previewFrames.length - 1;
+        this.updatePreviewFrameInfo();
+        this.renderPreview();
+    },
+
+    clearPreviewFrame() {
+        if (this.previewFrames.length === 0) return;
+        this.previewFrames.splice(this.previewCurrentFrame, 1);
+        if (this.previewCurrentFrame >= this.previewFrames.length) {
+            this.previewCurrentFrame = Math.max(0, this.previewFrames.length - 1);
+        }
+        if (this.previewFrames.length === 0) this.previewStop();
+        this.updatePreviewFrameInfo();
+        this.renderPreview();
+    },
+
+    clearAllPreviewFrames() {
+        this.previewStop();
+        this.previewFrames = [];
+        this.previewCurrentFrame = 0;
+        this.updatePreviewFrameInfo();
+        this.renderPreview();
+    },
+
+    previewPrev() {
+        if (this.previewFrames.length === 0) return;
+        this.previewCurrentFrame = (this.previewCurrentFrame - 1 + this.previewFrames.length) % this.previewFrames.length;
+        this.updatePreviewFrameInfo();
+        this.renderPreview();
+    },
+
+    previewNext() {
+        if (this.previewFrames.length === 0) return;
+        this.previewCurrentFrame = (this.previewCurrentFrame + 1) % this.previewFrames.length;
+        this.updatePreviewFrameInfo();
+        this.renderPreview();
+    },
+
+    previewPlay() {
+        if (this.previewFrames.length < 2) return;
+        this.previewPlaying = true;
+        const playBtn = document.getElementById('preview-play-btn');
+        if (playBtn) {
+            playBtn.textContent = '■';
+            playBtn.classList.add('playing');
+        }
+
+        const speedMs = [500, 350, 200, 120, 60];
+        const ms = speedMs[this.previewSpeed - 1] || 200;
+
+        this.previewTimer = setInterval(() => {
+            this.previewCurrentFrame = (this.previewCurrentFrame + 1) % this.previewFrames.length;
+            this.updatePreviewFrameInfo();
+            this.renderPreview();
+        }, ms);
+    },
+
+    previewStop() {
+        this.previewPlaying = false;
+        if (this.previewTimer) {
+            clearInterval(this.previewTimer);
+            this.previewTimer = null;
+        }
+        const playBtn = document.getElementById('preview-play-btn');
+        if (playBtn) {
+            playBtn.textContent = '▶';
+            playBtn.classList.remove('playing');
+        }
+    },
+
+    setPreviewSpeed(level) {
+        this.previewSpeed = Math.max(1, Math.min(5, level));
+        document.querySelectorAll('.preview-speed-dot').forEach(dot => {
+            const l = parseInt(dot.dataset.level);
+            dot.classList.toggle('active', l <= this.previewSpeed);
+        });
+        // 再生中なら再起動
+        if (this.previewPlaying) {
+            this.previewStop();
+            this.previewPlay();
+        }
+    },
+
+    togglePreviewMode() {
+        this.previewMode = this.previewMode === 1 ? 9 : 1;
+        const btn = document.getElementById('preview-mode-btn');
+        if (btn) btn.textContent = this.previewMode === 1 ? '1' : '9';
+        this.renderPreview();
+    },
+
+    updatePreviewFrameInfo() {
+        const el = document.getElementById('preview-frame-info');
+        if (!el) return;
+        if (this.previewFrames.length === 0) {
+            el.textContent = '—';
+        } else {
+            el.textContent = `${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+        }
+    },
+
+    renderPreview() {
+        const canvas = document.getElementById('preview-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        // 背景色
+        const bgColor = App.projectData?.stage?.bgColor || App.projectData?.stage?.backgroundColor || '#3CBCFC';
+        canvas.style.backgroundColor = bgColor;
+
+        const cw = 80;
+        canvas.width = cw;
+        canvas.height = cw;
+        ctx.clearRect(0, 0, cw, cw);
+
+        if (this.previewFrames.length === 0) return;
+
+        const spriteIdx = this.previewFrames[this.previewCurrentFrame];
+        const sprite = App.projectData?.sprites?.[spriteIdx];
+        if (!sprite) return;
+
+        const palette = App.nesPalette;
+        const dim = (sprite.size || 1) === 2 ? 32 : 16;
+
+        if (this.previewMode === 1) {
+            // 単体モード: キャンバスいっぱいに拡大
+            const pxSize = cw / dim;
+            for (let y = 0; y < dim; y++) {
+                for (let x = 0; x < dim; x++) {
+                    if (sprite.data[y] && sprite.data[y][x] >= 0) {
+                        ctx.fillStyle = palette[sprite.data[y][x]];
+                        ctx.fillRect(x * pxSize, y * pxSize, pxSize, pxSize);
+                    }
+                }
+            }
+        } else {
+            // 9分割モード: 3x3で均等表示
+            const tileSize = Math.floor(cw / 3);
+            const pxSize = tileSize / dim;
+            for (let ty = 0; ty < 3; ty++) {
+                for (let tx = 0; tx < 3; tx++) {
+                    const ox = tx * tileSize;
+                    const oy = ty * tileSize;
+                    for (let y = 0; y < dim; y++) {
+                        for (let x = 0; x < dim; x++) {
+                            if (sprite.data[y] && sprite.data[y][x] >= 0) {
+                                ctx.fillStyle = palette[sprite.data[y][x]];
+                                ctx.fillRect(ox + x * pxSize, oy + y * pxSize, pxSize, pxSize);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 };

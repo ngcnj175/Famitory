@@ -200,6 +200,32 @@
         <div id="paint-screen" class="screen">
 
             <div id="paint-content-wrapper">
+                <!-- プレビューエリア -->
+                <div id="preview-area">
+                    <canvas id="preview-canvas"></canvas>
+                    <div class="preview-controls">
+                        <div class="preview-row">
+                            <button id="preview-mode-btn" class="preview-btn mode-btn">1</button>
+                            <span id="preview-frame-info" class="preview-frame-info">—</span>
+                            <button id="preview-clear-btn" class="preview-btn clear-btn">CLR</button>
+                        </div>
+                        <div class="preview-row transport-row">
+                            <button id="preview-prev-btn" class="preview-btn transport-btn">◀</button>
+                            <button id="preview-play-btn" class="preview-btn transport-btn play-btn">▶</button>
+                            <button id="preview-next-btn" class="preview-btn transport-btn">▶</button>
+                        </div>
+                        <div class="preview-row">
+                            <div id="preview-speed-gauge" class="preview-speed-gauge">
+                                <span class="preview-speed-dot" data-level="1"></span>
+                                <span class="preview-speed-dot" data-level="2"></span>
+                                <span class="preview-speed-dot active" data-level="3"></span>
+                                <span class="preview-speed-dot" data-level="4"></span>
+                                <span class="preview-speed-dot" data-level="5"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- スプライトエリア（追加ボタン左固定 + スクロール可能リスト） -->
                 <div id="sprite-area" class="gallery-row">
                     <button id="add-sprite-btn" class="gallery-add-btn">+</button>

@@ -553,6 +553,118 @@ body {
     background: var(--bg-device);
 }
 
+/* プレビューエリア */
+#preview-area {
+    flex-shrink: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 6px 12px;
+    min-height: 88px;
+}
+
+#preview-canvas {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: var(--bg-screen);
+}
+
+.preview-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.preview-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.preview-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: #f5f5f5;
+    color: var(--color-dark);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-btn.mode-btn {
+    width: 28px;
+    height: 24px;
+    font-size: 13px;
+}
+
+.preview-btn.clear-btn {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 9px;
+    color: var(--color-medium);
+}
+
+.preview-frame-info {
+    flex: 1;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-medium);
+    font-family: monospace;
+}
+
+.transport-row {
+    justify-content: center;
+}
+
+.preview-btn.transport-btn {
+    width: 32px;
+    height: 28px;
+    font-size: 12px;
+}
+
+.preview-btn.transport-btn.play-btn {
+    width: 40px;
+    background: var(--color-dark);
+    color: var(--text-light);
+    border-color: var(--color-dark);
+}
+
+.preview-btn.transport-btn.play-btn.playing {
+    background: #e05050;
+    border-color: #e05050;
+}
+
+.preview-speed-gauge {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.preview-speed-dot {
+    width: 14px;
+    height: 10px;
+    border-radius: 2px;
+    background: #e0e0e0;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.preview-speed-dot.active {
+    background: var(--color-dark);
+}
+
 /* 繝斐け繧ｻ繝ｫ繝ｻ繧ｹ繝��繧ｸ逕ｻ髱｢繧ｳ繝ｳ繝�Φ繝�Λ繝�ヱ繝ｼ�井ｸ句ｯ�○�� */
 #paint-content-wrapper,
 #stage-content-wrapper {
