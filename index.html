@@ -202,25 +202,45 @@
             <div id="paint-content-wrapper">
                 <!-- プレビューエリア -->
                 <div id="preview-area">
-                    <canvas id="preview-canvas"></canvas>
-                    <div class="preview-controls">
-                        <div class="preview-row">
-                            <button id="preview-mode-btn" class="preview-btn mode-btn">1</button>
-                            <span id="preview-frame-info" class="preview-frame-info">—</span>
-                            <button id="preview-clear-btn" class="preview-btn clear-btn">CLR</button>
-                        </div>
-                        <div class="preview-row transport-row">
-                            <button id="preview-prev-btn" class="preview-btn transport-btn">◀</button>
-                            <button id="preview-play-btn" class="preview-btn transport-btn play-btn">▶</button>
-                            <button id="preview-next-btn" class="preview-btn transport-btn">▶</button>
-                        </div>
-                        <div class="preview-row">
-                            <div id="preview-speed-gauge" class="preview-speed-gauge">
-                                <span class="preview-speed-dot" data-level="1"></span>
-                                <span class="preview-speed-dot" data-level="2"></span>
-                                <span class="preview-speed-dot active" data-level="3"></span>
-                                <span class="preview-speed-dot" data-level="4"></span>
-                                <span class="preview-speed-dot" data-level="5"></span>
+                    <div id="preview-title">Preview (16×16)</div>
+                    <div id="preview-body">
+                        <canvas id="preview-canvas" width="128" height="128"></canvas>
+                        <div id="preview-controls">
+                            <div class="preview-row preview-row-top">
+                                <span class="preview-label">Tile Mode</span>
+                                <label class="toggle-switch preview-toggle">
+                                    <input type="checkbox" id="preview-tile-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="preview-row">
+                                <span id="preview-frame-info" class="preview-frame-info">Frame: — / —</span>
+                            </div>
+                            <div class="preview-row preview-transport">
+                                <button id="preview-prev-btn" class="preview-transport-btn" title="前フレーム">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                                </button>
+                                <button id="preview-play-btn" class="preview-transport-btn preview-play" title="再生/停止">
+                                    <svg id="preview-play-icon" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <button id="preview-next-btn" class="preview-transport-btn" title="次フレーム">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                                </button>
+                                <button id="preview-copy-btn" class="preview-transport-btn" title="フレーム複製">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                </button>
+                                <button id="preview-delete-btn" class="preview-transport-btn" title="削除">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                </button>
+                            </div>
+                            <div class="preview-row">
+                                <div id="preview-speed-gauge" class="block-gauge">
+                                    <span class="block-gauge-item active" data-level="1"></span>
+                                    <span class="block-gauge-item active" data-level="2"></span>
+                                    <span class="block-gauge-item active" data-level="3"></span>
+                                    <span class="block-gauge-item" data-level="4"></span>
+                                    <span class="block-gauge-item" data-level="5"></span>
+                                </div>
                             </div>
                         </div>
                     </div>

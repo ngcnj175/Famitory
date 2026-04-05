@@ -65,9 +65,9 @@ const SpriteEditor = {
     // プレビュー機能
     previewFrames: [],
     previewCurrentFrame: 0,
-    previewMode: 1,          // 1=単体, 9=3x3
+    previewTileMode: false,
     previewPlaying: false,
-    previewSpeed: 3,         // 1-5
+    previewSpeed: 3,
     previewTimer: null,
 
     init() {
@@ -897,6 +897,8 @@ const SpriteEditor = {
     // ========== 描画 ==========
     render() {
         if (!this.ctx) return;
+        // プレビュー連動
+        this.renderPreview();
         const sprite = App.projectData.sprites[this.currentSprite];
         if (!sprite) return;
 
@@ -2490,68 +2492,34 @@ const SpriteEditor = {
         const canvas = document.getElementById('preview-canvas');
         if (!canvas) return;
 
-        // プレビューキャンバスをD&Dターゲットに設定
+        // D&Dターゲット
         canvas.addEventListener('dragover', (e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'copy';
         });
         canvas.addEventListener('drop', (e) => {
             e.preventDefault();
-            const idx = e.dataTransfer.getData('text/plain');
-            if (idx !== '') {
-                this.addPreviewFrame(parseInt(idx));
-            }
+            const idx = e.dataTransfer.getData('text/sprite-index');
+            if (idx !== '') this.addPreviewFrame(parseInt(idx));
         });
 
-        // スプライトリストのdragstartイベント（委譲）
+        // スプライトリストdragstart（委譲）
         const spriteList = document.getElementById('sprite-list');
         if (spriteList) {
             spriteList.addEventListener('dragstart', (e) => {
                 const item = e.target.closest('.sprite-item');
                 if (item) {
-                    e.dataTransfer.setData('text/plain', item.dataset.index);
+                    e.dataTransfer.setData('text/sprite-index', item.dataset.index);
                     e.dataTransfer.effectAllowed = 'copy';
                 }
             });
         }
 
-        // モード切替
-        document.getElementById('preview-mode-btn')?.addEventListener('click', () => {
-            this.togglePreviewMode();
+        // Tile Modeトグル
+        document.getElementById('preview-tile-toggle')?.addEventListener('change', (e) => {
+            this.previewTileMode = e.target.checked;
+            this.renderPreview();
         });
-
-        // CLEARボタン（タップ=現フレーム削除、長押し=全クリア）
-        const clearBtn = document.getElementById('preview-clear-btn');
-        if (clearBtn) {
-            let clearTimer = null;
-            let clearLong = false;
-
-            const startClear = () => {
-                clearLong = false;
-                clearTimer = setTimeout(() => {
-                    clearTimer = null;
-                    clearLong = true;
-                    this.clearAllPreviewFrames();
-                }, 800);
-            };
-            const endClear = () => {
-                if (clearTimer) {
-                    clearTimeout(clearTimer);
-                    clearTimer = null;
-                }
-                if (!clearLong) this.clearPreviewFrame();
-            };
-            const cancelClear = () => {
-                if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
-            };
-
-            clearBtn.addEventListener('mousedown', startClear);
-            clearBtn.addEventListener('mouseup', endClear);
-            clearBtn.addEventListener('mouseleave', cancelClear);
-            clearBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startClear(); }, { passive: false });
-            clearBtn.addEventListener('touchend', (e) => { e.preventDefault(); endClear(); });
-            clearBtn.addEventListener('touchcancel', cancelClear);
-        }
 
         // トランスポート
         document.getElementById('preview-prev-btn')?.addEventListener('click', () => this.previewPrev());
@@ -2560,11 +2528,28 @@ const SpriteEditor = {
             if (this.previewPlaying) this.previewStop(); else this.previewPlay();
         });
 
+        // コピー（フレーム複製）
+        document.getElementById('preview-copy-btn')?.addEventListener('click', () => this.copyPreviewFrame());
+
+        // 削除（タップ=現フレーム、長押し=全クリア）
+        const delBtn = document.getElementById('preview-delete-btn');
+        if (delBtn) {
+            let dt = null, dl = false;
+            const ds = () => { dl = false; dt = setTimeout(() => { dt = null; dl = true; this.clearAllPreviewFrames(); }, 800); };
+            const de = () => { if (dt) { clearTimeout(dt); dt = null; } if (!dl) this.clearPreviewFrame(); };
+            const dc = () => { if (dt) { clearTimeout(dt); dt = null; } };
+            delBtn.addEventListener('mousedown', ds);
+            delBtn.addEventListener('mouseup', de);
+            delBtn.addEventListener('mouseleave', dc);
+            delBtn.addEventListener('touchstart', (e) => { e.preventDefault(); ds(); }, { passive: false });
+            delBtn.addEventListener('touchend', (e) => { e.preventDefault(); de(); });
+            delBtn.addEventListener('touchcancel', dc);
+        }
+
         // スピードゲージ
-        document.querySelectorAll('.preview-speed-dot').forEach(dot => {
+        document.querySelectorAll('#preview-speed-gauge .block-gauge-item').forEach(dot => {
             dot.addEventListener('click', () => {
-                const level = parseInt(dot.dataset.level);
-                this.setPreviewSpeed(level);
+                this.setPreviewSpeed(parseInt(dot.dataset.level));
             });
         });
 
@@ -2575,7 +2560,17 @@ const SpriteEditor = {
         if (spriteIdx < 0 || spriteIdx >= App.projectData.sprites.length) return;
         this.previewFrames.push(spriteIdx);
         this.previewCurrentFrame = this.previewFrames.length - 1;
-        this.updatePreviewFrameInfo();
+        this._updatePreviewTitle(spriteIdx);
+        this._updatePreviewUI();
+        this.renderPreview();
+    },
+
+    copyPreviewFrame() {
+        if (this.previewFrames.length === 0) return;
+        const idx = this.previewFrames[this.previewCurrentFrame];
+        this.previewFrames.splice(this.previewCurrentFrame + 1, 0, idx);
+        this.previewCurrentFrame++;
+        this._updatePreviewUI();
         this.renderPreview();
     },
 
@@ -2586,7 +2581,8 @@ const SpriteEditor = {
             this.previewCurrentFrame = Math.max(0, this.previewFrames.length - 1);
         }
         if (this.previewFrames.length === 0) this.previewStop();
-        this.updatePreviewFrameInfo();
+        this._updatePreviewUI();
+        this._updatePreviewTitleFromCurrent();
         this.renderPreview();
     },
 
@@ -2594,21 +2590,22 @@ const SpriteEditor = {
         this.previewStop();
         this.previewFrames = [];
         this.previewCurrentFrame = 0;
-        this.updatePreviewFrameInfo();
+        this._updatePreviewUI();
+        this._updatePreviewTitle(-1);
         this.renderPreview();
     },
 
     previewPrev() {
         if (this.previewFrames.length === 0) return;
         this.previewCurrentFrame = (this.previewCurrentFrame - 1 + this.previewFrames.length) % this.previewFrames.length;
-        this.updatePreviewFrameInfo();
+        this._updatePreviewUI();
         this.renderPreview();
     },
 
     previewNext() {
         if (this.previewFrames.length === 0) return;
         this.previewCurrentFrame = (this.previewCurrentFrame + 1) % this.previewFrames.length;
-        this.updatePreviewFrameInfo();
+        this._updatePreviewUI();
         this.renderPreview();
     },
 
@@ -2617,60 +2614,65 @@ const SpriteEditor = {
         this.previewPlaying = true;
         const playBtn = document.getElementById('preview-play-btn');
         if (playBtn) {
-            playBtn.textContent = '■';
             playBtn.classList.add('playing');
+            const icon = document.getElementById('preview-play-icon');
+            if (icon) icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
         }
 
         const speedMs = [500, 350, 200, 120, 60];
         const ms = speedMs[this.previewSpeed - 1] || 200;
-
         this.previewTimer = setInterval(() => {
             this.previewCurrentFrame = (this.previewCurrentFrame + 1) % this.previewFrames.length;
-            this.updatePreviewFrameInfo();
+            this._updatePreviewUI();
             this.renderPreview();
         }, ms);
     },
 
     previewStop() {
         this.previewPlaying = false;
-        if (this.previewTimer) {
-            clearInterval(this.previewTimer);
-            this.previewTimer = null;
-        }
+        if (this.previewTimer) { clearInterval(this.previewTimer); this.previewTimer = null; }
         const playBtn = document.getElementById('preview-play-btn');
         if (playBtn) {
-            playBtn.textContent = '▶';
             playBtn.classList.remove('playing');
+            const icon = document.getElementById('preview-play-icon');
+            if (icon) icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
         }
     },
 
     setPreviewSpeed(level) {
         this.previewSpeed = Math.max(1, Math.min(5, level));
-        document.querySelectorAll('.preview-speed-dot').forEach(dot => {
-            const l = parseInt(dot.dataset.level);
-            dot.classList.toggle('active', l <= this.previewSpeed);
+        document.querySelectorAll('#preview-speed-gauge .block-gauge-item').forEach(dot => {
+            dot.classList.toggle('active', parseInt(dot.dataset.level) <= this.previewSpeed);
         });
-        // 再生中なら再起動
-        if (this.previewPlaying) {
-            this.previewStop();
-            this.previewPlay();
-        }
+        if (this.previewPlaying) { this.previewStop(); this.previewPlay(); }
     },
 
-    togglePreviewMode() {
-        this.previewMode = this.previewMode === 1 ? 9 : 1;
-        const btn = document.getElementById('preview-mode-btn');
-        if (btn) btn.textContent = this.previewMode === 1 ? '1' : '9';
-        this.renderPreview();
-    },
-
-    updatePreviewFrameInfo() {
+    _updatePreviewUI() {
         const el = document.getElementById('preview-frame-info');
         if (!el) return;
         if (this.previewFrames.length === 0) {
-            el.textContent = '—';
+            el.textContent = 'Frame: — / —';
         } else {
-            el.textContent = `${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+            el.textContent = `Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+        }
+    },
+
+    _updatePreviewTitle(spriteIdx) {
+        const titleEl = document.getElementById('preview-title');
+        if (!titleEl) return;
+        if (spriteIdx < 0 || !App.projectData?.sprites?.[spriteIdx]) {
+            titleEl.textContent = 'Preview (16×16)';
+            return;
+        }
+        const dim = (App.projectData.sprites[spriteIdx].size || 1) === 2 ? 32 : 16;
+        titleEl.textContent = `Preview (${dim}×${dim})`;
+    },
+
+    _updatePreviewTitleFromCurrent() {
+        if (this.previewFrames.length === 0) {
+            this._updatePreviewTitle(-1);
+        } else {
+            this._updatePreviewTitle(this.previewFrames[this.previewCurrentFrame]);
         }
     },
 
@@ -2679,11 +2681,10 @@ const SpriteEditor = {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        // 背景色
         const bgColor = App.projectData?.stage?.bgColor || App.projectData?.stage?.backgroundColor || '#3CBCFC';
         canvas.style.backgroundColor = bgColor;
 
-        const cw = 80;
+        const cw = 128;
         canvas.width = cw;
         canvas.height = cw;
         ctx.clearRect(0, 0, cw, cw);
@@ -2697,30 +2698,30 @@ const SpriteEditor = {
         const palette = App.nesPalette;
         const dim = (sprite.size || 1) === 2 ? 32 : 16;
 
-        if (this.previewMode === 1) {
-            // 単体モード: キャンバスいっぱいに拡大
-            const pxSize = cw / dim;
+        if (!this.previewTileMode) {
+            // 単体モード
+            const px = cw / dim;
             for (let y = 0; y < dim; y++) {
                 for (let x = 0; x < dim; x++) {
-                    if (sprite.data[y] && sprite.data[y][x] >= 0) {
+                    if (sprite.data[y]?.[x] >= 0) {
                         ctx.fillStyle = palette[sprite.data[y][x]];
-                        ctx.fillRect(x * pxSize, y * pxSize, pxSize, pxSize);
+                        ctx.fillRect(x * px, y * px, px, px);
                     }
                 }
             }
         } else {
-            // 9分割モード: 3x3で均等表示
-            const tileSize = Math.floor(cw / 3);
-            const pxSize = tileSize / dim;
+            // 9分割モード
+            const tile = Math.floor(cw / 3);
+            const px = tile / dim;
             for (let ty = 0; ty < 3; ty++) {
                 for (let tx = 0; tx < 3; tx++) {
-                    const ox = tx * tileSize;
-                    const oy = ty * tileSize;
+                    const ox = tx * tile;
+                    const oy = ty * tile;
                     for (let y = 0; y < dim; y++) {
                         for (let x = 0; x < dim; x++) {
-                            if (sprite.data[y] && sprite.data[y][x] >= 0) {
+                            if (sprite.data[y]?.[x] >= 0) {
                                 ctx.fillStyle = palette[sprite.data[y][x]];
-                                ctx.fillRect(ox + x * pxSize, oy + y * pxSize, pxSize, pxSize);
+                                ctx.fillRect(ox + x * px, oy + y * px, Math.ceil(px), Math.ceil(px));
                             }
                         }
                     }
