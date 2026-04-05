@@ -556,22 +556,19 @@ body {
 /* ========== プレビューエリア ========== */
 #preview-area {
     flex-shrink: 0;
-    margin: 4px 10px 2px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+    margin: 0;
     overflow: hidden;
-    background: var(--bg-device);
+    background: transparent;
 }
 
 #preview-title {
     text-align: center;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--color-medium);
-    background: rgba(0,0,0,0.04);
-    padding: 3px 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #999;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 6px 0;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border-color);
 }
 
 #preview-body {
@@ -668,11 +665,6 @@ body {
 
 #preview-speed-gauge {
     gap: 4px;
-}
-
-#preview-speed-gauge .block-gauge-item {
-    height: 16px;
-    width: 16px;
 }
 
 /* 繝斐け繧ｻ繝ｫ繝ｻ繧ｹ繝��繧ｸ逕ｻ髱｢繧ｳ繝ｳ繝�Φ繝�Λ繝�ヱ繝ｼ�井ｸ句ｯ�○�� */

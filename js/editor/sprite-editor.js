@@ -2513,6 +2513,73 @@ const SpriteEditor = {
                     e.dataTransfer.effectAllowed = 'copy';
                 }
             });
+
+            // ===== iOS/タッチデバイス用タッチドラッグ =====
+            let touchDragIdx = -1;
+            let touchGhost = null;
+            let startX = 0, startY = 0;
+            let dragState = 0; // 0: なし, 1: 判定中, 2: ドラッグ中
+
+            spriteList.addEventListener('touchstart', (e) => {
+                const item = e.target.closest('.sprite-item');
+                if (!item) return;
+                touchDragIdx = parseInt(item.dataset.index);
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                dragState = 1;
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (dragState === 0) return;
+                const touch = e.touches[0];
+                const dx = Math.abs(touch.clientX - startX);
+                const dy = Math.abs(touch.clientY - startY);
+
+                if (dragState === 1) {
+                    // 縦方向の動きが大きければプレビューへのドラッグと判定
+                    if (dy > dx && dy > 5) {
+                        dragState = 2;
+                    } else if (dx > dy && dx > 5) {
+                        dragState = 0; // 横方向はスクロール
+                    }
+                }
+
+                if (dragState === 2) {
+                    e.preventDefault(); // スクロール防止
+                    if (!touchGhost) {
+                        const item = spriteList.querySelector(`.sprite-item[data-index="${touchDragIdx}"]`);
+                        if (item) {
+                            touchGhost = item.cloneNode(true);
+                            touchGhost.style.position = 'fixed';
+                            touchGhost.style.pointerEvents = 'none';
+                            touchGhost.style.zIndex = '9999';
+                            touchGhost.style.opacity = '0.7';
+                            touchGhost.style.margin = '0';
+                            document.body.appendChild(touchGhost);
+                        }
+                    }
+                    if (touchGhost) {
+                        touchGhost.style.left = (touch.clientX - 16) + 'px';
+                        touchGhost.style.top = (touch.clientY - 16) + 'px';
+                    }
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', (e) => {
+                if (dragState === 2 && touchDragIdx !== -1) {
+                    const touch = e.changedTouches[0];
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (target && target.closest('#preview-canvas')) {
+                        this.addPreviewFrame(touchDragIdx);
+                    }
+                }
+                if (touchGhost) {
+                    touchGhost.remove();
+                    touchGhost = null;
+                }
+                dragState = 0;
+                touchDragIdx = -1;
+            });
         }
 
         // Tile Modeトグル
@@ -2560,7 +2627,6 @@ const SpriteEditor = {
         if (spriteIdx < 0 || spriteIdx >= App.projectData.sprites.length) return;
         this.previewFrames.push(spriteIdx);
         this.previewCurrentFrame = this.previewFrames.length - 1;
-        this._updatePreviewTitle(spriteIdx);
         this._updatePreviewUI();
         this.renderPreview();
     },
@@ -2582,7 +2648,6 @@ const SpriteEditor = {
         }
         if (this.previewFrames.length === 0) this.previewStop();
         this._updatePreviewUI();
-        this._updatePreviewTitleFromCurrent();
         this.renderPreview();
     },
 
@@ -2591,7 +2656,6 @@ const SpriteEditor = {
         this.previewFrames = [];
         this.previewCurrentFrame = 0;
         this._updatePreviewUI();
-        this._updatePreviewTitle(-1);
         this.renderPreview();
     },
 
@@ -2657,25 +2721,6 @@ const SpriteEditor = {
         }
     },
 
-    _updatePreviewTitle(spriteIdx) {
-        const titleEl = document.getElementById('preview-title');
-        if (!titleEl) return;
-        if (spriteIdx < 0 || !App.projectData?.sprites?.[spriteIdx]) {
-            titleEl.textContent = 'Preview (16×16)';
-            return;
-        }
-        const dim = (App.projectData.sprites[spriteIdx].size || 1) === 2 ? 32 : 16;
-        titleEl.textContent = `Preview (${dim}×${dim})`;
-    },
-
-    _updatePreviewTitleFromCurrent() {
-        if (this.previewFrames.length === 0) {
-            this._updatePreviewTitle(-1);
-        } else {
-            this._updatePreviewTitle(this.previewFrames[this.previewCurrentFrame]);
-        }
-    },
-
     renderPreview() {
         const canvas = document.getElementById('preview-canvas');
         if (!canvas) return;
@@ -2698,33 +2743,33 @@ const SpriteEditor = {
         const palette = App.nesPalette;
         const dim = (sprite.size || 1) === 2 ? 32 : 16;
 
-        if (!this.previewTileMode) {
-            // 単体モード
-            const px = cw / dim;
-            for (let y = 0; y < dim; y++) {
-                for (let x = 0; x < dim; x++) {
-                    if (sprite.data[y]?.[x] >= 0) {
-                        ctx.fillStyle = palette[sprite.data[y][x]];
-                        ctx.fillRect(x * px, y * px, px, px);
-                    }
+        // タイルモード等での無駄な隙間を防ぐため、1枚のキャンバスにピクセル描画してからdrawImageする
+        const tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = dim;
+        tmpCanvas.height = dim;
+        const tctx = tmpCanvas.getContext('2d');
+        
+        for (let y = 0; y < dim; y++) {
+            for (let x = 0; x < dim; x++) {
+                if (sprite.data[y]?.[x] >= 0) {
+                    tctx.fillStyle = palette[sprite.data[y][x]];
+                    tctx.fillRect(x, y, 1, 1);
                 }
             }
+        }
+
+        ctx.imageSmoothingEnabled = false;
+
+        if (!this.previewTileMode) {
+            // 単体モード
+            ctx.drawImage(tmpCanvas, 0, 0, cw, cw);
         } else {
-            // 9分割モード
-            const tile = Math.floor(cw / 3);
-            const px = tile / dim;
+            // 9分割モード (Tile Mode)
+            // 3x3で敷き詰める（Math.ceil等を使わずdrawImageなので隙間発生なし）
+            const tile = Math.floor(cw / 3); // 42px
             for (let ty = 0; ty < 3; ty++) {
                 for (let tx = 0; tx < 3; tx++) {
-                    const ox = tx * tile;
-                    const oy = ty * tile;
-                    for (let y = 0; y < dim; y++) {
-                        for (let x = 0; x < dim; x++) {
-                            if (sprite.data[y]?.[x] >= 0) {
-                                ctx.fillStyle = palette[sprite.data[y][x]];
-                                ctx.fillRect(ox + x * px, oy + y * px, Math.ceil(px), Math.ceil(px));
-                            }
-                        }
-                    }
+                    ctx.drawImage(tmpCanvas, tx * tile, ty * tile, tile, tile);
                 }
             }
         }
