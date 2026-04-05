@@ -2765,11 +2765,13 @@ const SpriteEditor = {
             ctx.drawImage(tmpCanvas, 0, 0, cw, cw);
         } else {
             // 9分割モード (Tile Mode)
-            // 3x3で敷き詰める（Math.ceil等を使わずdrawImageなので隙間発生なし）
-            const tile = Math.floor(cw / 3); // 42px
+            // キャンバスサイズ(128px)を3等分すると端数が生じ、端に背景色の隙間ができるのを防ぐため、
+            // 各タイルを切り上げ(Math.ceil)たサイズで描画し1px分だけ重ね合わせる
+            const tileW = Math.ceil(cw / 3); // 43px
+            const tileStep = cw / 3;
             for (let ty = 0; ty < 3; ty++) {
                 for (let tx = 0; tx < 3; tx++) {
-                    ctx.drawImage(tmpCanvas, tx * tile, ty * tile, tile, tile);
+                    ctx.drawImage(tmpCanvas, Math.floor(tx * tileStep), Math.floor(ty * tileStep), tileW, tileW);
                 }
             }
         }
