@@ -292,7 +292,7 @@ const GameEngine = {
                             transformItemPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId });
                         }
                     } else if (template.type === 'enemy') {
-                        enemyPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId, behavior: template.config?.move || 'patrol' });
+                        enemyPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId, behavior: template.config?.move || 'idle' });
                     }
                 }
             });
@@ -312,7 +312,7 @@ const GameEngine = {
                                     transformItemPositions.push({ x, y, template, templateIdx });
                                 }
                             } else if (template.type === 'enemy') {
-                                enemyPositions.push({ x, y, template, templateIdx, behavior: template.config?.move || 'patrol' });
+                                enemyPositions.push({ x, y, template, templateIdx, behavior: template.config?.move || 'idle' });
                             }
                         }
                     }

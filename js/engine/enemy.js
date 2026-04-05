@@ -3,7 +3,7 @@
  */
 
 class Enemy {
-    constructor(tileX, tileY, template = null, behavior = 'patrol', templateIdx = undefined) {
+    constructor(tileX, tileY, template = null, behavior = 'idle', templateIdx = undefined) {
         this.x = tileX;
         this.y = tileY;
         this.originX = tileX; // 元の位置（追いかけて戻る用）
