@@ -292,7 +292,7 @@ const GameEngine = {
                             transformItemPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId });
                         }
                     } else if (template.type === 'enemy') {
-                        enemyPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId, behavior: template.config?.move || 'idle' });
+                        enemyPositions.push({ x: ent.x, y: ent.y, template, templateIdx: ent.templateId, behavior: template.config?.move || 'patrol' });
                     }
                 }
             });
@@ -312,7 +312,7 @@ const GameEngine = {
                                     transformItemPositions.push({ x, y, template, templateIdx });
                                 }
                             } else if (template.type === 'enemy') {
-                                enemyPositions.push({ x, y, template, templateIdx, behavior: template.config?.move || 'idle' });
+                                enemyPositions.push({ x, y, template, templateIdx, behavior: template.config?.move || 'patrol' });
                             }
                         }
                     }
@@ -3332,7 +3332,7 @@ const GameEngine = {
                 // リミックス処理の実行
                 if (App.projectData) {
                     App.isPlayOnlyMode = false;
-                    
+
                     // 原作者情報の待避（すでにoriginalAuthorがある場合は上書きしない）
                     if (!App.projectData.meta.originalAuthor) {
                         App.projectData.meta.originalAuthor = App.projectData.meta.author || 'Unknown';
@@ -3349,15 +3349,15 @@ const GameEngine = {
 
                     // 新しいエディットキーを発行
                     App.projectData.meta.editKey = App.generateEditKey();
-                    
+
                     // UIロック解除と画面更新
                     App.unlockCreatorMode();
                     App.switchScreen('stage');
-                    
+
                     // ストレージに保存（タイトルはそのまま）
                     const name = App.projectData.meta.name || 'Game';
                     App.currentProjectName = name;
-                    
+
                     if (typeof Storage !== 'undefined') {
                         Storage.saveProject(name, App.projectData);
                         Storage.save('currentProject', App.projectData);

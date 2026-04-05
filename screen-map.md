@@ -34,3 +34,5 @@
 | S028 | スプライト選択モーダル (sprite-select-modal) | スプライト選択（モーダル版・未使用の可能性） | index.html |
 | S029 | ステージ設定パネル (stage-settings-panel) | ステージ画面内の折りたたみ設定パネル | index.html, stage-editor.js |
 | S030 | タイル設定パネル (tile-config-panel) | ステージ画面内のインラインタイル設定パネル | index.html, stage-editor.js |
+| S031 | テキスト編集ポップアップ (text-edit-popup) | 汎用テキスト編集（ゲームタイトル/作成者名など） | index.html |
+| S032 | 数値コピー＆ペーストポップアップ (numcopy-popup) | サウンドパターンの指定範囲・トラック間のコピー＆ペースト | index.html, bgm-editor.js |

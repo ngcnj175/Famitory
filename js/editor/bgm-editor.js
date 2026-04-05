@@ -2841,18 +2841,32 @@ const SoundEditor = {
 
                 // ノート作成中でない場合のみタップ処理（既存ノート削除）
                 if (isDragging && !isLongPress && !isCreatingNote) {
-                    clearTimeout(longPressTimer);
-                    const pos = getPosFromEvent(e);
-                    const { step, pitch } = getStepPitch(pos);
-                    // 既存ノートがあれば削除
-                    const existingNote = this.findNoteAt(step, pitch);
-                    if (existingNote) {
-                        const song = this.getCurrentSong();
-                        const track = song.tracks[this.currentTrack];
-                        const idx = track.notes.indexOf(existingNote);
-                        if (idx >= 0) {
-                            track.notes.splice(idx, 1);
+                    if (pendingInputTimer) {
+                        clearTimeout(pendingInputTimer);
+                        pendingInputTimer = null;
+                        if (pendingInputData && !isTwoFingerPan && !this.selectionMode && !this.pasteMode) {
+                            const newNote = { step: pendingInputData.step, pitch: pendingInputData.pitch, length: 1 };
+                            const song = this.getCurrentSong();
+                            song.tracks[this.currentTrack].notes.push(newNote);
+                            const { note: noteName, octave } = this.pitchToNote(pendingInputData.pitch);
+                            this.playNote(noteName, octave);
                             this.render();
+                        }
+                        pendingInputData = null;
+                    } else {
+                        clearTimeout(longPressTimer);
+                        const pos = getPosFromEvent(e);
+                        const { step, pitch } = getStepPitch(pos);
+                        // 既存ノートがあれば削除
+                        const existingNote = this.findNoteAt(step, pitch);
+                        if (existingNote) {
+                            const song = this.getCurrentSong();
+                            const track = song.tracks[this.currentTrack];
+                            const idx = track.notes.indexOf(existingNote);
+                            if (idx >= 0) {
+                                track.notes.splice(idx, 1);
+                                this.render();
+                            }
                         }
                     }
                 }

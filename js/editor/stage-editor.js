@@ -426,7 +426,7 @@ const StageEditor = {
                         <span class="param-label">てきの動き</span>
                         <select class="param-select" data-key="move">
                             <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>動かない</option>
-                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
+                            <option value="patrol" ${!config.move || config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
                             <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>ぴょんぴょん</option>
                             <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>うろぴょん</option>
                             <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>追いかけてくる</option>

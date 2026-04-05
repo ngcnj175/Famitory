@@ -1,280 +1,404 @@
 # UIテキスト一覧
 
-このアプリで画面に表示されるテキスト（ボタン・ラベル・タイトル・メッセージ等）の一覧です。
+このアプリで画面上に表示されうるすべてのテキストデータ（HTML及びJS内メッセージ）の完全版です。
 
-| ID | テキスト | 画面名 | ファイル名 | 行番号 |
-|----|---------|--------|-----------|--------|
-| U001 | 新規 | ヘッダー | index.html | 26 |
-| U002 | NEW | ヘッダー | index.html | 30 |
-| U003 | 読み込み | ヘッダー | index.html | 32 |
-| U004 | OPEN | ヘッダー | index.html | 37 |
-| U005 | 保存 | ヘッダー | index.html | 40 |
-| U006 | SAVE | ヘッダー | index.html | 45 |
-| U007 | 共有 | ヘッダー | index.html | 46 |
-| U008 | SHARE | ヘッダー | index.html | 51 |
-| U009 | プレイ | ヘッダー | index.html | 55 |
-| U010 | PLAY | ヘッダー | index.html | 68 |
-| U011 | ピクセル | ヘッダー | index.html | 69 |
-| U012 | PIXEL | ヘッダー | index.html | 74 |
-| U013 | ステージ | ヘッダー | index.html | 75 |
-| U014 | STAGE | ヘッダー | index.html | 81 |
-| U015 | サウンド | ヘッダー | index.html | 83 |
-| U016 | SONG | ヘッダー | index.html | 88 |
-| U017 | ゲームタイトル | ゲーム画面 | index.html | 101 |
-| U018 | なまえ | ゲーム画面 | index.html | 104 |
-| U019 | FAMITORY | ゲーム画面 | index.html | 119 |
-| U020 | B | ゲーム画面 | index.html | 135 |
-| U021 | A | ゲーム画面 | index.html | 136 |
-| U022 | START | ゲーム画面 | index.html | 144 |
-| U023 | STAGE CLEAR | リザルト画面 | index.html | 151 |
-| U024 | SCORE | リザルト画面 | index.html | 154 |
-| U025 | HIGH SCORE | リザルト画面 | index.html | 158 |
-| U030 | いいね！ | リザルト画面 | index.html | 164 |
-| U031 | スコアを共有 | リザルト画面 | index.html | 174 |
-| U032 | もう一度 | リザルト画面 | index.html | 180 |
-| U033 | リミックスする | リザルト画面 | index.html | 188 |
-| U034 | 編集に戻る | リザルト画面 | index.html | 195 |
-| U035 | + | ピクセル画面 | index.html | 211 |
-| U036 | ペン | ピクセル画面 | index.html | 222 |
-| U037 | 消しゴム | ピクセル画面 | index.html | 227 |
-| U038 | 塗りつぶし | ピクセル画面 | index.html | 232 |
-| U039 | スポイト | ピクセル画面 | index.html | 237 |
-| U040 | 取り消し | ピクセル画面 | index.html | 242 |
-| U041 | 選択 | ピクセル画面 | index.html | 247 |
-| U042 | コピー | ピクセル画面 | index.html | 252 |
-| U043 | ペースト | ピクセル画面 | index.html | 257 |
-| U044 | 上下反転 | ピクセル画面 | index.html | 262 |
-| U045 | 左右反転 | ピクセル画面 | index.html | 267 |
-| U046 | おてほん | ピクセル画面 | index.html | 272 |
-| U047 | + | ピクセル画面 | index.html | 259 |
-| U048 | ステージ設定 | ステージ画面 | index.html | 272 |
-| U049 | ステージタイトル | ステージ画面 | index.html | 279 |
-| U050 | NEW GAME | ステージ画面 | index.html | 281 |
-| U051 | 作成者名 | ステージ画面 | index.html | 285 |
-| U052 | You | ステージ画面 | index.html | 286 |
-| U053 | エディットキー | ステージ画面 | index.html | 290 |
-| U054 | ステージサイズ | ステージ画面 | index.html | 294 |
-| U055 | 縦 | ステージ画面 | index.html | 289 |
-| U056 | 横 | ステージ画面 | index.html | 297 |
-| U057 | 背景色 | ステージ画面 | index.html | 305 |
-| U058 | BGM | ステージ画面 | index.html | 309 |
-| U059 | ステージ | ステージ画面 | index.html | 305 |
-| U060 | なし | ステージ画面 | index.html | 306 |
-| U061 | 無敵 | ステージ画面 | index.html | 309 |
-| U062 | クリア | ステージ画面 | index.html | 313 |
-| U063 | ゲームオーバー | ステージ画面 | index.html | 317 |
-| U064 | ボス | ステージ画面 | index.html | 321 |
-| U065 | クリア条件 | ステージ画面 | index.html | 326 |
-| U066 | アイテム取得 | ステージ画面 | index.html | 327 |
-| U067 | 敵ぜんめつ | ステージ画面 | index.html | 328 |
-| U068 | ボス撃破 | ステージ画面 | index.html | 329 |
-| U069 | サバイバル | ステージ画面 | index.html | 330 |
-| U070 | 制限時間 | ステージ画面 | index.html | 336 |
-| U071 | 分 | ステージ画面 | index.html | 337 |
-| U072 | 秒 | ステージ画面 | index.html | 339 |
-| U073 | スコア表示 | ステージ画面 | index.html | 343 |
-| U074 | 設定を保存 | ステージ画面 | index.html | 345 |
-| U075 | 配置 | ステージ画面 | index.html | 348 |
-| U076 | 素材 | ステージ画面 | index.html | 396 |
-| U077 | ✕ | ステージ画面 | index.html | 502 |
-| U078 | 保存 | ステージ画面 | index.html | 519 |
-| U079 | スプライトを選択 | スプライト選択ポップアップ | index.html | 528 |
-| U080 | 完了 | スプライト選択ポップアップ | index.html | 537 |
-| U081 | タイプを選択 | 属性選択ポップアップ | index.html | 564 |
-| U082 | プレイヤー | 属性選択ポップアップ | index.html | 569 |
-| U083 | てき | 属性選択ポップアップ | index.html | 570 |
-| U084 | ブロック・背景 | 属性選択ポップアップ | index.html | 571 |
-| U085 | アイテム | 属性選択ポップアップ | index.html | 572 |
-| U086 | ソング名変更 | ソング名変更ポップアップ | index.html | 581 |
-| U087 | ソング名を入力 | ソング名変更ポップアップ | index.html | 584 |
-| U088 | 保存 | ソング名変更ポップアップ | index.html | 588 |
-| U089 | ソング削除 | サウンド画面 | index.html | 599 |
-| U090 | ソング追加 | サウンド画面 | index.html | 603 |
-| U091 | Song 1 | サウンド画面 | index.html | 602 |
-| U092 | SPEED | サウンド画面 | index.html | 609 |
-| U093 | STEP | サウンド画面 | index.html | 613 |
-| U094 | PLAY/STOP | サウンド画面 | index.html | 623 |
-| U095 | STEP REC | サウンド画面 | index.html | 628 |
-| U096 | 戻る | サウンド画面 | index.html | 640 |
-| U097 | REST | サウンド画面 | index.html | 642 |
-| U098 | TIE | サウンド画面 | index.html | 648 |
-| U099 | ペン（入力モード） | サウンド画面 | index.html | 663 |
-| U277 | 消しゴム (Long: Clear) | サウンド画面 | index.html | 669 |
-| U100 | 選択 | サウンド画面 | index.html | 664 |
-| U101 | コピー | サウンド画面 | index.html | 670 |
-| U102 | ペースト | サウンド画面 | index.html | 676 |
-| U103 | TR1 | サウンド画面 | index.html | 691 |
-| U104 | SQUARE | サウンド画面 | index.html | 691 |
-| U105 | VOL | サウンド画面 | index.html | 694 |
-| U106 | PAN | サウンド画面 | index.html | 698 |
-| U107 | タイル種別を選択 | 種別選択モーダル | index.html | 721 |
-| U108 | プレイヤー | 種別選択モーダル | index.html | 725 |
-| U109 | 敵 | 種別選択モーダル | index.html | 729 |
-| U110 | 素材 | 種別選択モーダル | index.html | 733 |
-| U111 | アイテム | 種別選択モーダル | index.html | 737 |
-| U112 | ゴール | 種別選択モーダル | index.html | 741 |
-| U113 | キャンセル | 種別選択モーダル | index.html | 746 |
-| U114 | 🎮 プレイヤー設定 | プレイヤー設定モーダル | index.html | 755 |
-| U115 | メイン (必須) | プレイヤー設定モーダル | index.html | 758 |
-| U116 | 選択 | プレイヤー設定モーダル | index.html | 759 |
-| U117 | アニメーション (任意) | プレイヤー設定モーダル | index.html | 762 |
-| U118 | WALK | プレイヤー設定モーダル | index.html | 763 |
-| U119 | JUMP | プレイヤー設定モーダル | index.html | 764 |
-| U120 | ATTACK | プレイヤー設定モーダル | index.html | 765 |
-| U120a | 変身アイテム | タイル設定パネル（変身プレイヤー用） | stage-editor.js | 379 |
-| U121 | SHOT | プレイヤー設定モーダル | index.html | 766 |
-| U122 | LIFE表示 | プレイヤー設定モーダル | index.html | 770 |
-| U123 | LIFE数 | プレイヤー設定モーダル | index.html | 772 |
-| U124 | 攻撃方法 | プレイヤー設定モーダル | index.html | 780 |
-| U125 | なし | プレイヤー設定モーダル | index.html | 781 |
-| U126 | 踏む | プレイヤー設定モーダル | index.html | 782 |
-| U127 | 武器 | プレイヤー設定モーダル | index.html | 783 |
-| U128 | 効果音 | プレイヤー設定モーダル | index.html | 790 |
-| U129 | Jump ♪ | プレイヤー設定モーダル | index.html | 791 |
-| U130 | Attack ♪ | プレイヤー設定モーダル | index.html | 792 |
-| U131 | Damage ♪ | プレイヤー設定モーダル | index.html | 793 |
-| U132 | KO ♪ | プレイヤー設定モーダル | index.html | 794 |
-| U133 | キャンセル | プレイヤー設定モーダル | index.html | 798 |
-| U134 | 決定 | プレイヤー設定モーダル | index.html | 799 |
-| U135 | 👾 敵設定 | 敵設定モーダル | index.html | 821 |
-| U136 | 移動パターン | 敵設定モーダル | index.html | 658 |
-| U137 | 往復 | 敵設定モーダル | index.html | 660 |
-| U138 | ジャンプ | 敵設定モーダル | index.html | 661 |
-| U139 | 追跡 | 敵設定モーダル | index.html | 662 |
-| U140 | 🧱 素材設定 | 素材設定モーダル | index.html | 878 |
-| U141 | アニメ | 素材設定モーダル | index.html | 883 |
-| U142 | 当たり判定 | 素材設定モーダル | index.html | 887 |
-| U143 | ON | 素材設定モーダル | index.html | 888 |
-| U144 | ⭐ アイテム設定 | アイテム設定モーダル | index.html | 912 |
-| U145 | 効果 | アイテム設定モーダル | index.html | 918 |
-| U146 | 無敵 | アイテム設定モーダル | index.html | 919 |
-| U147 | ライフアップ | アイテム設定モーダル | index.html | 920 |
-| U148 | 武器取得 | アイテム設定モーダル | index.html | 921 |
-| U148a | ボム | アイテム設定モーダル | index.html | 943 |
-| U149 | Get ♪ | アイテム設定モーダル | index.html | 924 |
-| U150 | 🚩 ゴール設定 | ゴール設定モーダル | index.html | 943 |
-| U151 | ステージ設定 | ステージ設定モーダル | index.html | 962 |
-| U152 | クリア条件 | ステージ設定モーダル | index.html | 966 |
-| U153 | ゴールにたどり着く | ステージ設定モーダル | index.html | 968 |
-| U154 | 全アイテム取得 | ステージ設定モーダル | index.html | 969 |
-| U155 | 敵全滅 | ステージ設定モーダル | index.html | 970 |
-| U156 | サウンド | ステージ設定モーダル | index.html | 974 |
-| U157 | BGM | ステージ設定モーダル | index.html | 976 |
-| U158 | CLEAR | ステージ設定モーダル | index.html | 981 |
-| U159 | GAMEOVER | ステージ設定モーダル | index.html | 986 |
-| U160 | STAR | ステージ設定モーダル | index.html | 991 |
-| U161 | デフォルト | ステージ設定モーダル | index.html | 977 |
-| U162 | スプライトを選択 | スプライト選択モーダル | index.html | 1028 |
-| U163 | ゲームを共有 | 共有ダイアログ | index.html | 1045 |
-| U164 | 公開中 | 共有ダイアログ | index.html | 1056 |
-| U165 | URL をコピー | 共有ダイアログ | index.html | 1060 |
-| U166 | ✓ コピーしました | 共有ダイアログ | index.html | 1062 |
-| U167 | X に とうこう | 共有ダイアログ | index.html | 1065 |
-| U168 | Discord に とうこう | 共有ダイアログ | index.html | 1068 |
-| U169 | リミックスOK | 共有ダイアログ | index.html | 1050 |
-| U170 | データを移動 | 共有ダイアログ | index.html | 1071 |
-| U171 | そとに だす | 共有ダイアログ | index.html | 1074 |
-| U172 | もちこむ | 共有ダイアログ | index.html | 1077 |
-| U173 | もどる | 共有ダイアログ | index.html | 1082 |
-| U174 | つづきをえらぶ | プロジェクトリストモーダル | index.html | 1092 |
-| U175 | ひらく | プロジェクトリストモーダル | index.html | 1101 |
-| U176 | コピー | プロジェクトリストモーダル | index.html | 1102 |
-| U177 | けす | プロジェクトリストモーダル | index.html | 1103 |
-| U178 | やめる | プロジェクトリストモーダル | index.html | 1104 |
-| U179 | あたらしいゲームをつくる | 新規作成モーダル | index.html | 1113 |
-| U180 | なまえ | 新規作成モーダル | index.html | 1116 |
-| U181 | つくる | 新規作成モーダル | index.html | 1120 |
-| U182 | やめる | 新規作成モーダル | index.html | 1121 |
-| U183 | カラープリセット | パレットプリセットダイアログ | index.html | 1128 |
-| U184 | ファミトリー | パレットプリセットダイアログ | index.html | 1133 |
-| U185 | (28色) | パレットプリセットダイアログ | index.html | 1134 |
-| U186 | パステル | パレットプリセットダイアログ | index.html | 1138 |
-| U187 | (16色) | パレットプリセットダイアログ | index.html | 1139 |
-| U188 | ファミコン | パレットプリセットダイアログ | index.html | 1143 |
-| U189 | (54色) | パレットプリセットダイアログ | index.html | 1144 |
-| U190 | ゲームボーイ | パレットプリセットダイアログ | index.html | 1148 |
-| U191 | (4色) | パレットプリセットダイアログ | index.html | 1149 |
-| U192 | モノクロ | パレットプリセットダイアログ | index.html | 1153 |
-| U193 | (8色) | パレットプリセットダイアログ | index.html | 1154 |
-| U194 | ついか | パレットプリセットダイアログ | index.html | 1160 |
-| U195 | おきかえ | パレットプリセットダイアログ | index.html | 1161 |
-| U196 | とじる | パレットプリセットダイアログ | index.html | 1162 |
-| U197 | 値を入力を | 数値入力モーダル | index.html | 1169 |
-| U198 | OK | 数値入力モーダル | index.html | 1177 |
-| U199 | キャンセル | 数値入力モーダル | index.html | 1178 |
-| U200 | セーブしました | SAVEトースト | index.html | 1192 |
-| U201 | この作品を公開しますか？ | 公開確認ダイアログ | index.html | 1221 |
-| U202 | はい | 公開確認ダイアログ | index.html | 1224 |
-| U203 | やめる | 公開確認ダイアログ | index.html | 1225 |
-| U204 | なまえをつけてセーブ | 名前を付けてセーブモーダル | index.html | 1232 |
-| U205 | Project Name | 名前を付けてセーブモーダル | index.html | 1235 |
-| U206 | セーブ | 名前を付けてセーブモーダル | index.html | 1238 |
-| U207 | エディットキー入力 | エディットキー入力モーダル | index.html | 1245 |
-| U208 | このゲームを編集するにはエディットキーが必要です | エディットキー入力モーダル | index.html | 1248 |
-| U209 | 8桁のキーを入力 | エディットキー入力モーダル | index.html | 1249 |
-| U210 | キーが一致しません | エディットキー入力モーダル | index.html | 1251 |
-| U211 | 認証 | エディットキー入力モーダル | index.html | 1254 |
-| U212 | 編集モードに切り替わりました | （トースト） | app.js | 575 |
-| U213 | セーブしました | （トースト） | app.js | 889 |
-| U214 | 保存する | （確認ダイアログ） | app.js | 934 |
-| U215 | 保存しない | （確認ダイアログ） | app.js | 938 |
-| U216 | セーブデータなし | プロジェクトリスト | app.js | 1236 |
-| U217 | この作品を公開しますか？ | 公開確認 | app.js | 1371 |
-| U218 | 公開中の作品を更新しますか？ | 公開確認 | app.js | 1374 |
-| U219 | URLが発行され、だれでもプレイできるようになります | 公開確認 | app.js | 1375 |
-| U220 | 現在の内容で上書き保存されます | 公開確認 | app.js | 1376 |
-| U221 | 処理中です…少しお待ちください | （トースト） | app.js | 1397 |
-| U222 | クラウド接続がありません | （トースト） | app.js | 1414 |
-| U223 | 保存に失敗しました | （トースト） | app.js | 1430 |
-| U224 | 公開しました | （トースト） | app.js | 1442 |
-| U225 | 更新しました | （トースト） | app.js | 1445 |
-| U226 | 保存でエラーが発生しました | （トースト） | app.js | 1445 |
-| U227 | URLを コピーしました | （トースト） | app.js | 1512 |
-| U228 | コピーに失敗しました | （トースト） | app.js | 1514 |
-| U229 | Discord用に コピーしました | （トースト） | app.js | 1534 |
-| U230 | あたらしいゲームを つくりました | （トースト） | app.js | 1183 |
-| U231 | 「${newName}」として保存しました | （トースト） | app.js | 1642 |
-| U232 | 「${name}」を開きました | （alert） | app.js | 1069 |
-| U233 | プロジェクトの読み込みに失敗しました | （alert） | app.js | 1071 |
-| U234 | 「${importName}」としてインポートしました。\n今すぐ開きますか？ | （confirm） | app.js | 1112 |
-| U235 | インポートしました。「開く」メニューから選択できます。 | （alert） | app.js | 1117 |
-| U236 | ファイルの読み込みに失敗しました | （alert） | app.js | 1122 |
-| U237 | そのなまえは すでに つかわれています | （alert） | app.js | 1156 |
-| U238 | プロジェクト名を入力してください | （alert） | app.js | 1600 |
-| U239 | サバイバルモードでは制限時間を設定してください | （alert） | game-engine.js | 85 |
-| U240 | STAGE CLEAR! | リザルト画面 | game-engine.js | 3278 |
-| U241 | GAME OVER | リザルト画面 | game-engine.js | 3281 |
-| U243 | スプライトを登録してください | （alert） | stage-editor.js | 1355 |
-| U244 | このタイルを削除しますか？ | （confirm） | stage-editor.js | 1549 |
-| U245 | ステージエディタの反転機能は未実装です | （alert） | stage-editor.js | 2211 |
-| U246 | すべてのタイルを削除しますか？ | （confirm） | stage-editor.js | 2700 |
-| U247 | 最大20文字 | タイル設定 | stage-editor.js | 547 |
-| U248 | サバイバル時間 | ステージ設定 | stage-editor.js | 2839 |
-| U249 | 制限時間 | ステージ設定 | stage-editor.js | 2842 |
-| U250 | 複製 | アクションメニュー | stage-editor.js | 1521 |
-| U251 | 削除 | アクションメニュー | stage-editor.js | 1522 |
-| U252 | 最後のソングは削除できません | （alert） | bgm-editor.js | 872 |
-| U253 | "${name}" を削除しますか？ | （confirm） | bgm-editor.js | 875 |
-| U254 | 「${name}」を削除しますか？ | （confirm） | bgm-editor.js | 982 |
-| U255 | Tr${n}の全ノートを削除しますか？ | （confirm） | bgm-editor.js | 2013 |
-| U256 | クリップボードが空です | （alert） | bgm-editor.js | 2804 |
-| U257 | プリセットを選択してください | （alert） | sprite-editor.js | 262 |
-| U258 | 現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。 | （confirm） | sprite-editor.js | 285 |
-| U259 | 最低1色は必要です | （alert） | sprite-editor.js | 332 |
-| U260 | この色を削除しますか？\n（使用されているドットは透明になります） | （confirm） | sprite-editor.js | 335 |
-| U261 | サイズを縮小すると、16x16サイズに収まらないデータは削除されます。\nよろしいですか？ | （confirm） | sprite-editor.js | 1203 |
-| U262 | これ以上削除できません | （alert） | sprite-editor.js | 1238 |
-| U263 | このスプライトを削除しますか？\n（使用されている箇所は削除されます） | （confirm） | sprite-editor.js | 1242 |
-| U264 | スプライトをクリアしますか？ | （confirm） | sprite-editor.js | 1865 |
-| U265 | 立ち | タイル設定 | stage-editor.js | 371 |
-| U266 | 歩き | タイル設定 | stage-editor.js | 371 |
-| U267 | のぼる | タイル設定 | stage-editor.js | 371 |
-| U268 | ジャンプ | タイル設定 | stage-editor.js | 371 |
-| U269 | 攻撃 | タイル設定 | stage-editor.js | 371 |
-| U270 | 見た目 | タイル設定 | stage-editor.js | 371 |
-| U271 | ライフ | タイル設定 | stage-editor.js | 371 |
-| U272 | プレイヤー | タイル設定 | stage-editor.js | 293 |
-| U273 | てき | タイル設定 | stage-editor.js | 294 |
-| U274 | ブロック・背景 | タイル設定 | stage-editor.js | 295 |
-| U275 | アイテム | タイル設定 | stage-editor.js | 296 |
-| U276 | ゴール | タイル設定 | stage-editor.js | 297 |
+| ID | テキスト | 属性・種類 | ファイル名 | 行番号 |
+|----|---------|-----------|-----------|--------|
+| U001 | 新規 | HTML attribute | index.html | 27 |
+| U002 | NEW | HTML text node | index.html | 32 |
+| U003 | 読み込み | HTML attribute | index.html | 34 |
+| U004 | OPEN | HTML text node | index.html | 39 |
+| U005 | 保存 | HTML attribute | index.html | 41 |
+| U006 | SAVE | HTML text node | index.html | 46 |
+| U007 | 共有 | HTML attribute | index.html | 48 |
+| U008 | SHARE | HTML text node | index.html | 53 |
+| U009 | プレイ | HTML attribute | index.html | 57 |
+| U010 | PLAY | HTML text node | index.html | 68 |
+| U011 | ピクセル | HTML attribute | index.html | 70 |
+| U012 | PIXEL | HTML text node | index.html | 74 |
+| U013 | ステージ | HTML attribute | index.html | 76 |
+| U014 | STAGE | HTML text node | index.html | 80 |
+| U015 | サウンド | HTML attribute | index.html | 82 |
+| U016 | SONG | HTML text node | index.html | 87 |
+| U017 | My Game | HTML attribute | index.html | 97 |
+| U018 | ゲームタイトル | HTML attribute | index.html | 97 |
+| U019 | なまえ | HTML attribute | index.html | 99 |
+| U020 | いいね！ | HTML text node | index.html | 161 |
+| U021 | Frame: — / — | HTML text node | index.html | 217 |
+| U022 | 前フレーム | HTML attribute | index.html | 220 |
+| U023 | 再生/停止 | HTML attribute | index.html | 223 |
+| U024 | 次フレーム | HTML attribute | index.html | 226 |
+| U025 | フレーム複製 | HTML attribute | index.html | 229 |
+| U026 | 削除 | HTML attribute | index.html | 232 |
+| U027 | + | HTML text node | index.html | 251 |
+| U028 | ペン | HTML attribute | index.html | 263 |
+| U029 | 消しゴム | HTML attribute | index.html | 270 |
+| U030 | 塗りつぶし | HTML attribute | index.html | 276 |
+| U031 | スポイト | HTML attribute | index.html | 282 |
+| U032 | 取り消し | HTML attribute | index.html | 288 |
+| U033 | 選択 | HTML attribute | index.html | 295 |
+| U034 | コピー | HTML attribute | index.html | 301 |
+| U035 | ペースト | HTML attribute | index.html | 307 |
+| U036 | 上下反転 | HTML attribute | index.html | 313 |
+| U037 | 左右反転 | HTML attribute | index.html | 319 |
+| U038 | おてほん | HTML attribute | index.html | 325 |
+| U039 | ▼ | HTML text node | index.html | 356 |
+| U040 | ステージ設定 | HTML text node | index.html | 357 |
+| U041 | ステージタイトル | HTML text node | index.html | 362 |
+| U042 | NEW GAME | HTML attribute | index.html | 363 |
+| U043 | 作成者名 | HTML text node | index.html | 367 |
+| U044 | エディットキー | HTML text node | index.html | 372 |
+| U045 | ステージサイズ | HTML text node | index.html | 377 |
+| U046 | 縦 | HTML text node | index.html | 379 |
+| U047 | － | HTML text node | index.html | 380 |
+| U048 | ＋ | HTML text node | index.html | 382 |
+| U049 | 横 | HTML text node | index.html | 388 |
+| U050 | 背景色 | HTML text node | index.html | 396 |
+| U051 | なし | HTML text node | index.html | 405 |
+| U052 | 無敵 | HTML text node | index.html | 408 |
+| U053 | クリア | HTML text node | index.html | 413 |
+| U054 | ゲームオーバー | HTML text node | index.html | 417 |
+| U055 | ボス | HTML text node | index.html | 422 |
+| U056 | クリア条件 | HTML text node | index.html | 429 |
+| U057 | アイテム取得 | HTML text node | index.html | 432 |
+| U058 | 敵ぜんめつ | HTML text node | index.html | 433 |
+| U059 | ボス撃破 | HTML text node | index.html | 434 |
+| U060 | サバイバル | HTML text node | index.html | 435 |
+| U061 | 制限時間 | HTML text node | index.html | 440 |
+| U062 | 分 | HTML text node | index.html | 443 |
+| U063 | 秒 | HTML text node | index.html | 445 |
+| U064 | スコア表示 | HTML text node | index.html | 450 |
+| U065 | 設定を保存 | HTML text node | index.html | 458 |
+| U066 | 配置 | HTML attribute | index.html | 468 |
+| U067 | ✕ | HTML text node | index.html | 550 |
+| U068 | 素材 | HTML text node | index.html | 553 |
+| U069 | スプライトを選択 | HTML text node | index.html | 577 |
+| U070 | × | HTML text node | index.html | 578 |
+| U071 | 完了 | HTML text node | index.html | 586 |
+| U072 | タイプを選択 | HTML text node | index.html | 613 |
+| U073 | プレイヤー | HTML text node | index.html | 617 |
+| U074 | てき | HTML text node | index.html | 618 |
+| U075 | ブロック・背景 | HTML text node | index.html | 619 |
+| U076 | アイテム | HTML text node | index.html | 620 |
+| U077 | 編集 | HTML text node | index.html | 629 |
+| U078 | ソング名変更 | HTML text node | index.html | 646 |
+| U079 | ソング名を入力 | HTML attribute | index.html | 650 |
+| U080 | コピー＆ペースト | HTML text node | index.html | 663 |
+| U081 | トラック | HTML text node | index.html | 669 |
+| U082 | コピー範囲 | HTML text node | index.html | 680 |
+| U083 | ～ | HTML text node | index.html | 683 |
+| U084 | ペースト先 | HTML text node | index.html | 690 |
+| U085 | 実行 | HTML text node | index.html | 698 |
+| U086 | ソング削除 | HTML attribute | index.html | 710 |
+| U087 | 〈 | HTML text node | index.html | 711 |
+| U088 | タップで名前変更 | HTML attribute | index.html | 712 |
+| U089 | 〉 | HTML text node | index.html | 713 |
+| U090 | ソング追加 | HTML attribute | index.html | 714 |
+| U091 | 上下ドラッグで変更 | HTML attribute | index.html | 720 |
+| U092 | PLAY/STOP | HTML attribute | index.html | 734 |
+| U093 | STEP REC | HTML attribute | index.html | 739 |
+| U094 | 戻る | HTML attribute | index.html | 747 |
+| U095 | ペン（入力モード） | HTML attribute | index.html | 764 |
+| U096 | 消しゴム (Long: Clear) | HTML attribute | index.html | 770 |
+| U097 | タイル種別を選択 | HTML text node | index.html | 851 |
+| U098 | 🎮 | HTML text node | index.html | 855 |
+| U099 | 👾 | HTML text node | index.html | 859 |
+| U100 | 敵 | HTML text node | index.html | 860 |
+| U101 | 🧱 | HTML text node | index.html | 863 |
+| U102 | ⭐ | HTML text node | index.html | 867 |
+| U103 | 🚩 | HTML text node | index.html | 871 |
+| U104 | ゴール | HTML text node | index.html | 872 |
+| U105 | キャンセル | HTML text node | index.html | 877 |
+| U106 | 🎮 プレイヤー設定 | HTML text node | index.html | 885 |
+| U107 | メイン (必須) | HTML text node | index.html | 888 |
+| U108 | アニメーション (任意) | HTML text node | index.html | 892 |
+| U109 | LIFE表示 | HTML text node | index.html | 905 |
+| U110 | LIFE数 | HTML text node | index.html | 907 |
+| U111 | ∞ | HTML text node | index.html | 914 |
+| U112 | 攻撃方法 | HTML text node | index.html | 918 |
+| U113 | 踏む | HTML text node | index.html | 921 |
+| U114 | 武器 | HTML text node | index.html | 922 |
+| U115 | 効果音 | HTML text node | index.html | 932 |
+| U116 | Jump ♪ | HTML text node | index.html | 934 |
+| U117 | Attack ♪ | HTML text node | index.html | 935 |
+| U118 | Damage ♪ | HTML text node | index.html | 936 |
+| U119 | KO ♪ | HTML text node | index.html | 937 |
+| U120 | 決定 | HTML text node | index.html | 943 |
+| U121 | 👾 敵設定 | HTML text node | index.html | 951 |
+| U122 | 移動パターン | HTML text node | index.html | 980 |
+| U123 | 往復 | HTML text node | index.html | 983 |
+| U124 | ジャンプ | HTML text node | index.html | 984 |
+| U125 | 追跡 | HTML text node | index.html | 985 |
+| U126 | 🧱 素材設定 | HTML text node | index.html | 1008 |
+| U127 | アニメ | HTML text node | index.html | 1013 |
+| U128 | 当たり判定 | HTML text node | index.html | 1017 |
+| U129 | ⭐ アイテム設定 | HTML text node | index.html | 1042 |
+| U130 | 効果 | HTML text node | index.html | 1051 |
+| U131 | ライフアップ | HTML text node | index.html | 1054 |
+| U132 | 武器取得 | HTML text node | index.html | 1055 |
+| U133 | ボム | HTML text node | index.html | 1056 |
+| U134 | Get ♪ | HTML text node | index.html | 1061 |
+| U135 | 🚩 ゴール設定 | HTML text node | index.html | 1074 |
+| U136 | ゴールにたどり着く | HTML text node | index.html | 1098 |
+| U137 | 全アイテム取得 | HTML text node | index.html | 1099 |
+| U138 | 敵全滅 | HTML text node | index.html | 1100 |
+| U139 | デフォルト | HTML text node | index.html | 1110 |
+| U140 | ゲームを共有 | HTML text node | index.html | 1159 |
+| U141 | リミックスOK | HTML text node | index.html | 1163 |
+| U142 | 公開中 | HTML text node | index.html | 1169 |
+| U143 | ✓ コピーしました | HTML text node | index.html | 1176 |
+| U144 | データを移動 | HTML text node | index.html | 1188 |
+| U145 | もどる | HTML text node | index.html | 1200 |
+| U146 | つづきをえらぶ | HTML text node | index.html | 1208 |
+| U147 | ひらく | HTML text node | index.html | 1217 |
+| U148 | けす | HTML text node | index.html | 1219 |
+| U149 | やめる | HTML text node | index.html | 1220 |
+| U150 | あたらしいゲームをつくる | HTML text node | index.html | 1228 |
+| U151 | つくる | HTML text node | index.html | 1236 |
+| U152 | カラープリセット | HTML text node | index.html | 1245 |
+| U153 | ファミトリー | HTML text node | index.html | 1250 |
+| U154 | (28色) | HTML text node | index.html | 1251 |
+| U155 | パステル | HTML text node | index.html | 1255 |
+| U156 | (16色) | HTML text node | index.html | 1256 |
+| U157 | ファミコン | HTML text node | index.html | 1260 |
+| U158 | (54色) | HTML text node | index.html | 1261 |
+| U159 | ゲームボーイ | HTML text node | index.html | 1265 |
+| U160 | (4色) | HTML text node | index.html | 1266 |
+| U161 | モノクロ | HTML text node | index.html | 1270 |
+| U162 | (8色) | HTML text node | index.html | 1271 |
+| U163 | ついか | HTML text node | index.html | 1277 |
+| U164 | おきかえ | HTML text node | index.html | 1279 |
+| U165 | とじる | HTML text node | index.html | 1281 |
+| U166 | 値を入力を | HTML text node | index.html | 1289 |
+| U167 | セーブしました | HTML text node | index.html | 1305 |
+| U168 | この作品を公開しますか？ | HTML text node | index.html | 1332 |
+| U169 | はい | HTML text node | index.html | 1335 |
+| U170 | なまえをつけてセーブ | HTML text node | index.html | 1343 |
+| U171 | Project Name | HTML attribute | index.html | 1347 |
+| U172 | セーブ | HTML text node | index.html | 1351 |
+| U173 | エディットキー入力 | HTML text node | index.html | 1360 |
+| U174 | このゲームを編集するにはエディットキーが必要です | HTML text node | index.html | 1362 |
+| U175 | 8桁のキーを入力 | HTML attribute | index.html | 1363 |
+| U176 | 認証 | HTML text node | index.html | 1371 |
+| U177 | 複製 | JS message/literal | sprite-editor.js | 171 |
+| U178 | 削除 | JS message/literal | sprite-editor.js | 172 |
+| U179 | キャンセル | JS message/literal | sprite-editor.js | 173 |
+| U180 | プリセットを選択してください | JS message/literal | sprite-editor.js | 271 |
+| U181 | 現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。 | JS message/literal | sprite-editor.js | 294 |
+| U182 | ▶ | JS dom text assign | sprite-editor.js | 326 |
+| U183 | 最低1色は必要です | JS message/literal | sprite-editor.js | 341 |
+| U184 | この色を削除しますか？\n（使用されているドットは透明になります） | JS message/literal | sprite-editor.js | 344 |
+| U185 | 縮小すると細かい情報が失われます。続行しますか？ | JS message/literal | sprite-editor.js | 1214 |
+| U186 | これ以上削除できません | JS message/literal | sprite-editor.js | 1262 |
+| U187 | このスプライトを削除しますか？\n（使用されている箇所は削除されます） | JS message/literal | sprite-editor.js | 1266 |
+| U188 | スプライトをクリアしますか？ | JS message/literal | sprite-editor.js | 1897 |
+| U189 | <rect x= | JS dom text assign | sprite-editor.js | 2683 |
+| U190 | <path d= | JS dom text assign | sprite-editor.js | 2702 |
+| U191 | Frame: — / — | JS dom text assign | sprite-editor.js | 2718 |
+| U192 | Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | JS dom text assign | sprite-editor.js | 2720 |
+| U193 | プレイヤー | JS message/literal | stage-editor.js | 293 |
+| U194 | てき | JS message/literal | stage-editor.js | 294 |
+| U195 | ブロック・背景 | JS message/literal | stage-editor.js | 295 |
+| U196 | アイテム | JS message/literal | stage-editor.js | 296 |
+| U197 | ゴール | JS message/literal | stage-editor.js | 297 |
+| U198 | 立ち | JS message/literal | stage-editor.js | 377 |
+| U199 | 歩き | JS message/literal | stage-editor.js | 377 |
+| U200 | のぼる | JS message/literal | stage-editor.js | 377 |
+| U201 | ジャンプ | JS message/literal | stage-editor.js | 377 |
+| U202 | 攻撃 | JS message/literal | stage-editor.js | 378 |
+| U203 | 見た目 | JS message/literal | stage-editor.js | 378 |
+| U204 | ライフ | JS message/literal | stage-editor.js | 378 |
+| U205 | 変身アイテム | JS message/literal | stage-editor.js | 379 |
+| U206 | >能力</div> | JS message/literal | stage-editor.js | 402 |
+| U207 | 足の速さ | JS message/literal | stage-editor.js | 403 |
+| U208 | ジャンプ力 | JS message/literal | stage-editor.js | 407 |
+| U209 | 2段ジャンプ | JS message/literal | stage-editor.js | 407 |
+| U210 | ライフ数 | JS message/literal | stage-editor.js | 415 |
+| U211 | >特性</div> | JS message/literal | stage-editor.js | 423 |
+| U212 | 動かない | JS HTML template | stage-editor.js | 428 |
+| U213 | うろうろ | JS HTML template | stage-editor.js | 429 |
+| U214 | ぴょんぴょん | JS HTML template | stage-editor.js | 430 |
+| U215 | うろぴょん | JS HTML template | stage-editor.js | 431 |
+| U216 | 追いかけてくる | JS HTML template | stage-editor.js | 432 |
+| U217 | とっしん | JS HTML template | stage-editor.js | 433 |
+| U218 | 空中 | JS message/literal | stage-editor.js | 437 |
+| U219 | ボスてき | JS message/literal | stage-editor.js | 438 |
+| U220 | なし | JS HTML template | stage-editor.js | 443 |
+| U221 | コイン | JS HTML template | stage-editor.js | 444 |
+| U222 | むてき | JS HTML template | stage-editor.js | 445 |
+| U223 | ライフアップ | JS HTML template | stage-editor.js | 446 |
+| U224 | クリア | JS HTML template | stage-editor.js | 447 |
+| U225 | 武器 | JS HTML template | stage-editor.js | 448 |
+| U226 | ボム | JS HTML template | stage-editor.js | 449 |
+| U227 | イースターエッグ | JS HTML template | stage-editor.js | 450 |
+| U228 | >武器</div> | JS message/literal | stage-editor.js | 457 |
+| U229 | 近接 | JS HTML template | stage-editor.js | 466 |
+| U230 | ストレート | JS HTML template | stage-editor.js | 467 |
+| U231 | 山なり | JS HTML template | stage-editor.js | 468 |
+| U232 | 真下に落下 | JS HTML template | stage-editor.js | 469 |
+| U233 | 拡散 | JS HTML template | stage-editor.js | 470 |
+| U234 | ブーメラン | JS HTML template | stage-editor.js | 471 |
+| U235 | ピンボール | JS HTML template | stage-editor.js | 472 |
+| U236 | 回転 | JS HTML template | stage-editor.js | 473 |
+| U237 | 速度 | JS message/literal | stage-editor.js | 479 |
+| U238 | 連射 | JS message/literal | stage-editor.js | 482 |
+| U239 | 届く距離 | JS message/literal | stage-editor.js | 485 |
+| U240 | >効果音</div> | JS message/literal | stage-editor.js | 503 |
+| U241 | ジャンプ音 | JS message/literal | stage-editor.js | 504 |
+| U242 | 攻撃音 | JS message/literal | stage-editor.js | 505 |
+| U243 | ダメージ音 | JS message/literal | stage-editor.js | 506 |
+| U244 | ゲット音 | JS message/literal | stage-editor.js | 507 |
+| U245 | 横移動 | JS HTML template | stage-editor.js | 515 |
+| U246 | 縦移動 | JS HTML template | stage-editor.js | 516 |
+| U247 | 落下 | JS HTML template | stage-editor.js | 517 |
+| U248 | はしご | JS HTML template | stage-editor.js | 518 |
+| U249 | スプリング | JS HTML template | stage-editor.js | 519 |
+| U250 | とびら | JS HTML template | stage-editor.js | 520 |
+| U251 | はねる力 | JS message/literal | stage-editor.js | 525 |
+| U252 | 当たり判定 | JS message/literal | stage-editor.js | 529 |
+| U253 | 耐久性 | JS message/literal | stage-editor.js | 530 |
+| U254 | カギ | JS HTML template | stage-editor.js | 543 |
+| U255 | 最大20文字 | JS message/literal | stage-editor.js | 555 |
+| U256 | ジャンプ01 | JS message/literal | stage-editor.js | 668 |
+| U257 | ジャンプ02 | JS message/literal | stage-editor.js | 669 |
+| U258 | ジャンプ03 | JS message/literal | stage-editor.js | 670 |
+| U259 | ジャンプ04 | JS message/literal | stage-editor.js | 671 |
+| U260 | ジャンプ05 | JS message/literal | stage-editor.js | 672 |
+| U261 | 攻撃01 | JS message/literal | stage-editor.js | 674 |
+| U262 | 攻撃02 | JS message/literal | stage-editor.js | 675 |
+| U263 | 攻撃03 | JS message/literal | stage-editor.js | 676 |
+| U264 | 攻撃04 | JS message/literal | stage-editor.js | 677 |
+| U265 | 攻撃05 | JS message/literal | stage-editor.js | 678 |
+| U266 | ダメージ_01 | JS message/literal | stage-editor.js | 680 |
+| U267 | ダメージ_02 | JS message/literal | stage-editor.js | 681 |
+| U268 | ダメージ_03 | JS message/literal | stage-editor.js | 682 |
+| U269 | ダメージ_04 | JS message/literal | stage-editor.js | 683 |
+| U270 | ダメージ_05 | JS message/literal | stage-editor.js | 684 |
+| U271 | ゲット_01 | JS message/literal | stage-editor.js | 686 |
+| U272 | ゲット_02 | JS message/literal | stage-editor.js | 687 |
+| U273 | ゲット_03 | JS message/literal | stage-editor.js | 688 |
+| U274 | ゲット_04 | JS message/literal | stage-editor.js | 689 |
+| U275 | ゲット_05 | JS message/literal | stage-editor.js | 690 |
+| U276 | その他01(決定) | JS message/literal | stage-editor.js | 692 |
+| U277 | その他02(キャンセル) | JS message/literal | stage-editor.js | 693 |
+| U278 | その他03(カーソル) | JS message/literal | stage-editor.js | 694 |
+| U279 | その他04(ポーズ) | JS message/literal | stage-editor.js | 695 |
+| U280 | その他05(爆発) | JS message/literal | stage-editor.js | 696 |
+| U281 | ダメージ | JS message/literal | stage-editor.js | 1059 |
+| U282 | ゲット | JS message/literal | stage-editor.js | 1060 |
+| U283 | ■ | JS dom text assign | stage-editor.js | 1223 |
+| U284 | ▶ | JS dom text assign | stage-editor.js | 1238 |
+| U285 | スプライトを登録してください | JS message/literal | stage-editor.js | 1363 |
+| U286 | 複製 | JS message/literal | stage-editor.js | 1538 |
+| U287 | 削除 | JS message/literal | stage-editor.js | 1539 |
+| U288 | キャンセル | JS message/literal | stage-editor.js | 1540 |
+| U289 | このタイルを削除しますか？ | JS message/literal | stage-editor.js | 1565 |
+| U290 | ステージエディタの反転機能は未実装です | JS message/literal | stage-editor.js | 2311 |
+| U291 | 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧・い繧､繝・Β縺ｧ蝪励ｊ縺､縺ｶ縺励・縺ｧ縺阪∪縺帙ｓ | JS message/literal | stage-editor.js | 2478 |
+| U292 | すべてのタイルを削除しますか？ | JS message/literal | stage-editor.js | 2817 |
+| U293 | サバイバル時間 | JS message/literal | stage-editor.js | 2956 |
+| U294 | 制限時間 | JS message/literal | stage-editor.js | 2959 |
+| U295 | 音色を選択 | JS message/literal | bgm-editor.js | 625 |
+| U296 | Standard | JS object config | bgm-editor.js | 631 |
+| U297 | Standard (Short) | JS object config | bgm-editor.js | 632 |
+| U298 | Standard (FadeIn) | JS object config | bgm-editor.js | 633 |
+| U299 | Sharp | JS object config | bgm-editor.js | 634 |
+| U300 | Sharp (Short) | JS object config | bgm-editor.js | 635 |
+| U301 | Sharp (FadeIn) | JS object config | bgm-editor.js | 636 |
+| U302 | Tremolo (高速) | JS message/literal | bgm-editor.js | 637 |
+| U303 | Soft (Sine) | JS object config | bgm-editor.js | 642 |
+| U304 | Power (Saw) | JS object config | bgm-editor.js | 643 |
+| U305 | Kick (ピッチ下降) | JS message/literal | bgm-editor.js | 644 |
+| U306 | 閉じる | JS message/literal | bgm-editor.js | 669 |
+| U307 | 最後のソングは削除できません | JS message/literal | bgm-editor.js | 872 |
+| U308 | を削除しますか？ | JS message/literal | bgm-editor.js | 875 |
+| U309 | ▶ | JS dom text assign | bgm-editor.js | 909 |
+| U310 | ■ | JS dom text assign | bgm-editor.js | 921 |
+| U311 | 操作を選択 (delete / duplicate / rename) | JS message/literal | bgm-editor.js | 929 |
+| U312 | 新しい名前 | JS message/literal | bgm-editor.js | 940 |
+| U313 | 「${this.getCurrentSong().name}」を削除しますか？ | JS message/literal | bgm-editor.js | 982 |
+| U314 | Tr${this.currentTrack + 1}の全ノートを削除しますか？ | JS message/literal | bgm-editor.js | 2116 |
+| U315 | コピーする範囲を選択してください | JS message/literal | bgm-editor.js | 2966 |
+| U316 | ${notes.length} 個のノートをコピーしました | JS message/literal | bgm-editor.js | 2997 |
+| U317 | クリップボードが空です | JS message/literal | bgm-editor.js | 3003 |
+| U318 | <rect x= | JS dom text assign | bgm-editor.js | 3209 |
+| U319 | <path d= | JS dom text assign | bgm-editor.js | 3212 |
+| U320 | 0 | JS dom text assign | bgm-editor.js | 3410 |
+| U321 | 値を入力 | JS message/literal | bgm-editor.js | 3532 |
+| U322 | トラックを選択してください | JS message/literal | bgm-editor.js | 3564 |
+| U323 | コピー範囲が不正です | JS message/literal | bgm-editor.js | 3573 |
+| U324 | ジャンプ_01 | JS message/literal | app.js | 7 |
+| U325 | ジャンプ_02 | JS message/literal | app.js | 8 |
+| U326 | ジャンプ_03 | JS message/literal | app.js | 9 |
+| U327 | ジャンプ_04 | JS message/literal | app.js | 10 |
+| U328 | ジャンプ_05 | JS message/literal | app.js | 11 |
+| U329 | 攻撃_01 | JS message/literal | app.js | 12 |
+| U330 | 攻撃_02 | JS message/literal | app.js | 13 |
+| U331 | 攻撃_03 | JS message/literal | app.js | 14 |
+| U332 | 攻撃_04 | JS message/literal | app.js | 15 |
+| U333 | 攻撃_05 | JS message/literal | app.js | 16 |
+| U334 | ダメージ_01 | JS message/literal | app.js | 17 |
+| U335 | ダメージ_02 | JS message/literal | app.js | 18 |
+| U336 | ダメージ_03 | JS message/literal | app.js | 19 |
+| U337 | ダメージ_04 | JS message/literal | app.js | 20 |
+| U338 | ダメージ_05 | JS message/literal | app.js | 21 |
+| U339 | ゲット_01 | JS message/literal | app.js | 22 |
+| U340 | ゲット_02 | JS message/literal | app.js | 23 |
+| U341 | ゲット_03 | JS message/literal | app.js | 24 |
+| U342 | ゲット_04 | JS message/literal | app.js | 25 |
+| U343 | ゲット_05 | JS message/literal | app.js | 26 |
+| U344 | その他_01(決定) | JS message/literal | app.js | 27 |
+| U345 | その他_02(キャンセル) | JS message/literal | app.js | 28 |
+| U346 | その他_03(カーソル) | JS message/literal | app.js | 29 |
+| U347 | その他_04(ポーズ) | JS message/literal | app.js | 30 |
+| U348 | その他_05(爆発) | JS message/literal | app.js | 31 |
+| U349 | ファミトリー | JS message/literal | app.js | 43 |
+| U350 | パステル | JS message/literal | app.js | 55 |
+| U351 | ファミコン | JS message/literal | app.js | 62 |
+| U352 | ゲームボーイ | JS message/literal | app.js | 75 |
+| U353 | モノクロ | JS message/literal | app.js | 79 |
+| U354 | 編集モードに切り替わりました | JS message/literal | app.js | 577 |
+| U355 | タイトル変更 | JS message/literal | app.js | 845 |
+| U356 | ゲームタイトルを入力 | JS message/literal | app.js | 847 |
+| U357 | なまえ変更 | JS message/literal | app.js | 849 |
+| U358 | なまえを入力 | JS message/literal | app.js | 851 |
+| U359 | セーブしました | JS message/literal | app.js | 986 |
+| U360 | 保存する | JS message/literal | app.js | 1031 |
+| U361 | 保存しない | JS message/literal | app.js | 1035 |
+| U362 | キャンセル | JS message/literal | app.js | 1039 |
+| U363 | 「${name}」を開きました | JS message/literal | app.js | 1167 |
+| U364 | プロジェクトの読み込みに失敗しました | JS message/literal | app.js | 1169 |
+| U365 | 「${importName}」としてインポートしました。\n今すぐ開きますか？ | JS message/literal | app.js | 1218 |
+| U366 | インポートしました。「開く」メニューから選択できます。 | JS message/literal | app.js | 1223 |
+| U367 | ファイルの読み込みに失敗しました | JS message/literal | app.js | 1228 |
+| U368 | そのなまえは すでに つかわれています | JS message/literal | app.js | 1262 |
+| U369 | あたらしいゲームを つくりました | JS message/literal | app.js | 1295 |
+| U370 | >セーブデータなし</div> | JS message/literal | app.js | 1348 |
+| U371 | <div style= | JS dom text assign | app.js | 1348 |
+| U372 | のコピー | JS message/literal | app.js | 1439 |
+| U373 | この作品を公開しますか？ | JS message/literal | app.js | 1484 |
+| U374 | 公開中の作品を更新しますか？ | JS message/literal | app.js | 1485 |
+| U375 | URLが発行され、だれでもプレイできるようになります | JS message/literal | app.js | 1487 |
+| U376 | 現在の内容で上書き保存されます | JS message/literal | app.js | 1488 |
+| U377 | 処理中です…少しお待ちください | JS message/literal | app.js | 1509 |
+| U378 | クラウド接続がありません | JS message/literal | app.js | 1526 |
+| U379 | 保存に失敗しました | JS message/literal | app.js | 1542 |
+| U380 | 公開しました | JS message/literal | app.js | 1554 |
+| U381 | 更新しました | JS message/literal | app.js | 1554 |
+| U382 | 保存でエラーが発生しました | JS message/literal | app.js | 1557 |
+| U383 | URLを コピーしました | JS message/literal | app.js | 1624 |
+| U384 | コピーに失敗しました | JS message/literal | app.js | 1626 |
+| U385 | 「${gameName}」であそぼう！ #FAMITORY | JS message/literal | app.js | 1638 |
+| U386 | ${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart | JS message/literal | app.js | 1644 |
+| U387 | FAMITORYでゲームを作ったよ!\n${url} | JS message/literal | app.js | 1658 |
+| U388 | Discord用に コピーしました | JS message/literal | app.js | 1666 |
+| U389 | プロジェクト名を入力してください | JS message/literal | app.js | 1732 |
+| U390 | 「${newName}」として保存しました | JS message/literal | app.js | 1774 |
+| U391 | FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！ | JS message/literal | share.js | 151 |
+| U392 | 共有URL生成中... | JS message/literal | share.js | 172 |
+| U393 | エラー：保存に失敗しました | JS message/literal | share.js | 181 |
+| U394 | サバイバルモードでは制限時間を設定してください | JS message/literal | game-engine.js | 85 |
+| U395 | とじる | JS message/literal | game-engine.js | 1120 |
+| U396 | ひみつのメッセージ | JS message/literal | game-engine.js | 1389 |
+| U397 | STAGE CLEAR! | JS dom text assign | game-engine.js | 3421 |
+| U398 | GAME OVER | JS dom text assign | game-engine.js | 3424 |
