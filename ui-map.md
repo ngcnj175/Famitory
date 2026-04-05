@@ -215,8 +215,8 @@
 | U209 | 2段ジャンプ | JS message/literal | stage-editor.js | 407 |
 | U210 | ライフ数 | JS message/literal | stage-editor.js | 415 |
 | U211 | >特性</div> | JS message/literal | stage-editor.js | 423 |
-| U212 | 動かない | JS HTML template | stage-editor.js | 428 |
-| U213 | うろうろ | JS HTML template | stage-editor.js | 429 |
+| U212 | うろうろ | JS HTML template | stage-editor.js | 428 |
+| U213 | 動かない | JS HTML template | stage-editor.js | 429 |
 | U214 | ぴょんぴょん | JS HTML template | stage-editor.js | 430 |
 | U215 | うろぴょん | JS HTML template | stage-editor.js | 431 |
 | U216 | 追いかけてくる | JS HTML template | stage-editor.js | 432 |
