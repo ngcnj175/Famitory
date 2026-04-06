@@ -1749,15 +1749,21 @@ const App = {
         // 現在のデータをコピー
         const newData = JSON.parse(JSON.stringify(this.projectData));
 
-        // メタデータ更新（タイトルは変更しない仕様）
+        // メタデータ更新（ステージタイトルとプレイ画面タイトルも連動して変更）
         newData.meta.updatedAt = Date.now();
-
+        newData.meta.name = newName;
+        if (newData.stage) {
+            newData.stage.name = newName;
+        }
         // 内部変数更新
         this.projectData = newData;
         this.currentProjectName = newName;
 
         // UI反映
         this.updateGameInfo();
+        if (typeof StageEditor !== 'undefined' && StageEditor.updateStageSettingsUI) {
+            StageEditor.updateStageSettingsUI();
+        }
 
         // 保存実行
         Storage.saveProject(newName, newData);
