@@ -775,25 +775,14 @@ const App = {
         if (titleInput && this.projectData) {
             titleInput.value = this.projectData.meta.name || 'My Game';
             titleInput.readOnly = true;
-            // クリエイターモードではタップでポップアップ編集
-            if (!this.isPlayOnlyMode) {
-                titleInput.style.cursor = 'pointer';
-                titleInput.onclick = () => this.openTextEditPopup('title');
-            } else {
-                titleInput.style.cursor = 'default';
-                titleInput.onclick = null;
-            }
+            titleInput.style.cursor = 'default';
+            titleInput.onclick = null;
         }
         if (authorInput && this.projectData) {
             authorInput.value = this.projectData.meta.author || 'You';
             authorInput.readOnly = true;
-            if (!this.isPlayOnlyMode) {
-                authorInput.style.cursor = 'pointer';
-                authorInput.onclick = () => this.openTextEditPopup('author');
-            } else {
-                authorInput.style.cursor = 'default';
-                authorInput.onclick = null;
-            }
+            authorInput.style.cursor = 'default';
+            authorInput.onclick = null;
         }
 
         // shareIdがあればいいね数を取得・表示（モード問わず常に表示）
@@ -877,6 +866,9 @@ const App = {
 
         if (this._textEditField === 'title') {
             this.projectData.meta.name = newValue;
+            if (this.projectData.stage) {
+                this.projectData.stage.name = newValue;
+            }
         } else if (this._textEditField === 'author') {
             this.projectData.meta.author = newValue;
         }
@@ -1267,6 +1259,7 @@ const App = {
             this.nesPalette = this.PALETTE_PRESETS.famitory.colors.slice();
             this.projectData = this.createDefaultProject();
             this.projectData.meta.name = name;
+            this.projectData.stage.name = name;
             this.currentProjectName = name;
 
             // リミックス元はクリア（NEWから新規作成した場合は独立した作品として扱う）
