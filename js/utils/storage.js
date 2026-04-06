@@ -88,7 +88,6 @@ const Storage = {
         if (!data) return false;
 
         // メタデータ更新
-        data.meta.name = newName;
         data.meta.createdAt = Date.now(); // 複製時は作成日時を更新
 
         this.saveProject(newName, data);

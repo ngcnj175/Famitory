@@ -1358,7 +1358,7 @@ const App = {
                     <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
                     <div class="list-item-content">
                         <div class="list-item-name-wrapper">
-                            <span class="list-item-name">${p.name}</span>
+                            <span class="list-item-name">${p.name.replace(/\u200B/g, '')}</span>
                         </div>
                         <div class="list-item-date">${dateStr}</div>
                     </div>
@@ -1429,11 +1429,9 @@ const App = {
         copyBtn.onclick = () => {
             if (!selectedName) return;
             let baseName = selectedName;
-            let newName = baseName + ' のコピー';
-            let counter = 2;
+            let newName = baseName + '\u200B';
             while (Storage.projectExists(newName)) {
-                newName = baseName + ' のコピー' + counter;
-                counter++;
+                newName += '\u200B';
             }
 
             if (Storage.duplicateProject(selectedName, newName)) {
@@ -1739,7 +1737,8 @@ const App = {
         const input = document.getElementById('save-as-name-input');
         if (modal && input) {
             // 現在のプロジェクト名を初期値に
-            input.value = this.currentProjectName || 'MyGame';
+            let initialName = this.currentProjectName || 'MyGame';
+            input.value = initialName.replace(/\u200B/g, '');
             modal.classList.remove('hidden');
             input.focus();
         }
