@@ -944,7 +944,8 @@ const GameEngine = {
                         const obj = {
                             x: block.x, y: block.y,
                             spriteIdx: spriteIdx,
-                            facingRight: true
+                            facingRight: true,
+                            templateIdx: block.templateIdx
                         };
                         this.renderProjectileOrItem(obj);
                     }
