@@ -2356,6 +2356,10 @@ body {
     display: none;
 }
 
+#editkey-error.hidden {
+    display: none;
+}
+
 .modal-content {
     background: var(--bg-device);
     border-radius: 12px;
