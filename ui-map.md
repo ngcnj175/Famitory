@@ -176,8 +176,8 @@
 | U170 | なまえをつけてセーブ | HTML text node | index.html | 1343 |
 | U171 | Project Name | HTML attribute | index.html | 1347 |
 | U172 | セーブ | HTML text node | index.html | 1351 |
-| U173 | エディットキー入力 | HTML text node | index.html | 1360 |
-| U174 | このゲームを編集するにはエディットキーが必要です | HTML text node | index.html | 1362 |
+| U173 | (削除: エディットキー入力) | HTML text node | index.html | 1360 |
+| U174 | このゲームを編集するには<br>エディットキーが必要です | HTML text node | index.html | 1362 |
 | U175 | 8桁のキーを入力 | HTML attribute | index.html | 1363 |
 | U176 | 認証 | HTML text node | index.html | 1371 |
 | U177 | 複製 | JS message/literal | sprite-editor.js | 171 |

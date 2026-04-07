@@ -626,6 +626,10 @@ const App = {
         input?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') verify();
         });
+        // 入力し直したらエラーメッセージを伏せる
+        input?.addEventListener('input', () => {
+            if (error) error.classList.add('hidden');
+        });
         // 背景クリックで閉じる
         modal?.addEventListener('click', (e) => {
             if (e.target === modal) modal.classList.add('hidden');
