@@ -199,6 +199,46 @@ const Share = {
         this.currentShareData = null;
     },
 
+    // スコア共有ダイアログを開く
+    async openScoreDialog(data, scoreData) {
+        this.currentShareData = scoreData;
+
+        const dialog = document.getElementById('score-share-dialog');
+        const urlInput = document.getElementById('score-share-url-input');
+        const copySuccess = document.getElementById('score-copy-success');
+
+        if (!dialog || !urlInput) return;
+
+        urlInput.value = '共有URL生成中...';
+        if (copySuccess) {
+            copySuccess.classList.add('hidden');
+        }
+        dialog.classList.remove('hidden');
+
+        // Firebaseに保存してURLを発行
+        const id = await this.saveGame(data);
+        if (!id) {
+            urlInput.value = 'エラー：保存に失敗しました';
+            return;
+        }
+
+        const shareUrl = this.createShortUrl(id);
+        urlInput.value = shareUrl;
+
+        if (this.currentShareData) {
+            this.currentShareData.url = shareUrl;
+        }
+    },
+
+    // スコア共有ダイアログを閉じる
+    closeScoreDialog() {
+        const dialog = document.getElementById('score-share-dialog');
+        if (dialog) {
+            dialog.classList.add('hidden');
+        }
+        this.currentShareData = null;
+    },
+
     // いいね数を取得
     async getLikes(gameId) {
         if (!window.firebaseDB || !gameId) return 0;

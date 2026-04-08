@@ -1566,6 +1566,11 @@ const App = {
         const fileInput = document.getElementById('import-file-input');
         const closeBtn = document.getElementById('share-close-btn');
 
+        const scoreCopyUrlBtn = document.getElementById('score-copy-url-btn');
+        const scoreXBtn = document.getElementById('score-share-x-btn');
+        const scoreDiscordBtn = document.getElementById('score-share-discord-btn');
+        const scoreCloseBtn = document.getElementById('score-share-close-btn');
+
         // クリップボードコピー（iOS対応強化版）
         const copyToClipboard = async (text) => {
             // 1. Clipboard APIを試す（同期的イベントハンドラ内ならiOSでも動く可能性が高い）
@@ -1611,7 +1616,7 @@ const App = {
             return success;
         };
 
-        // URLコピー → 公開確認 → コピー実行
+        // URLコピー → 公開確認 → コピー実行 (メインシェア用)
         copyUrlBtn.onclick = () => {
             this._publishAndShare(async (url) => {
                 const success = await copyToClipboard(url);
@@ -1622,6 +1627,25 @@ const App = {
                 }
             });
         };
+
+        // スコア共有用: URLのみコピー
+        if (scoreCopyUrlBtn) {
+            scoreCopyUrlBtn.onclick = async () => {
+                const url = document.getElementById('score-share-url-input').value;
+                if (!url) return;
+                const success = await copyToClipboard(url);
+                if (success) {
+                    const successMsg = document.getElementById('score-copy-success');
+                    if (successMsg) {
+                        successMsg.classList.remove('hidden');
+                        setTimeout(() => successMsg.classList.add('hidden'), 2000);
+                    }
+                    this.showToast('URLを コピーしました');
+                } else {
+                    this.showToast('コピーに失敗しました');
+                }
+            };
+        }
 
         // X に投稿 → 公開確認 → Twitter URL へ遷移
         xBtn.onclick = () => {
@@ -1670,6 +1694,51 @@ const App = {
             const name = this.currentProjectName || this.projectData.meta.name || 'MyGame';
             this.exportProject(name);
         };
+
+        // スコア共有用: Xに投稿
+        if (scoreXBtn) {
+            scoreXBtn.onclick = () => {
+                const sdata = Share.currentShareData;
+                if (!sdata) return;
+                const url = sdata.url || document.getElementById('score-share-url-input').value;
+                const gameName = sdata.title || 'Game';
+                const hashTag = gameName.replace(/\s/g, '');
+                
+                const header = sdata.isClear ? `${gameName} クリア！\nScore: ${sdata.score}\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`
+                                             : `${gameName} GAME OVER\nScore: ${sdata.score}\nくやしい…リベンジして👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(header)}`;
+                window.open(twitterUrl, '_blank');
+            };
+        }
+
+        // スコア共有用: Discordに投稿
+        if (scoreDiscordBtn) {
+            scoreDiscordBtn.onclick = async () => {
+                const sdata = Share.currentShareData;
+                if (!sdata) return;
+                const url = sdata.url || document.getElementById('score-share-url-input').value;
+                const gameName = sdata.title || 'Game';
+                const hashTag = gameName.replace(/\s/g, '');
+                
+                const header = sdata.isClear ? `${gameName} クリア！\nScore: ${sdata.score}\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`
+                                             : `${gameName} GAME OVER\nScore: ${sdata.score}\nくやしい…リベンジして👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                
+                const success = await copyToClipboard(header);
+                if (success) {
+                    this.showToast('Discord用に コピーしました');
+                } else {
+                    this.showToast('コピーに失敗しました');
+                }
+            };
+        }
+
+        // スコア共有用: 閉じるボタン
+        if (scoreCloseBtn) {
+            scoreCloseBtn.onclick = () => {
+                Share.closeScoreDialog();
+            };
+        }
 
         // リミックスOKチェックボックス変更
         const remixOkCheckbox = document.getElementById('share-remix-ok');

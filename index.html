@@ -1202,6 +1202,36 @@
         </div>
     </div>
 
+    <!-- スコアを共有ダイアログ -->
+    <div id="score-share-dialog" class="modal-overlay hidden">
+        <div class="modal-content share-modal-content">
+            <div class="modal-header-simple">スコアを共有</div>
+            <div class="modal-body no-padding">
+                <div style="padding: 20px; text-align: center;">
+                    <input type="text" id="score-share-url-input" class="share-url-input" readonly>
+                </div>
+            </div>
+
+            <div class="share-simple-list">
+                <button id="score-copy-url-btn" class="share-simple-btn">
+                    URL をコピー
+                </button>
+                <div id="score-copy-success" class="copy-success hidden">✓ コピーしました</div>
+
+                <button id="score-share-x-btn" class="share-simple-btn">
+                    X に とうこう
+                </button>
+                <button id="score-share-discord-btn" class="share-simple-btn">
+                    Discord に とうこう
+                </button>
+            </div>
+
+            <div class="modal-footer-simple">
+                <button id="score-share-close-btn" class="modal-action-btn cancel">もどる</button>
+            </div>
+        </div>
+    </div>
+
     <!-- プロジェクトリストモーダル（選択式） -->
     <div id="project-list-modal" class="modal-overlay hidden">
         <div class="modal-content">
