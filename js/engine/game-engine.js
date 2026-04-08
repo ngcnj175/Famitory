@@ -3349,11 +3349,11 @@ const GameEngine = {
         if (shareBtn) {
             shareBtn.addEventListener('click', () => {
                 if (App.projectData) {
-                    Share.openScoreDialog(App.projectData, {
+                    Share.openScoreDialog({
                         score: this.score,
-                        title: App.projectData.meta?.title || 'Game',
+                        title: App.projectData.meta?.name || App.currentProjectName || 'Game',
                         isNewRecord: this.newHighScore,
-                        isClear: this.titleState === 'clear'
+                        isClear: this.isCleared
                     });
                 }
             });

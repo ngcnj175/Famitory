@@ -200,7 +200,7 @@ const Share = {
     },
 
     // スコア共有ダイアログを開く
-    async openScoreDialog(data, scoreData) {
+    openScoreDialog(scoreData) {
         this.currentShareData = scoreData;
 
         const dialog = document.getElementById('score-share-dialog');
@@ -209,20 +209,13 @@ const Share = {
 
         if (!dialog || !urlInput) return;
 
-        urlInput.value = '共有URL生成中...';
         if (copySuccess) {
             copySuccess.classList.add('hidden');
         }
         dialog.classList.remove('hidden');
 
-        // Firebaseに保存してURLを発行
-        const id = await this.saveGame(data);
-        if (!id) {
-            urlInput.value = 'エラー：保存に失敗しました';
-            return;
-        }
-
-        const shareUrl = this.createShortUrl(id);
+        // プレイヤーモード時の固定URLをそのまま使用
+        const shareUrl = window.location.href;
         urlInput.value = shareUrl;
 
         if (this.currentShareData) {
