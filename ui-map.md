@@ -44,9 +44,9 @@
 | U038 | おてほん | HTML attribute | index.html | 325 |
 | U039 | ▼ | HTML text node | index.html | 356 |
 | U040 | ステージ設定 | HTML text node | index.html | 357 |
-| U041 | ステージタイトル | HTML text node | index.html | 362 |
+| U041 | ゲームタイトル | HTML text node | index.html | 362 |
 | U042 | NEW GAME | HTML attribute | index.html | 363 |
-| U043 | 作成者名 | HTML text node | index.html | 367 |
+| U043 | クリエイター | HTML text node | index.html | 367 |
 | U044 | エディットキー | HTML text node | index.html | 372 |
 | U045 | ステージサイズ | HTML text node | index.html | 377 |
 | U046 | 縦 | HTML text node | index.html | 379 |
@@ -149,7 +149,7 @@
 | U143 | ✓ コピーしました | HTML text node | index.html | 1176 |
 | U144 | データを移動 | HTML text node | index.html | 1188 |
 | U145 | もどる | HTML text node | index.html | 1200 |
-| U146 | つづきをえらぶ | HTML text node | index.html | 1208 |
+| U146 | データをえらぶ | HTML text node | index.html | 1208 |
 | U147 | ひらく | HTML text node | index.html | 1217 |
 | U148 | けす | HTML text node | index.html | 1219 |
 | U149 | やめる | HTML text node | index.html | 1220 |
@@ -404,3 +404,7 @@
 | U398 | GAME OVER | JS dom text assign | game-engine.js | 3424 |
 | U399 | Noise (ピッチ) | JS dom text assign | bgm-editor.js | 647 |
 | U400 | Drum Kit | JS dom text assign | bgm-editor.js | 648 |
+| U401 | エクスポート | HTML text node | index.html | 1191 |
+| U402 | インポート | HTML text node | index.html | 1194 |
+| U403 | ゲームタイトル | HTML text node | index.html | 1231 |
+| U404 | ゲームタイトル | HTML text node | index.html | 1346 |

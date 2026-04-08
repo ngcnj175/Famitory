@@ -359,12 +359,12 @@
                 <div id="stage-settings-content">
                     <!-- ステージタイトル -->
                     <div class="setting-row">
-                        <label>ステージタイトル</label>
+                        <label>ゲームタイトル</label>
                         <input type="text" id="stage-name-input" placeholder="NEW GAME">
                     </div>
                     <!-- 作成者名 -->
                     <div class="setting-row">
-                        <label>作成者名</label>
+                        <label>クリエイター</label>
                         <input type="text" id="stage-author-input" placeholder="You">
                     </div>
                     <!-- エディットキー -->
@@ -1188,10 +1188,10 @@
             <h3 class="modal-title-simple sub">データを移動</h3>
             <div class="share-simple-list">
                 <button id="export-btn" class="share-simple-btn">
-                    そとに だす
+                    エクスポート
                 </button>
                 <button id="import-btn" class="share-simple-btn">
-                    もちこむ
+                    インポート
                 </button>
                 <input type="file" id="import-file-input" accept=".json,.pgk" style="display:none">
             </div>
@@ -1205,7 +1205,7 @@
     <!-- プロジェクトリストモーダル（選択式） -->
     <div id="project-list-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple">つづきをえらぶ</div>
+            <div class="modal-header-simple">データをえらぶ</div>
             <div class="modal-body no-padding">
                 <div id="project-list-scroll" class="simple-list-scroll">
                     <div id="project-list" class="selectable-list">
@@ -1228,7 +1228,7 @@
             <div class="modal-header-simple">あたらしいゲームをつくる</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>なまえ</label>
+                    <label>ゲームタイトル</label>
                     <input type="text" id="new-game-name" value="NEW GAME" class="simple-input">
                 </div>
             </div>
@@ -1343,7 +1343,7 @@
             <div class="modal-header-simple">なまえをつけてセーブ</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>なまえ</label>
+                    <label>ゲームタイトル</label>
                     <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name">
                 </div>
             </div>
