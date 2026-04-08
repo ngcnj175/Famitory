@@ -2987,6 +2987,55 @@ const GameEngine = {
             }
 
             if (waveType === 'noise') {
+                const tone = arguments[5] || 0; // tone引数
+
+                if (tone === 0) {
+                    const actualDuration = duration * 0.6; // データの長さを60%に調整
+
+                    // Noise (ピッチ): バンドパスフィルタで音程感のある持続ノイズ
+                    const bufferDuration = actualDuration + 0.05;
+                    const bufferSize = Math.floor(ctx.sampleRate * bufferDuration);
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+
+                    let lfsr = 1;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
+                        data[i] = (lfsr & 1) ? 1.0 : -1.0;
+                        lfsr = (lfsr >> 1) | (bit << 14);
+                    }
+
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = freq;
+                    filter.Q.value = 1.2;
+
+                    const gain = ctx.createGain();
+                    const noiseVol = 0.44 * (trackVolume > 1.0 ? trackVolume / 100 : trackVolume); // 元の0.55から80%に音量を調整
+
+                    const panner = ctx.createStereoPanner();
+                    panner.pan.value = trackPan;
+
+                    gain.gain.setValueAtTime(noiseVol, ctx.currentTime);
+                    gain.gain.setValueAtTime(noiseVol, ctx.currentTime + Math.max(0, actualDuration - 0.03));
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + actualDuration);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(panner);
+                    panner.connect(this.bgmMasterGain);
+
+                    noise.start();
+                    noise.stop(ctx.currentTime + bufferDuration);
+
+                    activeNodes[trackIdx] = noise;
+                    return;
+                }
+
+                // tone=1: Drum Kit（従来のドラム音）
                 // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）
                 const octave = Math.floor(pitch / 12) + 1;
 

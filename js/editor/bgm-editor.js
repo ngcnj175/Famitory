@@ -609,9 +609,6 @@ const SoundEditor = {
         const track = song.tracks[trackIdx];
         const trackType = ['square', 'square', 'triangle', 'noise'][trackIdx];
 
-        // NOISEはオクターブでドラムタイプが決まるため、音色選択不要
-        if (trackType === 'noise') return;
-
         // 既存のメニューがあれば削除
         const existing = document.getElementById('tone-select-menu');
         if (existing) existing.remove();
@@ -644,8 +641,10 @@ const SoundEditor = {
                 { val: 3, label: 'Kick (ピッチ下降)' }
             ];
         } else if (trackType === 'noise') {
-            // NOISEはオクターブでドラムタイプが決まるため、音色選択なし
-            options = [];
+            options = [
+                { val: 0, label: 'Noise (ピッチ)' },
+                { val: 1, label: 'Drum Kit' }
+            ];
         }
 
         options.forEach(opt => {
@@ -1466,9 +1465,14 @@ const SoundEditor = {
         const pitch = this.noteToPitch(note, octave);
         const tone = track.tone || 0;
 
-        // ノイズトラックはドラム音を使用
+        // ノイズトラック
         if (trackType === 'noise') {
-            const result = this.playDrum(pitch, 0.5, track.volume, track.pan, tone);
+            let result;
+            if (tone === 0) {
+                result = this.playPitchedNoise(pitch, 0.5, track.volume, track.pan);
+            } else {
+                result = this.playDrum(pitch, 0.5, track.volume, track.pan, tone);
+            }
             if (result) {
                 this.currentKeyOsc = result.noise;
                 this.currentKeyGain = result.gain;
@@ -1669,10 +1673,16 @@ const SoundEditor = {
         const trackType = this.trackTypes[this.currentTrack];
         const tone = track.tone || 0;
 
-        // ノイズトラックはドラム音を使用
+        // ノイズトラック
         if (trackType === 'noise') {
             const pitch = this.noteToPitch(note, octave);
-            this.playDrum(pitch, duration, track.volume, track.pan, tone);
+            if (tone === 0) {
+                // Noise (ピッチ): 音程に連動する持続ノイズ
+                this.playPitchedNoise(pitch, duration, track.volume, track.pan);
+            } else {
+                // Drum Kit: 従来のドラム音
+                this.playDrum(pitch, duration, track.volume, track.pan, tone);
+            }
             return;
         }
 
@@ -1782,10 +1792,14 @@ const SoundEditor = {
             this.activeOscillators[trackIdx] = null;
         }
 
-        // ノイズトラックはドラム音を使用
+        // ノイズトラック
         if (trackType === 'noise') {
             const pitch = this.noteToPitch(note, octave);
-            this.playDrum(pitch, duration, track.volume, track.pan, tone);
+            if (tone === 0) {
+                this.playPitchedNoise(pitch, duration, track.volume, track.pan);
+            } else {
+                this.playDrum(pitch, duration, track.volume, track.pan, tone);
+            }
             return;
         }
 
@@ -1903,6 +1917,66 @@ const SoundEditor = {
         const octave = Math.floor(pitch / 12) + 1;
         const noteIdx = pitch % 12;
         return { note: this.noteNames[noteIdx], octave };
+    },
+
+    // ========== Noise (ピッチ) - 音程対応の持続ノイズ ==========
+    playPitchedNoise(pitch, duration, volume = 1.0, pan = 0.0) {
+        if (!this.audioCtx) return null;
+
+        const ctx = this.audioCtx;
+        const t = ctx.currentTime;
+
+        // ピアノロールの音程から周波数を取得
+        const { note, octave } = this.pitchToNote(pitch);
+        const freq = this.getFrequency(note, octave);
+
+        const actualDuration = duration * 0.6; // データの長さを60%に調整
+
+        // LFSRノイズバッファ生成（入力データの長さに合わせて持続）
+        const bufferDuration = actualDuration + 0.05;
+        const bufferSize = Math.floor(ctx.sampleRate * bufferDuration);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        let lfsr = 1;
+        for (let i = 0; i < bufferSize; i++) {
+            const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
+            data[i] = (lfsr & 1) ? 1.0 : -1.0;
+            lfsr = (lfsr >> 1) | (bit << 14);
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        // バンドパスフィルタで音程感を付与
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = freq;
+        filter.Q.value = 1.2; // 抜け感のある「ザーッ」にするためQを低めに設定
+
+        // ゲインノード
+        const gain = ctx.createGain();
+        const noiseVol = 0.44 * volume; // 元の0.55から80%に音量を調整
+
+        // パンポット
+        const panner = ctx.createStereoPanner();
+        panner.pan.value = pan;
+
+        // エンベロープ: 入力の長さに合わせて持続し、最後に短い減衰
+        gain.gain.setValueAtTime(noiseVol, t);
+        gain.gain.setValueAtTime(noiseVol, t + Math.max(0, actualDuration - 0.03));
+        gain.gain.linearRampToValueAtTime(0.01, t + actualDuration);
+
+        // 接続
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(panner);
+        panner.connect(ctx.destination);
+
+        noise.start(t);
+        noise.stop(t + bufferDuration);
+
+        return { noise: noise, gain: gain };
     },
 
     // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）

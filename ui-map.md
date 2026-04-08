@@ -402,3 +402,5 @@
 | U396 | ひみつのメッセージ | JS message/literal | game-engine.js | 1389 |
 | U397 | STAGE CLEAR! | JS dom text assign | game-engine.js | 3421 |
 | U398 | GAME OVER | JS dom text assign | game-engine.js | 3424 |
+| U399 | Noise (ピッチ) | JS dom text assign | bgm-editor.js | 647 |
+| U400 | Drum Kit | JS dom text assign | bgm-editor.js | 648 |
