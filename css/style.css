@@ -2811,6 +2811,45 @@ body {
     box-sizing: border-box;
 }
 
+.editkey-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 50%;
+}
+
+.editkey-container input[type="text"] {
+    width: 100%;
+    background: #e8e8e8;
+    border: 1px dashed #ccc;
+    text-align: center;
+    font-family: monospace;
+    letter-spacing: 2px;
+    font-size: 13px;
+    color: #666;
+}
+
+.editkey-copy-btn {
+    width: 32px;
+    height: 30px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.editkey-copy-btn:hover {
+    background: #f5f5f5;
+}
+
+.editkey-copy-btn:active {
+    background: #e0e0e0;
+}
+
 .setting-row input[type="text"]:focus {
     outline: none;
     border-color: var(--color-dark);

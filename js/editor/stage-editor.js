@@ -2868,12 +2868,36 @@ const StageEditor = {
         const areaHPlus = document.getElementById('area-h-plus');
         const bgColorSwatch = document.getElementById('stage-bg-color');
         const saveBtn = document.getElementById('stage-settings-save');
+        const copyEditKeyBtn = document.getElementById('copy-editkey-btn');
 
-        // 迴ｾ蝨ｨ縺ｮ蛟､繧貞渚譏
+        // エディットキーをコピー
+        if (copyEditKeyBtn) {
+            copyEditKeyBtn.addEventListener('click', async () => {
+                const editKeyDisplay = document.getElementById('stage-editkey-display');
+                if (editKeyDisplay && editKeyDisplay.value) {
+                    try {
+                        await navigator.clipboard.writeText(editKeyDisplay.value);
+                        if (App && typeof App.showToast === 'function') {
+                            App.showToast('エディットキーを コピーしました');
+                        }
+                    } catch (err) {
+                        console.error('Failed to copy: ', err);
+                        // フォールバック
+                        editKeyDisplay.select();
+                        document.execCommand('copy');
+                        if (App && typeof App.showToast === 'function') {
+                            App.showToast('エディットキーを コピーしました');
+                        }
+                    }
+                }
+            });
+        }
+
+        // 現在の値を反映
         this.updateStageSettingsUI();
 
-        // 蜷榊燕縺ｯ菫晏ｭ倥・繧ｿ繝ｳ謚ｼ荳区凾縺ｮ縺ｿ蜿肴丐・医Μ繧｢繝ｫ繧ｿ繧､繝菫晏ｭ倥＠縺ｪ縺・ｼ・
-        // 繧､繝吶Φ繝医Μ繧ｹ繝翫・縺ｯ荳崎ｦ・
+        // 名前は保存ボタン押下時のみ反映（リアルタイム保存しない）
+        // イベントリスナーは不要
 
         // 繧ｨ繝ｪ繧｢繧ｵ繧､繧ｺ螟画峩・・I陦ｨ遉ｺ縺ｮ縺ｿ縲∽ｿ晏ｭ倥・繧ｿ繝ｳ縺ｧ蜿肴丐・・
         if (areaWMinus) {

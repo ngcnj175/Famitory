@@ -408,3 +408,4 @@
 | U402 | インポート | HTML text node | index.html | 1194 |
 | U403 | ゲームタイトル | HTML text node | index.html | 1231 |
 | U404 | ゲームタイトル | HTML text node | index.html | 1346 |
+| U405 | コピー | HTML attribute (title) | index.html | 374 |
