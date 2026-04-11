@@ -1241,6 +1241,22 @@ const SoundEditor = {
 
             eraserBtn.addEventListener('click', () => {
                 if (!isLongPress) {
+                    // 範囲選択中なら選択範囲を一括削除
+                    if (this.selectionStart && this.selectionEnd) {
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        
+                        const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+                        const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+                        const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+                        const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+
+                        track.notes = track.notes.filter(n => {
+                            // 範囲内にあるノートは除外（削除）
+                            return !(n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch);
+                        });
+                    }
+
                     // 消しゴムモードに切り替え
                     this.currentTool = 'eraser';
                     this.selectionMode = false;

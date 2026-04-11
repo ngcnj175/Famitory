@@ -2987,7 +2987,6 @@ const GameEngine = {
             }
 
             if (waveType === 'noise') {
-                const tone = arguments[5] || 0; // tone引数
 
                 if (tone === 0) {
                     const actualDuration = duration * 0.6; // データの長さを60%に調整
@@ -3211,12 +3210,13 @@ const GameEngine = {
                 else if (tone === 2) osc.type = 'sawtooth';
                 else if (tone === 3) {
                     // Kickトーン (ピッチ下降)
+                    const actualTrackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(freq, ctx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(freq * 0.25, ctx.currentTime + duration);
 
                     // 短い音にする
-                    gain.gain.setValueAtTime(0.5 * trackVol, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.5 * actualTrackVol, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
 
                     osc.connect(gain);
@@ -3224,6 +3224,8 @@ const GameEngine = {
                     panner.connect(this.bgmMasterGain);
                     osc.start();
                     osc.stop(ctx.currentTime + Math.min(duration, 0.15));
+
+                    activeNodes[trackIdx] = osc;
                     return; // ここで完了
                 }
                 else osc.type = 'triangle';
