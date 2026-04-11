@@ -721,8 +721,6 @@
                     <button id="song-next-btn" class="console-nav-btn">〉</button>
                     <button id="song-add-btn" class="console-nav-btn song-action-btn" title="ソング追加">+</button>
 
-                    <div class="console-spacer"></div>
-
                     <div class="console-param">
                         <span class="label">SPEED</span>
                         <span id="bpm-display" class="console-lcd value-lcd" title="上下ドラッグで変更">120</span>
@@ -784,9 +782,8 @@
                     </svg>
                 </button>
                 <button id="sound-rest-btn" class="sound-bottom-btn" title="REST">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M4 11h16v-2H4v2zm0 4h16v-2H4v2zm16-10v2H4V5h16z" transform="translate(12,12) rotate(180) translate(-12,-12)" />
-                        <path d="M4 13h16v2H4v-2z" />
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="transform: scaleX(-1);">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
                     </svg>
                 </button>
                 <button id="sound-tie-btn" class="sound-bottom-btn" title="TIE">

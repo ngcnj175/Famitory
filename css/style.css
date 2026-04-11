@@ -3494,7 +3494,7 @@ body {
 #bgm-console-header {
     height: 40px;
     background: var(--bg-device);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -3631,10 +3631,9 @@ body {
     display: flex;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 0;
+    padding: 2px 0;
     gap: 0;
     min-height: 0;
-    overflow: hidden;
     margin-bottom: 0;
 }
 
@@ -5245,7 +5244,6 @@ body {
 /* BGMコンソールヘッダー */
 #app.dark-mode #bgm-console-header {
     background: #0c0c16;
-    border-bottom-color: #1e1e30;
 }
 
 #app.dark-mode .console-lcd {
