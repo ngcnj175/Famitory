@@ -714,15 +714,15 @@
 
             <!-- 1. ヘッダー：ソング制御盤 -->
             <div id="bgm-console-header">
-                <div class="console-lcd-group">
+                <div class="console-lcd-group right">
                     <button id="song-delete-btn" class="console-nav-btn song-action-btn" title="ソング削除">-</button>
                     <button id="song-prev-btn" class="console-nav-btn">〈</button>
                     <div id="song-title-display" class="console-lcd title-lcd" title="タップで名前変更">Song 1</div>
                     <button id="song-next-btn" class="console-nav-btn">〉</button>
                     <button id="song-add-btn" class="console-nav-btn song-action-btn" title="ソング追加">+</button>
-                </div>
 
-                <div class="console-lcd-group right">
+                    <div class="console-spacer"></div>
+
                     <div class="console-param">
                         <span class="label">SPEED</span>
                         <span id="bpm-display" class="console-lcd value-lcd" title="上下ドラッグで変更">120</span>
@@ -736,39 +736,8 @@
 
             <!-- 2. メインエリア（ツール + ピアノロール） -->
             <div id="sound-main-area">
-                <!-- 編集ツール（左側縦列） -->
+                <!-- 編集ツール（左側縦列：ペン・消しゴム・選択・コピー・ペースト） -->
                 <div id="sound-controls">
-                    <!-- コントロールボタン群 -->
-                    <button id="sound-play-btn" class="sound-ctrl-btn play-stop" title="PLAY/STOP">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
-                    </button>
-                    <button id="sound-step-rec-btn" class="sound-ctrl-btn step-rec" title="STEP REC">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="12" cy="12" r="8" />
-                        </svg>
-                    </button>
-
-                    <hr class="ctrl-divider">
-
-                    <button id="sound-del-btn" class="sound-ctrl-btn" title="戻る">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
-                        </svg>
-                    </button>
-                    <button id="sound-rest-btn" class="sound-ctrl-btn" title="REST">
-                        <svg viewBox="0 0 24 24" fill="currentColor" style="transform: scaleX(-1);">
-                            <path
-                                d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
-                        </svg>
-                    </button>
-                    <button id="sound-tie-btn" class="sound-ctrl-btn" title="TIE">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 16 C4 8, 20 8, 20 16" stroke-linecap="round" />
-                        </svg>
-                    </button>
                     <button id="sound-pen-btn" class="sound-ctrl-btn" title="ペン（入力モード）">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -781,7 +750,6 @@
                                 d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 01-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z" />
                         </svg>
                     </button>
-
                     <button id="sound-select-btn" class="sound-ctrl-btn" title="選択">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -806,6 +774,36 @@
                 <div id="piano-roll-area">
                     <canvas id="piano-roll-canvas"></canvas>
                 </div>
+            </div>
+
+            <!-- 2.5. ピアノロール下部ボタンバー -->
+            <div id="sound-bottom-bar">
+                <button id="sound-del-btn" class="sound-bottom-btn" title="戻る">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </button>
+                <button id="sound-rest-btn" class="sound-bottom-btn" title="REST">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4 11h16v-2H4v2zm0 4h16v-2H4v2zm16-10v2H4V5h16z" transform="translate(12,12) rotate(180) translate(-12,-12)" />
+                        <path d="M4 13h16v2H4v-2z" />
+                    </svg>
+                </button>
+                <button id="sound-tie-btn" class="sound-bottom-btn" title="TIE">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M4 16 C4 8, 20 8, 20 16" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <button id="sound-step-rec-btn" class="sound-bottom-btn step-rec" title="STEP REC">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="12" r="8" />
+                    </svg>
+                </button>
+                <button id="sound-play-btn" class="sound-bottom-btn play-stop" title="PLAY/STOP">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </button>
             </div>
 
             <!-- 3. フッター：チャンネルストリップ（トラックミキサー） -->

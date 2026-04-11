@@ -1037,14 +1037,6 @@ const SoundEditor = {
                 this.currentTool = tool.dataset.tool || 'pencil';
             });
         });
-
-        // iOSスクロール対策
-        const soundControls = document.getElementById('sound-controls');
-        if (soundControls) {
-            soundControls.addEventListener('touchmove', (e) => {
-                e.stopPropagation();
-            }, { passive: true });
-        }
     },
 
     // ========== プレイヤーパネル ==========

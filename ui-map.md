@@ -89,17 +89,17 @@
 | U083 | ～ | HTML text node | index.html | 683 |
 | U084 | ペースト先 | HTML text node | index.html | 690 |
 | U085 | 実行 | HTML text node | index.html | 698 |
-| U086 | ソング削除 | HTML attribute | index.html | 710 |
-| U087 | 〈 | HTML text node | index.html | 711 |
-| U088 | タップで名前変更 | HTML attribute | index.html | 712 |
-| U089 | 〉 | HTML text node | index.html | 713 |
-| U090 | ソング追加 | HTML attribute | index.html | 714 |
-| U091 | 上下ドラッグで変更 | HTML attribute | index.html | 720 |
-| U092 | PLAY/STOP | HTML attribute | index.html | 734 |
-| U093 | STEP REC | HTML attribute | index.html | 739 |
-| U094 | 戻る | HTML attribute | index.html | 747 |
-| U095 | ペン（入力モード） | HTML attribute | index.html | 764 |
-| U096 | 消しゴム (Long: Clear) | HTML attribute | index.html | 770 |
+| U086 | ソング削除 | HTML attribute | index.html | 718 |
+| U087 | 〈 | HTML text node | index.html | 719 |
+| U088 | タップで名前変更 | HTML attribute | index.html | 720 |
+| U089 | 〉 | HTML text node | index.html | 721 |
+| U090 | ソング追加 | HTML attribute | index.html | 722 |
+| U091 | 上下ドラッグで変更 | HTML attribute | index.html | 728 |
+| U092 | PLAY/STOP | HTML attribute | index.html | 802 |
+| U093 | STEP REC | HTML attribute | index.html | 797 |
+| U094 | 戻る | HTML attribute | index.html | 781 |
+| U095 | ペン（入力モード） | HTML attribute | index.html | 741 |
+| U096 | 消しゴム (Long: Clear) | HTML attribute | index.html | 747 |
 | U097 | タイル種別を選択 | HTML text node | index.html | 851 |
 | U098 | 🎮 | HTML text node | index.html | 855 |
 | U099 | 👾 | HTML text node | index.html | 859 |
