@@ -409,3 +409,7 @@
 | U403 | ゲームタイトル | HTML text node | index.html | 1231 |
 | U404 | ゲームタイトル | HTML text node | index.html | 1346 |
 | U405 | コピー | HTML attribute (title) | index.html | 374 |
+| U406 | 複製 | JS action menu | bgm-editor.js | 267 |
+| U407 | 削除 | JS action menu | bgm-editor.js | 268 |
+| U408 | キャンセル | JS action menu | bgm-editor.js | 269 |
+| U409 | のコピー | JS message/literal | bgm-editor.js | 993 |

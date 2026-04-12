@@ -19,6 +19,8 @@ const SoundEditor = {
     isPlaying: false,
     isPaused: false,
     isStepRecording: false,
+    rtNoteStartStep: -1,
+    rtNotePitch: -1,
     playInterval: null,
     activeOscillators: [null, null, null, null], // トラックごとの再生中オシレーター（同時発音1制限用）
 
@@ -47,6 +49,7 @@ const SoundEditor = {
     pasteOffset: { step: 0, note: 0 },
     isMovingSelection: false,
     selectionMoveStart: null,
+    movingNotes: [],
 
     // 入力位置
     currentStep: 0,
@@ -250,9 +253,34 @@ const SoundEditor = {
         }
 
         // タイトルタップ（名前変更モーダル表示）
-        document.getElementById('song-title-display')?.addEventListener('click', () => {
-            this.openSongNameModal();
-        });
+        const titleEl = document.getElementById('song-title-display');
+        if (titleEl) {
+            let longPressTimer;
+            let isLongPress = false;
+            const startLongPress = (e) => {
+                isLongPress = false;
+                longPressTimer = setTimeout(() => {
+                    isLongPress = true;
+                    App.showActionMenu(null, [
+                        { text: '複製', action: () => this.duplicateSong() },
+                        { text: '削除', style: 'destructive', action: () => this.deleteSong() },
+                        { text: 'キャンセル', style: 'cancel' }
+                    ]);
+                }, 800);
+            };
+            const cancelLongPress = () => {
+                clearTimeout(longPressTimer);
+            };
+            titleEl.addEventListener('mousedown', startLongPress);
+            titleEl.addEventListener('mouseup', cancelLongPress);
+            titleEl.addEventListener('mouseleave', cancelLongPress);
+            titleEl.addEventListener('touchstart', startLongPress, { passive: true });
+            titleEl.addEventListener('touchend', cancelLongPress);
+            titleEl.addEventListener('click', () => {
+                if (isLongPress) return;
+                this.openSongNameModal();
+            });
+        }
 
         // モーダル保存ボタン
         document.getElementById('song-name-save')?.addEventListener('click', (e) => {
@@ -493,7 +521,19 @@ const SoundEditor = {
         const bpmEl = document.getElementById('bpm-display');
         const barEl = document.getElementById('bar-display');
 
-        if (titleEl) titleEl.textContent = song.name;
+        if (titleEl) {
+            const span = titleEl.querySelector('span');
+            if (span) {
+                span.textContent = song.name;
+                // テキストが枠を越える場合はスクロールクラスを付与
+                span.classList.remove('marquee');
+                if (span.offsetWidth > titleEl.clientWidth - 16) {
+                    span.classList.add('marquee');
+                }
+            } else {
+                titleEl.textContent = song.name;
+            }
+        }
         if (bpmEl) bpmEl.textContent = song.bpm;
         if (barEl) barEl.textContent = song.bars;
     },
@@ -945,15 +985,19 @@ const SoundEditor = {
         }
     },
 
-    duplicateSong(idx) {
-        const srcSong = this.songs[idx];
-        const newSong = JSON.parse(JSON.stringify(srcSong));
-        newSong.id = this.songs.length;
-        newSong.name = srcSong.name + '_copy';
-        this.songs.push(newSong);
+    duplicateSong() {
+        const currentSong = this.getCurrentSong();
+        if (!currentSong) return;
+        const duplicatedSong = JSON.parse(JSON.stringify(currentSong));
+
+        duplicatedSong.name = currentSong.name + "のコピー";
+        this.songs.push(duplicatedSong);
 
         // 追加したソングへ移動
         this.selectSong(this.songs.length - 1);
+
+        // 保存
+        if (window.Storage) Storage.saveProject();
     },
 
     addSong() {
@@ -1589,13 +1633,49 @@ const SoundEditor = {
         this.highlightPitch = pitch;
         this.render();
 
-        // ステップ録音ON時のみノート入力
+        // ステップ録音/リアルタイム録音
         if (this.isStepRecording) {
-            this.inputNote(note, octave);
+            if (this.isPlaying) {
+                // リアルタイム録音：開始位置とピッチを記録
+                this.rtNoteStartStep = this.currentStep;
+                this.rtNotePitch = pitch;
+            } else {
+                // 通常のステップ録音
+                this.inputNote(note, octave);
+            }
         }
     },
 
     stopKeySound() {
+        // リアルタイム録音の確定
+        if (this.isStepRecording && this.isPlaying && this.rtNoteStartStep !== -1) {
+            const song = this.getCurrentSong();
+            const track = song.tracks[this.currentTrack];
+            const maxSteps = song.bars;
+
+            // 長さを計算
+            let length = this.currentStep - this.rtNoteStartStep;
+            if (length <= 0) {
+                // ループまたぎの考慮
+                if (this.currentStep < this.rtNoteStartStep) {
+                    length = (maxSteps - this.rtNoteStartStep) + this.currentStep;
+                } else {
+                    length = 1; // 同一ステップ内でのリリース
+                }
+            }
+
+            if (length > 0) {
+                track.notes.push({
+                    step: this.rtNoteStartStep,
+                    pitch: this.rtNotePitch,
+                    length: length
+                });
+            }
+
+            this.rtNoteStartStep = -1;
+            this.rtNotePitch = -1;
+        }
+
         if (this.currentKeyGain) {
             // フェードアウト
             this.currentKeyGain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.1);
@@ -2415,6 +2495,7 @@ const SoundEditor = {
         };
 
         const checkAutoScroll = (clientX, clientY, eventUpdater) => {
+
             const rect = this.canvas.getBoundingClientRect();
             const edgeSize = 30;
             const scrollSpeed = 15;
@@ -2554,19 +2635,19 @@ const SoundEditor = {
                         this.selectionEnd.pitch += deltaPitch;
                     }
 
-                    // 選択範囲内のノートも移動
-                    const song = this.getCurrentSong();
-                    const track = song.tracks[this.currentTrack];
-                    const sStep = Math.min(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                    const eStep = Math.max(this.selectionStart.step - deltaStep, this.selectionEnd.step - deltaStep);
-                    const sPitch = Math.min(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
-                    const ePitch = Math.max(this.selectionStart.pitch - deltaPitch, this.selectionEnd.pitch - deltaPitch);
+                    // 選択されていたノートのみを移動
 
-                    track.notes.forEach(note => {
-                        if (note.step >= sStep && note.step <= eStep && note.pitch >= sPitch && note.pitch <= ePitch) {
+
+
+
+
+
+
+                    this.movingNotes.forEach(note => {
+
                             note.step += deltaStep;
                             note.pitch += deltaPitch;
-                        }
+
                     });
 
                     this.selectionMoveStart = { step, pitch };
@@ -2673,6 +2754,17 @@ const SoundEditor = {
                     if (this.isStepInSelection(step, pitch)) {
                         this.isMovingSelection = true;
                         this.selectionMoveStart = { step, pitch };
+                        
+                        // 移動対象のノートを確定
+                        const song = this.getCurrentSong();
+                        const track = song.tracks[this.currentTrack];
+                        const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+                        const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+                        const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+                        const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+                        this.movingNotes = track.notes.filter(n => 
+                            n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch
+                        );
                     } else {
                         this.isMovingSelection = false;
                         this.selectionStart = { step, pitch };
@@ -2773,6 +2865,17 @@ const SoundEditor = {
                 if (this.isStepInSelection(step, pitch)) {
                     this.isMovingSelection = true;
                     this.selectionMoveStart = { step, pitch };
+
+                    // 移動対象のノートを確定
+                    const song = this.getCurrentSong();
+                    const track = song.tracks[this.currentTrack];
+                    const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
+                    const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
+                    const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
+                    const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
+                    this.movingNotes = track.notes.filter(n => 
+                        n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch
+                    );
                 } else {
                     this.isMovingSelection = false;
                     this.selectionStart = { step, pitch };

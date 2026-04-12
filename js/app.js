@@ -908,6 +908,13 @@ const App = {
     },
 
     switchScreen(screenName) {
+        // もしSoundEditorが再生中なら停止
+        if (this.currentScreen === 'sound' && screenName !== 'sound') {
+            if (typeof SoundEditor !== 'undefined' && SoundEditor.isPlaying) {
+                SoundEditor.stop();
+            }
+        }
+
         this.currentScreen = screenName;
 
         // 画面切り替え

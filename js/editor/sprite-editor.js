@@ -698,7 +698,12 @@ const SpriteEditor = {
                         this.handleGuideButtonClick();
                         break;
                     default:
-                        // 選択モードをキャンセル
+                        // 範囲選択中なら消しゴムツールで一括削除
+                        if (tool === 'eraser' && this.selectionStart && this.selectionEnd) {
+                            this.clearSelectionArea();
+                        }
+
+                        // 選択モードをキャンセル（消しゴム以外のツール、または選択範囲がない場合）
                         this.cancelSelectionMode();
                         this.currentTool = tool;
                         // PIXEL画面のツールのみアクティブ切替
@@ -1072,7 +1077,7 @@ const SpriteEditor = {
         }
 
         // 範囲選択表示（点線）
-        if (this.selectionMode && this.selectionStart && this.selectionEnd) {
+        if (this.selectionStart && this.selectionEnd) {
             const offsetX = Math.floor(this.viewportOffsetX / this.pixelSize);
             const offsetY = Math.floor(this.viewportOffsetY / this.pixelSize);
 
@@ -1853,7 +1858,14 @@ const SpriteEditor = {
                 }
                 break;
             case 'eraser':
-                sprite.data[y][x] = -1;
+                // 選択範囲がある場合はその範囲内のみ消去
+                if (this.selectionStart && this.selectionEnd) {
+                    if (this.isPointInSelection(x, y)) {
+                        sprite.data[y][x] = -1;
+                    }
+                } else {
+                    sprite.data[y][x] = -1;
+                }
                 break;
             case 'fill':
                 this.floodFill(x, y, sprite.data[y][x], this.selectedColor);
@@ -1902,6 +1914,28 @@ const SpriteEditor = {
         for (let y = 0; y < dimension; y++) {
             for (let x = 0; x < dimension; x++) {
                 sprite.data[y][x] = -1;
+            }
+        }
+        this.render();
+        this.initSpriteGallery();
+    },
+
+    clearSelectionArea() {
+        if (!this.selectionStart || !this.selectionEnd) return;
+
+        this.saveHistory();
+        const sprite = App.projectData.sprites[this.currentSprite];
+        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+
+        for (let y = y1; y <= y2; y++) {
+            if (!sprite.data[y]) continue;
+            for (let x = x1; x <= x2; x++) {
+                if (typeof sprite.data[y][x] !== 'undefined') {
+                    sprite.data[y][x] = -1;
+                }
             }
         }
         this.render();

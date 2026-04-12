@@ -3527,7 +3527,9 @@ body {
 }
 
 .title-lcd {
-    min-width: 80px;
+    width: 100px;
+    overflow: hidden;
+    white-space: nowrap;
     text-align: center;
     font-weight: 600;
     font-size: 13px;
@@ -3536,6 +3538,23 @@ body {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
     padding: 4px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title-lcd span {
+    display: inline-block;
+}
+
+.title-lcd span.marquee {
+    padding-left: 100%;
+    animation: marquee-scroll 6s linear infinite;
+}
+
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
 .title-lcd:active {
