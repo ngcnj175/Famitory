@@ -2747,11 +2747,15 @@ const SpriteEditor = {
 
     _updatePreviewUI() {
         const el = document.getElementById('preview-frame-info');
+        const controls = document.getElementById('preview-controls');
         if (!el) return;
+
         if (this.previewFrames.length === 0) {
             el.textContent = 'Frame: — / —';
+            if (controls) controls.classList.add('disabled-preview');
         } else {
             el.textContent = `Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+            if (controls) controls.classList.remove('disabled-preview');
         }
     },
 
@@ -2768,7 +2772,16 @@ const SpriteEditor = {
         canvas.height = cw;
         ctx.clearRect(0, 0, cw, cw);
 
-        if (this.previewFrames.length === 0) return;
+        if (this.previewFrames.length === 0) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = '500 16px "Outfit", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Drop here', cw / 2, cw / 2 - 8);
+            ctx.font = '200 18px "Outfit", sans-serif';
+            ctx.fillText('↑', cw / 2, cw / 2 + 15);
+            return;
+        }
 
         const spriteIdx = this.previewFrames[this.previewCurrentFrame];
         const sprite = App.projectData?.sprites?.[spriteIdx];
