@@ -2655,6 +2655,7 @@ const SpriteEditor = {
         });
 
         this.renderPreview();
+        this._updatePreviewUI();
     },
 
     addPreviewFrame(spriteIdx) {
@@ -2774,12 +2775,34 @@ const SpriteEditor = {
 
         if (this.previewFrames.length === 0) {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.font = '500 16px "Outfit", sans-serif';
+            // Tile Modeと同じフォント指定（12px, 600）
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('Drop here', cw / 2, cw / 2 - 8);
-            ctx.font = '200 18px "Outfit", sans-serif';
-            ctx.fillText('↑', cw / 2, cw / 2 + 15);
+            
+            // 滲みを防ぐため整数座標で描画
+            const centerX = Math.floor(cw / 2);
+            const centerY = Math.floor(cw / 2);
+            
+            ctx.fillText('Drop here', centerX, centerY - 6);
+            
+            // 縦長でスタイリッシュな矢印（線で描画）
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.lineWidth = 1;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            const arrowY = centerY + 10;
+            const arrowH = 16;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, arrowY + arrowH); 
+            ctx.lineTo(centerX, arrowY); // 縦線
+            ctx.lineTo(centerX - 3, arrowY + 4); // 左ハネ
+            ctx.moveTo(centerX, arrowY);
+            ctx.lineTo(centerX + 3, arrowY + 4); // 右ハネ
+            ctx.stroke();
+            
             return;
         }
 
