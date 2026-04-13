@@ -1450,6 +1450,148 @@ const SoundEditor = {
             }
         };
         requestAnimationFrame(setInitialScroll);
+
+        // --- PCキーボード対応 ---
+        if (typeof this.kbBaseOctave === 'undefined') {
+            this.kbBaseOctave = 4; // 初期オクターブ
+        }
+
+        const keyMap = {
+            'A': { note: 'C', octaveOffset: 0 },
+            'W': { note: 'C#', octaveOffset: 0 },
+            'S': { note: 'D', octaveOffset: 0 },
+            'E': { note: 'D#', octaveOffset: 0 },
+            'D': { note: 'E', octaveOffset: 0 },
+            'F': { note: 'F', octaveOffset: 0 },
+            'T': { note: 'F#', octaveOffset: 0 },
+            'G': { note: 'G', octaveOffset: 0 },
+            'Y': { note: 'G#', octaveOffset: 0 },
+            'H': { note: 'A', octaveOffset: 0 },
+            'U': { note: 'A#', octaveOffset: 0 },
+            'J': { note: 'B', octaveOffset: 0 },
+            'K': { note: 'C', octaveOffset: 1 },
+            'O': { note: 'C#', octaveOffset: 1 },
+            'L': { note: 'D', octaveOffset: 1 }
+        };
+
+        window.addEventListener('keydown', (e) => {
+            if (App.currentScreen !== 'sound') return;
+            if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+            const key = e.key.toUpperCase();
+
+            // スペースキー操作
+            if (key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+                if (e.repeat) return; // 押しっぱなしによる連続トグルを防ぐ
+
+                if (e.shiftKey) {
+                    // Shift + Space: 録音 (STEP REC) Toggle
+                    const stepRecBtn = document.getElementById('sound-step-rec-btn');
+                    if (stepRecBtn) {
+                        stepRecBtn.classList.add('pressed');
+                        stepRecBtn.click();
+                    }
+                } else {
+                    // Space: 再生 / 停止
+                    const playBtn = document.getElementById('sound-play-btn');
+                    if (playBtn) {
+                        playBtn.classList.add('pressed');
+                        playBtn.click();
+                    }
+                }
+                return;
+            }
+
+            // オクターブ変更
+            if (key === 'Z') {
+                this.kbBaseOctave = Math.max(1, this.kbBaseOctave - 1);
+                return;
+            }
+            if (key === 'X') {
+                this.kbBaseOctave = Math.min(6, this.kbBaseOctave + 1);
+                return;
+            }
+
+            // 戻る（左矢印キー）
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (e.repeat) return;
+                const delBtn = document.getElementById('sound-del-btn');
+                if (delBtn) {
+                    delBtn.classList.add('pressed');
+                    delBtn.click();
+                }
+                return;
+            }
+
+            // REST / TIE（右矢印キー）
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (e.repeat) return;
+                if (e.shiftKey) {
+                    // TIE
+                    const tieBtn = document.getElementById('sound-tie-btn');
+                    if (tieBtn) {
+                        tieBtn.classList.add('pressed');
+                        tieBtn.click();
+                    }
+                } else {
+                    // REST
+                    const restBtn = document.getElementById('sound-rest-btn');
+                    if (restBtn) {
+                        restBtn.classList.add('pressed');
+                        restBtn.click();
+                    }
+                }
+                return;
+            }
+
+            // ピアノキー
+            const mapping = keyMap[key];
+            if (mapping) {
+                if (e.repeat) return; // 押しっぱなしによる連続再生を防ぐ
+                const oct = this.kbBaseOctave + mapping.octaveOffset;
+                if (oct > 6) return;
+
+                // 物理鍵盤の視覚的フィードバック
+                const keyEl = document.querySelector(`.piano-key[data-note="${mapping.note}"][data-octave="${oct}"]`);
+                if (keyEl) keyEl.classList.add('active');
+
+                // UIの鍵盤クリックと同じ挙動
+                // (startKeySound内部でハイライトと録音処理も行われる)
+                this.startKeySound(mapping.note, oct);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (App.currentScreen !== 'sound') return;
+            const key = e.key.toUpperCase();
+
+            // ピアノキー解除
+            if (keyMap[key]) {
+                const mapping = keyMap[key];
+                // 全てのオクターブの同一音階からactiveを除去（オクターブ切替時の残存防止）
+                // ただし、正確な解除のためには現在または直前のオクターブを探す
+                const activeKeys = document.querySelectorAll(`.piano-key.active[data-note="${mapping.note}"]`);
+                activeKeys.forEach(k => k.classList.remove('active'));
+
+                this.stopKeySound();
+            }
+
+            // ボタン解除
+            if (key === ' ' || e.code === 'Space') {
+                document.getElementById('sound-step-rec-btn')?.classList.remove('pressed');
+                document.getElementById('sound-play-btn')?.classList.remove('pressed');
+            }
+            if (e.key === 'ArrowLeft') {
+                document.getElementById('sound-del-btn')?.classList.remove('pressed');
+            }
+            if (e.key === 'ArrowRight') {
+                document.getElementById('sound-rest-btn')?.classList.remove('pressed');
+                document.getElementById('sound-tie-btn')?.classList.remove('pressed');
+            }
+        });
     },
 
     initKeyboardScrollbar() {

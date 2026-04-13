@@ -3747,8 +3747,14 @@ body {
     height: 100%;
 }
 
-.sound-bottom-btn:active {
+.sound-bottom-btn:active,
+.sound-bottom-btn.pressed {
     transform: scale(0.9);
+    filter: brightness(0.85);
+}
+
+.sound-bottom-btn:active:not(.play-stop):not(.step-rec),
+.sound-bottom-btn.pressed:not(.play-stop):not(.step-rec) {
     background: #d0d0d0;
 }
 
