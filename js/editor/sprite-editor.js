@@ -2176,6 +2176,40 @@ const SpriteEditor = {
             this.render();
             return;
         }
+
+        // 浮動選択範囲（移動中）を優先して反転
+        if (this.isFloating && this.floatingData) {
+            this.floatingData.reverse();
+            this.render();
+            return;
+        }
+
+        // 静的な選択範囲があればその範囲内のみ反転
+        if (this.selectionStart && this.selectionEnd) {
+            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+            const w = x2 - x1 + 1;
+            const h = y2 - y1 + 1;
+
+            const sprite = App.projectData.sprites[this.currentSprite];
+            const temp = [];
+            for (let y = 0; y < h; y++) {
+                temp.push([...sprite.data[y1 + y].slice(x1, x1 + w)]);
+            }
+            temp.reverse();
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    sprite.data[y1 + y][x1 + x] = temp[y][x];
+                }
+            }
+            this.render();
+            this.initSpriteGallery();
+            return;
+        }
+
+        // 選択範囲がない場合は全体を反転
         const sprite = App.projectData.sprites[this.currentSprite];
         sprite.data.reverse();
         this.render();
@@ -2189,6 +2223,37 @@ const SpriteEditor = {
             this.render();
             return;
         }
+
+        // 浮動選択範囲（移動中）を優先して反転
+        if (this.isFloating && this.floatingData) {
+            this.floatingData.forEach(row => row.reverse());
+            this.render();
+            return;
+        }
+
+        // 静的な選択範囲があればその範囲内のみ反転
+        if (this.selectionStart && this.selectionEnd) {
+            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+            const w = x2 - x1 + 1;
+            const h = y2 - y1 + 1;
+
+            const sprite = App.projectData.sprites[this.currentSprite];
+            for (let y = 0; y < h; y++) {
+                const row = sprite.data[y1 + y].slice(x1, x1 + w);
+                row.reverse();
+                for (let x = 0; x < w; x++) {
+                    sprite.data[y1 + y][x1 + x] = row[x];
+                }
+            }
+            this.render();
+            this.initSpriteGallery();
+            return;
+        }
+
+        // 選択範囲がない場合は全体を反転
         const sprite = App.projectData.sprites[this.currentSprite];
         sprite.data.forEach(row => row.reverse());
         this.render();
