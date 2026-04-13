@@ -1832,7 +1832,7 @@ const StageEditor = {
                 try {
                     if (this.selectionStart && this.selectionEnd && this.isPointInSelection(x, y)) {
                         if (!this.isFloating) {
-                            this.saveHistory();
+                            this.saveToHistory();
                             this.floatSelection();
                         }
                         this.selectionMoveStart = { x, y };
@@ -3700,12 +3700,11 @@ const StageEditor = {
         if (this.floatingEntities) {
             if (!stage.entities) stage.entities = [];
             this.floatingEntities.forEach(fe => {
-                const newX = this.floatingPos.x + fe.relX;
-                const newY = this.floatingPos.y + fe.relY;
+                const { relX, relY, ...entityData } = fe;
                 stage.entities.push({
-                    x: newX,
-                    y: newY,
-                    templateId: fe.templateId
+                    ...entityData,
+                    x: this.floatingPos.x + relX,
+                    y: this.floatingPos.y + relY
                 });
             });
         }
