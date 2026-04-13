@@ -2306,13 +2306,118 @@ const StageEditor = {
     },
 
     flipVertical() {
-        // 螳溯｣・・蠕悟屓縺励∪縺溘・迴ｾ蝨ｨ縺ｮ驕ｸ謚樒ｯ・峇縺ｫ蟇ｾ縺励※陦後≧
-        // 縺薙％縺ｧ縺ｯ驕ｸ謚樒ｯ・峇縺ｮ蜿崎ｻ｢繝ｭ繧ｸ繝・け縺悟ｿ・ｦ・
-        alert('ステージエディタの反転機能は未実装です');
+        if (this.pasteMode && this.pasteData) {
+            this.flipData(this.pasteData, 'v');
+            this.render();
+            return;
+        }
+        if (this.isFloating && this.floatingData) {
+            const data = { tiles: this.floatingData, entities: this.floatingEntities };
+            this.flipData(data, 'v');
+            this.floatingData = data.tiles;
+            this.floatingEntities = data.entities;
+            this.render();
+            return;
+        }
+        if (this.selectionStart && this.selectionEnd) {
+            this.saveToHistory();
+            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+            const w = x2 - x1 + 1;
+            const h = y2 - y1 + 1;
+
+            // 範囲内のデータを抽出
+            const tiles = [];
+            for (let y = y1; y <= y2; y++) {
+                tiles.push([...App.projectData.stage.layers.fg[y].slice(x1, x1 + w)]);
+            }
+            const entities = [];
+            if (App.projectData.stage.entities) {
+                App.projectData.stage.entities.forEach(e => {
+                    if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
+                        entities.push({ ...e, relX: e.x - x1, relY: e.y - y1 });
+                    }
+                });
+                // 範囲内のエンティティを一度削除
+                App.projectData.stage.entities = App.projectData.stage.entities.filter(e => 
+                    !(e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2)
+                );
+            }
+
+            const data = { tiles, entities };
+            this.flipData(data, 'v');
+
+            // 反転したデータを書き戻す
+            for (let dy = 0; dy < data.tiles.length; dy++) {
+                for (let dx = 0; dx < data.tiles[0].length; dx++) {
+                    App.projectData.stage.layers.fg[y1 + dy][x1 + dx] = data.tiles[dy][dx];
+                }
+            }
+            data.entities.forEach(e => {
+                App.projectData.stage.entities.push({ ...e, x: x1 + e.relX, y: y1 + e.relY });
+            });
+
+            this.render();
+            return;
+        }
     },
 
     flipHorizontal() {
-        alert('ステージエディタの反転機能は未実装です');
+        if (this.pasteMode && this.pasteData) {
+            this.flipData(this.pasteData, 'h');
+            this.render();
+            return;
+        }
+        if (this.isFloating && this.floatingData) {
+            const data = { tiles: this.floatingData, entities: this.floatingEntities };
+            this.flipData(data, 'h');
+            this.floatingData = data.tiles;
+            this.floatingEntities = data.entities;
+            this.render();
+            return;
+        }
+        if (this.selectionStart && this.selectionEnd) {
+            this.saveToHistory();
+            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+            const w = x2 - x1 + 1;
+            const h = y2 - y1 + 1;
+
+            const tiles = [];
+            for (let y = y1; y <= y2; y++) {
+                tiles.push([...App.projectData.stage.layers.fg[y].slice(x1, x1 + w)]);
+            }
+            const entities = [];
+            if (App.projectData.stage.entities) {
+                App.projectData.stage.entities.forEach(e => {
+                    if (e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2) {
+                        entities.push({ ...e, relX: e.x - x1, relY: e.y - y1 });
+                    }
+                });
+                App.projectData.stage.entities = App.projectData.stage.entities.filter(e => 
+                    !(e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2)
+                );
+            }
+
+            const data = { tiles, entities };
+            this.flipData(data, 'h');
+
+            for (let dy = 0; dy < data.tiles.length; dy++) {
+                for (let dx = 0; dx < data.tiles[0].length; dx++) {
+                    App.projectData.stage.layers.fg[y1 + dy][x1 + dx] = data.tiles[dy][dx];
+                }
+            }
+            data.entities.forEach(e => {
+                App.projectData.stage.entities.push({ ...e, x: x1 + e.relX, y: y1 + e.relY });
+            });
+
+            this.render();
+            return;
+        }
     },
 
     processPixel(e) {
@@ -2337,19 +2442,13 @@ const StageEditor = {
         // 繧ｨ繝ｳ繝・ぅ繝・ぅ驟榊・縺ｮ遒ｺ菫・
         if (!stage.entities) stage.entities = [];
 
-        // 繝・Φ繝励Ξ繝ｼ繝亥叙蠕励・繝ｫ繝代・
+        // テンプレート取得ヘルパー
         const getTemplate = (idx) => {
             return (App.projectData.templates && App.projectData.templates[idx]) || null;
         };
 
-        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ蜿門ｾ励・繝ｫ繝代・
-        const getTemplateSize = (templateIdx) => {
-            const tmpl = getTemplate(templateIdx);
-            if (!tmpl) return 1;
-            const spriteIdx = tmpl.sprites?.idle?.frames?.[0] ?? tmpl.sprites?.main?.frames?.[0];
-            const sprite = App.projectData.sprites[spriteIdx];
-            return sprite?.size || 1;
-        };
+        // スプライトサイズ取得
+        const getTemplateSize = (templateIdx) => this.getTemplateSize(templateIdx);
 
         switch (this.currentTool) {
             case 'pen':
@@ -2569,14 +2668,14 @@ const StageEditor = {
         if (!this.canvas || !this.ctx) return;
         if (App.currentScreen !== 'stage') return;
 
-        // 閭梧勹濶ｲ・・ixel逕ｻ髱｢縺ｮ閭梧勹濶ｲ繧剃ｽｿ逕ｨ・・
+        // 背景色
         this.ctx.fillStyle = this.getBackgroundColor();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // FG繝ｬ繧､繝､繝ｼ縺ｮ縺ｿ謠冗判
+        // FGレイヤーのみ描画
         this.renderLayer('fg', 1);
 
-        // 繧ｨ繝ｳ繝・ぅ繝・ぅ謠冗判・域眠隕剰ｿｽ蜉・・
+        // エンティティ描画
         this.renderEntities();
 
         this.renderGrid();
@@ -2657,26 +2756,27 @@ const StageEditor = {
         this.ctx.globalAlpha = 1;
     },
 
-    renderSprite(sprite, tileX, tileY, palette, flipX = false) {
+    renderSprite(sprite, tileX, tileY, palette, flipX = false, targetCtx = null) {
+        const ctx = targetCtx || this.ctx;
         const scrollX = this.canvasScrollX || 0;
         const scrollY = this.canvasScrollY || 0;
 
-        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
+        // スプライトサイズを判定
         const spriteSize = sprite.size || 1;
         const dimension = spriteSize === 2 ? 32 : 16;
-        const tileCount = spriteSize === 2 ? 2 : 1;  // 蜊譛峨☆繧九ち繧､繝ｫ謨ｰ
+        const tileCount = spriteSize === 2 ? 2 : 1;  // 占有するタイル数
         const pixelSize = (this.tileSize * tileCount) / dimension;
 
         for (let y = 0; y < dimension; y++) {
             for (let x = 0; x < dimension; x++) {
                 const colorIndex = sprite.data[y]?.[x];
                 if (colorIndex >= 0) {
-                    this.ctx.fillStyle = palette[colorIndex];
-                    // flipX縺ｮ蝣ｴ蜷医・X蠎ｧ讓吶ｒ蜿崎ｻ｢
+                    ctx.fillStyle = palette[colorIndex];
+                    // flipXの場合はX座標を反転
                     const drawX = flipX
                         ? tileX * this.tileSize + (dimension - 1 - x) * pixelSize + scrollX
                         : tileX * this.tileSize + x * pixelSize + scrollX;
-                    this.ctx.fillRect(
+                    ctx.fillRect(
                         drawX,
                         tileY * this.tileSize + y * pixelSize + scrollY,
                         pixelSize + 0.5,
@@ -3513,11 +3613,21 @@ const StageEditor = {
         const sprites = App.projectData.sprites;
         const templates = App.projectData.templates || [];
 
-        // Helper to render an entity/sprite at pos
-        const renderSpriteAt = (tileIdOrTemplateId, tx, ty, opacity = 1.0, isEntity = false) => {
+        // 重なりによるドット格子の発生を防ぐため、一度オフスクリーンに不透明で描画してから透過合成する
+        if (!this.offscreenCanvas) {
+            this.offscreenCanvas = document.createElement('canvas');
+        }
+        if (this.offscreenCanvas.width !== this.canvas.width || this.offscreenCanvas.height !== this.canvas.height) {
+            this.offscreenCanvas.width = this.canvas.width;
+            this.offscreenCanvas.height = this.canvas.height;
+        }
+        const offCtx = this.offscreenCanvas.getContext('2d');
+        offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
+
+        // Helper to render an entity/sprite at pos to offCtx
+        const renderSpriteAt = (tileIdOrTemplateId, tx, ty, isEntity = false) => {
             if (tileIdOrTemplateId <= -1000 || tileIdOrTemplateId === -1) return;
 
-            this.ctx.globalAlpha = opacity;
             let sprite;
             let flipX = false;
 
@@ -3540,9 +3650,8 @@ const StageEditor = {
             }
 
             if (sprite) {
-                this.renderSprite(sprite, tx, ty, palette, flipX);
+                this.renderSprite(sprite, tx, ty, palette, flipX, offCtx);
             }
-            this.ctx.globalAlpha = 1.0;
         };
 
         // ペーストプレビュー
@@ -3550,24 +3659,23 @@ const StageEditor = {
             const h = this.pasteData.tiles.length;
             const w = this.pasteData.tiles[0].length;
 
-            // Tiles
+            offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
             for (let dy = 0; dy < h; dy++) {
                 for (let dx = 0; dx < w; dx++) {
-                    const tileId = this.pasteData.tiles[dy][dx];
-                    const tx = this.pasteOffset.x + dx;
-                    const ty = this.pasteOffset.y + dy;
-                    renderSpriteAt(tileId, tx, ty, 0.7);
+                    renderSpriteAt(this.pasteData.tiles[dy][dx], this.pasteOffset.x + dx, this.pasteOffset.y + dy);
                 }
             }
-            // Entities
             if (this.pasteData.entities) {
                 this.pasteData.entities.forEach(e => {
-                    renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, 0.7, true);
+                    renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, true);
                 });
             }
+            // 0.7の不透明度でメインキャンバスへ
+            this.ctx.globalAlpha = 0.7;
+            this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+            this.ctx.globalAlpha = 1.0;
 
             // 枠線
-            // ... (keep existing rect logic logic)
             const rectX = this.pasteOffset.x * this.tileSize + scrollX;
             const rectY = this.pasteOffset.y * this.tileSize + scrollY;
             const rectW = w * this.tileSize;
@@ -3579,45 +3687,43 @@ const StageEditor = {
             this.ctx.setLineDash([]);
         }
 
-        if (!this.selectionStart || !this.selectionEnd) return;
-
-        // 浮動レイヤー
-        if (this.isFloating && this.floatingData) {
-
-            // Tiles
-            for (let y = 0; y < this.floatingData.length; y++) {
-                for (let x = 0; x < this.floatingData[0].length; x++) {
-                    const tileId = this.floatingData[y][x];
-                    const tx = this.floatingPos.x + x;
-                    const ty = this.floatingPos.y + y;
-                    renderSpriteAt(tileId, tx, ty, 0.5);
+        if (this.selectionStart && this.selectionEnd) {
+            // 浮動レイヤー
+            if (this.isFloating && this.floatingData) {
+                offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
+                for (let y = 0; y < this.floatingData.length; y++) {
+                    for (let x = 0; x < this.floatingData[0].length; x++) {
+                        renderSpriteAt(this.floatingData[y][x], this.floatingPos.x + x, this.floatingPos.y + y);
+                    }
                 }
+                if (this.floatingEntities) {
+                    this.floatingEntities.forEach(e => {
+                        renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, true);
+                    });
+                }
+                // 0.5の不透明度でメインキャンバスへ
+                this.ctx.globalAlpha = 0.5;
+                this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+                this.ctx.globalAlpha = 1.0;
             }
 
-            // Entities
-            if (this.floatingEntities) {
-                this.floatingEntities.forEach(e => {
-                    renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, 0.5, true);
-                });
-            }
+            // 選択枠
+            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
+            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
+            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
+
+            const rectX = x1 * this.tileSize + scrollX;
+            const rectY = y1 * this.tileSize + scrollY;
+            const rectW = (x2 - x1 + 1) * this.tileSize;
+            const rectH = (y2 - y1 + 1) * this.tileSize;
+
+            this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([4, 4]);
+            this.ctx.strokeRect(rectX, rectY, rectW, rectH);
+            this.ctx.setLineDash([]);
         }
-
-        // 選択枠
-        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-
-        const rectX = x1 * this.tileSize + scrollX;
-        const rectY = y1 * this.tileSize + scrollY;
-        const rectW = (x2 - x1 + 1) * this.tileSize;
-        const rectH = (y2 - y1 + 1) * this.tileSize;
-
-        this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
-        this.ctx.lineWidth = 2;
-        this.ctx.setLineDash([4, 4]);
-        this.ctx.strokeRect(rectX, rectY, rectW, rectH);
-        this.ctx.setLineDash([]);
     },
 
     floatSelection() {
@@ -3713,6 +3819,64 @@ const StageEditor = {
         this.floatingData = null;
         this.floatingEntities = null;
         this.render();
+    },
+
+    getTemplateSize(templateIdx) {
+        const tmpl = (App.projectData.templates && App.projectData.templates[templateIdx]) || null;
+        if (!tmpl) return 1;
+        const spriteIdx = tmpl.sprites?.idle?.frames?.[0] ?? tmpl.sprites?.main?.frames?.[0];
+        const sprite = App.projectData.sprites[spriteIdx];
+        return sprite?.size || 1;
+    },
+
+    flipData(data, axis) {
+        if (!data || !data.tiles || data.tiles.length === 0) return;
+        const tiles = data.tiles;
+        const h = tiles.length;
+        const w = tiles[0].length;
+
+        const items = [];
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const id = tiles[y][x];
+                if (id >= 100) {
+                    items.push({ id, x, y, size: this.getTemplateSize(id - 100) });
+                } else if (id >= 0) {
+                    items.push({ id, x, y, size: 1 });
+                }
+            }
+        }
+
+        const newTiles = Array.from({ length: h }, () => Array(w).fill(-1));
+        items.forEach(item => {
+            let nx = item.x, ny = item.y;
+            if (axis === 'h') nx = (w - item.size) - item.x;
+            else ny = (h - item.size) - item.y;
+
+            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                newTiles[ny][nx] = item.id;
+                if (item.size === 2) {
+                    for (let dy = 0; dy < 2; dy++) {
+                        for (let dx = 0; dx < 2; dx++) {
+                            if (dx === 0 && dy === 0) continue;
+                            if (ny + dy < h && nx + dx < w) {
+                                newTiles[ny + dy][nx + dx] = -1000 - (dy * 2 + dx);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        data.tiles = newTiles;
+
+        if (data.entities) {
+            data.entities.forEach(e => {
+                const size = this.getTemplateSize(e.templateId);
+                const s = (size === 2) ? 2 : 1;
+                if (axis === 'h') e.relX = (w - s) - e.relX;
+                else e.relY = (h - s) - e.relY;
+            });
+        }
     }
 };
 
