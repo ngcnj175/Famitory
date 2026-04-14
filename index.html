@@ -23,35 +23,44 @@
 
         <!-- ヘッダー（アイコンバー） -->
         <header id="header">
-            <div id="toolbar-file">
-                <button id="new-icon-btn" class="toolbar-icon" title="新規">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-                    </svg>
-                    <span class="icon-label">NEW</span>
-                </button>
-                <button id="load-icon-btn" class="toolbar-icon" title="読み込み">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-                    </svg>
-                    <span class="icon-label">OPEN</span>
-                </button>
-                <button id="save-icon-btn" class="toolbar-icon" title="保存">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
-                    </svg>
-                    <span class="icon-label">SAVE</span>
-                </button>
-                <button id="share-icon-btn" class="toolbar-icon" title="共有">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
-                    </svg>
-                    <span class="icon-label">SHARE</span>
-                </button>
+            <div id="toolbar-left">
+                <div id="toolbar-file">
+                    <button id="new-icon-btn" class="toolbar-icon" title="新規">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U002">NEW</span>
+                    </button>
+                    <button id="load-icon-btn" class="toolbar-icon" title="読み込み">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U004">OPEN</span>
+                    </button>
+                    <button id="save-icon-btn" class="toolbar-icon" title="保存">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U006">SAVE</span>
+                    </button>
+                    <button id="share-icon-btn" class="toolbar-icon" title="共有">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U008">SHARE</span>
+                    </button>
+                    <!-- ローカライズボタン -->
+                    <button id="lang-icon-btn" class="toolbar-icon" title="言語切替">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                        </svg>
+                        <span class="icon-label" id="lang-label">JPN</span>
+                    </button>
+                </div>
             </div>
             <div id="toolbar-nav">
                 <button id="nav-play-btn" class="toolbar-icon nav-icon active-nav" title="プレイ">
@@ -65,26 +74,26 @@
                         <circle cx="16.5" cy="12.75" r="1.3" class="play-icon-detail" />
                         <circle cx="19.5" cy="12.75" r="1.3" class="play-icon-detail" />
                     </svg>
-                    <span class="icon-label">PLAY</span>
+                    <span class="icon-label" data-i18n="U010">PLAY</span>
                 </button>
                 <button id="nav-paint-btn" class="toolbar-icon nav-icon" title="ピクセル">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />
                     </svg>
-                    <span class="icon-label">PIXEL</span>
+                    <span class="icon-label" data-i18n="U012">PIXEL</span>
                 </button>
                 <button id="nav-stage-btn" class="toolbar-icon nav-icon" title="ステージ">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z" />
                     </svg>
-                    <span class="icon-label">STAGE</span>
+                    <span class="icon-label" data-i18n="U014">STAGE</span>
                 </button>
                 <button id="nav-sound-btn" class="toolbar-icon nav-icon" title="サウンド">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path
                             d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                     </svg>
-                    <span class="icon-label">SONG</span>
+                    <span class="icon-label" data-i18n="U016">SONG</span>
                 </button>
             </div>
         </header>
@@ -354,22 +363,22 @@
             <div id="stage-settings-panel" class="collapsed">
                 <div id="stage-settings-header">
                     <span id="stage-settings-toggle">▼</span>
-                    <span>ステージ設定</span>
+                    <span data-i18n="U040">ステージ設定</span>
                 </div>
                 <div id="stage-settings-content">
                     <!-- ステージタイトル -->
                     <div class="setting-row">
-                        <label>ゲームタイトル</label>
+                        <label data-i18n="U041">ゲームタイトル</label>
                         <input type="text" id="stage-name-input" placeholder="NEW GAME">
                     </div>
                     <!-- 作成者名 -->
                     <div class="setting-row">
-                        <label>クリエイター</label>
+                        <label data-i18n="U043">クリエイター</label>
                         <input type="text" id="stage-author-input" placeholder="You">
                     </div>
                     <!-- エディットキー -->
                     <div class="setting-row">
-                        <label>エディットキー</label>
+                        <label data-i18n="U044">エディットキー</label>
                         <div class="editkey-container">
                             <input type="text" id="stage-editkey-display" readonly>
                             <button id="copy-editkey-btn" class="editkey-copy-btn" title="コピー">
@@ -382,9 +391,9 @@
                     </div>
                     <!-- ステージサイズ（縦横2行レイアウト） -->
                     <div class="setting-row setting-row-size">
-                        <label>ステージサイズ</label>
+                        <label data-i18n="U045">ステージサイズ</label>
                         <div class="size-row">
-                            <span class="size-label">縦</span>
+                            <span class="size-label" data-i18n="U046">縦</span>
                             <button id="area-h-minus" class="size-btn">－</button>
                             <span id="area-h-value">1</span>
                             <button id="area-h-plus" class="size-btn">＋</button>
@@ -393,7 +402,7 @@
                     <div class="setting-row setting-row-size-sub">
                         <label></label>
                         <div class="size-row">
-                            <span class="size-label">横</span>
+                            <span class="size-label" data-i18n="U049">横</span>
                             <button id="area-w-minus" class="size-btn">－</button>
                             <span id="area-w-value">1</span>
                             <button id="area-w-plus" class="size-btn">＋</button>
@@ -401,7 +410,7 @@
                     </div>
                     <!-- 背景色 -->
                     <div class="setting-row">
-                        <label>背景色</label>
+                        <label data-i18n="U050">背景色</label>
                         <div id="stage-bg-color" class="color-swatch"></div>
                     </div>
                     <!-- BGM設定 -->
@@ -434,28 +443,28 @@
                     </div>
                     <!-- クリア条件 -->
                     <div class="setting-row">
-                        <label>クリア条件</label>
+                        <label data-i18n="U056">クリア条件</label>
                         <select id="stage-clear-condition" class="setting-select">
                             <option value="none">なし</option>
-                            <option value="item">アイテム取得</option>
-                            <option value="enemies">敵ぜんめつ</option>
-                            <option value="boss">ボス撃破</option>
-                            <option value="survival">サバイバル</option>
+                            <option value="item" data-i18n="U057">アイテム取得</option>
+                            <option value="enemies" data-i18n="U058">敵ぜんめつ</option>
+                            <option value="boss" data-i18n="U059">ボス撃破</option>
+                            <option value="survival" data-i18n="U060">サバイバル</option>
                         </select>
                     </div>
                     <!-- 制限時間 -->
                     <div class="setting-row" id="time-limit-row">
-                        <label id="time-limit-label">制限時間</label>
+                        <label id="time-limit-label" data-i18n="U061">制限時間</label>
                         <div class="time-control">
                             <input type="number" id="stage-time-min" min="0" max="99" value="0">
-                            <span>分</span>
+                            <span data-i18n="U062">分</span>
                             <input type="number" id="stage-time-sec" min="0" max="59" value="0">
-                            <span>秒</span>
+                            <span data-i18n="U063">秒</span>
                         </div>
                     </div>
                     <!-- スコア表示設定 -->
                     <div class="setting-row">
-                        <label>スコア表示</label>
+                        <label data-i18n="U064">スコア表示</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="stage-show-score" checked>
                             <span class="toggle-slider"></span>
@@ -463,7 +472,7 @@
                     </div>
                     <!-- 保存ボタン -->
                     <div class="setting-row setting-row-center">
-                        <button id="stage-settings-save" class="setting-save-btn">設定を保存</button>
+                        <button id="stage-settings-save" class="setting-save-btn" data-i18n="U065">設定を保存</button>
                     </div>
                 </div>
             </div>
@@ -1159,24 +1168,24 @@
     <!-- 共有ダイアログ -->
     <div id="share-dialog" class="modal-overlay hidden">
         <div class="modal-content share-modal-content">
-            <h3 class="modal-title-simple">ゲームを共有</h3>
+            <h3 class="modal-title-simple" data-i18n="U140">ゲームを共有</h3>
 
             <div class="setting-row" style="margin: 12px 24px; justify-content: center; gap: 8px;">
                 <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
-                <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;">リミックスOK</label>
+                <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U141">リミックスOK</label>
             </div>
 
             <!-- 公開ステータスバッジ（公開済みのとき表示） -->
             <div id="share-status" class="share-status hidden">
                 <span class="share-status-dot"></span>
-                <span class="share-status-text">公開中</span>
+                <span class="share-status-text" data-i18n="U142">公開中</span>
             </div>
 
             <div class="share-simple-list">
                 <button id="copy-url-btn" class="share-simple-btn">
                     URL をコピー
                 </button>
-                <div id="copy-success" class="copy-success hidden">✓ コピーしました</div>
+                <div id="copy-success" class="copy-success hidden" data-i18n="U143">✓ コピーしました</div>
 
                 <button id="share-x-btn" class="share-simple-btn">
                     X に とうこう
@@ -1188,19 +1197,19 @@
 
             <hr class="share-divider">
 
-            <h3 class="modal-title-simple sub">データを移動</h3>
+            <h3 class="modal-title-simple sub" data-i18n="U144">データを移動</h3>
             <div class="share-simple-list">
                 <button id="export-btn" class="share-simple-btn">
-                    エクスポート
+                    <span data-i18n="U401">エクスポート</span>
                 </button>
                 <button id="import-btn" class="share-simple-btn">
-                    インポート
+                    <span data-i18n="U402">インポート</span>
                 </button>
                 <input type="file" id="import-file-input" accept=".json,.pgk" style="display:none">
             </div>
 
             <div class="modal-footer-simple">
-                <button id="share-close-btn" class="modal-action-btn cancel">もどる</button>
+                <button id="share-close-btn" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
             </div>
         </div>
     </div>
@@ -1235,7 +1244,7 @@
     <!-- プロジェクトリストモーダル（選択式） -->
     <div id="project-list-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple">データをえらぶ</div>
+            <div class="modal-header-simple" data-i18n="U146">データをえらぶ</div>
             <div class="modal-body no-padding">
                 <div id="project-list-scroll" class="simple-list-scroll">
                     <div id="project-list" class="selectable-list">
@@ -1244,10 +1253,10 @@
                 </div>
             </div>
             <div class="modal-footer-actions">
-                <button class="modal-action-btn" id="project-open-btn" disabled>ひらく</button>
+                <button class="modal-action-btn" id="project-open-btn" disabled data-i18n="U147">ひらく</button>
                 <button class="modal-action-btn" id="project-copy-btn" disabled>コピー</button>
-                <button class="modal-action-btn" id="project-delete-btn" disabled>けす</button>
-                <button class="modal-action-btn cancel" id="project-list-close">やめる</button>
+                <button class="modal-action-btn" id="project-delete-btn" disabled data-i18n="U148">けす</button>
+                <button class="modal-action-btn cancel" id="project-list-close" data-i18n="U149">やめる</button>
             </div>
         </div>
     </div>
@@ -1255,16 +1264,16 @@
     <!-- 新規作成モーダル -->
     <div id="new-game-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple">あたらしいゲームをつくる</div>
+            <div class="modal-header-simple" data-i18n="U150">あたらしいゲームをつくる</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>ゲームタイトル</label>
+                    <label data-i18n="U403">ゲームタイトル</label>
                     <input type="text" id="new-game-name" value="NEW GAME" class="simple-input">
                 </div>
             </div>
             <div class="modal-footer-actions">
-                <button class="modal-action-btn primary" id="new-game-create-btn">つくる</button>
-                <button class="modal-action-btn cancel" id="new-game-cancel-btn">やめる</button>
+                <button class="modal-action-btn primary" id="new-game-create-btn" data-i18n="U151">つくる</button>
+                <button class="modal-action-btn cancel" id="new-game-cancel-btn" data-i18n="U149">やめる</button>
             </div>
         </div>
     </div>
@@ -1272,43 +1281,43 @@
     <!-- パレットプリセット選択ダイアログ -->
     <div id="palette-preset-dialog" class="modal-overlay hidden">
         <div class="modal-content palette-preset-modal">
-            <div class="modal-header-simple">カラープリセット</div>
+            <div class="modal-header-simple" data-i18n="U152">カラープリセット</div>
 
             <div id="palette-preset-list" class="preset-list">
                 <div class="preset-item" data-value="famitory">
                     <div class="preset-item-arrow"></div>
-                    <span class="preset-name">ファミトリー</span>
+                    <span class="preset-name" data-i18n="U153">ファミトリー</span>
                     <span class="preset-count">(28色)</span>
                 </div>
                 <div class="preset-item" data-value="pastel">
                     <div class="preset-item-arrow"></div>
-                    <span class="preset-name">パステル</span>
+                    <span class="preset-name" data-i18n="U155">パステル</span>
                     <span class="preset-count">(16色)</span>
                 </div>
                 <div class="preset-item" data-value="famicom">
                     <div class="preset-item-arrow"></div>
-                    <span class="preset-name">ファミコン</span>
+                    <span class="preset-name" data-i18n="U157">ファミコン</span>
                     <span class="preset-count">(54色)</span>
                 </div>
                 <div class="preset-item" data-value="gameboy">
                     <div class="preset-item-arrow"></div>
-                    <span class="preset-name">ゲームボーイ</span>
+                    <span class="preset-name" data-i18n="U159">ゲームボーイ</span>
                     <span class="preset-count">(4色)</span>
                 </div>
                 <div class="preset-item" data-value="mono">
                     <div class="preset-item-arrow"></div>
-                    <span class="preset-name">モノクロ</span>
+                    <span class="preset-name" data-i18n="U161">モノクロ</span>
                     <span class="preset-count">(8色)</span>
                 </div>
             </div>
 
             <div class="modal-footer-actions" style="display:flex; flex-wrap:nowrap; gap:8px; justify-content:center;">
                 <button id="preset-add-btn" class="modal-action-btn"
-                    style="width:100px; white-space:nowrap;">ついか</button>
+                    style="width:100px; white-space:nowrap;" data-i18n="U163">ついか</button>
                 <button id="preset-replace-btn" class="modal-action-btn"
-                    style="width:100px; white-space:nowrap;">おきかえ</button>
+                    style="width:100px; white-space:nowrap;" data-i18n="U164">おきかえ</button>
                 <button id="preset-close-btn" class="modal-action-btn cancel"
-                    style="width:100px; white-space:nowrap;">とじる</button>
+                    style="width:100px; white-space:nowrap;" data-i18n="U165">とじる</button>
             </div>
         </div>
     </div>
@@ -1332,7 +1341,7 @@
 
     <!-- SAVE トースト -->
     <div id="save-toast">
-        <div class="save-msg-large">セーブしました</div>
+        <div class="save-msg-large" data-i18n="U167">セーブしました</div>
     </div>
 
     <!-- Scripts -->
@@ -1359,27 +1368,27 @@
     <!-- 公開確認ダイアログ -->
     <div id="publish-confirm-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple" id="publish-confirm-msg">この作品を公開しますか？</div>
+            <div class="modal-header-simple" id="publish-confirm-msg" data-i18n="U168">この作品を公開しますか？</div>
             <div class="publish-confirm-sub" id="publish-confirm-sub"></div>
             <div class="modal-footer-actions">
-                <button class="modal-action-btn primary" id="publish-confirm-ok">はい</button>
-                <button class="modal-action-btn cancel" id="publish-confirm-cancel">やめる</button>
+                <button class="modal-action-btn primary" id="publish-confirm-ok" data-i18n="U169">はい</button>
+                <button class="modal-action-btn cancel" id="publish-confirm-cancel" data-i18n="U149">やめる</button>
             </div>
         </div>
     </div>
 
     <div id="save-as-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple">なまえをつけてセーブ</div>
+            <div class="modal-header-simple" data-i18n="U170">なまえをつけてセーブ</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label>ゲームタイトル</label>
+                    <label data-i18n="U403">ゲームタイトル</label>
                     <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name">
                 </div>
             </div>
             <div class="modal-footer-actions">
-                <button class="modal-action-btn primary" id="save-as-ok-btn">セーブ</button>
-                <button class="modal-action-btn cancel" id="save-as-cancel-btn">やめる</button>
+                <button class="modal-action-btn primary" id="save-as-ok-btn" data-i18n="U172">セーブ</button>
+                <button class="modal-action-btn cancel" id="save-as-cancel-btn" data-i18n="U149">やめる</button>
             </div>
         </div>
     </div>
@@ -1388,7 +1397,7 @@
     <div id="editkey-modal" class="modal-overlay hidden">
         <div class="modal-content modal-small">
             <div class="modal-body">
-                <p style="font-size:12px;color:#8888aa;margin-bottom:12px;">このゲームを編集するには<br>エディットキーが必要です</p>
+                <p style="font-size:12px;color:#8888aa;margin-bottom:12px;" data-i18n="U174">このゲームを編集するには<br>エディットキーが必要です</p>
                 <input type="text" id="editkey-input" placeholder="8桁のキーを入力"
                     maxlength="8" autocomplete="off" style="width:100%;padding:10px;font-size:16px;text-align:center;letter-spacing:4px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;">
                 <p id="editkey-error" class="hidden" style="color:#ff6b6b;font-size:12px;margin-top:8px;text-align:center;">
@@ -1397,7 +1406,7 @@
             </div>
             <div class="modal-footer">
                 <button class="modal-btn cancel-btn" id="editkey-cancel">キャンセル</button>
-                <button class="modal-btn ok-btn" id="editkey-ok">認証</button>
+                <button class="modal-btn ok-btn" id="editkey-ok" data-i18n="U176">認証</button>
             </div>
         </div>
     </div>

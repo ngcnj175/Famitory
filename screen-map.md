@@ -36,3 +36,4 @@
 | S030 | タイル設定パネル (tile-config-panel) | ステージ画面内のインラインタイル設定パネル | index.html, stage-editor.js |
 | S031 | テキスト編集ポップアップ (text-edit-popup) | 汎用テキスト編集（ゲームタイトル/作成者名など） | index.html |
 | S032 | 数値コピー＆ペーストポップアップ (numcopy-popup) | サウンドパターンの指定範囲・トラック間のコピー＆ペースト | index.html, bgm-editor.js |
+| S033 | ローカライズボタン (lang-icon-btn) | ヘッダー最上段に常時表示。タップでJPN/ENGを切替。data-i18n属性を持つ全要素のテキストを切替 | index.html, app.js |

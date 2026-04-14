@@ -770,6 +770,9 @@ const App = {
 
         // タイトル・作成者名はPLAY画面では常に読み取り専用
         // （編集はステージ設定パネルでのみ行う）
+
+        // ローカライズボタン初期化
+        this.initLangBtn();
     },
 
     updateGameInfo() {
@@ -1851,6 +1854,156 @@ const App = {
 
         this.showToast(`「${newName}」として保存しました`);
         console.log(`Project saved as: ${newName}`);
+    },
+
+    // ========================================
+    // ローカライズ (i18n) システム
+    // ========================================
+
+    // 現在の言語（'JPN' または 'ENG'）
+    currentLang: 'JPN',
+
+    // UIテキスト翻訳テーブル（IDキー→{JPN, ENG}）
+    I18N: {
+        // ---- ヘッダーツールバー ----
+        'U002': { JPN: 'NEW',   ENG: 'NEW' },
+        'U004': { JPN: 'OPEN',  ENG: 'OPEN' },
+        'U006': { JPN: 'SAVE',  ENG: 'SAVE' },
+        'U008': { JPN: 'SHARE', ENG: 'SHARE' },
+        'U010': { JPN: 'PLAY',  ENG: 'PLAY' },
+        'U012': { JPN: 'PIXEL', ENG: 'PIXEL' },
+        'U014': { JPN: 'STAGE', ENG: 'STAGE' },
+        'U016': { JPN: 'SONG',  ENG: 'SONG' },
+        // ---- ステージ設定パネル ----
+        'U040': { JPN: 'ステージ設定',    ENG: 'Stage Settings' },
+        'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
+        'U043': { JPN: 'クリエイター',    ENG: 'Creator' },
+        'U044': { JPN: 'エディットキー',  ENG: 'Edit Key' },
+        'U045': { JPN: 'ステージサイズ',  ENG: 'Stage Size' },
+        'U046': { JPN: '縦',              ENG: 'H' },
+        'U049': { JPN: '横',              ENG: 'W' },
+        'U050': { JPN: '背景色',          ENG: 'BG Color' },
+        'U056': { JPN: 'クリア条件',      ENG: 'Clear Cond.' },
+        'U057': { JPN: 'アイテム取得',    ENG: 'Collect Items' },
+        'U058': { JPN: '敵ぜんめつ',      ENG: 'Defeat Enemies' },
+        'U059': { JPN: 'ボス撃破',        ENG: 'Defeat Boss' },
+        'U060': { JPN: 'サバイバル',      ENG: 'Survival' },
+        'U061': { JPN: '制限時間',        ENG: 'Time Limit' },
+        'U062': { JPN: '分',              ENG: 'min' },
+        'U063': { JPN: '秒',              ENG: 'sec' },
+        'U064': { JPN: 'スコア表示',      ENG: 'Show Score' },
+        'U065': { JPN: '設定を保存',      ENG: 'Save Settings' },
+        // ---- リザルト画面 ----
+        'U020': { JPN: 'いいね！',             ENG: 'Like!' },
+        'U397': { JPN: 'STAGE CLEAR!',        ENG: 'STAGE CLEAR!' },
+        'U398': { JPN: 'GAME OVER',           ENG: 'GAME OVER' },
+        // ---- 共有ダイアログ ----
+        'U140': { JPN: 'ゲームを共有',         ENG: 'Share Game' },
+        'U141': { JPN: 'リミックスOK',         ENG: 'Allow Remix' },
+        'U142': { JPN: '公開中',              ENG: 'Published' },
+        'U143': { JPN: '✓ コピーしました',     ENG: '✓ Copied' },
+        'U144': { JPN: 'データを移動',         ENG: 'Transfer Data' },
+        'U401': { JPN: 'エクスポート',         ENG: 'Export' },
+        'U402': { JPN: 'インポート',           ENG: 'Import' },
+        // ---- プロジェクトリストモーダル ----
+        'U145': { JPN: 'もどる',              ENG: 'Back' },
+        'U146': { JPN: 'データをえらぶ',       ENG: 'Select Data' },
+        'U147': { JPN: 'ひらく',              ENG: 'Open' },
+        'U148': { JPN: 'けす',               ENG: 'Delete' },
+        'U149': { JPN: 'やめる',              ENG: 'Cancel' },
+        // ---- 新規作成モーダル ----
+        'U150': { JPN: 'あたらしいゲームをつくる', ENG: 'Create New Game' },
+        'U403': { JPN: 'ゲームタイトル',       ENG: 'Game Title' },
+        'U151': { JPN: 'つくる',              ENG: 'Create' },
+        // ---- セーブ/トースト ----
+        'U167': { JPN: 'セーブしました',       ENG: 'Saved!' },
+        'U172': { JPN: 'セーブ',              ENG: 'Save' },
+        'U170': { JPN: 'なまえをつけてセーブ', ENG: 'Save As' },
+        // ---- カラープリセット ----
+        'U152': { JPN: 'カラープリセット',     ENG: 'Color Preset' },
+        'U153': { JPN: 'ファミトリー',         ENG: 'Famitory' },
+        'U155': { JPN: 'パステル',            ENG: 'Pastel' },
+        'U157': { JPN: 'ファミコン',           ENG: 'Famicom' },
+        'U159': { JPN: 'ゲームボーイ',         ENG: 'Game Boy' },
+        'U161': { JPN: 'モノクロ',            ENG: 'Mono' },
+        'U163': { JPN: 'ついか',              ENG: 'Add' },
+        'U164': { JPN: 'おきかえ',            ENG: 'Replace' },
+        'U165': { JPN: 'とじる',              ENG: 'Close' },
+        // ---- 数値入力モーダル ----
+        'U166': { JPN: '値を入力を',          ENG: 'Enter Value' },
+        // ---- エディットキーモーダル ----
+        'U174': { JPN: 'このゲームを編集するには<br>エディットキーが必要です', ENG: 'An edit key is required<br>to edit this game.' },
+        'U176': { JPN: '認証',               ENG: 'Verify' },
+        // ---- BGMエディタ（ソング制御） ----
+        'U078': { JPN: 'ソング名変更',         ENG: 'Rename Song' },
+        'U080': { JPN: 'コピー＆ペースト',     ENG: 'Copy & Paste' },
+        'U081': { JPN: 'トラック',            ENG: 'Track' },
+        'U082': { JPN: 'コピー範囲',          ENG: 'Copy Range' },
+        'U084': { JPN: 'ペースト先',          ENG: 'Paste At' },
+        'U085': { JPN: '実行',               ENG: 'Execute' },
+        // ---- スプライト選択ポップアップ ----
+        'U069': { JPN: 'スプライトを選択',     ENG: 'Select Sprite' },
+        'U071': { JPN: '完了',               ENG: 'Done' },
+        // ---- 属性選択ポップアップ ----
+        'U072': { JPN: 'タイプを選択',         ENG: 'Select Type' },
+        'U073': { JPN: 'プレイヤー',          ENG: 'Player' },
+        'U074': { JPN: 'てき',               ENG: 'Enemy' },
+        'U075': { JPN: 'ブロック・背景',       ENG: 'Block/BG' },
+        'U076': { JPN: 'アイテム',            ENG: 'Item' },
+        // ---- 公開確認ダイアログ ----
+        'U168': { JPN: 'この作品を公開しますか？',    ENG: 'Publish this game?' },
+        'U169': { JPN: 'はい',               ENG: 'Yes' },
+    },
+
+    /**
+     * data-i18n 属性を持つ全要素のテキストを現在の言語に切り替える
+     */
+    applyLang() {
+        const lang = this.currentLang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const id = el.getAttribute('data-i18n');
+            const entry = this.I18N[id];
+            if (entry && entry[lang] !== undefined) {
+                el.textContent = entry[lang];
+            }
+        });
+        // lang-labelは特別処理
+        const langLabel = document.getElementById('lang-label');
+        if (langLabel) langLabel.textContent = lang;
+
+        // html要素のlang属性更新
+        document.documentElement.lang = (lang === 'JPN') ? 'ja' : 'en';
+    },
+
+    /**
+     * ローカライズボタンの初期化
+     */
+    initLangBtn() {
+        // LocalStorageから言語設定を復元
+        const savedLang = localStorage.getItem('pgk_lang');
+        if (savedLang === 'ENG') {
+            this.currentLang = 'ENG';
+            const btn = document.getElementById('lang-icon-btn');
+            if (btn) btn.classList.add('lang-eng');
+        } else {
+            this.currentLang = 'JPN';
+        }
+        this.applyLang();
+
+        // ボタンクリックで切替
+        const langBtn = document.getElementById('lang-icon-btn');
+        if (!langBtn) return;
+        langBtn.addEventListener('click', () => {
+            if (this.currentLang === 'JPN') {
+                this.currentLang = 'ENG';
+                langBtn.classList.add('lang-eng');
+            } else {
+                this.currentLang = 'JPN';
+                langBtn.classList.remove('lang-eng');
+            }
+            localStorage.setItem('pgk_lang', this.currentLang);
+            this.applyLang();
+        });
     }
 };
 
