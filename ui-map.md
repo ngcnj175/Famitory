@@ -56,7 +56,7 @@
 | U048 | ＋ | ＋ | HTML text node | index.html | |
 | U049 | 横 | W | HTML text node | index.html | ✓ |
 | U050 | 背景色 | BG Color | HTML text node (label) | index.html | ✓ |
-| U051 | なし | None | HTML text node (option) | index.html | |
+| U051 | なし | None | HTML text node (option) | index.html | ✓ |
 | U052 | 無敵 | Invincible | HTML text node | index.html | |
 | U053 | クリア | Clear | HTML text node | index.html | |
 | U054 | ゲームオーバー | Game Over | HTML text node | index.html | |

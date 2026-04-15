@@ -1883,6 +1883,7 @@ const App = {
         'U046': { JPN: '縦',              ENG: 'H' },
         'U049': { JPN: '横',              ENG: 'W' },
         'U050': { JPN: '背景色',          ENG: 'BG Color' },
+        'U051': { JPN: 'なし',           ENG: 'None' },
         'U056': { JPN: 'クリア条件',      ENG: 'Clear Cond.' },
         'U057': { JPN: 'アイテム取得',    ENG: 'Collect Items' },
         'U058': { JPN: '敵ぜんめつ',      ENG: 'Defeat Enemies' },
