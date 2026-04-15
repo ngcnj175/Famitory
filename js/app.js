@@ -1953,6 +1953,13 @@ const App = {
         // ---- 公開確認ダイアログ ----
         'U168': { JPN: 'この作品を公開しますか？',    ENG: 'Publish this game?' },
         'U169': { JPN: 'はい',               ENG: 'Yes' },
+        // ---- BGM設定 ----
+        'U413': { JPN: 'ステージ',            ENG: 'Stage' },
+        'U414': { JPN: '無敵',               ENG: 'Invincible' },
+        'U415': { JPN: 'クリア',              ENG: 'Win' },
+        'U416': { JPN: 'ゲームオーバー',       ENG: 'Game Over' },
+        'U417': { JPN: 'ボス',               ENG: 'Boss' },
+        'U418': { JPN: 'なし',               ENG: 'None' },
     },
 
     /**
@@ -1973,6 +1980,11 @@ const App = {
 
         // html要素のlang属性更新
         document.documentElement.lang = (lang === 'JPN') ? 'ja' : 'en';
+
+        // ステージエディタのBGM選択ボタン（なし/None）を更新
+        if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
+            StageEditor.updateBgmSelects();
+        }
     },
 
     /**

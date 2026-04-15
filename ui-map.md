@@ -418,3 +418,9 @@
 | U410 | 言語切替 | Language | HTML attribute (title) | index.html | |
 | U411 | JPN | JPN | HTML text node (lang-label) | index.html | ✓ |
 | U412 | ENG | ENG | HTML text node (lang-label) | index.html | ✓ |
+| U413 | ステージ | Stage | HTML text node (bgm-label) | index.html | |
+| U414 | 無敵 | Invincible | HTML text node (bgm-label) | index.html | |
+| U415 | クリア | Win | HTML text node (bgm-label) | index.html | |
+| U416 | ゲームオーバー | Game Over | HTML text node (bgm-label) | index.html | |
+| U417 | ボス | Boss | HTML text node (bgm-label) | index.html | |
+| U418 | なし | None | JS message/literal | stage-editor.js | |

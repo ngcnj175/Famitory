@@ -3245,7 +3245,7 @@ const StageEditor = {
 
             const value = bgm[type];
             if (value === '' || value === undefined || value === null) {
-                btn.textContent = 'なし';
+                btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
             } else {
                 const idx = parseInt(value);
                 const song = songs[idx];
