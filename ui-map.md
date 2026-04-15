@@ -198,96 +198,96 @@
 | U190 | <path d= | <path d= | JS dom text assign | sprite-editor.js | |
 | U191 | Frame: — / — | Frame: — / — | JS dom text assign | sprite-editor.js | |
 | U192 | Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | JS dom text assign | sprite-editor.js | |
-| U193 | プレイヤー | Player | JS message/literal | stage-editor.js | |
-| U194 | てき | Enemy | JS message/literal | stage-editor.js | |
-| U195 | ブロック・背景 | Block/BG | JS message/literal | stage-editor.js | |
-| U196 | アイテム | Item | JS message/literal | stage-editor.js | |
-| U197 | ゴール | Goal | JS message/literal | stage-editor.js | |
-| U198 | 立ち | Stand | JS message/literal | stage-editor.js | |
-| U199 | 歩き | Walk | JS message/literal | stage-editor.js | |
-| U200 | のぼる | Climb | JS message/literal | stage-editor.js | |
-| U201 | ジャンプ | Jump | JS message/literal | stage-editor.js | |
-| U202 | 攻撃 | Attack | JS message/literal | stage-editor.js | |
-| U203 | 見た目 | Appearance | JS message/literal | stage-editor.js | |
-| U204 | ライフ | Life | JS message/literal | stage-editor.js | |
-| U205 | 変身アイテム | Transform Item | JS message/literal | stage-editor.js | |
-| U206 | >能力</div> | >Abilities</div> | JS message/literal | stage-editor.js | |
-| U207 | 足の速さ | Move Speed | JS message/literal | stage-editor.js | |
-| U208 | ジャンプ力 | Jump Power | JS message/literal | stage-editor.js | |
-| U209 | 2段ジャンプ | Double Jump | JS message/literal | stage-editor.js | |
-| U210 | ライフ数 | Life Count | JS message/literal | stage-editor.js | |
-| U211 | >特性</div> | >Traits</div> | JS message/literal | stage-editor.js | |
-| U212 | うろうろ | Wander | JS HTML template | stage-editor.js | |
-| U213 | 動かない | Static | JS HTML template | stage-editor.js | |
-| U214 | ぴょんぴょん | Hop | JS HTML template | stage-editor.js | |
-| U215 | うろぴょん | Wander+Hop | JS HTML template | stage-editor.js | |
-| U216 | 追いかけてくる | Chase | JS HTML template | stage-editor.js | |
-| U217 | とっしん | Rush | JS HTML template | stage-editor.js | |
-| U218 | 空中 | Aerial | JS message/literal | stage-editor.js | |
-| U219 | ボスてき | Boss Enemy | JS message/literal | stage-editor.js | |
-| U220 | なし | None | JS HTML template | stage-editor.js | |
-| U221 | コイン | Coin | JS HTML template | stage-editor.js | |
-| U222 | むてき | Invincible | JS HTML template | stage-editor.js | |
-| U223 | ライフアップ | Life Up | JS HTML template | stage-editor.js | |
-| U224 | クリア | Clear | JS HTML template | stage-editor.js | |
-| U225 | 武器 | Weapon | JS HTML template | stage-editor.js | |
-| U226 | ボム | Bomb | JS HTML template | stage-editor.js | |
-| U227 | イースターエッグ | Easter Egg | JS HTML template | stage-editor.js | |
-| U228 | >武器</div> | >Weapon</div> | JS message/literal | stage-editor.js | |
-| U229 | 近接 | Melee | JS HTML template | stage-editor.js | |
-| U230 | ストレート | Straight | JS HTML template | stage-editor.js | |
-| U231 | 山なり | Arc | JS HTML template | stage-editor.js | |
-| U232 | 真下に落下 | Drop Down | JS HTML template | stage-editor.js | |
-| U233 | 拡散 | Spread | JS HTML template | stage-editor.js | |
-| U234 | ブーメラン | Boomerang | JS HTML template | stage-editor.js | |
-| U235 | ピンボール | Pinball | JS HTML template | stage-editor.js | |
-| U236 | 回転 | Rotate | JS HTML template | stage-editor.js | |
-| U237 | 速度 | Speed | JS message/literal | stage-editor.js | |
-| U238 | 連射 | Rapid Fire | JS message/literal | stage-editor.js | |
-| U239 | 届く距離 | Range | JS message/literal | stage-editor.js | |
-| U240 | >効果音</div> | >Sound FX</div> | JS message/literal | stage-editor.js | |
-| U241 | ジャンプ音 | Jump SFX | JS message/literal | stage-editor.js | |
-| U242 | 攻撃音 | Attack SFX | JS message/literal | stage-editor.js | |
-| U243 | ダメージ音 | Damage SFX | JS message/literal | stage-editor.js | |
-| U244 | ゲット音 | Get SFX | JS message/literal | stage-editor.js | |
-| U245 | 横移動 | Horizontal | JS HTML template | stage-editor.js | |
-| U246 | 縦移動 | Vertical | JS HTML template | stage-editor.js | |
-| U247 | 落下 | Fall | JS HTML template | stage-editor.js | |
-| U248 | はしご | Ladder | JS HTML template | stage-editor.js | |
-| U249 | スプリング | Spring | JS HTML template | stage-editor.js | |
-| U250 | とびら | Door | JS HTML template | stage-editor.js | |
-| U251 | はねる力 | Spring Power | JS message/literal | stage-editor.js | |
-| U252 | 当たり判定 | Collision | JS message/literal | stage-editor.js | |
-| U253 | 耐久性 | Durability | JS message/literal | stage-editor.js | |
-| U254 | カギ | Key | JS HTML template | stage-editor.js | |
-| U255 | 最大20文字 | Max 20 chars | JS message/literal | stage-editor.js | |
-| U256 | ジャンプ01 | Jump01 | JS message/literal | stage-editor.js | |
-| U257 | ジャンプ02 | Jump02 | JS message/literal | stage-editor.js | |
-| U258 | ジャンプ03 | Jump03 | JS message/literal | stage-editor.js | |
-| U259 | ジャンプ04 | Jump04 | JS message/literal | stage-editor.js | |
-| U260 | ジャンプ05 | Jump05 | JS message/literal | stage-editor.js | |
-| U261 | 攻撃01 | Attack01 | JS message/literal | stage-editor.js | |
-| U262 | 攻撃02 | Attack02 | JS message/literal | stage-editor.js | |
-| U263 | 攻撃03 | Attack03 | JS message/literal | stage-editor.js | |
-| U264 | 攻撃04 | Attack04 | JS message/literal | stage-editor.js | |
-| U265 | 攻撃05 | Attack05 | JS message/literal | stage-editor.js | |
-| U266 | ダメージ_01 | Damage_01 | JS message/literal | stage-editor.js | |
-| U267 | ダメージ_02 | Damage_02 | JS message/literal | stage-editor.js | |
-| U268 | ダメージ_03 | Damage_03 | JS message/literal | stage-editor.js | |
-| U269 | ダメージ_04 | Damage_04 | JS message/literal | stage-editor.js | |
-| U270 | ダメージ_05 | Damage_05 | JS message/literal | stage-editor.js | |
-| U271 | ゲット_01 | Get_01 | JS message/literal | stage-editor.js | |
-| U272 | ゲット_02 | Get_02 | JS message/literal | stage-editor.js | |
-| U273 | ゲット_03 | Get_03 | JS message/literal | stage-editor.js | |
-| U274 | ゲット_04 | Get_04 | JS message/literal | stage-editor.js | |
-| U275 | ゲット_05 | Get_05 | JS message/literal | stage-editor.js | |
-| U276 | その他01(決定) | Other01(OK) | JS message/literal | stage-editor.js | |
-| U277 | その他02(キャンセル) | Other02(Cancel) | JS message/literal | stage-editor.js | |
-| U278 | その他03(カーソル) | Other03(Cursor) | JS message/literal | stage-editor.js | |
-| U279 | その他04(ポーズ) | Other04(Pause) | JS message/literal | stage-editor.js | |
-| U280 | その他05(爆発) | Other05(Explosion) | JS message/literal | stage-editor.js | |
-| U281 | ダメージ | Damage | JS message/literal | stage-editor.js | |
-| U282 | ゲット | Get | JS message/literal | stage-editor.js | |
+| U193 | プレイヤー | Player | JS message/literal | stage-editor.js | ✓ |
+| U194 | てき | Enemy | JS message/literal | stage-editor.js | ✓ |
+| U195 | ブロック・背景 | Block/BG | JS message/literal | stage-editor.js | ✓ |
+| U196 | アイテム | Item | JS message/literal | stage-editor.js | ✓ |
+| U197 | ゴール | Goal | JS message/literal | stage-editor.js | ✓ |
+| U198 | 立ち | Stand | JS message/literal | stage-editor.js | ✓ |
+| U199 | 歩き | Walk | JS message/literal | stage-editor.js | ✓ |
+| U200 | のぼる | Climb | JS message/literal | stage-editor.js | ✓ |
+| U201 | ジャンプ | Jump | JS message/literal | stage-editor.js | ✓ |
+| U202 | 攻撃 | Attack | JS message/literal | stage-editor.js | ✓ |
+| U203 | 見た目 | Appearance | JS message/literal | stage-editor.js | ✓ |
+| U204 | ライフ | Life | JS message/literal | stage-editor.js | ✓ |
+| U205 | 変身アイテム | Transform Item | JS message/literal | stage-editor.js | ✓ |
+| U206 | 能力 | Abilities | JS message/literal | stage-editor.js | ✓ |
+| U207 | 足の速さ | Move Speed | JS message/literal | stage-editor.js | ✓ |
+| U208 | ジャンプ力 | Jump Power | JS message/literal | stage-editor.js | ✓ |
+| U209 | 2段ジャンプ | Double Jump | JS message/literal | stage-editor.js | ✓ |
+| U210 | ライフ数 | Life Count | JS message/literal | stage-editor.js | ✓ |
+| U211 | 特性 | Traits | JS message/literal | stage-editor.js | ✓ |
+| U212 | うろうろ | Wander | JS HTML template | stage-editor.js | ✓ |
+| U213 | 動かない | Static | JS HTML template | stage-editor.js | ✓ |
+| U214 | ぴょんぴょん | Hop | JS HTML template | stage-editor.js | ✓ |
+| U215 | うろぴょん | Wander+Hop | JS HTML template | stage-editor.js | ✓ |
+| U216 | 追いかけてくる | Chase | JS HTML template | stage-editor.js | ✓ |
+| U217 | とっしん | Rush | JS HTML template | stage-editor.js | ✓ |
+| U218 | 空中 | Aerial | JS message/literal | stage-editor.js | ✓ |
+| U219 | ボスてき | Boss Enemy | JS message/literal | stage-editor.js | ✓ |
+| U220 | なし | None | JS HTML template | stage-editor.js | ✓ |
+| U221 | コイン | Coin | JS HTML template | stage-editor.js | ✓ |
+| U222 | むてき | Invincible | JS HTML template | stage-editor.js | ✓ |
+| U223 | ライフアップ | Life Up | JS HTML template | stage-editor.js | ✓ |
+| U224 | クリア | Clear | JS HTML template | stage-editor.js | ✓ |
+| U225 | 武器 | Weapon | JS HTML template | stage-editor.js | ✓ |
+| U226 | ボム | Bomb | JS HTML template | stage-editor.js | ✓ |
+| U227 | イースターエッグ | Easter Egg | JS HTML template | stage-editor.js | ✓ |
+| U228 | 武器 | Weapon | JS message/literal | stage-editor.js | ✓ |
+| U229 | 近接 | Melee | JS HTML template | stage-editor.js | ✓ |
+| U230 | ストレート | Straight | JS HTML template | stage-editor.js | ✓ |
+| U231 | 山なり | Arc | JS HTML template | stage-editor.js | ✓ |
+| U232 | 真下に落下 | Drop Down | JS HTML template | stage-editor.js | ✓ |
+| U233 | 拡散 | Spread | JS HTML template | stage-editor.js | ✓ |
+| U234 | ブーメラン | Boomerang | JS HTML template | stage-editor.js | ✓ |
+| U235 | ピンボール | Pinball | JS HTML template | stage-editor.js | ✓ |
+| U236 | 回転 | Rotate | JS HTML template | stage-editor.js | ✓ |
+| U237 | 速度 | Speed | JS message/literal | stage-editor.js | ✓ |
+| U238 | 連射 | Rapid Fire | JS message/literal | stage-editor.js | ✓ |
+| U239 | 届く距離 | Range | JS message/literal | stage-editor.js | ✓ |
+| U240 | 効果音 | Sound FX | JS message/literal | stage-editor.js | ✓ |
+| U241 | ジャンプ音 | Jump SFX | JS message/literal | stage-editor.js | ✓ |
+| U242 | 攻撃音 | Attack SFX | JS message/literal | stage-editor.js | ✓ |
+| U243 | ダメージ音 | Damage SFX | JS message/literal | stage-editor.js | ✓ |
+| U244 | ゲット音 | Get SFX | JS message/literal | stage-editor.js | ✓ |
+| U245 | 横移動 | Horizontal | JS HTML template | stage-editor.js | ✓ |
+| U246 | 縦移動 | Vertical | JS HTML template | stage-editor.js | ✓ |
+| U247 | 落下 | Fall | JS HTML template | stage-editor.js | ✓ |
+| U248 | はしご | Ladder | JS HTML template | stage-editor.js | ✓ |
+| U249 | スプリング | Spring | JS HTML template | stage-editor.js | ✓ |
+| U250 | とびら | Door | JS HTML template | stage-editor.js | ✓ |
+| U251 | はねる力 | Spring Power | JS message/literal | stage-editor.js | ✓ |
+| U252 | 当たり判定 | Collision | JS message/literal | stage-editor.js | ✓ |
+| U253 | 耐久性 | Durability | JS message/literal | stage-editor.js | ✓ |
+| U254 | カギ | Key | JS HTML template | stage-editor.js | ✓ |
+| U255 | 最大20文字 | Max 20 chars | JS message/literal | stage-editor.js | ✓ |
+| U256 | ジャンプ01 | Jump01 | JS message/literal | stage-editor.js | ✓ |
+| U257 | ジャンプ02 | Jump02 | JS message/literal | stage-editor.js | ✓ |
+| U258 | ジャンプ03 | Jump03 | JS message/literal | stage-editor.js | ✓ |
+| U259 | ジャンプ04 | Jump04 | JS message/literal | stage-editor.js | ✓ |
+| U260 | ジャンプ05 | Jump05 | JS message/literal | stage-editor.js | ✓ |
+| U261 | 攻撃01 | Attack01 | JS message/literal | stage-editor.js | ✓ |
+| U262 | 攻撃02 | Attack02 | JS message/literal | stage-editor.js | ✓ |
+| U263 | 攻撃03 | Attack03 | JS message/literal | stage-editor.js | ✓ |
+| U264 | 攻撃04 | Attack04 | JS message/literal | stage-editor.js | ✓ |
+| U265 | 攻撃05 | Attack05 | JS message/literal | stage-editor.js | ✓ |
+| U266 | ダメージ_01 | Damage_01 | JS message/literal | stage-editor.js | ✓ |
+| U267 | ダメージ_02 | Damage_02 | JS message/literal | stage-editor.js | ✓ |
+| U268 | ダメージ_03 | Damage_03 | JS message/literal | stage-editor.js | ✓ |
+| U269 | ダメージ_04 | Damage_04 | JS message/literal | stage-editor.js | ✓ |
+| U270 | ダメージ_05 | Damage_05 | JS message/literal | stage-editor.js | ✓ |
+| U271 | ゲット_01 | Get_01 | JS message/literal | stage-editor.js | ✓ |
+| U272 | ゲット_02 | Get_02 | JS message/literal | stage-editor.js | ✓ |
+| U273 | ゲット_03 | Get_03 | JS message/literal | stage-editor.js | ✓ |
+| U274 | ゲット_04 | Get_04 | JS message/literal | stage-editor.js | ✓ |
+| U275 | ゲット_05 | Get_05 | JS message/literal | stage-editor.js | ✓ |
+| U276 | その他01(決定) | Other01(OK) | JS message/literal | stage-editor.js | ✓ |
+| U277 | その他02(キャンセル) | Other02(Cancel) | JS message/literal | stage-editor.js | ✓ |
+| U278 | その他03(カーソル) | Other03(Cursor) | JS message/literal | stage-editor.js | ✓ |
+| U279 | その他04(ポーズ) | Other04(Pause) | JS message/literal | stage-editor.js | ✓ |
+| U280 | その他05(爆発) | Other05(Explosion) | JS message/literal | stage-editor.js | ✓ |
+| U281 | ダメージ | Damage | JS message/literal | stage-editor.js | ✓ |
+| U282 | ゲット | Get | JS message/literal | stage-editor.js | ✓ |
 | U283 | ■ | ■ | JS dom text assign | stage-editor.js | |
 | U284 | ▶ | ▶ | JS dom text assign | stage-editor.js | |
 | U285 | スプライトを登録してください | Please register a sprite | JS message/literal | stage-editor.js | |
@@ -425,3 +425,6 @@
 | U417 | ボス | Boss | HTML text node (bgm-label) | index.html | |
 | U418 | なし | None | JS message/literal | stage-editor.js | |
 | U419 | コピー | Copy | HTML text node (button) | index.html | |
+| U420 | URLをコピー | Copy URL | HTML text node (button) | index.html | |
+| U421 | Xにとうこう | Post on X | HTML text node (button) | index.html | |
+| U422 | Discordにとうこう | Post on Discord | HTML text node (button) | index.html | |

@@ -6,6 +6,14 @@ const StageEditor = {
     canvas: null,
     ctx: null,
     tileSize: 20,
+    
+    // 翻訳ヘルパー
+    t(id) {
+        if (typeof App === 'undefined' || !App.I18N) return id;
+        const entry = App.I18N[id];
+        if (!entry) return id;
+        return entry[App.currentLang] || entry['JPN'] || id;
+    },
 
     // 迥ｶ諷・
     currentTool: 'pen',
@@ -290,11 +298,11 @@ const StageEditor = {
 
     // 螻樊ｧ繝ｩ繝吶Ν陦ｨ遉ｺ逕ｨ縺ｮ繝槭ャ繝斐Φ繧ｰ
     typeLabels: {
-        player: 'プレイヤー',
-        enemy: 'てき',
-        material: 'ブロック・背景',
-        item: 'アイテム',
-        goal: 'ゴール'
+        player: 'U193',
+        enemy: 'U194',
+        material: 'U195',
+        item: 'U196',
+        goal: 'U197'
     },
 
     openConfigPanel() {
@@ -310,7 +318,8 @@ const StageEditor = {
             // 螻樊ｧ繝ｩ繝吶Ν繧呈峩譁ｰ
             const typeLabel = document.getElementById('tile-type-label');
             if (typeLabel) {
-                typeLabel.textContent = this.typeLabels[this.editingTemplate.type] || this.editingTemplate.type;
+                const labelId = this.typeLabels[this.editingTemplate.type];
+                typeLabel.textContent = labelId ? this.t(labelId) : this.editingTemplate.type;
             }
 
             this.renderConfigContent();
@@ -374,9 +383,9 @@ const StageEditor = {
 
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
         const labels = {
-            idle: '立ち', walk: '歩き', climb: 'のぼる', jump: 'ジャンプ',
-            attack: '攻撃', shot: '見た目', life: 'ライフ', main: '見た目',
-            transformItem: '変身アイテム'
+            idle: this.t('U198'), walk: this.t('U199'), climb: this.t('U200'), jump: this.t('U201'),
+            attack: this.t('U202'), shot: this.t('U203'), life: this.t('U204'), main: this.t('U203'),
+            transformItem: this.t('U205')
         };
 
         return `
@@ -399,62 +408,62 @@ const StageEditor = {
 
         if (type === 'player' || type === 'enemy') {
             // ① 能力
-            html += '<div class="param-section-label">能力</div>';
-            html += this.renderSlider('足の速さ', 'speed', config.speed ?? 5, 1, 10);
+            html += `<div class="param-section-label">${this.t('U206')}</div>`;
+            html += this.renderSlider(this.t('U207'), 'speed', config.speed ?? 5, 1, 10);
 
             // ② ジャンプ力（プレイヤーは 2段ジャンプトグル付き）
             if (type === 'player') {
-                html += this.renderSliderWithCheck('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20, '2段ジャンプ', 'wJump', config.wJump);
+                html += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20, this.t('U209'), 'wJump', config.wJump);
             } else {
-                html += this.renderSlider('ジャンプ力', 'jumpPower', config.jumpPower ?? 10, 1, 20);
+                html += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20);
             }
 
             // ③ ライフ スプライト行 ＋ ライフ数（プレイヤーのみ）
             if (type === 'player') {
                 html += this.renderSpriteRow('life');
-                html += this.renderSlider('ライフ数', 'life', config.life ?? 3, 1, 5);
+                html += this.renderSlider(this.t('U210'), 'life', config.life ?? 3, 1, 5);
             } else {
                 // てきはライフスプライトなしでライフ数のみ
-                html += this.renderSlider('ライフ数', 'life', config.life ?? 1, 1, 5);
+                html += this.renderSlider(this.t('U210'), 'life', config.life ?? 1, 1, 5);
             }
 
             // てき専用: 特性セクション（武器より先に表示）
             if (type === 'enemy') {
-                html += '<div class="param-section-label">特性</div>';
+                html += `<div class="param-section-label">${this.t('U211')}</div>`;
                 html += `
                     <div class="param-row">
                         <span class="param-label">てきの動き</span>
                         <select class="param-select" data-key="move">
-                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>動かない</option>
-                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>うろうろ</option>
-                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>ぴょんぴょん</option>
-                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>うろぴょん</option>
-                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>追いかけてくる</option>
-                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>とっしん</option>
+                            <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>${this.t('U213')}</option>
+                            <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>${this.t('U212')}</option>
+                            <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>${this.t('U214')}</option>
+                            <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>${this.t('U215')}</option>
+                            <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>${this.t('U216')}</option>
+                            <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>${this.t('U217')}</option>
                         </select>
                     </div>
                 `;
-                html += this.renderToggle('空中', 'isAerial', config.isAerial);
-                html += this.renderToggle('ボスてき', 'isBoss', config.isBoss);
+                html += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
+                html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 html += `
                     <div class="param-row">
                         <span class="param-label">ドロップ</span>
                         <select class="param-select" data-key="dropItem">
-                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>なし</option>
-                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>コイン</option>
-                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>むてき</option>
-                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
-                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>クリア</option>
-                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>武器</option>
-                            <option value="bomb" ${config.dropItem === 'bomb' ? 'selected' : ''}>ボム</option>
-                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>イースターエッグ</option>
+                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
+                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>${this.t('U221')}</option>
+                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>${this.t('U222')}</option>
+                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>${this.t('U223')}</option>
+                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>${this.t('U224')}</option>
+                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>${this.t('U225')}</option>
+                            <option value="bomb" ${config.dropItem === 'bomb' ? 'selected' : ''}>${this.t('U226')}</option>
+                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>${this.t('U227')}</option>
                         </select>
                     </div>
                 `;
             }
 
             // ④ 武器
-            html += '<div class="param-section-label">武器</div>';
+            html += `<div class="param-section-label">${this.t('U228')}</div>`;
             // 飛び道具 スプライト行
             html += this.renderSpriteRow('shot');
 
@@ -463,26 +472,26 @@ const StageEditor = {
                 <div class="param-row">
                     <span class="param-label">軌道</span>
                     <select class="param-select" data-key="shotType">
-                        <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>近接</option>
-                        <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>ストレート</option>
-                        <option value="arc" ${config.shotType === 'arc' ? 'selected' : ''}>山なり</option>
-                        <option value="drop" ${config.shotType === 'drop' ? 'selected' : ''}>真下に落下</option>
-                        <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>拡散</option>
-                        <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>ブーメラン</option>
-                        <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>ピンボール</option>
-                        <option value="orbit" ${config.shotType === 'orbit' ? 'selected' : ''}>回転</option>
+                        <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>${this.t('U229')}</option>
+                        <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>${this.t('U230')}</option>
+                        <option value="arc" ${config.shotType === 'arc' ? 'selected' : ''}>${this.t('U231')}</option>
+                        <option value="drop" ${config.shotType === 'drop' ? 'selected' : ''}>${this.t('U232')}</option>
+                        <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>${this.t('U233')}</option>
+                        <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>${this.t('U234')}</option>
+                        <option value="pinball" ${config.shotType === 'pinball' ? 'selected' : ''}>${this.t('U235')}</option>
+                        <option value="orbit" ${config.shotType === 'orbit' ? 'selected' : ''}>${this.t('U236')}</option>
                     </select>
                 </div>
             `;
 
             // ⑥ 速度
-            html += this.renderBlockGauge('速度', 'shotSpeed', config.shotSpeed ?? 3, 1, 5);
+            html += this.renderBlockGauge(this.t('U237'), 'shotSpeed', config.shotSpeed ?? 3, 1, 5);
 
             // ⑦ 連射
-            html += this.renderBlockGauge('連射', 'shotRate', config.shotRate ?? 3, 1, 5);
+            html += this.renderBlockGauge(this.t('U238'), 'shotRate', config.shotRate ?? 3, 1, 5);
 
             // ⑧ 届く距離（旧射程距離）
-            html += this.renderBlockGauge('届く距離', 'shotMaxRange', config.shotMaxRange ?? 3, 1, 5);
+            html += this.renderBlockGauge(this.t('U239'), 'shotMaxRange', config.shotMaxRange ?? 3, 1, 5);
 
             // プレイヤー専用: はじめから使える
             if (type === 'player') {
@@ -500,48 +509,48 @@ const StageEditor = {
 
             // プレイヤー専用 SE設定
             if (type === 'player') {
-                html += '<div class="param-section-label">効果音</div>';
-                html += this.renderSeSelect('ジャンプ音', 'seJump', config.seJump ?? 0);
-                html += this.renderSeSelect('攻撃音', 'seAttack', config.seAttack ?? 5);
-                html += this.renderSeSelect('ダメージ音', 'seDamage', config.seDamage ?? 10);
-                html += this.renderSeSelect('ゲット音', 'seItemGet', config.seItemGet ?? 15);
+                html += `<div class="param-section-label">${this.t('U240')}</div>`;
+                html += this.renderSeSelect(this.t('U241'), 'seJump', config.seJump ?? 0);
+                html += this.renderSeSelect(this.t('U242'), 'seAttack', config.seAttack ?? 5);
+                html += this.renderSeSelect(this.t('U243'), 'seDamage', config.seDamage ?? 10);
+                html += this.renderSeSelect(this.t('U244'), 'seItemGet', config.seItemGet ?? 15);
             }
         } else if (type === 'material') {
             html += `
                 <div class="param-row">
                     <span class="param-label">ギミック</span>
                     <select class="param-select" data-key="gimmick">
-                        <option value="none" ${!config.gimmick || config.gimmick === 'none' ? 'selected' : ''}>なし</option>
-                        <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>横移動</option>
-                        <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>縦移動</option>
-                        <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>落下</option>
-                        <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>はしご</option>
-                        <option value="spring" ${config.gimmick === 'spring' ? 'selected' : ''}>スプリング</option>
-                        <option value="door" ${config.gimmick === 'door' ? 'selected' : ''}>とびら</option>
+                        <option value="none" ${!config.gimmick || config.gimmick === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
+                        <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>${this.t('U245')}</option>
+                        <option value="moveV" ${config.gimmick === 'moveV' ? 'selected' : ''}>${this.t('U246')}</option>
+                        <option value="fall" ${config.gimmick === 'fall' ? 'selected' : ''}>${this.t('U247')}</option>
+                        <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>${this.t('U248')}</option>
+                        <option value="spring" ${config.gimmick === 'spring' ? 'selected' : ''}>${this.t('U249')}</option>
+                        <option value="door" ${config.gimmick === 'door' ? 'selected' : ''}>${this.t('U250')}</option>
                     </select>
                 </div>
             `;
             if (config.gimmick === 'spring') {
-                html += this.renderBlockGauge('はねる力', 'springPower', config.springPower ?? 3, 1, 5);
+                html += this.renderBlockGauge(this.t('U251'), 'springPower', config.springPower ?? 3, 1, 5);
             }
             // ギミック「なし」の時のみ当たり判定・耐久性を表示
             if (!config.gimmick || config.gimmick === 'none') {
-                html += this.renderToggle('当たり判定', 'collision', config.collision !== false);
-                html += this.renderSlider('耐久性', 'life', config.life ?? -1, -1, 10);
+                html += this.renderToggle(this.t('U252'), 'collision', config.collision !== false);
+                html += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
             }
         } else if (type === 'item') {
             html += `
                 <div class="param-row">
                     <span class="param-label">種類</span>
                     <select class="param-select" data-key="itemType">
-                        <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>コイン</option>
-                        <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>むてき</option>
-                        <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>ライフアップ</option>
-                        <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>クリア</option>
-                        <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>武器</option>
-                        <option value="bomb" ${config.itemType === 'bomb' ? 'selected' : ''}>ボム</option>
-                        <option value="key" ${config.itemType === 'key' ? 'selected' : ''}>カギ</option>
-                        <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>イースターエッグ</option>
+                        <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>${this.t('U221')}</option>
+                        <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>${this.t('U222')}</option>
+                        <option value="lifeup" ${config.itemType === 'lifeup' ? 'selected' : ''}>${this.t('U223')}</option>
+                        <option value="clear" ${config.itemType === 'clear' ? 'selected' : ''}>${this.t('U224')}</option>
+                        <option value="weapon" ${config.itemType === 'weapon' ? 'selected' : ''}>${this.t('U225')}</option>
+                        <option value="bomb" ${config.itemType === 'bomb' ? 'selected' : ''}>${this.t('U226')}</option>
+                        <option value="key" ${config.itemType === 'key' ? 'selected' : ''}>${this.t('U254')}</option>
+                        <option value="easter" ${config.itemType === 'easter' ? 'selected' : ''}>${this.t('U227')}</option>
                     </select>
                 </div>
             `;
@@ -552,7 +561,7 @@ const StageEditor = {
                         <span class="param-label">メッセージ</span>
                         <input type="text" class="param-input" data-key="easterMessage" 
                                value="${config.easterMessage || ''}" 
-                               maxlength="20" placeholder="最大20文字">
+                               maxlength="20" placeholder="${this.t('U255')}">
                     </div>
                 `;
             }
@@ -567,7 +576,6 @@ const StageEditor = {
     },
 
     renderBlockGauge(label, key, value, min, max) {
-        // 値を1-5の範囲にマッピング
         let mappedValue = value;
 
         // 特殊ケース: lifeで-1は無限
@@ -665,35 +673,35 @@ const StageEditor = {
         if (!sounds || sounds.length === 0) {
             sounds = [
                 // ジャンプ系
-                { id: 0, name: 'ジャンプ01', type: 'jump_01' },
-                { id: 1, name: 'ジャンプ02', type: 'jump_02' },
-                { id: 2, name: 'ジャンプ03', type: 'jump_03' },
-                { id: 3, name: 'ジャンプ04', type: 'jump_04' },
-                { id: 4, name: 'ジャンプ05', type: 'jump_05' },
+                { id: 0, name: this.t('U256'), type: 'jump_01' },
+                { id: 1, name: this.t('U257'), type: 'jump_02' },
+                { id: 2, name: this.t('U258'), type: 'jump_03' },
+                { id: 3, name: this.t('U259'), type: 'jump_04' },
+                { id: 4, name: this.t('U260'), type: 'jump_05' },
                 // 攻撃系
-                { id: 5, name: '攻撃01', type: 'attack_01' },
-                { id: 6, name: '攻撃02', type: 'attack_02' },
-                { id: 7, name: '攻撃03', type: 'attack_03' },
-                { id: 8, name: '攻撃04', type: 'attack_04' },
-                { id: 9, name: '攻撃05', type: 'attack_05' },
+                { id: 5, name: this.t('U261'), type: 'attack_01' },
+                { id: 6, name: this.t('U262'), type: 'attack_02' },
+                { id: 7, name: this.t('U263'), type: 'attack_03' },
+                { id: 8, name: this.t('U264'), type: 'attack_04' },
+                { id: 9, name: this.t('U265'), type: 'attack_05' },
                 // ダメージ系
-                { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-                { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-                { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-                { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-                { id: 14, name: 'ダメージ_05', type: 'damage_05' },
+                { id: 10, name: this.t('U266'), type: 'damage_01' },
+                { id: 11, name: this.t('U267'), type: 'damage_02' },
+                { id: 12, name: this.t('U268'), type: 'damage_03' },
+                { id: 13, name: this.t('U269'), type: 'damage_04' },
+                { id: 14, name: this.t('U270'), type: 'damage_05' },
                 // ゲット系
-                { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-                { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-                { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-                { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-                { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
+                { id: 15, name: this.t('U271'), type: 'itemGet_01' },
+                { id: 16, name: this.t('U272'), type: 'itemGet_02' },
+                { id: 17, name: this.t('U273'), type: 'itemGet_03' },
+                { id: 18, name: this.t('U274'), type: 'itemGet_04' },
+                { id: 19, name: this.t('U275'), type: 'itemGet_05' },
                 // その他
-                { id: 20, name: 'その他01(決定)', type: 'other_01' },
-                { id: 21, name: 'その他02(キャンセル)', type: 'other_02' },
-                { id: 22, name: 'その他03(カーソル)', type: 'other_03' },
-                { id: 23, name: 'その他04(ポーズ)', type: 'other_04' },
-                { id: 24, name: 'その他05(爆発)', type: 'other_05' }
+                { id: 20, name: this.t('U276'), type: 'other_01' },
+                { id: 21, name: this.t('U277'), type: 'other_02' },
+                { id: 22, name: this.t('U278'), type: 'other_03' },
+                { id: 23, name: this.t('U279'), type: 'other_04' },
+                { id: 24, name: this.t('U280'), type: 'other_05' }
             ];
             // プロジェクトデータに登録
             if (App.projectData) {
@@ -702,7 +710,7 @@ const StageEditor = {
         }
 
         // 驕ｸ謚樔ｸｭ縺ｮSE蜷阪ｒ蜿門ｾ・
-        let selectedName = 'なし';
+        let selectedName = this.t('U220');
         if (selectedValue >= 0 && selectedValue < sounds.length) {
             selectedName = sounds[selectedValue].name;
         }
@@ -1054,16 +1062,16 @@ const StageEditor = {
         let sounds = App.projectData?.sounds;
         if (!sounds || sounds.length === 0) {
             sounds = [
-                { id: 0, name: 'ジャンプ', type: 'jump' },
-                { id: 1, name: '攻撃', type: 'attack' },
-                { id: 2, name: 'ダメージ', type: 'damage' },
-                { id: 3, name: 'ゲット', type: 'itemGet' }
+                { id: 0, name: this.t('U201'), type: 'jump' },
+                { id: 1, name: this.t('U202'), type: 'attack' },
+                { id: 2, name: this.t('U281'), type: 'damage' },
+                { id: 3, name: this.t('U282'), type: 'itemGet' }
             ];
         }
 
         let html = `
             <div class="se-select-item ${this.selectedSeIndex === -1 ? 'current' : ''}" data-se-index="-1">
-                <span class="se-name">なし</span>
+                <span class="se-name">${this.t('U220')}</span>
             </div>
         `;
         sounds.forEach((se, idx) => {
