@@ -1352,7 +1352,8 @@ const App = {
             list.sort((a, b) => b.updatedAt - a.updatedAt);
 
             if (list.length === 0) {
-                listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#888;">セーブデータなし</div>';
+                const msg = this.I18N['U370'][this.currentLang];
+                listContainer.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">${msg}</div>`;
                 updateButtons();
                 return;
             }
@@ -1912,6 +1913,7 @@ const App = {
         'U147': { JPN: 'ひらく',              ENG: 'Open' },
         'U148': { JPN: 'けす',               ENG: 'Delete' },
         'U149': { JPN: 'やめる',              ENG: 'Cancel' },
+        'U370': { JPN: 'セーブデータなし',     ENG: 'No save data' },
         // ---- 新規作成モーダル ----
         'U150': { JPN: 'あたらしいゲームをつくる', ENG: 'Create New Game' },
         'U403': { JPN: 'ゲームタイトル',       ENG: 'Game Title' },

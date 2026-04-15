@@ -375,7 +375,7 @@
 | U367 | ファイルの読み込みに失敗しました | Failed to read file | JS message/literal | app.js | |
 | U368 | そのなまえは すでに つかわれています | That name is already in use | JS message/literal | app.js | |
 | U369 | あたらしいゲームを つくりました | New game created! | JS message/literal | app.js | |
-| U370 | >セーブデータなし</div> | >No save data</div> | JS message/literal | app.js | |
+| U370 | セーブデータなし | No save data | JS message/literal | app.js | ✓ |
 | U371 | <div style= | <div style= | JS dom text assign | app.js | |
 | U372 | のコピー | copy of | JS message/literal | app.js | |
 | U373 | この作品を公開しますか？ | Publish this game? | JS message/literal | app.js | |
