@@ -15,6 +15,26 @@ const StageEditor = {
         return entry[App.currentLang] || entry['JPN'] || id;
     },
 
+    // SE名の翻訳取得
+    getSeName(se) {
+        if (!se) return this.t('U220'); // なし
+        // デフォルトのSEリスト（U256〜U280）に一致するか確認
+        const nameIdMap = {
+            'jump_01': 'U256', 'jump_02': 'U257', 'jump_03': 'U258', 'jump_04': 'U259', 'jump_05': 'U260',
+            'attack_01': 'U261', 'attack_02': 'U262', 'attack_03': 'U263', 'attack_04': 'U264', 'attack_05': 'U265',
+            'damage_01': 'U266', 'damage_02': 'U267', 'damage_03': 'U268', 'damage_04': 'U269', 'damage_05': 'U270',
+            'itemGet_01': 'U271', 'itemGet_02': 'U272', 'itemGet_03': 'U273', 'itemGet_04': 'U274', 'itemGet_05': 'U275',
+            'other_01': 'U276', 'other_02': 'U277', 'other_03': 'U278', 'other_04': 'U279', 'other_05': 'U280',
+            // 基本タイプ
+            'jump': 'U201', 'attack': 'U202', 'damage': 'U281', 'itemGet': 'U282'
+        };
+        const id = nameIdMap[se.type];
+        if (id) {
+            return this.t(id);
+        }
+        return se.name;
+    },
+
     // 迥ｶ諷・
     currentTool: 'pen',
     currentLayer: 'fg', // FG縺ｮ縺ｿ菴ｿ逕ｨ・・G縺ｯ蜊倩牡閭梧勹・・
@@ -432,7 +452,7 @@ const StageEditor = {
                 html += `<div class="param-section-label">${this.t('U211')}</div>`;
                 html += `
                     <div class="param-row">
-                        <span class="param-label">てきの動き</span>
+                        <span class="param-label">${this.t('U424')}</span>
                         <select class="param-select" data-key="move">
                             <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>${this.t('U213')}</option>
                             <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>${this.t('U212')}</option>
@@ -447,7 +467,7 @@ const StageEditor = {
                 html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 html += `
                     <div class="param-row">
-                        <span class="param-label">ドロップ</span>
+                        <span class="param-label">${this.t('U425')}</span>
                         <select class="param-select" data-key="dropItem">
                             <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
                             <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>${this.t('U221')}</option>
@@ -499,7 +519,7 @@ const StageEditor = {
                     <div class="param-row param-row-toggle">
                         <span class="param-label"></span>
                         <label class="toggle-switch toggle-inline" style="margin-left: 0;">
-                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">はじめから使える</span>
+                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">${this.t('U423')}</span>
                             <input type="checkbox" data-key="weaponFromStart" ${config.weaponFromStart ?? true ? 'checked' : ''}>
                             <span class="toggle-slider"></span>
                         </label>
@@ -518,7 +538,7 @@ const StageEditor = {
         } else if (type === 'material') {
             html += `
                 <div class="param-row">
-                    <span class="param-label">ギミック</span>
+                    <span class="param-label">${this.t('U426')}</span>
                     <select class="param-select" data-key="gimmick">
                         <option value="none" ${!config.gimmick || config.gimmick === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
                         <option value="moveH" ${config.gimmick === 'moveH' ? 'selected' : ''}>${this.t('U245')}</option>
@@ -541,7 +561,7 @@ const StageEditor = {
         } else if (type === 'item') {
             html += `
                 <div class="param-row">
-                    <span class="param-label">種類</span>
+                    <span class="param-label">${this.t('U427')}</span>
                     <select class="param-select" data-key="itemType">
                         <option value="coin" ${config.itemType === 'coin' ? 'selected' : ''}>${this.t('U221')}</option>
                         <option value="muteki" ${config.itemType === 'muteki' ? 'selected' : ''}>${this.t('U222')}</option>
@@ -710,10 +730,7 @@ const StageEditor = {
         }
 
         // 驕ｸ謚樔ｸｭ縺ｮSE蜷阪ｒ蜿門ｾ・
-        let selectedName = this.t('U220');
-        if (selectedValue >= 0 && selectedValue < sounds.length) {
-            selectedName = sounds[selectedValue].name;
-        }
+        let selectedName = this.getSeName(sounds[selectedValue]);
 
         return `
             <div class="param-row se-row">
@@ -1077,7 +1094,7 @@ const StageEditor = {
         sounds.forEach((se, idx) => {
             html += `
                 <div class="se-select-item ${this.selectedSeIndex === idx ? 'current' : ''}" data-se-index="${idx}">
-                    <span class="se-name">${se.name}</span>
+                    <span class="se-name">${this.getSeName(se)}</span>
                     <button class="se-preview-btn" data-se-index="${idx}">▶</button>
                 </div>
             `;

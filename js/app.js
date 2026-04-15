@@ -1967,6 +1967,11 @@ const App = {
         'U420': { JPN: 'URLをコピー',         ENG: 'Copy URL' },
         'U421': { JPN: 'Xにとうこう',         ENG: 'Post on X' },
         'U422': { JPN: 'Discordにとうこう',   ENG: 'Post on Discord' },
+        'U423': { JPN: 'はじめから使える',    ENG: 'Available from start' },
+        'U424': { JPN: 'てきの動き',          ENG: 'Move Type' },
+        'U425': { JPN: 'ドロップ',            ENG: 'Drop Item' },
+        'U426': { JPN: 'ギミック',            ENG: 'Gimmick' },
+        'U427': { JPN: '種類',               ENG: 'Type' },
 
         // ---- タイル設定パネル (Stage Editor) ----
         'U193': { JPN: 'プレイヤー',          ENG: 'Player' },
@@ -2080,9 +2085,12 @@ const App = {
         // html要素のlang属性更新
         document.documentElement.lang = (lang === 'JPN') ? 'ja' : 'en';
 
-        // ステージエディタのBGM選択ボタン（なし/None）を更新
-        if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
-            StageEditor.updateBgmSelects();
+        // ステージエディタのBGM選択ボタン（なし/None）および設定パネルを更新
+        if (typeof StageEditor !== 'undefined') {
+            if (StageEditor.updateBgmSelects) StageEditor.updateBgmSelects();
+            if (StageEditor.isConfigOpen && StageEditor.renderConfigContent) {
+                StageEditor.renderConfigContent();
+            }
         }
     },
 
