@@ -424,3 +424,4 @@
 | U416 | ゲームオーバー | Game Over | HTML text node (bgm-label) | index.html | |
 | U417 | ボス | Boss | HTML text node (bgm-label) | index.html | |
 | U418 | なし | None | JS message/literal | stage-editor.js | |
+| U419 | コピー | Copy | HTML text node (button) | index.html | |

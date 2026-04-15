@@ -1961,6 +1961,7 @@ const App = {
         'U416': { JPN: 'ゲームオーバー',       ENG: 'Game Over' },
         'U417': { JPN: 'ボス',               ENG: 'Boss' },
         'U418': { JPN: 'なし',               ENG: 'None' },
+        'U419': { JPN: 'コピー',              ENG: 'Copy' },
     },
 
     /**
