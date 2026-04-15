@@ -110,6 +110,7 @@ body {
     font-size: 7px;
     line-height: 1;
     white-space: nowrap;
+    font-weight: 400;
 }
 
 .toolbar-icon:active {
@@ -138,8 +139,7 @@ body {
 /* ローカライズボタン：言語ラベルのスタイル */
 #lang-icon-btn .icon-label {
     font-size: 7px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
+    font-weight: 400;
 }
 
 #lang-icon-btn.lang-eng {
