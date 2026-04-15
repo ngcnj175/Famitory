@@ -850,7 +850,7 @@ const SoundEditor = {
         });
     },
 
-    // ========== Song Jukebox (ソングリスト) ==========
+    // ========== BGM Jukebox (BGMリスト) ==========
     initSongJukebox() {
         const modal = document.getElementById('song-jukebox-modal');
 
@@ -908,7 +908,7 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert('最後のソングは削除できません');
+                        alert('最後のBGMは削除できません');
                         return;
                     }
                     if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
@@ -921,7 +921,7 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert('最後のソングは削除できません');
+                        alert('最後のBGMは削除できません');
                         return;
                     }
                     if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
@@ -1002,7 +1002,7 @@ const SoundEditor = {
 
     addSong() {
         const newSong = {
-            name: `Song ${this.songs.length + 1}`,
+            name: `BGM ${this.songs.length + 1}`,
             bpm: 120,
             bars: 16,
             tracks: [
@@ -1018,7 +1018,7 @@ const SoundEditor = {
 
     deleteSong() {
         if (this.songs.length <= 1) {
-            alert('最後のソングは削除できません');
+            alert('最後のBGMは削除できません');
             return;
         }
 

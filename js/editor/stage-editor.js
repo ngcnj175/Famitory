@@ -1137,7 +1137,7 @@ const StageEditor = {
         const list = document.getElementById('bgm-select-list');
         if (!popup || !list) return;
 
-        // ソング一覧を取得（SoundEditorから）
+        // BGM一覧を取得（SoundEditorから）
         const songs = (typeof SoundEditor !== 'undefined' && SoundEditor.songs) ? SoundEditor.songs : [];
         const currentValue = App.projectData.stage?.bgm?.[this.selectedBgmType] || '';
 
@@ -1150,7 +1150,7 @@ const StageEditor = {
             const isCurrent = currentValue === String(idx) ? 'current' : '';
             html += `
                 <div class="se-select-item ${isCurrent}" data-bgm-index="${idx}">
-                    <span class="se-name">${song.name || `Song ${idx + 1}`}</span>
+                    <span class="se-name">${song.name || `BGM ${idx + 1}`}</span>
                     <button class="se-preview-btn" data-bgm-index="${idx}">▶</button>
                 </div>
             `;
@@ -1195,7 +1195,7 @@ const StageEditor = {
                 btn.textContent = 'なし';
             } else {
                 const song = App.projectData.songs?.[parseInt(idx)];
-                btn.textContent = song?.name || `Song ${parseInt(idx) + 1}`;
+                btn.textContent = song?.name || `BGM ${parseInt(idx) + 1}`;
             }
         }
 
@@ -3249,7 +3249,7 @@ const StageEditor = {
             } else {
                 const idx = parseInt(value);
                 const song = songs[idx];
-                btn.textContent = song?.name || `Song ${idx + 1}`;
+                btn.textContent = song?.name || `BGM ${idx + 1}`;
             }
         });
     },

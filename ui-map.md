@@ -21,7 +21,7 @@
 | U013 | ステージ | Stage | HTML attribute (title) | index.html | |
 | U014 | STAGE | STAGE | HTML text node (icon-label) | index.html | ✓ |
 | U015 | サウンド | Sound | HTML attribute (title) | index.html | |
-| U016 | SONG | SONG | HTML text node (icon-label) | index.html | ✓ |
+| U016 | BGM | BGM | HTML text node (icon-label) | index.html | ✓ |
 | U017 | My Game | My Game | HTML attribute (value) | index.html | |
 | U018 | ゲームタイトル | Game Title | HTML attribute (placeholder) | index.html | |
 | U019 | なまえ | Name | HTML attribute (placeholder) | index.html | |
@@ -83,19 +83,19 @@
 | U075 | ブロック・背景 | Block/BG | HTML text node (button) | index.html | ✓ |
 | U076 | アイテム | Item | HTML text node (button) | index.html | ✓ |
 | U077 | 編集 | Edit | HTML text node | index.html | |
-| U078 | ソング名変更 | Rename Song | HTML text node | index.html | ✓ |
-| U079 | ソング名を入力 | Enter Song Name | HTML attribute (placeholder) | index.html | |
+| U078 | BGM名変更 | Rename BGM | HTML text node | index.html | ✓ |
+| U079 | BGM名を入力 | Enter BGM Name | HTML attribute (placeholder) | index.html | |
 | U080 | コピー＆ペースト | Copy & Paste | HTML text node | index.html | ✓ |
 | U081 | トラック | Track | HTML text node (label) | index.html | ✓ |
 | U082 | コピー範囲 | Copy Range | HTML text node (label) | index.html | ✓ |
 | U083 | ～ | ～ | HTML text node | index.html | |
 | U084 | ペースト先 | Paste At | HTML text node (label) | index.html | ✓ |
 | U085 | 実行 | Execute | HTML text node (button) | index.html | ✓ |
-| U086 | ソング削除 | Delete Song | HTML attribute (title) | index.html | |
+| U086 | BGM削除 | Delete BGM | HTML attribute (title) | index.html | |
 | U087 | 〈 | 〈 | HTML text node | index.html | |
 | U088 | タップで名前変更 | Tap to Rename | HTML attribute (title) | index.html | |
 | U089 | 〉 | 〉 | HTML text node | index.html | |
-| U090 | ソング追加 | Add Song | HTML attribute (title) | index.html | |
+| U090 | BGM追加 | Add BGM | HTML attribute (title) | index.html | |
 | U091 | 上下ドラッグで変更 | Drag to Change | HTML attribute (title) | index.html | |
 | U092 | PLAY/STOP | PLAY/STOP | HTML attribute (title) | index.html | |
 | U093 | STEP REC | STEP REC | HTML attribute (title) | index.html | |
@@ -312,8 +312,8 @@
 | U304 | Power (Saw) | Power (Saw) | JS object config | bgm-editor.js | |
 | U305 | Kick (ピッチ下降) | Kick (Pitch Down) | JS message/literal | bgm-editor.js | |
 | U306 | 閉じる | Close | JS message/literal | bgm-editor.js | |
-| U307 | 最後のソングは削除できません | Cannot delete the last song | JS message/literal | bgm-editor.js | |
-| U308 | を削除しますか？ | Delete this song? | JS message/literal | bgm-editor.js | |
+| U307 | 最後のBGMは削除できません | Cannot delete the last BGM | JS message/literal | bgm-editor.js | |
+| U308 | を削除しますか？ | Delete this BGM? | JS message/literal | bgm-editor.js | |
 | U309 | ▶ | ▶ | JS dom text assign | bgm-editor.js | |
 | U310 | ■ | ■ | JS dom text assign | bgm-editor.js | |
 | U311 | 操作を選択 (delete / duplicate / rename) | Select action (delete / duplicate / rename) | JS message/literal | bgm-editor.js | |

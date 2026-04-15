@@ -22,8 +22,8 @@
 | S016 | SE選択ポップアップ (se-select-popup) | 効果音の選択 | index.html, stage-editor.js |
 | S017 | BGM選択ポップアップ (bgm-select-popup) | BGM曲の選択 | index.html, stage-editor.js |
 | S018 | 属性選択ポップアップ (type-select-popup) | タイル追加時の種別選択（プレイヤー・敵・素材・アイテム） | index.html, stage-editor.js |
-| S019 | ソング名変更ポップアップ (song-name-popup) | BGMソングの名前変更 | index.html, bgm-editor.js |
-| S020 | ソングジュークボックスモーダル (song-jukebox-modal) | サウンド画面内のソング一覧選択 | index.html, bgm-editor.js |
+| S019 | BGM名変更ポップアップ (song-name-popup) | BGMの名前変更 | index.html, bgm-editor.js |
+| S020 | BGMジュークボックスモーダル (song-jukebox-modal) | サウンド画面内のBGM一覧選択 | index.html, bgm-editor.js |
 | S021 | 種別選択モーダル (type-select-modal) | タイル種別選択（旧UI・未使用の可能性） | index.html |
 | S022 | プレイヤー設定モーダル (player-config-modal) | プレイヤータイルの詳細設定（旧UI・未使用の可能性） | index.html |
 | S023 | 敵設定モーダル (enemy-config-modal) | 敵タイルの詳細設定（旧UI・未使用の可能性） | index.html |

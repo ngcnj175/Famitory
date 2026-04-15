@@ -1873,7 +1873,7 @@ const App = {
         'U010': { JPN: 'PLAY',  ENG: 'PLAY' },
         'U012': { JPN: 'PIXEL', ENG: 'PIXEL' },
         'U014': { JPN: 'STAGE', ENG: 'STAGE' },
-        'U016': { JPN: 'SONG',  ENG: 'SONG' },
+        'U016': { JPN: 'BGM',  ENG: 'BGM' },
         // ---- ステージ設定パネル ----
         'U040': { JPN: 'ステージ設定',    ENG: 'Stage Settings' },
         'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
@@ -1935,7 +1935,7 @@ const App = {
         'U174': { JPN: 'このゲームを編集するには<br>エディットキーが必要です', ENG: 'An edit key is required<br>to edit this game.' },
         'U176': { JPN: '認証',               ENG: 'Verify' },
         // ---- BGMエディタ（ソング制御） ----
-        'U078': { JPN: 'ソング名変更',         ENG: 'Rename Song' },
+        'U078': { JPN: 'BGM名変更',         ENG: 'Rename BGM' },
         'U080': { JPN: 'コピー＆ペースト',     ENG: 'Copy & Paste' },
         'U081': { JPN: 'トラック',            ENG: 'Track' },
         'U082': { JPN: 'コピー範囲',          ENG: 'Copy Range' },
