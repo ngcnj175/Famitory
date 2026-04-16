@@ -290,7 +290,7 @@
 | U282 | ゲット | Get | JS message/literal | stage-editor.js | ✓ |
 | U283 | ■ | ■ | JS dom text assign | stage-editor.js | |
 | U284 | ▶ | ▶ | JS dom text assign | stage-editor.js | |
-| U285 | スプライトを登録してください | Please register a sprite | JS message/literal | stage-editor.js | |
+| U285 | スプライトを登録してください | Please register a sprite | JS message/literal | stage-editor.js | ✓ |
 | U286 | 複製 | Duplicate | JS message/literal | stage-editor.js | |
 | U287 | 削除 | Delete | JS message/literal | stage-editor.js | |
 | U288 | キャンセル | Cancel | JS message/literal | stage-editor.js | |

@@ -2072,6 +2072,7 @@ const App = {
         'U280': { JPN: 'その他05(爆発)',       ENG: 'Other05(Explosion)' },
         'U281': { JPN: 'ダメージ',            ENG: 'Damage' },
         'U282': { JPN: 'ゲット',              ENG: 'Get' },
+        'U285': { JPN: 'スプライトを登録してください', ENG: 'Please register a sprite' },
         'U428': { JPN: '軌道',               ENG: 'Trajectory' },
     },
 

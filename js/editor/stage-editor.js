@@ -1385,7 +1385,7 @@ const StageEditor = {
         const hasMainSprite = idleFrames.length > 0 || mainFrames.length > 0;
 
         if (!hasMainSprite) {
-            alert('スプライトを登録してください');
+            alert(this.t('U285'));
             return;
         }
 
