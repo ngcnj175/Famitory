@@ -262,9 +262,9 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     isLongPress = true;
                     App.showActionMenu(null, [
-                        { text: (typeof App !== 'undefined' && App.I18N['U406'] ? (App.I18N['U406'][App.currentLang] || App.t('U177')) : App.t('U177')), action: () => this.duplicateSong() },
-                        { text: (typeof App !== 'undefined' && App.I18N['U407'] ? (App.I18N['U407'][App.currentLang] || App.t('U178')) : App.t('U178')), style: 'destructive', action: () => this.deleteSong() },
-                        { text: (typeof App !== 'undefined' && App.I18N['U408'] ? (App.I18N['U408'][App.currentLang] || App.t('U179')) : App.t('U179')), style: 'cancel' }
+                        { text: '複製', action: () => this.duplicateSong() },
+                        { text: '削除', style: 'destructive', action: () => this.deleteSong() },
+                        { text: 'キャンセル', style: 'cancel' }
                     ]);
                 }, 800);
             };
@@ -659,31 +659,31 @@ const SoundEditor = {
 
         const title = document.createElement('div');
         title.className = 'tone-menu-title';
-        title.innerText = (typeof App !== 'undefined' && App.I18N['U295'] ? (App.I18N['U295'][App.currentLang] || '音色を選択') : '音色を選択');
+        title.innerText = '音色を選択';
         menu.appendChild(title);
 
         let options = [];
         if (trackType === 'square') {
             options = [
-                { val: 0, label: (typeof App !== 'undefined' && App.I18N['U296'] ? (App.I18N['U296'][App.currentLang] || 'Standard') : 'Standard') },
-                { val: 1, label: (typeof App !== 'undefined' && App.I18N['U297'] ? (App.I18N['U297'][App.currentLang] || 'Standard (Short)') : 'Standard (Short)') },
-                { val: 2, label: (typeof App !== 'undefined' && App.I18N['U298'] ? (App.I18N['U298'][App.currentLang] || 'Standard (FadeIn)') : 'Standard (FadeIn)') },
-                { val: 3, label: (typeof App !== 'undefined' && App.I18N['U299'] ? (App.I18N['U299'][App.currentLang] || 'Sharp') : 'Sharp') },
-                { val: 4, label: (typeof App !== 'undefined' && App.I18N['U300'] ? (App.I18N['U300'][App.currentLang] || 'Sharp (Short)') : 'Sharp (Short)') },
-                { val: 5, label: (typeof App !== 'undefined' && App.I18N['U301'] ? (App.I18N['U301'][App.currentLang] || 'Sharp (FadeIn)') : 'Sharp (FadeIn)') },
-                { val: 6, label: (typeof App !== 'undefined' && App.I18N['U302'] ? (App.I18N['U302'][App.currentLang] || 'Tremolo (高速)') : 'Tremolo (高速)') }
+                { val: 0, label: 'Standard' },
+                { val: 1, label: 'Standard (Short)' },
+                { val: 2, label: 'Standard (FadeIn)' },
+                { val: 3, label: 'Sharp' },
+                { val: 4, label: 'Sharp (Short)' },
+                { val: 5, label: 'Sharp (FadeIn)' },
+                { val: 6, label: 'Tremolo (高速)' }
             ];
         } else if (trackType === 'triangle') {
             options = [
-                { val: 0, label: (typeof App !== 'undefined' && App.I18N['U296'] ? (App.I18N['U296'][App.currentLang] || 'Standard') : 'Standard') },
-                { val: 1, label: (typeof App !== 'undefined' && App.I18N['U303'] ? (App.I18N['U303'][App.currentLang] || 'Soft (Sine)') : 'Soft (Sine)') },
-                { val: 2, label: (typeof App !== 'undefined' && App.I18N['U304'] ? (App.I18N['U304'][App.currentLang] || 'Power (Saw)') : 'Power (Saw)') },
-                { val: 3, label: (typeof App !== 'undefined' && App.I18N['U305'] ? (App.I18N['U305'][App.currentLang] || 'Kick (ピッチ下降)') : 'Kick (ピッチ下降)') }
+                { val: 0, label: 'Standard' },
+                { val: 1, label: 'Soft (Sine)' },
+                { val: 2, label: 'Power (Saw)' },
+                { val: 3, label: 'Kick (ピッチ下降)' }
             ];
         } else if (trackType === 'noise') {
             options = [
-                { val: 0, label: (typeof App !== 'undefined' && App.I18N['U399'] ? (App.I18N['U399'][App.currentLang] || 'Noise (ピッチ)') : 'Noise (ピッチ)') },
-                { val: 1, label: (typeof App !== 'undefined' && App.I18N['U400'] ? (App.I18N['U400'][App.currentLang] || 'Drum Kit') : 'Drum Kit') }
+                { val: 0, label: 'Noise (ピッチ)' },
+                { val: 1, label: 'Drum Kit' }
             ];
         }
 
@@ -705,7 +705,7 @@ const SoundEditor = {
         // 閉じるボタン（背景クリックで閉じる機能があれば不要だが、念のため）
         const closeBtn = document.createElement('button');
         closeBtn.className = 'tone-menu-close';
-        closeBtn.innerText = (typeof App !== 'undefined' && App.I18N['U306'] ? (App.I18N['U306'][App.currentLang] || '閉じる') : '閉じる');
+        closeBtn.innerText = '閉じる';
         closeBtn.onclick = () => menu.remove();
         menu.appendChild(closeBtn);
 
@@ -880,7 +880,7 @@ const SoundEditor = {
             html += `
                 <div class="se-select-item ${isCurrent}" data-song-index="${idx}">
                     <span class="se-name">${song.name}</span>
-                    <button class="se-preview-btn" data-song-index="${idx}" data-i18n="U309">▶</button>
+                    <button class="se-preview-btn" data-song-index="${idx}">▶</button>
                 </div>
             `;
         });
@@ -908,7 +908,7 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert((typeof App !== 'undefined' && App.I18N['U307'] ? (App.I18N['U307'][App.currentLang] || '最後のBGMは削除できません') : '最後のBGMは削除できません'));
+                        alert('最後のBGMは削除できません');
                         return;
                     }
                     if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
@@ -921,7 +921,7 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert((typeof App !== 'undefined' && App.I18N['U307'] ? (App.I18N['U307'][App.currentLang] || '最後のBGMは削除できません') : '最後のBGMは削除できません'));
+                        alert('最後のBGMは削除できません');
                         return;
                     }
                     if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
@@ -945,7 +945,7 @@ const SoundEditor = {
                 if (this.currentSongIdx === idx && this.isPlaying) {
                     this.stop();
                     // ボタンを停止状態に戻す
-                    btn.textContent = (typeof App !== 'undefined' && App.I18N['U309'] ? (App.I18N['U309'][App.currentLang] || App.t('U182')) : App.t('U182'));
+                    btn.textContent = '▶';
                     btn.classList.remove('playing');
                     return;
                 }
@@ -954,10 +954,10 @@ const SoundEditor = {
                 this.play();
                 // 他のボタンをリセット
                 listContainer.querySelectorAll('.se-preview-btn').forEach(b => {
-                    b.textContent = (typeof App !== 'undefined' && App.I18N['U309'] ? (App.I18N['U309'][App.currentLang] || App.t('U182')) : App.t('U182'));
+                    b.textContent = '▶';
                     b.classList.remove('playing');
                 });
-                btn.textContent = (typeof App !== 'undefined' && App.I18N['U310'] ? (App.I18N['U310'][App.currentLang] || App.t('U283')) : App.t('U283'));
+                btn.textContent = '■';
                 btn.classList.add('playing');
             });
         });
@@ -965,7 +965,7 @@ const SoundEditor = {
 
     showSongContextMenu(idx, event) {
         // 簡易実装：ブラウザ標準のconfirm/promptで代用
-        const action = prompt((typeof App !== 'undefined' && App.I18N['U311'] ? (App.I18N['U311'][App.currentLang] || '操作を選択 (delete / duplicate / rename)') : '操作を選択 (delete / duplicate / rename)'), 'duplicate');
+        const action = prompt('操作を選択 (delete / duplicate / rename)', 'duplicate');
         if (!action) return;
 
         if (action.toLowerCase() === 'delete') {
@@ -976,7 +976,7 @@ const SoundEditor = {
             this.renderJukeboxList();
         } else if (action.toLowerCase() === 'rename') {
             const song = this.songs[idx];
-            const newName = prompt((typeof App !== 'undefined' && App.I18N['U312'] ? (App.I18N['U312'][App.currentLang] || '新しい名前') : '新しい名前'), song.name);
+            const newName = prompt('新しい名前', song.name);
             if (newName) {
                 song.name = newName;
                 this.renderJukeboxList();
@@ -990,7 +990,7 @@ const SoundEditor = {
         if (!currentSong) return;
         const duplicatedSong = JSON.parse(JSON.stringify(currentSong));
 
-        duplicatedSong.name = currentSong.name + (typeof App !== 'undefined' && App.I18N['U409'] ? (App.I18N['U409'][App.currentLang] || App.t('U372')) : App.t('U372'));
+        duplicatedSong.name = currentSong.name + "のコピー";
         this.songs.push(duplicatedSong);
 
         // 追加したソングへ移動
@@ -1018,11 +1018,11 @@ const SoundEditor = {
 
     deleteSong() {
         if (this.songs.length <= 1) {
-            alert((typeof App !== 'undefined' && App.I18N['U307'] ? (App.I18N['U307'][App.currentLang] || '最後のBGMは削除できません') : '最後のBGMは削除できません'));
+            alert('最後のBGMは削除できません');
             return;
         }
 
-        if (!confirm((typeof App !== 'undefined' && App.I18N['U313'] ? (App.I18N['U313'][App.currentLang] || '「${this.getCurrentSong().name}」を削除しますか？') : '「${this.getCurrentSong().name}」を削除しますか？'))) {
+        if (!confirm(`「${this.getCurrentSong().name}」を削除しますか？`)) {
             return;
         }
 
@@ -2417,7 +2417,7 @@ const SoundEditor = {
             this.stop();
         }
 
-        if (!confirm((typeof App !== 'undefined' && App.I18N['U314'] ? (App.I18N['U314'][App.currentLang] || 'Tr${this.currentTrack + 1}の全ノートを削除しますか？') : 'Tr${this.currentTrack + 1}の全ノートを削除しますか？'))) {
+        if (!confirm(`Tr${this.currentTrack + 1}の全ノートを削除しますか？`)) {
             // iOSでconfirmダイアログ後にAudioContextが壊れる対策：再作成
             this.resetAudioContext();
             return;
@@ -3290,7 +3290,7 @@ const SoundEditor = {
     // 範囲コピー
     copySelection() {
         if (!this.selectionStart || !this.selectionEnd) {
-            // alert((typeof App !== 'undefined' && App.I18N['U315'] ? (App.I18N['U315'][App.currentLang] || 'コピーする範囲を選択してください') : 'コピーする範囲を選択してください'));
+            // alert('コピーする範囲を選択してください');
             return;
         }
 
@@ -3321,13 +3321,13 @@ const SoundEditor = {
         this.selectionStart = null;
         this.selectionEnd = null;
 
-        // alert((typeof App !== 'undefined' && App.I18N['U316'] ? (App.I18N['U316'][App.currentLang] || '${notes.length} 個のノートをコピーしました') : '${notes.length} 個のノートをコピーしました'));
+        // alert(`${notes.length} 個のノートをコピーしました`);
         this.render();
     },
 
     startPasteMode() {
         if (!this.rangeClipboard) {
-            alert((typeof App !== 'undefined' && App.I18N['U317'] ? (App.I18N['U317'][App.currentLang] || 'クリップボードが空です') : 'クリップボードが空です'));
+            alert('クリップボードが空です');
             return;
         }
 
@@ -3734,7 +3734,7 @@ const SoundEditor = {
 
         // デフォルト値設定
         this._numcopyTracks = [this.currentTrack];
-        document.getElementById('numcopy-from').textContent = (typeof App !== 'undefined' && App.I18N['U320'] ? (App.I18N['U320'][App.currentLang] || '0') : '0');
+        document.getElementById('numcopy-from').textContent = '0';
         document.getElementById('numcopy-to').textContent = String(song.bars - 1);
         document.getElementById('numcopy-paste-at').textContent = String(song.bars);
 
@@ -3856,7 +3856,7 @@ const SoundEditor = {
             if (!hasDragged) {
                 // タップ → 直接入力
                 const current = parseInt(el.textContent) || 0;
-                const input = prompt((typeof App !== 'undefined' && App.I18N['U321'] ? (App.I18N['U321'][App.currentLang] || '値を入力') : '値を入力'), current);
+                const input = prompt('値を入力', current);
                 if (input !== null) {
                     const val = parseInt(input);
                     if (!isNaN(val)) {
@@ -3888,7 +3888,7 @@ const SoundEditor = {
         const tracks = this._numcopyTracks;
 
         if (tracks.length === 0) {
-            alert((typeof App !== 'undefined' && App.I18N['U322'] ? (App.I18N['U322'][App.currentLang] || 'トラックを選択してください') : 'トラックを選択してください'));
+            alert('トラックを選択してください');
             return;
         }
 
@@ -3897,7 +3897,7 @@ const SoundEditor = {
         const pasteAt = parseInt(document.getElementById('numcopy-paste-at').textContent) || 0;
 
         if (fromStep > toStep) {
-            alert((typeof App !== 'undefined' && App.I18N['U323'] ? (App.I18N['U323'][App.currentLang] || 'コピー範囲が不正です') : 'コピー範囲が不正です'));
+            alert('コピー範囲が不正です');
             return;
         }
 

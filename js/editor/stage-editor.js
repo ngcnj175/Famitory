@@ -1095,7 +1095,7 @@ const StageEditor = {
             html += `
                 <div class="se-select-item ${this.selectedSeIndex === idx ? 'current' : ''}" data-se-index="${idx}">
                     <span class="se-name">${this.getSeName(se)}</span>
-                    <button class="se-preview-btn" data-se-index="${idx}" data-i18n="U284">▶</button>
+                    <button class="se-preview-btn" data-se-index="${idx}">▶</button>
                 </div>
             `;
         });
@@ -1168,7 +1168,7 @@ const StageEditor = {
 
         let html = `
             <div class="se-select-item ${currentValue === '' ? 'current' : ''}" data-bgm-index="">
-                <span class="se-name" data-i18n="U220">なし</span>
+                <span class="se-name">なし</span>
             </div>
         `;
         songs.forEach((song, idx) => {
@@ -1176,7 +1176,7 @@ const StageEditor = {
             html += `
                 <div class="se-select-item ${isCurrent}" data-bgm-index="${idx}">
                     <span class="se-name">${song.name || `BGM ${idx + 1}`}</span>
-                    <button class="se-preview-btn" data-bgm-index="${idx}" data-i18n="U284">▶</button>
+                    <button class="se-preview-btn" data-bgm-index="${idx}">▶</button>
                 </div>
             `;
         });
@@ -1217,7 +1217,7 @@ const StageEditor = {
         const btn = document.getElementById(`bgm-${this.selectedBgmType}-btn`);
         if (btn) {
             if (idx === '') {
-                btn.textContent = (typeof App !== 'undefined' && App.I18N['U220'] ? (App.I18N['U220'][App.currentLang] || (typeof App !== 'undefined' && App.I18N['U418'] ? (App.I18N['U418'][App.currentLang] || 'なし') : 'なし')) : (typeof App !== 'undefined' && App.I18N['U418'] ? (App.I18N['U418'][App.currentLang] || 'なし') : 'なし'));
+                btn.textContent = 'なし';
             } else {
                 const song = App.projectData.songs?.[parseInt(idx)];
                 btn.textContent = song?.name || `BGM ${parseInt(idx) + 1}`;
@@ -1245,7 +1245,7 @@ const StageEditor = {
             // UI更新
             const btn = document.querySelector(`#bgm-select-popup .se-preview-btn[data-bgm-index="${idx}"]`);
             if (btn) {
-                btn.textContent = (typeof App !== 'undefined' && App.I18N['U283'] ? (App.I18N['U283'][App.currentLang] || App.t('U310')) : App.t('U310'));
+                btn.textContent = '■';
                 btn.classList.add('playing');
             }
         }
@@ -1260,7 +1260,7 @@ const StageEditor = {
         const popup = document.getElementById('bgm-select-popup');
         if (popup) {
             popup.querySelectorAll('.se-preview-btn').forEach(btn => {
-                btn.textContent = (typeof App !== 'undefined' && App.I18N['U284'] ? (App.I18N['U284'][App.currentLang] || App.t('U182')) : App.t('U182'));
+                btn.textContent = '▶';
                 btn.classList.remove('playing');
             });
         }
@@ -1587,7 +1587,7 @@ const StageEditor = {
 
     // 繧ｿ繧､繝ｫ繝・Φ繝励Ξ繝ｼ繝医ｒ蜑企勁
     deleteTemplate(index, needConfirm = true) {
-        if (needConfirm && !confirm((typeof App !== 'undefined' && App.I18N['U289'] ? (App.I18N['U289'][App.currentLang] || 'このタイルを削除しますか？') : 'このタイルを削除しますか？'))) {
+        if (needConfirm && !confirm('このタイルを削除しますか？')) {
             return;
         }
 
@@ -2939,7 +2939,7 @@ const StageEditor = {
     },
 
     clearAllTiles() {
-        if (!confirm((typeof App !== 'undefined' && App.I18N['U292'] ? (App.I18N['U292'][App.currentLang] || 'すべてのタイルを削除しますか？') : 'すべてのタイルを削除しますか？'))) {
+        if (!confirm('すべてのタイルを削除しますか？')) {
             return;
         }
 
@@ -3102,10 +3102,10 @@ const StageEditor = {
         const updateTimeLimitLabel = () => {
             const condition = clearCondition?.value || 'none';
             if (condition === 'survival') {
-                if (timeLimitLabel) timeLimitLabel.textContent = (typeof App !== 'undefined' && App.I18N['U293'] ? (App.I18N['U293'][App.currentLang] || 'サバイバル時間') : 'サバイバル時間');
+                if (timeLimitLabel) timeLimitLabel.textContent = 'サバイバル時間';
                 if (timeLimitRow) timeLimitRow.style.display = '';
             } else {
-                if (timeLimitLabel) timeLimitLabel.textContent = (typeof App !== 'undefined' && App.I18N['U294'] ? (App.I18N['U294'][App.currentLang] || '制限時間') : '制限時間');
+                if (timeLimitLabel) timeLimitLabel.textContent = '制限時間';
                 // 他の条件でも制限時間を表示する（なしなら無制限）
                 if (timeLimitRow) timeLimitRow.style.display = '';
             }
@@ -3239,9 +3239,9 @@ const StageEditor = {
             clearConditionEl.value = stage.clearCondition || 'none';
             // 繝ｩ繝吶Ν譖ｴ譁ｰ
             if (stage.clearCondition === 'survival') {
-                if (timeLimitLabel) timeLimitLabel.textContent = (typeof App !== 'undefined' && App.I18N['U293'] ? (App.I18N['U293'][App.currentLang] || 'サバイバル時間') : 'サバイバル時間');
+                if (timeLimitLabel) timeLimitLabel.textContent = 'サバイバル時間';
             } else {
-                if (timeLimitLabel) timeLimitLabel.textContent = (typeof App !== 'undefined' && App.I18N['U294'] ? (App.I18N['U294'][App.currentLang] || '制限時間') : '制限時間');
+                if (timeLimitLabel) timeLimitLabel.textContent = '制限時間';
             }
         }
 
@@ -3270,7 +3270,7 @@ const StageEditor = {
 
             const value = bgm[type];
             if (value === '' || value === undefined || value === null) {
-                btn.textContent = (App.currentLang === 'ENG') ? 'None' : (typeof App !== 'undefined' && App.I18N['U220'] ? (App.I18N['U220'][App.currentLang] || (typeof App !== 'undefined' && App.I18N['U418'] ? (App.I18N['U418'][App.currentLang] || 'なし') : 'なし')) : (typeof App !== 'undefined' && App.I18N['U418'] ? (App.I18N['U418'][App.currentLang] || 'なし') : 'なし'));
+                btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
             } else {
                 const idx = parseInt(value);
                 const song = songs[idx];
@@ -3384,7 +3384,7 @@ const StageEditor = {
             return { h, s: max === 0 ? 0 : (d / max) * 100, v: max * 100 };
         };
 
-        const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, App.t('U320'))}${g.toString(16).padStart(2, App.t('U320'))}${b.toString(16).padStart(2, App.t('U320'))}`.toUpperCase();
+        const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase();
 
         const hexToRgb = (hex) => {
             hex = hex.replace('#', '');
