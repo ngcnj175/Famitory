@@ -4,31 +4,31 @@
 
 // デフォルトSEリスト（createDefaultProject と migrateProjectData で共用）
 const DEFAULT_SOUNDS = [
-    { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-    { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-    { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-    { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-    { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-    { id: 5, name: '攻撃_01', type: 'attack_01' },
-    { id: 6, name: '攻撃_02', type: 'attack_02' },
-    { id: 7, name: '攻撃_03', type: 'attack_03' },
-    { id: 8, name: '攻撃_04', type: 'attack_04' },
-    { id: 9, name: '攻撃_05', type: 'attack_05' },
-    { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-    { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-    { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-    { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-    { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-    { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-    { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-    { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-    { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-    { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-    { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-    { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-    { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-    { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-    { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
+    { id: 0, name: App.t('U324'), type: 'jump_01' },
+    { id: 1, name: App.t('U325'), type: 'jump_02' },
+    { id: 2, name: App.t('U326'), type: 'jump_03' },
+    { id: 3, name: App.t('U327'), type: 'jump_04' },
+    { id: 4, name: App.t('U328'), type: 'jump_05' },
+    { id: 5, name: App.t('U329'), type: 'attack_01' },
+    { id: 6, name: App.t('U330'), type: 'attack_02' },
+    { id: 7, name: App.t('U331'), type: 'attack_03' },
+    { id: 8, name: App.t('U332'), type: 'attack_04' },
+    { id: 9, name: App.t('U333'), type: 'attack_05' },
+    { id: 10, name: App.t('U266'), type: 'damage_01' },
+    { id: 11, name: App.t('U267'), type: 'damage_02' },
+    { id: 12, name: App.t('U268'), type: 'damage_03' },
+    { id: 13, name: App.t('U269'), type: 'damage_04' },
+    { id: 14, name: App.t('U270'), type: 'damage_05' },
+    { id: 15, name: App.t('U271'), type: 'itemGet_01' },
+    { id: 16, name: App.t('U272'), type: 'itemGet_02' },
+    { id: 17, name: App.t('U273'), type: 'itemGet_03' },
+    { id: 18, name: App.t('U274'), type: 'itemGet_04' },
+    { id: 19, name: App.t('U275'), type: 'itemGet_05' },
+    { id: 20, name: App.t('U344'), type: 'other_01' },
+    { id: 21, name: App.t('U345'), type: 'other_02' },
+    { id: 22, name: App.t('U346'), type: 'other_03' },
+    { id: 23, name: App.t('U347'), type: 'other_04' },
+    { id: 24, name: App.t('U348'), type: 'other_05' }
 ];
 
 // グローバル状態
@@ -40,7 +40,7 @@ const App = {
     // パレットプリセット
     PALETTE_PRESETS: {
         famitory: {
-            name: 'ファミトリー',
+            name: App.t('U153'),
             colors: [
                 '#ffffff', '#bcbcbc', '#757575', '#000000',
                 '#abe7ff', '#3CBCFC', '#0073ef', '#271b8f',
@@ -52,14 +52,14 @@ const App = {
             ]
         },
         pastel: {
-            name: 'パステル',
+            name: App.t('U155'),
             colors: [
                 '#FFB6C1', '#FFC0CB', '#FFD1DC', '#FFDAB9', '#FFE4B5', '#FFFACD', '#E0FFE0', '#98FB98',
                 '#AFEEEE', '#B0E0E6', '#ADD8E6', '#E6E6FA', '#DDA0DD', '#D8BFD8', '#FFFFFF', '#000000'
             ]
         },
         famicom: {
-            name: 'ファミコン',
+            name: App.t('U157'),
             colors: [
                 '#7C7C7C', '#0000FC', '#0000BC', '#4428BC', '#940084', '#A80020', '#A81000', '#881400',
                 '#503000', '#007800', '#006800', '#005800', '#004058', '#000000', '#000000', '#000000',
@@ -72,11 +72,11 @@ const App = {
             ]
         },
         gameboy: {
-            name: 'ゲームボーイ',
+            name: App.t('U159'),
             colors: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f']
         },
         mono: {
-            name: 'モノクロ',
+            name: App.t('U161'),
             colors: ['#000000', '#333333', '#555555', '#777777', '#999999', '#BBBBBB', '#DDDDDD', '#FFFFFF']
         }
     },
@@ -99,7 +99,7 @@ const App = {
         return {
             version: 1,
             meta: {
-                name: 'NEW GAME',
+                name: App.t('U042'),
                 author: '',
                 locked: false,
                 createdAt: Date.now(),
@@ -574,7 +574,7 @@ const App = {
         document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
             btn.classList.remove('locked');
         });
-        this.showToast('編集モードに切り替わりました');
+        this.showToast(App.t('U354'));
         // 現在の画面をリフレッシュ
         this.refreshCurrentScreen();
     },
@@ -780,7 +780,7 @@ const App = {
         const authorInput = document.getElementById('game-author');
 
         if (titleInput && this.projectData) {
-            titleInput.value = this.projectData.meta.name || 'My Game';
+            titleInput.value = this.projectData.meta.name || App.t('U017');
             titleInput.readOnly = true;
             titleInput.style.cursor = 'default';
             titleInput.onclick = null;
@@ -838,13 +838,13 @@ const App = {
         this._textEditField = field;
 
         if (field === 'title') {
-            title.textContent = 'タイトル変更';
+            title.textContent = App.t('U355');
             input.value = this.projectData.meta.name || '';
-            input.placeholder = 'ゲームタイトルを入力';
+            input.placeholder = App.t('U356');
         } else {
-            title.textContent = 'なまえ変更';
+            title.textContent = App.t('U357');
             input.value = this.projectData.meta.author || '';
-            input.placeholder = 'なまえを入力';
+            input.placeholder = App.t('U358');
         }
 
         popup.classList.remove('hidden');
@@ -989,12 +989,12 @@ const App = {
         Storage.save('currentProject', this.projectData);
 
         // 静かに通知
-        this.showToast('セーブしました');
+        this.showToast(App.t('U167'));
     },
 
     showToast(message) {
         // 特別なセーブトースト
-        if (message === 'セーブしました') {
+        if (message === App.t('U167')) {
             const saveToast = document.getElementById('save-toast');
             if (saveToast) {
                 saveToast.classList.add('visible');
@@ -1034,15 +1034,15 @@ const App = {
         btnContainer.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
 
         const saveBtn = document.createElement('button');
-        saveBtn.textContent = '保存する';
+        saveBtn.textContent = App.t('U360');
         saveBtn.style.cssText = 'padding:12px;border:none;background:#4a4a4a;color:white;border-radius:4px;cursor:pointer;font-size:14px;';
 
         const noSaveBtn = document.createElement('button');
-        noSaveBtn.textContent = '保存しない';
+        noSaveBtn.textContent = App.t('U361');
         noSaveBtn.style.cssText = 'padding:12px;border:1px solid #4a4a4a;background:white;border-radius:4px;cursor:pointer;font-size:14px;';
 
         const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'キャンセル';
+        cancelBtn.textContent = App.t('U105');
         cancelBtn.style.cssText = 'padding:12px;border:1px solid #ccc;background:#f5f5f5;border-radius:4px;cursor:pointer;font-size:14px;';
 
         btnContainer.appendChild(saveBtn);
@@ -1112,7 +1112,7 @@ const App = {
         // キャンセルボタン
         const cancelAction = actions.find(a => a.style === 'cancel');
         const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = cancelAction ? cancelAction.text : 'キャンセル';
+        cancelBtn.textContent = cancelAction ? cancelAction.text : App.t('U105');
         cancelBtn.style.cssText = 'width:100%;padding:16px;border:none;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);border-radius:14px;font-size:16px;font-weight:600;color:#007aff;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.1);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
 
         cancelBtn.addEventListener('click', () => {
@@ -1170,9 +1170,9 @@ const App = {
             this.updateGameInfo();
             this.refreshCurrentScreen();
             Storage.save('currentProject', this.projectData);
-            alert(`「${name}」を開きました`);
+            alert(App.t('U363', { name: name }));
         } else {
-            alert('プロジェクトの読み込みに失敗しました');
+            alert(App.t('U364'));
         }
     },
 
@@ -1221,17 +1221,17 @@ const App = {
                 data.meta.createdAt = Date.now();
                 Storage.saveProject(importName, data);
 
-                if (confirm(`「${importName}」としてインポートしました。\n今すぐ開きますか？`)) {
+                if (confirm(App.t('U365'))) {
                     this.loadProject(importName);
                     // モーダル閉じる
                     document.getElementById('share-dialog').classList.add('hidden');
                 } else {
-                    alert('インポートしました。「開く」メニューから選択できます。');
+                    alert(App.t('U366'));
                 }
 
             } catch (err) {
                 console.error(err);
-                alert('ファイルの読み込みに失敗しました');
+                alert(App.t('U367'));
             }
         };
         reader.readAsText(file);
@@ -1247,7 +1247,7 @@ const App = {
         if (!modal) return;
 
         // 初期化
-        input.value = "NEW GAME";
+        input.value = App.t('U042');
 
         modal.classList.remove('hidden');
         input.focus();
@@ -1265,7 +1265,7 @@ const App = {
             if (!name) return;
 
             if (Storage.projectExists(name)) {
-                alert('そのなまえは すでに つかわれています');
+                alert(App.t('U368'));
                 return;
             }
 
@@ -1299,7 +1299,7 @@ const App = {
             this.updateGameInfo();
             this.refreshCurrentScreen();
 
-            this.showToast('あたらしいゲームを つくりました');
+            this.showToast(App.t('U369'));
             close();
         };
 
@@ -1487,11 +1487,11 @@ const App = {
         if (!modal || !okBtn || !cancelBtn) return;
 
         msgEl.textContent = isFirstTime
-            ? 'この作品を公開しますか？'
-            : '公開中の作品を更新しますか？';
+            ? App.t('U168')
+            : App.t('U374');
         subEl.textContent = isFirstTime
-            ? 'URLが発行され、だれでもプレイできるようになります'
-            : '現在の内容で上書き保存されます';
+            ? App.t('U375')
+            : App.t('U376');
 
         modal.classList.remove('hidden');
 
@@ -1512,7 +1512,7 @@ const App = {
     // Firebase保存（ネットワーク通信）より先に actionFn を実行する
     async _publishAndShare(actionFn) {
         if (this._shareLoading) {
-            this.showToast('処理中です…少しお待ちください');
+            this.showToast(App.t('U377'));
             return;
         }
 
@@ -1529,7 +1529,7 @@ const App = {
 
             // --- 以降はバックグラウンドでFirebase保存 ---
             if (!window.firebaseDB || typeof Share === 'undefined') {
-                this.showToast('クラウド接続がありません');
+                this.showToast(App.t('U378'));
                 return;
             }
 
@@ -1545,7 +1545,7 @@ const App = {
                 const id = await Share.saveOrUpdateGame(shareId, this.projectData, !isFirstTime);
 
                 if (!id) {
-                    this.showToast('保存に失敗しました');
+                    this.showToast(App.t('U379'));
                     this._shareLoading = false;
                     return;
                 }
@@ -1557,10 +1557,10 @@ const App = {
 
                 this._shareUrl = url;
                 this._updateShareStatus();
-                this.showToast(isFirstTime ? '公開しました' : '更新しました');
+                this.showToast(isFirstTime ? App.t('U380') : App.t('U381'));
             } catch (e) {
                 console.error('[Share] _publishAndShare error:', e);
-                this.showToast('保存でエラーが発生しました');
+                this.showToast(App.t('U382'));
             } finally {
                 this._shareLoading = false;
             }
@@ -1632,9 +1632,9 @@ const App = {
             this._publishAndShare(async (url) => {
                 const success = await copyToClipboard(url);
                 if (success) {
-                    this.showToast('URLを コピーしました');
+                    this.showToast(App.t('U383'));
                 } else {
-                    this.showToast('コピーに失敗しました');
+                    this.showToast(App.t('U384'));
                 }
             });
         };
@@ -1651,9 +1651,9 @@ const App = {
                         successMsg.classList.remove('hidden');
                         setTimeout(() => successMsg.classList.add('hidden'), 2000);
                     }
-                    this.showToast('URLを コピーしました');
+                    this.showToast(App.t('U383'));
                 } else {
-                    this.showToast('コピーに失敗しました');
+                    this.showToast(App.t('U384'));
                 }
             };
         }
@@ -1665,13 +1665,13 @@ const App = {
                 let text;
                 if (this.isPlayOnlyMode) {
                     // プレイヤーモード（従来）: テキストとURLを別パラメータで渡す
-                    text = `「${gameName}」であそぼう！ #FAMITORY`;
+                    text = App.t('U385', { gameName: typeof gameName !== 'undefined' ? gameName : undefined });
                     const twitterUrl = Share.createTwitterUrl(url, text);
                     window.open(twitterUrl, '_blank');
                 } else {
                     // クリエイターモード: テキスト内にURLを含むためtextのみで投稿
                     const hashTag = gameName.replace(/\s/g, '');
-                    text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                    text = App.t('U386');
                     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                     window.open(twitterUrl, '_blank');
                 }
@@ -1685,17 +1685,17 @@ const App = {
                 let text;
                 if (this.isPlayOnlyMode) {
                     // プレイヤーモード（従来）
-                    text = `FAMITORYでゲームを作ったよ!\n${url}`;
+                    text = App.t('U387');
                 } else {
                     // クリエイターモード
                     const hashTag = gameName.replace(/\s/g, '');
-                    text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                    text = App.t('U386');
                 }
                 const success = await copyToClipboard(text);
                 if (success) {
-                    this.showToast('Discord用に コピーしました');
+                    this.showToast(App.t('U388'));
                 } else {
-                    this.showToast('コピーに失敗しました');
+                    this.showToast(App.t('U384'));
                 }
             });
         };
@@ -1737,9 +1737,9 @@ const App = {
                 
                 const success = await copyToClipboard(header);
                 if (success) {
-                    this.showToast('Discord用に コピーしました');
+                    this.showToast(App.t('U388'));
                 } else {
-                    this.showToast('コピーに失敗しました');
+                    this.showToast(App.t('U384'));
                 }
             };
         }
@@ -1804,7 +1804,7 @@ const App = {
                 this.saveProjectAs(newName);
                 close();
             } else {
-                alert('プロジェクト名を入力してください');
+                alert(App.t('U389'));
             }
         });
 
@@ -1853,7 +1853,7 @@ const App = {
         Storage.saveProject(newName, newData);
         Storage.save('currentProject', newData);
 
-        this.showToast(`「${newName}」として保存しました`);
+        this.showToast(App.t('U390', { newName: typeof newName !== 'undefined' ? newName : undefined }));
         console.log(`Project saved as: ${newName}`);
     },
 
@@ -1861,220 +1861,1102 @@ const App = {
     // ローカライズ (i18n) システム
     // ========================================
 
-    // 現在の言語（'JPN' または 'ENG'）
-    currentLang: 'JPN',
+    // 現在の言語（App.t('U411') または App.t('U412')）
+    currentLang: App.t('U411'),
 
     // UIテキスト翻訳テーブル（IDキー→{JPN, ENG}）
     I18N: {
-        // ---- ヘッダーツールバー ----
-        'U001': { JPN: '新規',      ENG: 'New' },
-        'U002': { JPN: 'NEW',       ENG: 'NEW' },
-        'U003': { JPN: '読み込み',  ENG: 'Open' },
-        'U004': { JPN: 'OPEN',      ENG: 'OPEN' },
-        'U005': { JPN: '保存',      ENG: 'Save' },
-        'U006': { JPN: 'SAVE',      ENG: 'SAVE' },
-        'U007': { JPN: '共有',      ENG: 'Share' },
-        'U008': { JPN: 'SHARE',     ENG: 'SHARE' },
-        'U009': { JPN: 'プレイ',    ENG: 'Play' },
-        'U010': { JPN: 'PLAY',      ENG: 'PLAY' },
-        'U011': { JPN: 'ピクセル',  ENG: 'Pixel' },
-        'U012': { JPN: 'PIXEL',     ENG: 'PIXEL' },
-        'U013': { JPN: 'ステージ',  ENG: 'Stage' },
-        'U014': { JPN: 'STAGE',     ENG: 'STAGE' },
-        'U015': { JPN: 'サウンド',  ENG: 'Sound' },
-        'U016': { JPN: 'BGM',       ENG: 'BGM' },
-        // ---- ステージ設定パネル ----
-        'U040': { JPN: 'ステージ設定',    ENG: 'Stage Settings' },
-        'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
-        'U043': { JPN: 'クリエイター',    ENG: 'Creator' },
-        'U044': { JPN: 'エディットキー',  ENG: 'Edit Key' },
-        'U045': { JPN: 'ステージサイズ',  ENG: 'Stage Size' },
-        'U046': { JPN: '縦',              ENG: 'H' },
-        'U049': { JPN: '横',              ENG: 'W' },
-        'U050': { JPN: '背景色',          ENG: 'BG Color' },
-        'U051': { JPN: 'なし',           ENG: 'None' },
-        'U056': { JPN: 'クリア条件',      ENG: 'Clear Cond.' },
-        'U057': { JPN: 'アイテム取得',    ENG: 'Collect Items' },
-        'U058': { JPN: '敵ぜんめつ',      ENG: 'Defeat Enemies' },
-        'U059': { JPN: 'ボス撃破',        ENG: 'Defeat Boss' },
-        'U060': { JPN: 'サバイバル',      ENG: 'Survival' },
-        'U061': { JPN: '制限時間',        ENG: 'Time Limit' },
-        'U062': { JPN: '分',              ENG: 'min' },
-        'U063': { JPN: '秒',              ENG: 'sec' },
-        'U064': { JPN: 'スコア表示',      ENG: 'Show Score' },
-        'U065': { JPN: '設定を保存',      ENG: 'Save Settings' },
-        // ---- リザルト画面 ----
-        'U020': { JPN: 'いいね！',             ENG: 'Like!' },
-        'U397': { JPN: 'STAGE CLEAR!',        ENG: 'STAGE CLEAR!' },
-        'U398': { JPN: 'GAME OVER',           ENG: 'GAME OVER' },
-        // ---- 共有ダイアログ ----
-        'U140': { JPN: 'ゲームを共有',         ENG: 'Share Game' },
-        'U141': { JPN: 'リミックスOK',         ENG: 'Allow Remix' },
-        'U142': { JPN: '公開中',              ENG: 'Published' },
-        'U143': { JPN: '✓ コピーしました',     ENG: '✓ Copied' },
-        'U144': { JPN: 'データを移動',         ENG: 'Transfer Data' },
-        'U401': { JPN: 'エクスポート',         ENG: 'Export' },
-        'U402': { JPN: 'インポート',           ENG: 'Import' },
-        // ---- プロジェクトリストモーダル ----
-        'U145': { JPN: 'もどる',              ENG: 'Back' },
-        'U146': { JPN: 'データをえらぶ',       ENG: 'Select Data' },
-        'U147': { JPN: 'ひらく',              ENG: 'Open' },
-        'U148': { JPN: 'けす',               ENG: 'Delete' },
-        'U149': { JPN: 'やめる',              ENG: 'Cancel' },
-        'U370': { JPN: 'セーブデータなし',     ENG: 'No save data' },
-        // ---- 新規作成モーダル ----
-        'U150': { JPN: 'あたらしいゲームをつくる', ENG: 'Create New Game' },
-        'U403': { JPN: 'ゲームタイトル',       ENG: 'Game Title' },
-        'U151': { JPN: 'つくる',              ENG: 'Create' },
-        // ---- セーブ/トースト ----
-        'U167': { JPN: 'セーブしました',       ENG: 'Saved!' },
-        'U172': { JPN: 'セーブ',              ENG: 'Save' },
-        'U170': { JPN: 'なまえをつけてセーブ', ENG: 'Save As' },
-        // ---- カラープリセット ----
-        'U152': { JPN: 'カラープリセット',     ENG: 'Color Preset' },
-        'U153': { JPN: 'ファミトリー',         ENG: 'Famitory' },
-        'U155': { JPN: 'パステル',            ENG: 'Pastel' },
-        'U157': { JPN: 'ファミコン',           ENG: 'Famicom' },
-        'U159': { JPN: 'ゲームボーイ',         ENG: 'Game Boy' },
-        'U161': { JPN: 'モノクロ',            ENG: 'Mono' },
-        'U163': { JPN: 'ついか',              ENG: 'Add' },
-        'U164': { JPN: 'おきかえ',            ENG: 'Replace' },
-        'U165': { JPN: 'とじる',              ENG: 'Close' },
-        // ---- 数値入力モーダル ----
-        'U166': { JPN: '値を入力を',          ENG: 'Enter Value' },
-        // ---- エディットキーモーダル ----
-        'U174': { JPN: 'このゲームを編集するには<br>エディットキーが必要です', ENG: 'An edit key is required<br>to edit this game.' },
-        'U176': { JPN: '認証',               ENG: 'Verify' },
-        // ---- BGMエディタ（ソング制御） ----
-        'U078': { JPN: 'BGM名変更',         ENG: 'Rename BGM' },
-        'U080': { JPN: 'コピー＆ペースト',     ENG: 'Copy & Paste' },
-        'U081': { JPN: 'トラック',            ENG: 'Track' },
-        'U082': { JPN: 'コピー範囲',          ENG: 'Copy Range' },
-        'U084': { JPN: 'ペースト先',          ENG: 'Paste At' },
-        'U085': { JPN: '実行',               ENG: 'Execute' },
-        // ---- スプライト選択ポップアップ ----
-        'U069': { JPN: 'スプライトを選択',     ENG: 'Select Sprite' },
-        'U071': { JPN: '完了',               ENG: 'Done' },
-        // ---- 属性選択ポップアップ ----
-        'U072': { JPN: 'タイプを選択',         ENG: 'Select Type' },
-        'U073': { JPN: 'プレイヤー',          ENG: 'Player' },
-        'U074': { JPN: 'てき',               ENG: 'Enemy' },
-        'U075': { JPN: 'ブロック・背景',       ENG: 'Block/BG' },
-        'U076': { JPN: 'アイテム',            ENG: 'Item' },
-        // ---- 公開確認ダイアログ ----
-        'U168': { JPN: 'この作品を公開しますか？',    ENG: 'Publish this game?' },
-        'U169': { JPN: 'はい',               ENG: 'Yes' },
-        // ---- BGM設定 ----
-        'U413': { JPN: 'ステージ',            ENG: 'Stage' },
-        'U414': { JPN: '無敵',               ENG: 'Invincible' },
-        'U415': { JPN: 'クリア',              ENG: 'Win' },
-        'U416': { JPN: 'ゲームオーバー',       ENG: 'Game Over' },
-        'U417': { JPN: 'ボス',               ENG: 'Boss' },
-        'U418': { JPN: 'なし',               ENG: 'None' },
-        'U419': { JPN: 'コピー',              ENG: 'Copy' },
-        'U420': { JPN: 'URLをコピー',         ENG: 'Copy URL' },
-        'U421': { JPN: 'Xにとうこう',         ENG: 'Post on X' },
-        'U422': { JPN: 'Discordにとうこう',   ENG: 'Post on Discord' },
-        'U423': { JPN: 'はじめから使える',    ENG: 'Available from start' },
-        'U424': { JPN: 'てきの動き',          ENG: 'Move Type' },
-        'U425': { JPN: 'ドロップ',            ENG: 'Drop Item' },
-        'U426': { JPN: 'ギミック',            ENG: 'Gimmick' },
-        'U427': { JPN: '種類',               ENG: 'Type' },
-
-        // ---- タイル設定パネル (Stage Editor) ----
-        'U193': { JPN: 'プレイヤー',          ENG: 'Player' },
-        'U194': { JPN: 'てき',               ENG: 'Enemy' },
-        'U195': { JPN: 'ブロック・背景',       ENG: 'Block/BG' },
-        'U196': { JPN: 'アイテム',            ENG: 'Item' },
-        'U197': { JPN: 'ゴール',              ENG: 'Goal' },
-        'U198': { JPN: '立ち',               ENG: 'Stand' },
-        'U199': { JPN: '歩き',               ENG: 'Walk' },
-        'U200': { JPN: 'のぼる',             ENG: 'Climb' },
-        'U201': { JPN: 'ジャンプ',            ENG: 'Jump' },
-        'U202': { JPN: '攻撃',               ENG: 'Attack' },
-        'U203': { JPN: '見た目',             ENG: 'Appearance' },
-        'U204': { JPN: 'ライフ',             ENG: 'Life' },
-        'U205': { JPN: '変身アイテム',        ENG: 'Transform Item' },
-        'U206': { JPN: '能力',               ENG: 'Abilities' },
-        'U207': { JPN: '足の速さ',            ENG: 'Move Speed' },
-        'U208': { JPN: 'ジャンプ力',          ENG: 'Jump Power' },
-        'U209': { JPN: '2段ジャンプ',         ENG: 'Double Jump' },
-        'U210': { JPN: 'ライフ数',            ENG: 'Life Count' },
-        'U211': { JPN: '特性',               ENG: 'Traits' },
-        'U212': { JPN: 'うろうろ',            ENG: 'Wander' },
-        'U213': { JPN: '動かない',            ENG: 'Static' },
-        'U214': { JPN: 'ぴょんぴょん',        ENG: 'Hop' },
-        'U215': { JPN: 'うろぴょん',          ENG: 'Wander+Hop' },
-        'U216': { JPN: '追いかけてくる',      ENG: 'Chase' },
-        'U217': { JPN: 'とっしん',            ENG: 'Rush' },
-        'U218': { JPN: '空中',               ENG: 'Aerial' },
-        'U219': { JPN: 'ボスてき',            ENG: 'Boss Enemy' },
-        'U220': { JPN: 'なし',               ENG: 'None' },
-        'U221': { JPN: 'コイン',             ENG: 'Coin' },
-        'U222': { JPN: 'むてき',             ENG: 'Invincible' },
-        'U223': { JPN: 'ライフアップ',        ENG: 'Life Up' },
-        'U224': { JPN: 'クリア',             ENG: 'Clear' },
-        'U225': { JPN: '武器',               ENG: 'Weapon' },
-        'U226': { JPN: 'ボム',               ENG: 'Bomb' },
-        'U227': { JPN: 'イースターエッグ',    ENG: 'Easter Egg' },
-        'U228': { JPN: '武器',               ENG: 'Weapon' },
-        'U229': { JPN: '近接',               ENG: 'Melee' },
-        'U230': { JPN: 'ストレート',          ENG: 'Straight' },
-        'U231': { JPN: '山なり',             ENG: 'Arc' },
-        'U232': { JPN: '真下に落下',          ENG: 'Drop Down' },
-        'U233': { JPN: '拡散',               ENG: 'Spread' },
-        'U234': { JPN: 'ブーメラン',          ENG: 'Boomerang' },
-        'U235': { JPN: 'ピンボール',          ENG: 'Pinball' },
-        'U236': { JPN: '回転',               ENG: 'Rotate' },
-        'U237': { JPN: '速度',               ENG: 'Speed' },
-        'U238': { JPN: '連射',               ENG: 'Rapid Fire' },
-        'U239': { JPN: '届く距離',            ENG: 'Range' },
-        'U240': { JPN: '効果音',             ENG: 'Sound FX' },
-        'U241': { JPN: 'ジャンプ音',          ENG: 'Jump SFX' },
-        'U242': { JPN: '攻撃音',             ENG: 'Attack SFX' },
-        'U243': { JPN: 'ダメージ音',          ENG: 'Damage SFX' },
-        'U244': { JPN: 'ゲット音',            ENG: 'Get SFX' },
-        'U245': { JPN: '横移動',             ENG: 'Horizontal' },
-        'U246': { JPN: '縦移動',             ENG: 'Vertical' },
-        'U247': { JPN: '落下',               ENG: 'Fall' },
-        'U248': { JPN: 'はしご',             ENG: 'Ladder' },
-        'U249': { JPN: 'スプリング',          ENG: 'Spring' },
-        'U250': { JPN: 'とびら',             ENG: 'Door' },
-        'U251': { JPN: 'はねる力',            ENG: 'Spring Power' },
-        'U252': { JPN: '当たり判定',          ENG: 'Collision' },
-        'U253': { JPN: '耐久性',             ENG: 'Durability' },
-        'U254': { JPN: 'カギ',               ENG: 'Key' },
-        'U255': { JPN: '最大20文字',          ENG: 'Max 20 chars' },
-        'U256': { JPN: 'ジャンプ01',          ENG: 'Jump01' },
-        'U257': { JPN: 'ジャンプ02',          ENG: 'Jump02' },
-        'U258': { JPN: 'ジャンプ03',          ENG: 'Jump03' },
-        'U259': { JPN: 'ジャンプ04',          ENG: 'Jump04' },
-        'U260': { JPN: 'ジャンプ05',          ENG: 'Jump05' },
-        'U261': { JPN: '攻撃01',             ENG: 'Attack01' },
-        'U262': { JPN: '攻撃02',             ENG: 'Attack02' },
-        'U263': { JPN: '攻撃03',             ENG: 'Attack03' },
-        'U264': { JPN: '攻撃04',             ENG: 'Attack04' },
-        'U265': { JPN: '攻撃05',             ENG: 'Attack05' },
-        'U266': { JPN: 'ダメージ_01',         ENG: 'Damage_01' },
-        'U267': { JPN: 'ダメージ_02',         ENG: 'Damage_02' },
-        'U268': { JPN: 'ダメージ_03',         ENG: 'Damage_03' },
-        'U269': { JPN: 'ダメージ_04',         ENG: 'Damage_04' },
-        'U270': { JPN: 'ダメージ_05',         ENG: 'Damage_05' },
-        'U271': { JPN: 'ゲット_01',           ENG: 'Get_01' },
-        'U272': { JPN: 'ゲット_02',           ENG: 'Get_02' },
-        'U273': { JPN: 'ゲット_03',           ENG: 'Get_03' },
-        'U274': { JPN: 'ゲット_04',           ENG: 'Get_04' },
-        'U275': { JPN: 'ゲット_05',           ENG: 'Get_05' },
-        'U276': { JPN: 'その他01(決定)',      ENG: 'Other01(OK)' },
-        'U277': { JPN: 'その他02(キャンセル)', ENG: 'Other02(Cancel)' },
-        'U278': { JPN: 'その他03(カーソル)',   ENG: 'Other03(Cursor)' },
-        'U279': { JPN: 'その他04(ポーズ)',     ENG: 'Other04(Pause)' },
-        'U280': { JPN: 'その他05(爆発)',       ENG: 'Other05(Explosion)' },
-        'U281': { JPN: 'ダメージ',            ENG: 'Damage' },
-        'U282': { JPN: 'ゲット',              ENG: 'Get' },
-        'U285': { JPN: 'スプライトを登録してください', ENG: 'Please register a sprite' },
-        'U428': { JPN: '軌道',               ENG: 'Trajectory' },
+        'U001': { JPN: '新規', ENG: 'New' },
+        'U002': { JPN: App.t('U002'), ENG: App.t('U002') },
+        'U003': { JPN: App.t('U003'), ENG: 'Open' },
+        'U004': { JPN: App.t('U004'), ENG: App.t('U004') },
+        'U005': { JPN: App.t('U005'), ENG: 'Save' },
+        'U006': { JPN: App.t('U006'), ENG: App.t('U006') },
+        'U007': { JPN: App.t('U007'), ENG: 'Share' },
+        'U008': { JPN: App.t('U008'), ENG: App.t('U008') },
+        'U009': { JPN: App.t('U009'), ENG: 'Play' },
+        'U010': { JPN: App.t('U010'), ENG: App.t('U010') },
+        'U011': { JPN: App.t('U011'), ENG: 'Pixel' },
+        'U012': { JPN: App.t('U012'), ENG: App.t('U012') },
+        'U013': { JPN: App.t('U013'), ENG: 'Stage' },
+        'U014': { JPN: App.t('U014'), ENG: App.t('U014') },
+        'U015': { JPN: App.t('U015'), ENG: 'Sound' },
+        'U016': { JPN: App.t('U016'), ENG: App.t('U016') },
+        'U017': { JPN: App.t('U017'), ENG: App.t('U017') },
+        'U018': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U019': { JPN: App.t('U019'), ENG: 'Name' },
+        'U020': { JPN: App.t('U020'), ENG: 'Like!' },
+        'U021': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U022': { JPN: App.t('U022'), ENG: 'Prev Frame' },
+        'U023': { JPN: App.t('U023'), ENG: 'Play/Stop' },
+        'U024': { JPN: App.t('U024'), ENG: 'Next Frame' },
+        'U025': { JPN: App.t('U025'), ENG: 'Duplicate Frame' },
+        'U026': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U027': { JPN: '+', ENG: '+' },
+        'U028': { JPN: App.t('U028'), ENG: 'Pen' },
+        'U029': { JPN: App.t('U029'), ENG: 'Eraser' },
+        'U030': { JPN: App.t('U030'), ENG: 'Fill' },
+        'U031': { JPN: App.t('U031'), ENG: 'Eyedropper' },
+        'U032': { JPN: App.t('U032'), ENG: 'Undo' },
+        'U033': { JPN: App.t('U033'), ENG: 'Select' },
+        'U034': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U035': { JPN: App.t('U035'), ENG: 'Paste' },
+        'U036': { JPN: App.t('U036'), ENG: 'Flip V' },
+        'U037': { JPN: App.t('U037'), ENG: 'Flip H' },
+        'U038': { JPN: App.t('U038'), ENG: 'Guide' },
+        'U039': { JPN: '▼', ENG: '▼' },
+        'U040': { JPN: App.t('U040'), ENG: 'Stage Settings' },
+        'U041': { JPN: App.t('U018'), ENG: 'Title' },
+        'U042': { JPN: App.t('U042'), ENG: App.t('U042') },
+        'U043': { JPN: App.t('U043'), ENG: 'Creator' },
+        'U044': { JPN: App.t('U044'), ENG: 'Edit Key' },
+        'U045': { JPN: App.t('U045'), ENG: 'Stage Size' },
+        'U046': { JPN: '縦', ENG: 'H' },
+        'U047': { JPN: '－', ENG: '－' },
+        'U048': { JPN: '＋', ENG: '＋' },
+        'U049': { JPN: '横', ENG: 'W' },
+        'U050': { JPN: App.t('U050'), ENG: 'BG Color' },
+        'U051': { JPN: App.t('U051'), ENG: 'None' },
+        'U052': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U053': { JPN: App.t('U053'), ENG: 'Clear' },
+        'U054': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U055': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U056': { JPN: App.t('U056'), ENG: 'Clear Cond.' },
+        'U057': { JPN: App.t('U057'), ENG: 'Collect Items' },
+        'U058': { JPN: App.t('U058'), ENG: 'Defeat Enemies' },
+        'U059': { JPN: App.t('U059'), ENG: 'Defeat Boss' },
+        'U060': { JPN: App.t('U060'), ENG: 'Survival' },
+        'U061': { JPN: App.t('U061'), ENG: 'Time Limit' },
+        'U062': { JPN: '分', ENG: 'min' },
+        'U063': { JPN: '秒', ENG: 'sec' },
+        'U064': { JPN: App.t('U064'), ENG: 'Show Score' },
+        'U065': { JPN: App.t('U065'), ENG: 'Save Settings' },
+        'U066': { JPN: App.t('U066'), ENG: 'Place' },
+        'U067': { JPN: '✕', ENG: '✕' },
+        'U068': { JPN: App.t('U068'), ENG: 'Material' },
+        'U069': { JPN: App.t('U069'), ENG: 'Select Sprite' },
+        'U070': { JPN: '×', ENG: '×' },
+        'U071': { JPN: App.t('U071'), ENG: 'Done' },
+        'U072': { JPN: App.t('U072'), ENG: 'Select Type' },
+        'U073': { JPN: App.t('U073'), ENG: 'Player' },
+        'U074': { JPN: App.t('U074'), ENG: 'Enemy' },
+        'U075': { JPN: App.t('U075'), ENG: 'Block/BG' },
+        'U076': { JPN: App.t('U076'), ENG: 'Item' },
+        'U077': { JPN: App.t('U077'), ENG: 'Edit' },
+        'U078': { JPN: App.t('U078'), ENG: 'Rename BGM' },
+        'U079': { JPN: App.t('U079'), ENG: 'Enter BGM Name' },
+        'U080': { JPN: App.t('U080'), ENG: 'Copy & Paste' },
+        'U081': { JPN: App.t('U081'), ENG: 'Track' },
+        'U082': { JPN: App.t('U082'), ENG: 'Copy Range' },
+        'U083': { JPN: '～', ENG: '～' },
+        'U084': { JPN: App.t('U084'), ENG: 'Paste At' },
+        'U085': { JPN: App.t('U085'), ENG: 'Execute' },
+        'U086': { JPN: App.t('U086'), ENG: 'Delete BGM' },
+        'U087': { JPN: '〈', ENG: '〈' },
+        'U088': { JPN: App.t('U088'), ENG: 'Tap to Rename' },
+        'U089': { JPN: '〉', ENG: '〉' },
+        'U090': { JPN: App.t('U090'), ENG: 'Add BGM' },
+        'U091': { JPN: App.t('U091'), ENG: 'Drag to Change' },
+        'U092': { JPN: App.t('U092'), ENG: App.t('U092') },
+        'U093': { JPN: App.t('U093'), ENG: App.t('U093') },
+        'U094': { JPN: App.t('U094'), ENG: 'Back' },
+        'U095': { JPN: App.t('U095'), ENG: 'Pen (Input Mode)' },
+        'U096': { JPN: App.t('U096'), ENG: 'Eraser (Long: Clear)' },
+        'U097': { JPN: App.t('U097'), ENG: 'Select Tile Type' },
+        'U098': { JPN: App.t('U098'), ENG: App.t('U098') },
+        'U099': { JPN: App.t('U099'), ENG: App.t('U099') },
+        'U100': { JPN: '敵', ENG: 'Enemy' },
+        'U101': { JPN: App.t('U101'), ENG: App.t('U101') },
+        'U102': { JPN: '⭐', ENG: '⭐' },
+        'U103': { JPN: App.t('U103'), ENG: App.t('U103') },
+        'U104': { JPN: App.t('U104'), ENG: 'Goal' },
+        'U105': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U106': { JPN: App.t('U106'), ENG: '🎮 Player Settings' },
+        'U107': { JPN: App.t('U107'), ENG: 'Main (Required)' },
+        'U108': { JPN: App.t('U108'), ENG: 'Animation (Optional)' },
+        'U109': { JPN: App.t('U109'), ENG: 'Show LIFE' },
+        'U110': { JPN: App.t('U110'), ENG: 'LIFE Count' },
+        'U111': { JPN: '∞', ENG: '∞' },
+        'U112': { JPN: App.t('U112'), ENG: 'Attack Type' },
+        'U113': { JPN: App.t('U113'), ENG: 'Stomp' },
+        'U114': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U115': { JPN: App.t('U115'), ENG: 'Sound Effect' },
+        'U116': { JPN: App.t('U116'), ENG: App.t('U116') },
+        'U117': { JPN: App.t('U117'), ENG: App.t('U117') },
+        'U118': { JPN: App.t('U118'), ENG: App.t('U118') },
+        'U119': { JPN: App.t('U119'), ENG: App.t('U119') },
+        'U120': { JPN: App.t('U120'), ENG: 'OK' },
+        'U121': { JPN: App.t('U121'), ENG: '👾 Enemy Settings' },
+        'U122': { JPN: App.t('U122'), ENG: 'Move Pattern' },
+        'U123': { JPN: App.t('U123'), ENG: 'Back & Forth' },
+        'U124': { JPN: App.t('U124'), ENG: 'Jump' },
+        'U125': { JPN: App.t('U125'), ENG: 'Chase' },
+        'U126': { JPN: App.t('U126'), ENG: '🧱 Block Settings' },
+        'U127': { JPN: App.t('U127'), ENG: 'Anim' },
+        'U128': { JPN: App.t('U128'), ENG: 'Collision' },
+        'U129': { JPN: App.t('U129'), ENG: '⭐ Item Settings' },
+        'U130': { JPN: App.t('U130'), ENG: 'Effect' },
+        'U131': { JPN: App.t('U131'), ENG: 'Life Up' },
+        'U132': { JPN: App.t('U132'), ENG: 'Get Weapon' },
+        'U133': { JPN: App.t('U133'), ENG: 'Bomb' },
+        'U134': { JPN: App.t('U134'), ENG: App.t('U134') },
+        'U135': { JPN: App.t('U135'), ENG: '🚩 Goal Settings' },
+        'U136': { JPN: App.t('U136'), ENG: 'Reach the Goal' },
+        'U137': { JPN: App.t('U137'), ENG: 'Get All Items' },
+        'U138': { JPN: App.t('U138'), ENG: 'Defeat All Enemies' },
+        'U139': { JPN: App.t('U139'), ENG: 'Default' },
+        'U140': { JPN: App.t('U140'), ENG: 'Share Game' },
+        'U141': { JPN: App.t('U141'), ENG: 'Allow Remix' },
+        'U142': { JPN: App.t('U142'), ENG: 'Published' },
+        'U143': { JPN: App.t('U143'), ENG: '✓ Copied' },
+        'U144': { JPN: App.t('U144'), ENG: 'Transfer Data' },
+        'U145': { JPN: App.t('U145'), ENG: 'Back' },
+        'U146': { JPN: App.t('U146'), ENG: 'Select Data' },
+        'U147': { JPN: App.t('U147'), ENG: 'Open' },
+        'U148': { JPN: App.t('U148'), ENG: 'Delete' },
+        'U149': { JPN: App.t('U149'), ENG: 'Cancel' },
+        'U150': { JPN: App.t('U150'), ENG: 'Create New Game' },
+        'U151': { JPN: App.t('U151'), ENG: 'Create' },
+        'U152': { JPN: App.t('U152'), ENG: 'Color Preset' },
+        'U153': { JPN: App.t('U153'), ENG: 'Famitory' },
+        'U154': { JPN: App.t('U154'), ENG: '(28 colors)' },
+        'U155': { JPN: App.t('U155'), ENG: 'Pastel' },
+        'U156': { JPN: App.t('U156'), ENG: '(16 colors)' },
+        'U157': { JPN: App.t('U157'), ENG: 'Famicom' },
+        'U158': { JPN: App.t('U158'), ENG: '(54 colors)' },
+        'U159': { JPN: App.t('U159'), ENG: 'Game Boy' },
+        'U160': { JPN: App.t('U160'), ENG: '(4 colors)' },
+        'U161': { JPN: App.t('U161'), ENG: 'Mono' },
+        'U162': { JPN: App.t('U162'), ENG: '(8 colors)' },
+        'U163': { JPN: App.t('U163'), ENG: 'Add' },
+        'U164': { JPN: App.t('U164'), ENG: 'Replace' },
+        'U165': { JPN: App.t('U165'), ENG: 'Close' },
+        'U166': { JPN: App.t('U166'), ENG: 'Enter Value' },
+        'U167': { JPN: App.t('U167'), ENG: 'Saved!' },
+        'U168': { JPN: App.t('U168'), ENG: 'Publish this game?' },
+        'U169': { JPN: App.t('U169'), ENG: 'Yes' },
+        'U170': { JPN: App.t('U170'), ENG: 'Save As' },
+        'U171': { JPN: App.t('U171'), ENG: App.t('U171') },
+        'U172': { JPN: App.t('U172'), ENG: 'Save' },
+        'U173': { JPN: App.t('U173'), ENG: '(removed: edit key label)' },
+        'U174': { JPN: App.t('U174'), ENG: 'An edit key is required<br>to edit this game.' },
+        'U175': { JPN: App.t('U175'), ENG: 'Enter 8-character key' },
+        'U176': { JPN: App.t('U176'), ENG: 'Verify' },
+        'U177': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U178': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U179': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U180': { JPN: App.t('U180'), ENG: 'Please select a preset' },
+        'U181': { JPN: App.t('U181'), ENG: 'Replace the current palette?\nSprite colors may change.' },
+        'U182': { JPN: '▶', ENG: '▶' },
+        'U183': { JPN: App.t('U183'), ENG: 'At least 1 color is required' },
+        'U184': { JPN: App.t('U184'), ENG: 'Delete this color?\n(Dots using this color will become transparent.)' },
+        'U185': { JPN: App.t('U185'), ENG: 'Shrinking may lose detail. Continue?' },
+        'U186': { JPN: App.t('U186'), ENG: 'Cannot delete any more' },
+        'U187': { JPN: App.t('U187'), ENG: 'Delete this sprite?\n(All usages will be removed.)' },
+        'U188': { JPN: App.t('U188'), ENG: 'Clear this sprite?' },
+        'U189': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U190': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U191': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U192': { JPN: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }), ENG: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }) },
+        'U193': { JPN: App.t('U073'), ENG: 'Player' },
+        'U194': { JPN: App.t('U074'), ENG: 'Enemy' },
+        'U195': { JPN: App.t('U075'), ENG: 'Block/BG' },
+        'U196': { JPN: App.t('U076'), ENG: 'Item' },
+        'U197': { JPN: App.t('U104'), ENG: 'Goal' },
+        'U198': { JPN: App.t('U198'), ENG: 'Stand' },
+        'U199': { JPN: App.t('U199'), ENG: 'Walk' },
+        'U200': { JPN: App.t('U200'), ENG: 'Climb' },
+        'U201': { JPN: App.t('U124'), ENG: 'Jump' },
+        'U202': { JPN: App.t('U202'), ENG: 'Attack' },
+        'U203': { JPN: App.t('U203'), ENG: 'Appearance' },
+        'U204': { JPN: App.t('U204'), ENG: 'Life' },
+        'U205': { JPN: App.t('U205'), ENG: 'Transform Item' },
+        'U206': { JPN: App.t('U206'), ENG: 'Abilities' },
+        'U207': { JPN: App.t('U207'), ENG: 'Move Speed' },
+        'U208': { JPN: App.t('U208'), ENG: 'Jump Power' },
+        'U209': { JPN: App.t('U209'), ENG: 'Double Jump' },
+        'U210': { JPN: App.t('U210'), ENG: 'Life Count' },
+        'U211': { JPN: App.t('U211'), ENG: 'Traits' },
+        'U212': { JPN: App.t('U212'), ENG: 'Wander' },
+        'U213': { JPN: App.t('U213'), ENG: 'Static' },
+        'U214': { JPN: App.t('U214'), ENG: 'Hop' },
+        'U215': { JPN: App.t('U215'), ENG: 'Wander+Hop' },
+        'U216': { JPN: App.t('U216'), ENG: 'Chase' },
+        'U217': { JPN: App.t('U217'), ENG: 'Rush' },
+        'U218': { JPN: App.t('U218'), ENG: 'Aerial' },
+        'U219': { JPN: App.t('U219'), ENG: 'Boss Enemy' },
+        'U220': { JPN: App.t('U051'), ENG: 'None' },
+        'U221': { JPN: App.t('U221'), ENG: 'Coin' },
+        'U222': { JPN: App.t('U222'), ENG: 'Invincible' },
+        'U223': { JPN: App.t('U131'), ENG: 'Life Up' },
+        'U224': { JPN: App.t('U053'), ENG: 'Clear' },
+        'U225': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U226': { JPN: App.t('U133'), ENG: 'Bomb' },
+        'U227': { JPN: App.t('U227'), ENG: 'Easter Egg' },
+        'U228': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U229': { JPN: App.t('U229'), ENG: 'Melee' },
+        'U230': { JPN: App.t('U230'), ENG: 'Straight' },
+        'U231': { JPN: App.t('U231'), ENG: 'Arc' },
+        'U232': { JPN: App.t('U232'), ENG: 'Drop Down' },
+        'U233': { JPN: App.t('U233'), ENG: 'Spread' },
+        'U234': { JPN: App.t('U234'), ENG: 'Boomerang' },
+        'U235': { JPN: App.t('U235'), ENG: 'Pinball' },
+        'U236': { JPN: App.t('U236'), ENG: 'Rotate' },
+        'U237': { JPN: App.t('U237'), ENG: 'Speed' },
+        'U238': { JPN: App.t('U238'), ENG: 'Rapid Fire' },
+        'U239': { JPN: App.t('U239'), ENG: 'Range' },
+        'U240': { JPN: App.t('U115'), ENG: 'Sound FX' },
+        'U241': { JPN: App.t('U241'), ENG: 'Jump SFX' },
+        'U242': { JPN: App.t('U242'), ENG: 'Attack SFX' },
+        'U243': { JPN: App.t('U243'), ENG: 'Damage SFX' },
+        'U244': { JPN: App.t('U244'), ENG: 'Get SFX' },
+        'U245': { JPN: App.t('U245'), ENG: 'Horizontal' },
+        'U246': { JPN: App.t('U246'), ENG: 'Vertical' },
+        'U247': { JPN: App.t('U247'), ENG: 'Fall' },
+        'U248': { JPN: App.t('U248'), ENG: 'Ladder' },
+        'U249': { JPN: App.t('U249'), ENG: 'Spring' },
+        'U250': { JPN: App.t('U250'), ENG: 'Door' },
+        'U251': { JPN: App.t('U251'), ENG: 'Spring Power' },
+        'U252': { JPN: App.t('U128'), ENG: 'Collision' },
+        'U253': { JPN: App.t('U253'), ENG: 'Durability' },
+        'U254': { JPN: App.t('U254'), ENG: 'Key' },
+        'U255': { JPN: App.t('U255'), ENG: 'Max 20 chars' },
+        'U256': { JPN: App.t('U256'), ENG: 'Jump01' },
+        'U257': { JPN: App.t('U257'), ENG: 'Jump02' },
+        'U258': { JPN: App.t('U258'), ENG: 'Jump03' },
+        'U259': { JPN: App.t('U259'), ENG: 'Jump04' },
+        'U260': { JPN: App.t('U260'), ENG: 'Jump05' },
+        'U261': { JPN: App.t('U261'), ENG: 'Attack01' },
+        'U262': { JPN: App.t('U262'), ENG: 'Attack02' },
+        'U263': { JPN: App.t('U263'), ENG: 'Attack03' },
+        'U264': { JPN: App.t('U264'), ENG: 'Attack04' },
+        'U265': { JPN: App.t('U265'), ENG: 'Attack05' },
+        'U266': { JPN: App.t('U266'), ENG: 'Damage_01' },
+        'U267': { JPN: App.t('U267'), ENG: 'Damage_02' },
+        'U268': { JPN: App.t('U268'), ENG: 'Damage_03' },
+        'U269': { JPN: App.t('U269'), ENG: 'Damage_04' },
+        'U270': { JPN: App.t('U270'), ENG: 'Damage_05' },
+        'U271': { JPN: App.t('U271'), ENG: 'Get_01' },
+        'U272': { JPN: App.t('U272'), ENG: 'Get_02' },
+        'U273': { JPN: App.t('U273'), ENG: 'Get_03' },
+        'U274': { JPN: App.t('U274'), ENG: 'Get_04' },
+        'U275': { JPN: App.t('U275'), ENG: 'Get_05' },
+        'U276': { JPN: App.t('U276'), ENG: 'Other01(OK)' },
+        'U277': { JPN: App.t('U277'), ENG: 'Other02(Cancel)' },
+        'U278': { JPN: App.t('U278'), ENG: 'Other03(Cursor)' },
+        'U279': { JPN: App.t('U279'), ENG: 'Other04(Pause)' },
+        'U280': { JPN: App.t('U280'), ENG: 'Other05(Explosion)' },
+        'U281': { JPN: App.t('U281'), ENG: 'Damage' },
+        'U282': { JPN: App.t('U282'), ENG: 'Get' },
+        'U283': { JPN: '■', ENG: '■' },
+        'U284': { JPN: '▶', ENG: '▶' },
+        'U285': { JPN: App.t('U285'), ENG: 'Please register a sprite' },
+        'U286': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U287': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U288': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U289': { JPN: App.t('U289'), ENG: 'Delete this tile?' },
+        'U290': { JPN: App.t('U290'), ENG: 'Flip function is not yet implemented in the stage editor' },
+        'U291': { JPN: App.t('U291'), ENG: 'Cannot stompt with characters or items' },
+        'U292': { JPN: App.t('U292'), ENG: 'Delete all tiles?' },
+        'U293': { JPN: App.t('U293'), ENG: 'Survival Time' },
+        'U294': { JPN: App.t('U061'), ENG: 'Time Limit' },
+        'U295': { JPN: App.t('U295'), ENG: 'Select Tone' },
+        'U296': { JPN: App.t('U296'), ENG: App.t('U296') },
+        'U297': { JPN: App.t('U297'), ENG: App.t('U297') },
+        'U298': { JPN: App.t('U298'), ENG: App.t('U298') },
+        'U299': { JPN: App.t('U299'), ENG: App.t('U299') },
+        'U300': { JPN: App.t('U300'), ENG: App.t('U300') },
+        'U301': { JPN: App.t('U301'), ENG: App.t('U301') },
+        'U302': { JPN: App.t('U302'), ENG: 'Tremolo (Fast)' },
+        'U303': { JPN: App.t('U303'), ENG: App.t('U303') },
+        'U304': { JPN: App.t('U304'), ENG: App.t('U304') },
+        'U305': { JPN: App.t('U305'), ENG: 'Kick (Pitch Down)' },
+        'U306': { JPN: App.t('U306'), ENG: 'Close' },
+        'U307': { JPN: App.t('U307'), ENG: 'Cannot delete the last BGM' },
+        'U308': { JPN: App.t('U308'), ENG: 'Delete this BGM?' },
+        'U309': { JPN: '▶', ENG: '▶' },
+        'U310': { JPN: '■', ENG: '■' },
+        'U311': { JPN: App.t('U311'), ENG: 'Select action (delete / duplicate / rename)' },
+        'U312': { JPN: App.t('U312'), ENG: 'New Name' },
+        'U313': { JPN: App.t('U313', { this.getCurrentSong().name: typeof this.getCurrentSong().name !== 'undefined' ? this.getCurrentSong().name : undefined }), ENG: 'Delete "${this.getCurrentSong().name}"?' },
+        'U314': { JPN: App.t('U314', { this.currentTrack + 1: typeof this.currentTrack + 1 !== 'undefined' ? this.currentTrack + 1 : undefined }), ENG: 'Delete all notes in Tr${this.currentTrack + 1}?' },
+        'U315': { JPN: App.t('U315'), ENG: 'Select the range to copy' },
+        'U316': { JPN: App.t('U316', { notes.length: typeof notes.length !== 'undefined' ? notes.length : undefined }), ENG: 'Copied ${notes.length} note(s)' },
+        'U317': { JPN: App.t('U317'), ENG: 'Clipboard is empty' },
+        'U318': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U319': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U320': { JPN: '0', ENG: '0' },
+        'U321': { JPN: App.t('U321'), ENG: 'Enter Value' },
+        'U322': { JPN: App.t('U322'), ENG: 'Please select a track' },
+        'U323': { JPN: App.t('U323'), ENG: 'Invalid copy range' },
+        'U324': { JPN: App.t('U324'), ENG: 'Jump_01' },
+        'U325': { JPN: App.t('U325'), ENG: 'Jump_02' },
+        'U326': { JPN: App.t('U326'), ENG: 'Jump_03' },
+        'U327': { JPN: App.t('U327'), ENG: 'Jump_04' },
+        'U328': { JPN: App.t('U328'), ENG: 'Jump_05' },
+        'U329': { JPN: App.t('U329'), ENG: 'Attack_01' },
+        'U330': { JPN: App.t('U330'), ENG: 'Attack_02' },
+        'U331': { JPN: App.t('U331'), ENG: 'Attack_03' },
+        'U332': { JPN: App.t('U332'), ENG: 'Attack_04' },
+        'U333': { JPN: App.t('U333'), ENG: 'Attack_05' },
+        'U334': { JPN: App.t('U266'), ENG: 'Damage_01' },
+        'U335': { JPN: App.t('U267'), ENG: 'Damage_02' },
+        'U336': { JPN: App.t('U268'), ENG: 'Damage_03' },
+        'U337': { JPN: App.t('U269'), ENG: 'Damage_04' },
+        'U338': { JPN: App.t('U270'), ENG: 'Damage_05' },
+        'U339': { JPN: App.t('U271'), ENG: 'Get_01' },
+        'U340': { JPN: App.t('U272'), ENG: 'Get_02' },
+        'U341': { JPN: App.t('U273'), ENG: 'Get_03' },
+        'U342': { JPN: App.t('U274'), ENG: 'Get_04' },
+        'U343': { JPN: App.t('U275'), ENG: 'Get_05' },
+        'U344': { JPN: App.t('U344'), ENG: 'Other_01(OK)' },
+        'U345': { JPN: App.t('U345'), ENG: 'Other_02(Cancel)' },
+        'U346': { JPN: App.t('U346'), ENG: 'Other_03(Cursor)' },
+        'U347': { JPN: App.t('U347'), ENG: 'Other_04(Pause)' },
+        'U348': { JPN: App.t('U348'), ENG: 'Other_05(Explosion)' },
+        'U349': { JPN: App.t('U153'), ENG: 'Famitory' },
+        'U350': { JPN: App.t('U155'), ENG: 'Pastel' },
+        'U351': { JPN: App.t('U157'), ENG: 'Famicom' },
+        'U352': { JPN: App.t('U159'), ENG: 'Game Boy' },
+        'U353': { JPN: App.t('U161'), ENG: 'Mono' },
+        'U354': { JPN: App.t('U354'), ENG: 'Switched to Edit Mode' },
+        'U355': { JPN: App.t('U355'), ENG: 'Edit Title' },
+        'U356': { JPN: App.t('U356'), ENG: 'Enter Game Title' },
+        'U357': { JPN: App.t('U357'), ENG: 'Edit Name' },
+        'U358': { JPN: App.t('U358'), ENG: 'Enter Name' },
+        'U359': { JPN: App.t('U167'), ENG: 'Saved!' },
+        'U360': { JPN: App.t('U360'), ENG: 'Save' },
+        'U361': { JPN: App.t('U361'), ENG: 'Don\'t Save' },
+        'U362': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U363': { JPN: App.t('U363', { name: typeof name !== 'undefined' ? name : undefined }), ENG: 'Opened "${name}"' },
+        'U364': { JPN: App.t('U364'), ENG: 'Failed to load project' },
+        'U365': { JPN: App.t('U365'), ENG: 'Imported as "${importName}".\nOpen now?' },
+        'U366': { JPN: App.t('U366'), ENG: 'Imported. You can open it from the "Open" menu.' },
+        'U367': { JPN: App.t('U367'), ENG: 'Failed to read file' },
+        'U368': { JPN: App.t('U368'), ENG: 'That name is already in use' },
+        'U369': { JPN: App.t('U369'), ENG: 'New game created!' },
+        'U370': { JPN: App.t('U370'), ENG: 'No save data' },
+        'U371': { JPN: App.t('U371'), ENG: App.t('U371') },
+        'U372': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U373': { JPN: App.t('U168'), ENG: 'Publish this game?' },
+        'U374': { JPN: App.t('U374'), ENG: 'Update the published game?' },
+        'U375': { JPN: App.t('U375'), ENG: 'A URL will be generated so anyone can play' },
+        'U376': { JPN: App.t('U376'), ENG: 'The current content will be overwritten' },
+        'U377': { JPN: App.t('U377'), ENG: 'Processing… Please wait' },
+        'U378': { JPN: App.t('U378'), ENG: 'No cloud connection' },
+        'U379': { JPN: App.t('U379'), ENG: 'Save failed' },
+        'U380': { JPN: App.t('U380'), ENG: 'Published!' },
+        'U381': { JPN: App.t('U381'), ENG: 'Updated!' },
+        'U382': { JPN: App.t('U382'), ENG: 'An error occurred while saving' },
+        'U383': { JPN: App.t('U383'), ENG: 'Copied URL' },
+        'U384': { JPN: App.t('U384'), ENG: 'Copy failed' },
+        'U385': { JPN: App.t('U385', { gameName: typeof gameName !== 'undefined' ? gameName : undefined }), ENG: 'Play "${gameName}"! #FAMITORY' },
+        'U386': { JPN: App.t('U386'), ENG: 'Made "${gameName}"!\nPlay in your browser👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart' },
+        'U387': { JPN: App.t('U387'), ENG: 'I made a game on FAMITORY!\n${url}' },
+        'U388': { JPN: App.t('U388'), ENG: 'Copied for Discord' },
+        'U389': { JPN: App.t('U389'), ENG: 'Please enter a project name' },
+        'U390': { JPN: App.t('U390', { newName: typeof newName !== 'undefined' ? newName : undefined }), ENG: 'Saved as "${newName}"' },
+        'U391': { JPN: App.t('U391'), ENG: 'I made a game on FAMITORY! 🎮\nGive it a try!' },
+        'U392': { JPN: App.t('U392'), ENG: 'Generating share URL...' },
+        'U393': { JPN: App.t('U393'), ENG: 'Error: Save failed' },
+        'U394': { JPN: App.t('U394'), ENG: 'Please set a time limit for Survival mode' },
+        'U395': { JPN: App.t('U165'), ENG: 'Close' },
+        'U396': { JPN: App.t('U396'), ENG: 'Secret Message' },
+        'U397': { JPN: App.t('U397'), ENG: App.t('U397') },
+        'U398': { JPN: App.t('U398'), ENG: App.t('U398') },
+        'U399': { JPN: App.t('U399'), ENG: 'Noise (Pitch)' },
+        'U400': { JPN: App.t('U400'), ENG: App.t('U400') },
+        'U401': { JPN: App.t('U401'), ENG: 'Export' },
+        'U402': { JPN: App.t('U402'), ENG: 'Import' },
+        'U403': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U404': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U405': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U406': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U407': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U408': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U409': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U410': { JPN: App.t('U410'), ENG: 'Language' },
+        'U411': { JPN: App.t('U411'), ENG: App.t('U411') },
+        'U412': { JPN: App.t('U412'), ENG: App.t('U412') },
+        'U413': { JPN: App.t('U013'), ENG: 'Stage' },
+        'U414': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U415': { JPN: App.t('U053'), ENG: 'Win' },
+        'U416': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U417': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U418': { JPN: App.t('U051'), ENG: 'None' },
+        'U419': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U420': { JPN: App.t('U420'), ENG: 'Copy URL' },
+        'U421': { JPN: App.t('U421'), ENG: 'Post on X' },
+        'U422': { JPN: App.t('U422'), ENG: 'Post on Discord' },
+        'U423': { JPN: App.t('U423'), ENG: 'Available from start' },
+        'U424': { JPN: App.t('U424'), ENG: 'Move Type' },
+        'U425': { JPN: App.t('U425'), ENG: 'Drop Item' },
+        'U426': { JPN: App.t('U426'), ENG: 'Gimmick' },
+        'U427': { JPN: App.t('U427'), ENG: 'Type' },
+        'U428': { JPN: App.t('U428'), ENG: 'Trajectory' },
     },
+        'U002': { JPN: App.t('U002'), ENG: App.t('U002') },
+        'U003': { JPN: App.t('U003'), ENG: 'Open' },
+        'U004': { JPN: App.t('U004'), ENG: App.t('U004') },
+        'U005': { JPN: App.t('U005'), ENG: 'Save' },
+        'U006': { JPN: App.t('U006'), ENG: App.t('U006') },
+        'U007': { JPN: App.t('U007'), ENG: 'Share' },
+        'U008': { JPN: App.t('U008'), ENG: App.t('U008') },
+        'U009': { JPN: App.t('U009'), ENG: 'Play' },
+        'U010': { JPN: App.t('U010'), ENG: App.t('U010') },
+        'U011': { JPN: App.t('U011'), ENG: 'Pixel' },
+        'U012': { JPN: App.t('U012'), ENG: App.t('U012') },
+        'U013': { JPN: App.t('U013'), ENG: 'Stage' },
+        'U014': { JPN: App.t('U014'), ENG: App.t('U014') },
+        'U015': { JPN: App.t('U015'), ENG: 'Sound' },
+        'U016': { JPN: App.t('U016'), ENG: App.t('U016') },
+        'U017': { JPN: App.t('U017'), ENG: App.t('U017') },
+        'U018': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U019': { JPN: App.t('U019'), ENG: 'Name' },
+        'U020': { JPN: App.t('U020'), ENG: 'Like!' },
+        'U021': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U022': { JPN: App.t('U022'), ENG: 'Prev Frame' },
+        'U023': { JPN: App.t('U023'), ENG: 'Play/Stop' },
+        'U024': { JPN: App.t('U024'), ENG: 'Next Frame' },
+        'U025': { JPN: App.t('U025'), ENG: 'Duplicate Frame' },
+        'U026': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U027': { JPN: '+', ENG: '+' },
+        'U028': { JPN: App.t('U028'), ENG: 'Pen' },
+        'U029': { JPN: App.t('U029'), ENG: 'Eraser' },
+        'U030': { JPN: App.t('U030'), ENG: 'Fill' },
+        'U031': { JPN: App.t('U031'), ENG: 'Eyedropper' },
+        'U032': { JPN: App.t('U032'), ENG: 'Undo' },
+        'U033': { JPN: App.t('U033'), ENG: 'Select' },
+        'U034': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U035': { JPN: App.t('U035'), ENG: 'Paste' },
+        'U036': { JPN: App.t('U036'), ENG: 'Flip V' },
+        'U037': { JPN: App.t('U037'), ENG: 'Flip H' },
+        'U038': { JPN: App.t('U038'), ENG: 'Guide' },
+        'U039': { JPN: '▼', ENG: '▼' },
+        'U040': { JPN: App.t('U040'), ENG: 'Stage Settings' },
+        'U041': { JPN: App.t('U018'), ENG: 'Title' },
+        'U042': { JPN: App.t('U042'), ENG: App.t('U042') },
+        'U043': { JPN: App.t('U043'), ENG: 'Creator' },
+        'U044': { JPN: App.t('U044'), ENG: 'Edit Key' },
+        'U045': { JPN: App.t('U045'), ENG: 'Stage Size' },
+        'U046': { JPN: '縦', ENG: 'H' },
+        'U047': { JPN: '－', ENG: '－' },
+        'U048': { JPN: '＋', ENG: '＋' },
+        'U049': { JPN: '横', ENG: 'W' },
+        'U050': { JPN: App.t('U050'), ENG: 'BG Color' },
+        'U051': { JPN: App.t('U051'), ENG: 'None' },
+        'U052': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U053': { JPN: App.t('U053'), ENG: 'Clear' },
+        'U054': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U055': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U056': { JPN: App.t('U056'), ENG: 'Clear Cond.' },
+        'U057': { JPN: App.t('U057'), ENG: 'Collect Items' },
+        'U058': { JPN: App.t('U058'), ENG: 'Defeat Enemies' },
+        'U059': { JPN: App.t('U059'), ENG: 'Defeat Boss' },
+        'U060': { JPN: App.t('U060'), ENG: 'Survival' },
+        'U061': { JPN: App.t('U061'), ENG: 'Time Limit' },
+        'U062': { JPN: '分', ENG: 'min' },
+        'U063': { JPN: '秒', ENG: 'sec' },
+        'U064': { JPN: App.t('U064'), ENG: 'Show Score' },
+        'U065': { JPN: App.t('U065'), ENG: 'Save Settings' },
+        'U066': { JPN: App.t('U066'), ENG: 'Place' },
+        'U067': { JPN: '✕', ENG: '✕' },
+        'U068': { JPN: App.t('U068'), ENG: 'Material' },
+        'U069': { JPN: App.t('U069'), ENG: 'Select Sprite' },
+        'U070': { JPN: '×', ENG: '×' },
+        'U071': { JPN: App.t('U071'), ENG: 'Done' },
+        'U072': { JPN: App.t('U072'), ENG: 'Select Type' },
+        'U073': { JPN: App.t('U073'), ENG: 'Player' },
+        'U074': { JPN: App.t('U074'), ENG: 'Enemy' },
+        'U075': { JPN: App.t('U075'), ENG: 'Block/BG' },
+        'U076': { JPN: App.t('U076'), ENG: 'Item' },
+        'U077': { JPN: App.t('U077'), ENG: 'Edit' },
+        'U078': { JPN: App.t('U078'), ENG: 'Rename BGM' },
+        'U079': { JPN: App.t('U079'), ENG: 'Enter BGM Name' },
+        'U080': { JPN: App.t('U080'), ENG: 'Copy & Paste' },
+        'U081': { JPN: App.t('U081'), ENG: 'Track' },
+        'U082': { JPN: App.t('U082'), ENG: 'Copy Range' },
+        'U083': { JPN: '～', ENG: '～' },
+        'U084': { JPN: App.t('U084'), ENG: 'Paste At' },
+        'U085': { JPN: App.t('U085'), ENG: 'Execute' },
+        'U086': { JPN: App.t('U086'), ENG: 'Delete BGM' },
+        'U087': { JPN: '〈', ENG: '〈' },
+        'U088': { JPN: App.t('U088'), ENG: 'Tap to Rename' },
+        'U089': { JPN: '〉', ENG: '〉' },
+        'U090': { JPN: App.t('U090'), ENG: 'Add BGM' },
+        'U091': { JPN: App.t('U091'), ENG: 'Drag to Change' },
+        'U092': { JPN: App.t('U092'), ENG: App.t('U092') },
+        'U093': { JPN: App.t('U093'), ENG: App.t('U093') },
+        'U094': { JPN: App.t('U094'), ENG: 'Back' },
+        'U095': { JPN: App.t('U095'), ENG: 'Pen (Input Mode)' },
+        'U096': { JPN: App.t('U096'), ENG: 'Eraser (Long: Clear)' },
+        'U097': { JPN: App.t('U097'), ENG: 'Select Tile Type' },
+        'U098': { JPN: App.t('U098'), ENG: App.t('U098') },
+        'U099': { JPN: App.t('U099'), ENG: App.t('U099') },
+        'U100': { JPN: '敵', ENG: 'Enemy' },
+        'U101': { JPN: App.t('U101'), ENG: App.t('U101') },
+        'U102': { JPN: '⭐', ENG: '⭐' },
+        'U103': { JPN: App.t('U103'), ENG: App.t('U103') },
+        'U104': { JPN: App.t('U104'), ENG: 'Goal' },
+        'U105': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U106': { JPN: App.t('U106'), ENG: '🎮 Player Settings' },
+        'U107': { JPN: App.t('U107'), ENG: 'Main (Required)' },
+        'U108': { JPN: App.t('U108'), ENG: 'Animation (Optional)' },
+        'U109': { JPN: App.t('U109'), ENG: 'Show LIFE' },
+        'U110': { JPN: App.t('U110'), ENG: 'LIFE Count' },
+        'U111': { JPN: '∞', ENG: '∞' },
+        'U112': { JPN: App.t('U112'), ENG: 'Attack Type' },
+        'U113': { JPN: App.t('U113'), ENG: 'Stomp' },
+        'U114': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U115': { JPN: App.t('U115'), ENG: 'Sound Effect' },
+        'U116': { JPN: App.t('U116'), ENG: App.t('U116') },
+        'U117': { JPN: App.t('U117'), ENG: App.t('U117') },
+        'U118': { JPN: App.t('U118'), ENG: App.t('U118') },
+        'U119': { JPN: App.t('U119'), ENG: App.t('U119') },
+        'U120': { JPN: App.t('U120'), ENG: 'OK' },
+        'U121': { JPN: App.t('U121'), ENG: '👾 Enemy Settings' },
+        'U122': { JPN: App.t('U122'), ENG: 'Move Pattern' },
+        'U123': { JPN: App.t('U123'), ENG: 'Back & Forth' },
+        'U124': { JPN: App.t('U124'), ENG: 'Jump' },
+        'U125': { JPN: App.t('U125'), ENG: 'Chase' },
+        'U126': { JPN: App.t('U126'), ENG: '🧱 Block Settings' },
+        'U127': { JPN: App.t('U127'), ENG: 'Anim' },
+        'U128': { JPN: App.t('U128'), ENG: 'Collision' },
+        'U129': { JPN: App.t('U129'), ENG: '⭐ Item Settings' },
+        'U130': { JPN: App.t('U130'), ENG: 'Effect' },
+        'U131': { JPN: App.t('U131'), ENG: 'Life Up' },
+        'U132': { JPN: App.t('U132'), ENG: 'Get Weapon' },
+        'U133': { JPN: App.t('U133'), ENG: 'Bomb' },
+        'U134': { JPN: App.t('U134'), ENG: App.t('U134') },
+        'U135': { JPN: App.t('U135'), ENG: '🚩 Goal Settings' },
+        'U136': { JPN: App.t('U136'), ENG: 'Reach the Goal' },
+        'U137': { JPN: App.t('U137'), ENG: 'Get All Items' },
+        'U138': { JPN: App.t('U138'), ENG: 'Defeat All Enemies' },
+        'U139': { JPN: App.t('U139'), ENG: 'Default' },
+        'U140': { JPN: App.t('U140'), ENG: 'Share Game' },
+        'U141': { JPN: App.t('U141'), ENG: 'Allow Remix' },
+        'U142': { JPN: App.t('U142'), ENG: 'Published' },
+        'U143': { JPN: App.t('U143'), ENG: '✓ Copied' },
+        'U144': { JPN: App.t('U144'), ENG: 'Transfer Data' },
+        'U145': { JPN: App.t('U145'), ENG: 'Back' },
+        'U146': { JPN: App.t('U146'), ENG: 'Select Data' },
+        'U147': { JPN: App.t('U147'), ENG: 'Open' },
+        'U148': { JPN: App.t('U148'), ENG: 'Delete' },
+        'U149': { JPN: App.t('U149'), ENG: 'Cancel' },
+        'U150': { JPN: App.t('U150'), ENG: 'Create New Game' },
+        'U151': { JPN: App.t('U151'), ENG: 'Create' },
+        'U152': { JPN: App.t('U152'), ENG: 'Color Preset' },
+        'U153': { JPN: App.t('U153'), ENG: 'Famitory' },
+        'U154': { JPN: App.t('U154'), ENG: '(28 colors)' },
+        'U155': { JPN: App.t('U155'), ENG: 'Pastel' },
+        'U156': { JPN: App.t('U156'), ENG: '(16 colors)' },
+        'U157': { JPN: App.t('U157'), ENG: 'Famicom' },
+        'U158': { JPN: App.t('U158'), ENG: '(54 colors)' },
+        'U159': { JPN: App.t('U159'), ENG: 'Game Boy' },
+        'U160': { JPN: App.t('U160'), ENG: '(4 colors)' },
+        'U161': { JPN: App.t('U161'), ENG: 'Mono' },
+        'U162': { JPN: App.t('U162'), ENG: '(8 colors)' },
+        'U163': { JPN: App.t('U163'), ENG: 'Add' },
+        'U164': { JPN: App.t('U164'), ENG: 'Replace' },
+        'U165': { JPN: App.t('U165'), ENG: 'Close' },
+        'U166': { JPN: App.t('U166'), ENG: 'Enter Value' },
+        'U167': { JPN: App.t('U167'), ENG: 'Saved!' },
+        'U168': { JPN: App.t('U168'), ENG: 'Publish this game?' },
+        'U169': { JPN: App.t('U169'), ENG: 'Yes' },
+        'U170': { JPN: App.t('U170'), ENG: 'Save As' },
+        'U171': { JPN: App.t('U171'), ENG: App.t('U171') },
+        'U172': { JPN: App.t('U172'), ENG: 'Save' },
+        'U173': { JPN: App.t('U173'), ENG: '(removed: edit key label)' },
+        'U174': { JPN: App.t('U174'), ENG: 'An edit key is required<br>to edit this game.' },
+        'U175': { JPN: App.t('U175'), ENG: 'Enter 8-character key' },
+        'U176': { JPN: App.t('U176'), ENG: 'Verify' },
+        'U177': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U178': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U179': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U180': { JPN: App.t('U180'), ENG: 'Please select a preset' },
+        'U181': { JPN: App.t('U181'), ENG: 'Replace the current palette?\nSprite colors may change.' },
+        'U182': { JPN: '▶', ENG: '▶' },
+        'U183': { JPN: App.t('U183'), ENG: 'At least 1 color is required' },
+        'U184': { JPN: App.t('U184'), ENG: 'Delete this color?\n(Dots using this color will become transparent.)' },
+        'U185': { JPN: App.t('U185'), ENG: 'Shrinking may lose detail. Continue?' },
+        'U186': { JPN: App.t('U186'), ENG: 'Cannot delete any more' },
+        'U187': { JPN: App.t('U187'), ENG: 'Delete this sprite?\n(All usages will be removed.)' },
+        'U188': { JPN: App.t('U188'), ENG: 'Clear this sprite?' },
+        'U189': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U190': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U191': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U192': { JPN: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }), ENG: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }) },
+        'U193': { JPN: App.t('U073'), ENG: 'Player' },
+        'U194': { JPN: App.t('U074'), ENG: 'Enemy' },
+        'U195': { JPN: App.t('U075'), ENG: 'Block/BG' },
+        'U196': { JPN: App.t('U076'), ENG: 'Item' },
+        'U197': { JPN: App.t('U104'), ENG: 'Goal' },
+        'U198': { JPN: App.t('U198'), ENG: 'Stand' },
+        'U199': { JPN: App.t('U199'), ENG: 'Walk' },
+        'U200': { JPN: App.t('U200'), ENG: 'Climb' },
+        'U201': { JPN: App.t('U124'), ENG: 'Jump' },
+        'U202': { JPN: App.t('U202'), ENG: 'Attack' },
+        'U203': { JPN: App.t('U203'), ENG: 'Appearance' },
+        'U204': { JPN: App.t('U204'), ENG: 'Life' },
+        'U205': { JPN: App.t('U205'), ENG: 'Transform Item' },
+        'U206': { JPN: App.t('U206'), ENG: 'Abilities' },
+        'U207': { JPN: App.t('U207'), ENG: 'Move Speed' },
+        'U208': { JPN: App.t('U208'), ENG: 'Jump Power' },
+        'U209': { JPN: App.t('U209'), ENG: 'Double Jump' },
+        'U210': { JPN: App.t('U210'), ENG: 'Life Count' },
+        'U211': { JPN: App.t('U211'), ENG: 'Traits' },
+        'U212': { JPN: App.t('U212'), ENG: 'Wander' },
+        'U213': { JPN: App.t('U213'), ENG: 'Static' },
+        'U214': { JPN: App.t('U214'), ENG: 'Hop' },
+        'U215': { JPN: App.t('U215'), ENG: 'Wander+Hop' },
+        'U216': { JPN: App.t('U216'), ENG: 'Chase' },
+        'U217': { JPN: App.t('U217'), ENG: 'Rush' },
+        'U218': { JPN: App.t('U218'), ENG: 'Aerial' },
+        'U219': { JPN: App.t('U219'), ENG: 'Boss Enemy' },
+        'U220': { JPN: App.t('U051'), ENG: 'None' },
+        'U221': { JPN: App.t('U221'), ENG: 'Coin' },
+        'U222': { JPN: App.t('U222'), ENG: 'Invincible' },
+        'U223': { JPN: App.t('U131'), ENG: 'Life Up' },
+        'U224': { JPN: App.t('U053'), ENG: 'Clear' },
+        'U225': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U226': { JPN: App.t('U133'), ENG: 'Bomb' },
+        'U227': { JPN: App.t('U227'), ENG: 'Easter Egg' },
+        'U228': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U229': { JPN: App.t('U229'), ENG: 'Melee' },
+        'U230': { JPN: App.t('U230'), ENG: 'Straight' },
+        'U231': { JPN: App.t('U231'), ENG: 'Arc' },
+        'U232': { JPN: App.t('U232'), ENG: 'Drop Down' },
+        'U233': { JPN: App.t('U233'), ENG: 'Spread' },
+        'U234': { JPN: App.t('U234'), ENG: 'Boomerang' },
+        'U235': { JPN: App.t('U235'), ENG: 'Pinball' },
+        'U236': { JPN: App.t('U236'), ENG: 'Rotate' },
+        'U237': { JPN: App.t('U237'), ENG: 'Speed' },
+        'U238': { JPN: App.t('U238'), ENG: 'Rapid Fire' },
+        'U239': { JPN: App.t('U239'), ENG: 'Range' },
+        'U240': { JPN: App.t('U115'), ENG: 'Sound FX' },
+        'U241': { JPN: App.t('U241'), ENG: 'Jump SFX' },
+        'U242': { JPN: App.t('U242'), ENG: 'Attack SFX' },
+        'U243': { JPN: App.t('U243'), ENG: 'Damage SFX' },
+        'U244': { JPN: App.t('U244'), ENG: 'Get SFX' },
+        'U245': { JPN: App.t('U245'), ENG: 'Horizontal' },
+        'U246': { JPN: App.t('U246'), ENG: 'Vertical' },
+        'U247': { JPN: App.t('U247'), ENG: 'Fall' },
+        'U248': { JPN: App.t('U248'), ENG: 'Ladder' },
+        'U249': { JPN: App.t('U249'), ENG: 'Spring' },
+        'U250': { JPN: App.t('U250'), ENG: 'Door' },
+        'U251': { JPN: App.t('U251'), ENG: 'Spring Power' },
+        'U252': { JPN: App.t('U128'), ENG: 'Collision' },
+        'U253': { JPN: App.t('U253'), ENG: 'Durability' },
+        'U254': { JPN: App.t('U254'), ENG: 'Key' },
+        'U255': { JPN: App.t('U255'), ENG: 'Max 20 chars' },
+        'U256': { JPN: App.t('U256'), ENG: 'Jump01' },
+        'U257': { JPN: App.t('U257'), ENG: 'Jump02' },
+        'U258': { JPN: App.t('U258'), ENG: 'Jump03' },
+        'U259': { JPN: App.t('U259'), ENG: 'Jump04' },
+        'U260': { JPN: App.t('U260'), ENG: 'Jump05' },
+        'U261': { JPN: App.t('U261'), ENG: 'Attack01' },
+        'U262': { JPN: App.t('U262'), ENG: 'Attack02' },
+        'U263': { JPN: App.t('U263'), ENG: 'Attack03' },
+        'U264': { JPN: App.t('U264'), ENG: 'Attack04' },
+        'U265': { JPN: App.t('U265'), ENG: 'Attack05' },
+        'U266': { JPN: App.t('U266'), ENG: 'Damage_01' },
+        'U267': { JPN: App.t('U267'), ENG: 'Damage_02' },
+        'U268': { JPN: App.t('U268'), ENG: 'Damage_03' },
+        'U269': { JPN: App.t('U269'), ENG: 'Damage_04' },
+        'U270': { JPN: App.t('U270'), ENG: 'Damage_05' },
+        'U271': { JPN: App.t('U271'), ENG: 'Get_01' },
+        'U272': { JPN: App.t('U272'), ENG: 'Get_02' },
+        'U273': { JPN: App.t('U273'), ENG: 'Get_03' },
+        'U274': { JPN: App.t('U274'), ENG: 'Get_04' },
+        'U275': { JPN: App.t('U275'), ENG: 'Get_05' },
+        'U276': { JPN: App.t('U276'), ENG: 'Other01(OK)' },
+        'U277': { JPN: App.t('U277'), ENG: 'Other02(Cancel)' },
+        'U278': { JPN: App.t('U278'), ENG: 'Other03(Cursor)' },
+        'U279': { JPN: App.t('U279'), ENG: 'Other04(Pause)' },
+        'U280': { JPN: App.t('U280'), ENG: 'Other05(Explosion)' },
+        'U281': { JPN: App.t('U281'), ENG: 'Damage' },
+        'U282': { JPN: App.t('U282'), ENG: 'Get' },
+        'U283': { JPN: '■', ENG: '■' },
+        'U284': { JPN: '▶', ENG: '▶' },
+        'U285': { JPN: App.t('U285'), ENG: 'Please register a sprite' },
+        'U286': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U287': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U288': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U289': { JPN: App.t('U289'), ENG: 'Delete this tile?' },
+        'U290': { JPN: App.t('U290'), ENG: 'Flip function is not yet implemented in the stage editor' },
+        'U291': { JPN: App.t('U291'), ENG: 'Cannot stompt with characters or items' },
+        'U292': { JPN: App.t('U292'), ENG: 'Delete all tiles?' },
+        'U293': { JPN: App.t('U293'), ENG: 'Survival Time' },
+        'U294': { JPN: App.t('U061'), ENG: 'Time Limit' },
+        'U295': { JPN: App.t('U295'), ENG: 'Select Tone' },
+        'U296': { JPN: App.t('U296'), ENG: App.t('U296') },
+        'U297': { JPN: App.t('U297'), ENG: App.t('U297') },
+        'U298': { JPN: App.t('U298'), ENG: App.t('U298') },
+        'U299': { JPN: App.t('U299'), ENG: App.t('U299') },
+        'U300': { JPN: App.t('U300'), ENG: App.t('U300') },
+        'U301': { JPN: App.t('U301'), ENG: App.t('U301') },
+        'U302': { JPN: App.t('U302'), ENG: 'Tremolo (Fast)' },
+        'U303': { JPN: App.t('U303'), ENG: App.t('U303') },
+        'U304': { JPN: App.t('U304'), ENG: App.t('U304') },
+        'U305': { JPN: App.t('U305'), ENG: 'Kick (Pitch Down)' },
+        'U306': { JPN: App.t('U306'), ENG: 'Close' },
+        'U307': { JPN: App.t('U307'), ENG: 'Cannot delete the last BGM' },
+        'U308': { JPN: App.t('U308'), ENG: 'Delete this BGM?' },
+        'U309': { JPN: '▶', ENG: '▶' },
+        'U310': { JPN: '■', ENG: '■' },
+        'U311': { JPN: App.t('U311'), ENG: 'Select action (delete / duplicate / rename)' },
+        'U312': { JPN: App.t('U312'), ENG: 'New Name' },
+        'U313': { JPN: App.t('U313', { this.getCurrentSong().name: typeof this.getCurrentSong().name !== 'undefined' ? this.getCurrentSong().name : undefined }), ENG: 'Delete "${this.getCurrentSong().name}"?' },
+        'U314': { JPN: App.t('U314', { this.currentTrack + 1: typeof this.currentTrack + 1 !== 'undefined' ? this.currentTrack + 1 : undefined }), ENG: 'Delete all notes in Tr${this.currentTrack + 1}?' },
+        'U315': { JPN: App.t('U315'), ENG: 'Select the range to copy' },
+        'U316': { JPN: App.t('U316', { notes.length: typeof notes.length !== 'undefined' ? notes.length : undefined }), ENG: 'Copied ${notes.length} note(s)' },
+        'U317': { JPN: App.t('U317'), ENG: 'Clipboard is empty' },
+        'U318': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U319': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U320': { JPN: '0', ENG: '0' },
+        'U321': { JPN: App.t('U321'), ENG: 'Enter Value' },
+        'U322': { JPN: App.t('U322'), ENG: 'Please select a track' },
+        'U323': { JPN: App.t('U323'), ENG: 'Invalid copy range' },
+        'U324': { JPN: App.t('U324'), ENG: 'Jump_01' },
+        'U325': { JPN: App.t('U325'), ENG: 'Jump_02' },
+        'U326': { JPN: App.t('U326'), ENG: 'Jump_03' },
+        'U327': { JPN: App.t('U327'), ENG: 'Jump_04' },
+        'U328': { JPN: App.t('U328'), ENG: 'Jump_05' },
+        'U329': { JPN: App.t('U329'), ENG: 'Attack_01' },
+        'U330': { JPN: App.t('U330'), ENG: 'Attack_02' },
+        'U331': { JPN: App.t('U331'), ENG: 'Attack_03' },
+        'U332': { JPN: App.t('U332'), ENG: 'Attack_04' },
+        'U333': { JPN: App.t('U333'), ENG: 'Attack_05' },
+        'U334': { JPN: App.t('U266'), ENG: 'Damage_01' },
+        'U335': { JPN: App.t('U267'), ENG: 'Damage_02' },
+        'U336': { JPN: App.t('U268'), ENG: 'Damage_03' },
+        'U337': { JPN: App.t('U269'), ENG: 'Damage_04' },
+        'U338': { JPN: App.t('U270'), ENG: 'Damage_05' },
+        'U339': { JPN: App.t('U271'), ENG: 'Get_01' },
+        'U340': { JPN: App.t('U272'), ENG: 'Get_02' },
+        'U341': { JPN: App.t('U273'), ENG: 'Get_03' },
+        'U342': { JPN: App.t('U274'), ENG: 'Get_04' },
+        'U343': { JPN: App.t('U275'), ENG: 'Get_05' },
+        'U344': { JPN: App.t('U344'), ENG: 'Other_01(OK)' },
+        'U345': { JPN: App.t('U345'), ENG: 'Other_02(Cancel)' },
+        'U346': { JPN: App.t('U346'), ENG: 'Other_03(Cursor)' },
+        'U347': { JPN: App.t('U347'), ENG: 'Other_04(Pause)' },
+        'U348': { JPN: App.t('U348'), ENG: 'Other_05(Explosion)' },
+        'U349': { JPN: App.t('U153'), ENG: 'Famitory' },
+        'U350': { JPN: App.t('U155'), ENG: 'Pastel' },
+        'U351': { JPN: App.t('U157'), ENG: 'Famicom' },
+        'U352': { JPN: App.t('U159'), ENG: 'Game Boy' },
+        'U353': { JPN: App.t('U161'), ENG: 'Mono' },
+        'U354': { JPN: App.t('U354'), ENG: 'Switched to Edit Mode' },
+        'U355': { JPN: App.t('U355'), ENG: 'Edit Title' },
+        'U356': { JPN: App.t('U356'), ENG: 'Enter Game Title' },
+        'U357': { JPN: App.t('U357'), ENG: 'Edit Name' },
+        'U358': { JPN: App.t('U358'), ENG: 'Enter Name' },
+        'U359': { JPN: App.t('U167'), ENG: 'Saved!' },
+        'U360': { JPN: App.t('U360'), ENG: 'Save' },
+        'U361': { JPN: App.t('U361'), ENG: 'Don\'t Save' },
+        'U362': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U363': { JPN: App.t('U363', { name: typeof name !== 'undefined' ? name : undefined }), ENG: 'Opened "${name}"' },
+        'U364': { JPN: App.t('U364'), ENG: 'Failed to load project' },
+        'U365': { JPN: App.t('U365'), ENG: 'Imported as "${importName}".\nOpen now?' },
+        'U366': { JPN: App.t('U366'), ENG: 'Imported. You can open it from the "Open" menu.' },
+        'U367': { JPN: App.t('U367'), ENG: 'Failed to read file' },
+        'U368': { JPN: App.t('U368'), ENG: 'That name is already in use' },
+        'U369': { JPN: App.t('U369'), ENG: 'New game created!' },
+        'U370': { JPN: App.t('U370'), ENG: 'No save data' },
+        'U371': { JPN: App.t('U371'), ENG: App.t('U371') },
+        'U372': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U373': { JPN: App.t('U168'), ENG: 'Publish this game?' },
+        'U374': { JPN: App.t('U374'), ENG: 'Update the published game?' },
+        'U375': { JPN: App.t('U375'), ENG: 'A URL will be generated so anyone can play' },
+        'U376': { JPN: App.t('U376'), ENG: 'The current content will be overwritten' },
+        'U377': { JPN: App.t('U377'), ENG: 'Processing… Please wait' },
+        'U378': { JPN: App.t('U378'), ENG: 'No cloud connection' },
+        'U379': { JPN: App.t('U379'), ENG: 'Save failed' },
+        'U380': { JPN: App.t('U380'), ENG: 'Published!' },
+        'U381': { JPN: App.t('U381'), ENG: 'Updated!' },
+        'U382': { JPN: App.t('U382'), ENG: 'An error occurred while saving' },
+        'U383': { JPN: App.t('U383'), ENG: 'Copied URL' },
+        'U384': { JPN: App.t('U384'), ENG: 'Copy failed' },
+        'U385': { JPN: App.t('U385', { gameName: typeof gameName !== 'undefined' ? gameName : undefined }), ENG: 'Play "${gameName}"! #FAMITORY' },
+        'U386': { JPN: App.t('U386'), ENG: 'Made "${gameName}"!\nPlay in your browser👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart' },
+        'U387': { JPN: App.t('U387'), ENG: 'I made a game on FAMITORY!\n${url}' },
+        'U388': { JPN: App.t('U388'), ENG: 'Copied for Discord' },
+        'U389': { JPN: App.t('U389'), ENG: 'Please enter a project name' },
+        'U390': { JPN: App.t('U390', { newName: typeof newName !== 'undefined' ? newName : undefined }), ENG: 'Saved as "${newName}"' },
+        'U391': { JPN: App.t('U391'), ENG: 'I made a game on FAMITORY! 🎮\nGive it a try!' },
+        'U392': { JPN: App.t('U392'), ENG: 'Generating share URL...' },
+        'U393': { JPN: App.t('U393'), ENG: 'Error: Save failed' },
+        'U394': { JPN: App.t('U394'), ENG: 'Please set a time limit for Survival mode' },
+        'U395': { JPN: App.t('U165'), ENG: 'Close' },
+        'U396': { JPN: App.t('U396'), ENG: 'Secret Message' },
+        'U397': { JPN: App.t('U397'), ENG: App.t('U397') },
+        'U398': { JPN: App.t('U398'), ENG: App.t('U398') },
+        'U399': { JPN: App.t('U399'), ENG: 'Noise (Pitch)' },
+        'U400': { JPN: App.t('U400'), ENG: App.t('U400') },
+        'U401': { JPN: App.t('U401'), ENG: 'Export' },
+        'U402': { JPN: App.t('U402'), ENG: 'Import' },
+        'U403': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U404': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U405': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U406': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U407': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U408': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U409': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U410': { JPN: App.t('U410'), ENG: 'Language' },
+        'U411': { JPN: App.t('U411'), ENG: App.t('U411') },
+        'U412': { JPN: App.t('U412'), ENG: App.t('U412') },
+        'U413': { JPN: App.t('U013'), ENG: 'Stage' },
+        'U414': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U415': { JPN: App.t('U053'), ENG: 'Win' },
+        'U416': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U417': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U418': { JPN: App.t('U051'), ENG: 'None' },
+        'U419': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U420': { JPN: App.t('U420'), ENG: 'Copy URL' },
+        'U421': { JPN: App.t('U421'), ENG: 'Post on X' },
+        'U422': { JPN: App.t('U422'), ENG: 'Post on Discord' },
+        'U423': { JPN: App.t('U423'), ENG: 'Available from start' },
+        'U424': { JPN: App.t('U424'), ENG: 'Move Type' },
+        'U425': { JPN: App.t('U425'), ENG: 'Drop Item' },
+        'U426': { JPN: App.t('U426'), ENG: 'Gimmick' },
+        'U427': { JPN: App.t('U427'), ENG: 'Type' },
+        'U428': { JPN: App.t('U428'), ENG: 'Trajectory' },
+    },
+        'U018': { JPN: App.t('U018'), ENG: 'Game Title' },
+        'U019': { JPN: App.t('U019'), ENG: 'Name' },
+        'U021': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U022': { JPN: App.t('U022'), ENG: 'Prev Frame' },
+        'U023': { JPN: App.t('U023'), ENG: 'Play/Stop' },
+        'U024': { JPN: App.t('U024'), ENG: 'Next Frame' },
+        'U025': { JPN: App.t('U025'), ENG: 'Duplicate Frame' },
+        'U026': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U027': { JPN: '+', ENG: '+' },
+        'U028': { JPN: App.t('U028'), ENG: 'Pen' },
+        'U029': { JPN: App.t('U029'), ENG: 'Eraser' },
+        'U030': { JPN: App.t('U030'), ENG: 'Fill' },
+        'U031': { JPN: App.t('U031'), ENG: 'Eyedropper' },
+        'U032': { JPN: App.t('U032'), ENG: 'Undo' },
+        'U033': { JPN: App.t('U033'), ENG: 'Select' },
+        'U034': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U035': { JPN: App.t('U035'), ENG: 'Paste' },
+        'U036': { JPN: App.t('U036'), ENG: 'Flip V' },
+        'U037': { JPN: App.t('U037'), ENG: 'Flip H' },
+        'U038': { JPN: App.t('U038'), ENG: 'Guide' },
+        'U039': { JPN: '▼', ENG: '▼' },
+        'U042': { JPN: App.t('U042'), ENG: App.t('U042') },
+        'U047': { JPN: '－', ENG: '－' },
+        'U048': { JPN: '＋', ENG: '＋' },
+        'U052': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U053': { JPN: App.t('U053'), ENG: 'Clear' },
+        'U054': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U055': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U066': { JPN: App.t('U066'), ENG: 'Place' },
+        'U067': { JPN: '✕', ENG: '✕' },
+        'U068': { JPN: App.t('U068'), ENG: 'Material' },
+        'U070': { JPN: '×', ENG: '×' },
+        'U077': { JPN: App.t('U077'), ENG: 'Edit' },
+        'U079': { JPN: App.t('U079'), ENG: 'Enter BGM Name' },
+        'U083': { JPN: '～', ENG: '～' },
+        'U086': { JPN: App.t('U086'), ENG: 'Delete BGM' },
+        'U087': { JPN: '〈', ENG: '〈' },
+        'U088': { JPN: App.t('U088'), ENG: 'Tap to Rename' },
+        'U089': { JPN: '〉', ENG: '〉' },
+        'U090': { JPN: App.t('U090'), ENG: 'Add BGM' },
+        'U091': { JPN: App.t('U091'), ENG: 'Drag to Change' },
+        'U092': { JPN: App.t('U092'), ENG: App.t('U092') },
+        'U093': { JPN: App.t('U093'), ENG: App.t('U093') },
+        'U094': { JPN: App.t('U094'), ENG: 'Back' },
+        'U095': { JPN: App.t('U095'), ENG: 'Pen (Input Mode)' },
+        'U096': { JPN: App.t('U096'), ENG: 'Eraser (Long: Clear)' },
+        'U097': { JPN: App.t('U097'), ENG: 'Select Tile Type' },
+        'U098': { JPN: App.t('U098'), ENG: App.t('U098') },
+        'U099': { JPN: App.t('U099'), ENG: App.t('U099') },
+        'U100': { JPN: '敵', ENG: 'Enemy' },
+        'U101': { JPN: App.t('U101'), ENG: App.t('U101') },
+        'U102': { JPN: '⭐', ENG: '⭐' },
+        'U103': { JPN: App.t('U103'), ENG: App.t('U103') },
+        'U104': { JPN: App.t('U104'), ENG: 'Goal' },
+        'U105': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U106': { JPN: App.t('U106'), ENG: '🎮 Player Settings' },
+        'U107': { JPN: App.t('U107'), ENG: 'Main (Required)' },
+        'U108': { JPN: App.t('U108'), ENG: 'Animation (Optional)' },
+        'U109': { JPN: App.t('U109'), ENG: 'Show LIFE' },
+        'U110': { JPN: App.t('U110'), ENG: 'LIFE Count' },
+        'U111': { JPN: '∞', ENG: '∞' },
+        'U112': { JPN: App.t('U112'), ENG: 'Attack Type' },
+        'U113': { JPN: App.t('U113'), ENG: 'Stomp' },
+        'U114': { JPN: App.t('U114'), ENG: 'Weapon' },
+        'U115': { JPN: App.t('U115'), ENG: 'Sound Effect' },
+        'U116': { JPN: App.t('U116'), ENG: App.t('U116') },
+        'U117': { JPN: App.t('U117'), ENG: App.t('U117') },
+        'U118': { JPN: App.t('U118'), ENG: App.t('U118') },
+        'U119': { JPN: App.t('U119'), ENG: App.t('U119') },
+        'U120': { JPN: App.t('U120'), ENG: 'OK' },
+        'U121': { JPN: App.t('U121'), ENG: '👾 Enemy Settings' },
+        'U122': { JPN: App.t('U122'), ENG: 'Move Pattern' },
+        'U123': { JPN: App.t('U123'), ENG: 'Back & Forth' },
+        'U124': { JPN: App.t('U124'), ENG: 'Jump' },
+        'U125': { JPN: App.t('U125'), ENG: 'Chase' },
+        'U126': { JPN: App.t('U126'), ENG: '🧱 Block Settings' },
+        'U127': { JPN: App.t('U127'), ENG: 'Anim' },
+        'U128': { JPN: App.t('U128'), ENG: 'Collision' },
+        'U129': { JPN: App.t('U129'), ENG: '⭐ Item Settings' },
+        'U130': { JPN: App.t('U130'), ENG: 'Effect' },
+        'U131': { JPN: App.t('U131'), ENG: 'Life Up' },
+        'U132': { JPN: App.t('U132'), ENG: 'Get Weapon' },
+        'U133': { JPN: App.t('U133'), ENG: 'Bomb' },
+        'U134': { JPN: App.t('U134'), ENG: App.t('U134') },
+        'U135': { JPN: App.t('U135'), ENG: '🚩 Goal Settings' },
+        'U136': { JPN: App.t('U136'), ENG: 'Reach the Goal' },
+        'U137': { JPN: App.t('U137'), ENG: 'Get All Items' },
+        'U138': { JPN: App.t('U138'), ENG: 'Defeat All Enemies' },
+        'U139': { JPN: App.t('U139'), ENG: 'Default' },
+        'U154': { JPN: App.t('U154'), ENG: '(28 colors)' },
+        'U156': { JPN: App.t('U156'), ENG: '(16 colors)' },
+        'U158': { JPN: App.t('U158'), ENG: '(54 colors)' },
+        'U160': { JPN: App.t('U160'), ENG: '(4 colors)' },
+        'U162': { JPN: App.t('U162'), ENG: '(8 colors)' },
+        'U171': { JPN: App.t('U171'), ENG: App.t('U171') },
+        'U173': { JPN: App.t('U173'), ENG: '(removed: edit key label)' },
+        'U175': { JPN: App.t('U175'), ENG: 'Enter 8-character key' },
+        'U180': { JPN: App.t('U180'), ENG: 'Please select a preset' },
+        'U182': { JPN: '▶', ENG: '▶' },
+        'U184': { JPN: App.t('U184'), ENG: 'Delete this color?\n(Dots using this color will become transparent.)' },
+        'U185': { JPN: App.t('U185'), ENG: 'Shrinking may lose detail. Continue?' },
+        'U187': { JPN: App.t('U187'), ENG: 'Delete this sprite?\n(All usages will be removed.)' },
+        'U188': { JPN: App.t('U188'), ENG: 'Clear this sprite?' },
+        'U189': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U190': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U191': { JPN: App.t('U021'), ENG: App.t('U021') },
+        'U192': { JPN: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }), ENG: App.t('U192', { this.previewCurrentFrame + 1: typeof this.previewCurrentFrame + 1 !== 'undefined' ? this.previewCurrentFrame + 1 : undefined, this.previewFrames.length: typeof this.previewFrames.length !== 'undefined' ? this.previewFrames.length : undefined }) },
+        'U283': { JPN: '■', ENG: '■' },
+        'U284': { JPN: '▶', ENG: '▶' },
+        'U289': { JPN: App.t('U289'), ENG: 'Delete this tile?' },
+        'U290': { JPN: App.t('U290'), ENG: 'Flip function is not yet implemented in the stage editor' },
+        'U291': { JPN: App.t('U291'), ENG: 'Cannot stompt with characters or items' },
+        'U292': { JPN: App.t('U292'), ENG: 'Delete all tiles?' },
+        'U293': { JPN: App.t('U293'), ENG: 'Survival Time' },
+        'U294': { JPN: App.t('U061'), ENG: 'Time Limit' },
+        'U295': { JPN: App.t('U295'), ENG: 'Select Tone' },
+        'U296': { JPN: App.t('U296'), ENG: App.t('U296') },
+        'U297': { JPN: App.t('U297'), ENG: App.t('U297') },
+        'U298': { JPN: App.t('U298'), ENG: App.t('U298') },
+        'U299': { JPN: App.t('U299'), ENG: App.t('U299') },
+        'U300': { JPN: App.t('U300'), ENG: App.t('U300') },
+        'U301': { JPN: App.t('U301'), ENG: App.t('U301') },
+        'U302': { JPN: App.t('U302'), ENG: 'Tremolo (Fast)' },
+        'U303': { JPN: App.t('U303'), ENG: App.t('U303') },
+        'U304': { JPN: App.t('U304'), ENG: App.t('U304') },
+        'U305': { JPN: App.t('U305'), ENG: 'Kick (Pitch Down)' },
+        'U306': { JPN: App.t('U306'), ENG: 'Close' },
+        'U307': { JPN: App.t('U307'), ENG: 'Cannot delete the last BGM' },
+        'U308': { JPN: App.t('U308'), ENG: 'Delete this BGM?' },
+        'U309': { JPN: '▶', ENG: '▶' },
+        'U310': { JPN: '■', ENG: '■' },
+        'U311': { JPN: App.t('U311'), ENG: 'Select action (delete / duplicate / rename)' },
+        'U312': { JPN: App.t('U312'), ENG: 'New Name' },
+        'U313': { JPN: App.t('U313', { this.getCurrentSong().name: typeof this.getCurrentSong().name !== 'undefined' ? this.getCurrentSong().name : undefined }), ENG: 'Delete "${this.getCurrentSong().name}"?' },
+        'U314': { JPN: App.t('U314', { this.currentTrack + 1: typeof this.currentTrack + 1 !== 'undefined' ? this.currentTrack + 1 : undefined }), ENG: 'Delete all notes in Tr${this.currentTrack + 1}?' },
+        'U315': { JPN: App.t('U315'), ENG: 'Select the range to copy' },
+        'U316': { JPN: App.t('U316', { notes.length: typeof notes.length !== 'undefined' ? notes.length : undefined }), ENG: 'Copied ${notes.length} note(s)' },
+        'U317': { JPN: App.t('U317'), ENG: 'Clipboard is empty' },
+        'U318': { JPN: App.t('U189'), ENG: App.t('U189') },
+        'U319': { JPN: App.t('U190'), ENG: App.t('U190') },
+        'U320': { JPN: '0', ENG: '0' },
+        'U321': { JPN: App.t('U321'), ENG: 'Enter Value' },
+        'U322': { JPN: App.t('U322'), ENG: 'Please select a track' },
+        'U323': { JPN: App.t('U323'), ENG: 'Invalid copy range' },
+        'U324': { JPN: App.t('U324'), ENG: 'Jump_01' },
+        'U325': { JPN: App.t('U325'), ENG: 'Jump_02' },
+        'U326': { JPN: App.t('U326'), ENG: 'Jump_03' },
+        'U327': { JPN: App.t('U327'), ENG: 'Jump_04' },
+        'U328': { JPN: App.t('U328'), ENG: 'Jump_05' },
+        'U329': { JPN: App.t('U329'), ENG: 'Attack_01' },
+        'U330': { JPN: App.t('U330'), ENG: 'Attack_02' },
+        'U331': { JPN: App.t('U331'), ENG: 'Attack_03' },
+        'U332': { JPN: App.t('U332'), ENG: 'Attack_04' },
+        'U333': { JPN: App.t('U333'), ENG: 'Attack_05' },
+        'U334': { JPN: App.t('U266'), ENG: 'Damage_01' },
+        'U335': { JPN: App.t('U267'), ENG: 'Damage_02' },
+        'U336': { JPN: App.t('U268'), ENG: 'Damage_03' },
+        'U337': { JPN: App.t('U269'), ENG: 'Damage_04' },
+        'U338': { JPN: App.t('U270'), ENG: 'Damage_05' },
+        'U339': { JPN: App.t('U271'), ENG: 'Get_01' },
+        'U340': { JPN: App.t('U272'), ENG: 'Get_02' },
+        'U341': { JPN: App.t('U273'), ENG: 'Get_03' },
+        'U342': { JPN: App.t('U274'), ENG: 'Get_04' },
+        'U343': { JPN: App.t('U275'), ENG: 'Get_05' },
+        'U344': { JPN: 'その他_01(決定'), ENG: 'Other_01(OK)' },
+        'U345': { JPN: 'その他_02(キャンセル'), ENG: 'Other_02(Cancel)' },
+        'U346': { JPN: 'その他_03(カーソル'), ENG: 'Other_03(Cursor)' },
+        'U347': { JPN: 'その他_04(ポーズ'), ENG: 'Other_04(Pause)' },
+        'U348': { JPN: 'その他_05(爆発'), ENG: 'Other_05(Explosion)' },
+        'U349': { JPN: App.t('U153'), ENG: 'Famitory' },
+        'U350': { JPN: App.t('U155'), ENG: 'Pastel' },
+        'U351': { JPN: App.t('U157'), ENG: 'Famicom' },
+        'U352': { JPN: App.t('U159'), ENG: 'Game Boy' },
+        'U353': { JPN: App.t('U161'), ENG: 'Mono' },
+        'U354': { JPN: App.t('U354'), ENG: 'Switched to Edit Mode' },
+        'U355': { JPN: App.t('U355'), ENG: 'Edit Title' },
+        'U356': { JPN: App.t('U356'), ENG: 'Enter Game Title' },
+        'U357': { JPN: App.t('U357'), ENG: 'Edit Name' },
+        'U358': { JPN: App.t('U358'), ENG: 'Enter Name' },
+        'U359': { JPN: App.t('U167'), ENG: 'Saved!' },
+        'U360': { JPN: App.t('U360'), ENG: 'Save' },
+        'U361': { JPN: App.t('U361'), ENG: 'Don\'t Save' },
+        'U362': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U363': { JPN: App.t('U363', { name: typeof name !== 'undefined' ? name : undefined }), ENG: 'Opened "${name}"' },
+        'U364': { JPN: App.t('U364'), ENG: 'Failed to load project' },
+        'U365': { JPN: App.t('U365'), ENG: 'Imported as "${importName}".\nOpen now?' },
+        'U366': { JPN: App.t('U366'), ENG: 'Imported. You can open it from the "Open" menu.' },
+        'U367': { JPN: App.t('U367'), ENG: 'Failed to read file' },
+        'U368': { JPN: App.t('U368'), ENG: 'That name is already in use' },
+        'U369': { JPN: App.t('U369'), ENG: 'New game created!' },
+        'U371': { JPN: App.t('U371'), ENG: App.t('U371') },
+        'U372': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U373': { JPN: App.t('U168'), ENG: 'Publish this game?' },
+        'U374': { JPN: App.t('U374'), ENG: 'Update the published game?' },
+        'U375': { JPN: App.t('U375'), ENG: 'A URL will be generated so anyone can play' },
+        'U376': { JPN: App.t('U376'), ENG: 'The current content will be overwritten' },
+        'U377': { JPN: App.t('U377'), ENG: 'Processing… Please wait' },
+        'U378': { JPN: App.t('U378'), ENG: 'No cloud connection' },
+        'U379': { JPN: App.t('U379'), ENG: 'Save failed' },
+        'U380': { JPN: App.t('U380'), ENG: 'Published!' },
+        'U381': { JPN: App.t('U381'), ENG: 'Updated!' },
+        'U382': { JPN: App.t('U382'), ENG: 'An error occurred while saving' },
+        'U383': { JPN: App.t('U383'), ENG: 'Copied URL' },
+        'U384': { JPN: App.t('U384'), ENG: 'Copy failed' },
+        'U385': { JPN: App.t('U385', { gameName: typeof gameName !== 'undefined' ? gameName : undefined }), ENG: 'Play "${gameName}"! #FAMITORY' },
+        'U386': { JPN: App.t('U386'), ENG: 'Made "${gameName}"!\nPlay in your browser👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart' },
+        'U387': { JPN: App.t('U387'), ENG: 'I made a game on FAMITORY!\n${url}' },
+        'U388': { JPN: App.t('U388'), ENG: 'Copied for Discord' },
+        'U389': { JPN: App.t('U389'), ENG: 'Please enter a project name' },
+        'U390': { JPN: App.t('U390', { newName: typeof newName !== 'undefined' ? newName : undefined }), ENG: 'Saved as "${newName}"' },
+        'U391': { JPN: App.t('U391'), ENG: 'I made a game on FAMITORY! 🎮\nGive it a try!' },
+        'U392': { JPN: App.t('U392'), ENG: 'Generating share URL...' },
+        'U393': { JPN: App.t('U393'), ENG: 'Error: Save failed' },
+        'U394': { JPN: App.t('U394'), ENG: 'Please set a time limit for Survival mode' },
+        'U395': { JPN: App.t('U165'), ENG: 'Close' },
+        'U396': { JPN: App.t('U396'), ENG: 'Secret Message' },
+        'U397': { JPN: App.t('U397'), ENG: App.t('U397') },
+        'U398': { JPN: App.t('U398'), ENG: App.t('U398') },
+        'U399': { JPN: App.t('U399'), ENG: 'Noise (Pitch)' },
+        'U400': { JPN: App.t('U400'), ENG: App.t('U400') },
+        'U405': { JPN: App.t('U034'), ENG: 'Copy' },
+        'U406': { JPN: App.t('U177'), ENG: 'Duplicate' },
+        'U407': { JPN: App.t('U026'), ENG: 'Delete' },
+        'U408': { JPN: App.t('U105'), ENG: 'Cancel' },
+        'U409': { JPN: App.t('U372'), ENG: 'copy of' },
+        'U410': { JPN: App.t('U410'), ENG: 'Language' },
+        'U413': { JPN: App.t('U013'), ENG: 'Stage' },
+        'U414': { JPN: App.t('U052'), ENG: 'Invincible' },
+        'U415': { JPN: App.t('U053'), ENG: 'Win' },
+        'U416': { JPN: App.t('U054'), ENG: 'Game Over' },
+        'U417': { JPN: App.t('U055'), ENG: 'Boss' },
+        'U418': { JPN: App.t('U051'), ENG: 'None' },
+        'U419': { JPN: App.t('U034'), ENG: 'Copy' },
+        
 
     /**
      * data-i18n 属性を持つ全要素のテキストを現在の言語に切り替える
@@ -2095,12 +2977,26 @@ const App = {
                 el.title = entry[lang];
             }
         });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const id = el.getAttribute('data-i18n-placeholder');
+            const entry = this.I18N[id];
+            if (entry && entry[lang] !== undefined) {
+                el.placeholder = entry[lang];
+            }
+        });
+        document.querySelectorAll('[data-i18n-value]').forEach(el => {
+            const id = el.getAttribute('data-i18n-value');
+            const entry = this.I18N[id];
+            if (entry && entry[lang] !== undefined) {
+                el.value = entry[lang];
+            }
+        });
         // lang-labelは特別処理
         const langLabel = document.getElementById('lang-label');
         if (langLabel) langLabel.textContent = lang;
 
         // html要素のlang属性更新
-        document.documentElement.lang = (lang === 'JPN') ? 'ja' : 'en';
+        document.documentElement.lang = (lang === App.t('U411')) ? 'ja' : 'en';
 
         // ステージエディタのBGM選択ボタン（なし/None）および設定パネルを更新
         if (typeof StageEditor !== 'undefined') {
@@ -2112,17 +3008,30 @@ const App = {
     },
 
     /**
+     * 翻訳テキストを取得する（テンプレート変数対応）
+     */
+    t(id, params = {}) {
+        const entry = this.I18N[id];
+        if (!entry) return id;
+        let text = entry[this.currentLang] || entry[App.t('U411')] || id;
+        for (const [key, value] of Object.entries(params)) {
+            text = text.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), value);
+        }
+        return text;
+    },
+
+    /**
      * ローカライズボタンの初期化
      */
     initLangBtn() {
         // LocalStorageから言語設定を復元
         const savedLang = localStorage.getItem('pgk_lang');
-        if (savedLang === 'ENG') {
-            this.currentLang = 'ENG';
+        if (savedLang === App.t('U412')) {
+            this.currentLang = App.t('U412');
             const btn = document.getElementById('lang-icon-btn');
             if (btn) btn.classList.add('lang-eng');
         } else {
-            this.currentLang = 'JPN';
+            this.currentLang = App.t('U411');
         }
         this.applyLang();
 
@@ -2130,11 +3039,11 @@ const App = {
         const langBtn = document.getElementById('lang-icon-btn');
         if (!langBtn) return;
         langBtn.addEventListener('click', () => {
-            if (this.currentLang === 'JPN') {
-                this.currentLang = 'ENG';
+            if (this.currentLang === App.t('U411')) {
+                this.currentLang = App.t('U412');
                 langBtn.classList.add('lang-eng');
             } else {
-                this.currentLang = 'JPN';
+                this.currentLang = App.t('U411');
                 langBtn.classList.remove('lang-eng');
             }
             localStorage.setItem('pgk_lang', this.currentLang);

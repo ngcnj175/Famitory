@@ -54,11 +54,11 @@
                         <span class="icon-label" data-i18n="U008">SHARE</span>
                     </button>
                     <!-- ローカライズボタン -->
-                    <button id="lang-icon-btn" class="toolbar-icon" title="言語切替">
+                    <button id="lang-icon-btn" class="toolbar-icon" title="言語切替" data-i18n-title="U410">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
                         </svg>
-                        <span class="icon-label" id="lang-label">JPN</span>
+                        <span class="icon-label" id="lang-label" data-i18n="U411">JPN</span>
                     </button>
                 </div>
             </div>
@@ -103,9 +103,9 @@
 
             <!-- ゲーム情報（読み取り専用、編集はステージ設定で） -->
             <div id="game-info">
-                <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
+                <input type="text" id="game-title" value="My Game" data-i18n-value="U017" placeholder="ゲームタイトル" data-i18n-placeholder="U018" readonly>
                 <div id="game-sub-row">
-                    <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                    <input type="text" id="game-author" value="You" placeholder="なまえ" data-i18n-placeholder="U019" readonly>
                 </div>
                 <div id="game-info-bottom">
                     <div id="game-remix-info" class="hidden">
@@ -167,7 +167,7 @@
                     <div id="result-like-area" class="hidden">
                         <button id="result-like-btn" class="result-like-btn">
                             <img src="images/like_icon.svg" alt="like" class="like-icon-result">
-                            <span>いいね！</span>
+                            <span data-i18n="U020">いいね！</span>
                             <span id="result-like-count" class="result-like-count">0</span>
                         </button>
                     </div>
@@ -223,22 +223,22 @@
                                 </label>
                             </div>
                             <div class="preview-row">
-                                <span id="preview-frame-info" class="preview-frame-info">Frame: — / —</span>
+                                <span id="preview-frame-info" class="preview-frame-info" data-i18n="U021">Frame: — / —</span>
                             </div>
                             <div class="preview-row preview-transport">
-                                <button id="preview-prev-btn" class="preview-transport-btn" title="前フレーム">
+                                <button id="preview-prev-btn" class="preview-transport-btn" title="前フレーム" data-i18n-title="U022">
                                     <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
                                 </button>
-                                <button id="preview-play-btn" class="preview-transport-btn preview-play" title="再生/停止">
+                                <button id="preview-play-btn" class="preview-transport-btn preview-play" title="再生/停止" data-i18n-title="U023">
                                     <svg id="preview-play-icon" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
                                 </button>
-                                <button id="preview-next-btn" class="preview-transport-btn" title="次フレーム">
+                                <button id="preview-next-btn" class="preview-transport-btn" title="次フレーム" data-i18n-title="U024">
                                     <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
                                 </button>
-                                <button id="preview-copy-btn" class="preview-transport-btn" title="フレーム複製">
+                                <button id="preview-copy-btn" class="preview-transport-btn" title="フレーム複製" data-i18n-title="U025">
                                     <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                                 </button>
-                                <button id="preview-delete-btn" class="preview-transport-btn" title="削除">
+                                <button id="preview-delete-btn" class="preview-transport-btn" title="削除" data-i18n-title="U026">
                                     <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                                 </button>
                             </div>
@@ -257,7 +257,7 @@
 
                 <!-- スプライトエリア（追加ボタン左固定 + スクロール可能リスト） -->
                 <div id="sprite-area" class="gallery-row">
-                    <button id="add-sprite-btn" class="gallery-add-btn">+</button>
+                    <button id="add-sprite-btn" class="gallery-add-btn" data-i18n="U027">+</button>
                     <div id="sprite-scroll-container" class="gallery-scroll">
                         <div id="sprite-list">
                             <!-- JSで生成 -->
@@ -269,69 +269,69 @@
                 <div id="paint-main-area">
                     <!-- 編集ツール（左側縦1列） -->
                     <div id="paint-tools">
-                        <button class="paint-tool-btn active" data-tool="pen" title="ペン">
+                        <button class="paint-tool-btn active" data-tool="pen" title="ペン" data-i18n-title="U028">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                             </svg>
                         </button>
 
-                        <button class="paint-tool-btn" data-tool="eraser" title="消しゴム">
+                        <button class="paint-tool-btn" data-tool="eraser" title="消しゴム" data-i18n-title="U029">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 01-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="fill" title="塗りつぶし">
+                        <button class="paint-tool-btn" data-tool="fill" title="塗りつぶし" data-i18n-title="U030">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="eyedropper" title="スポイト">
+                        <button class="paint-tool-btn" data-tool="eyedropper" title="スポイト" data-i18n-title="U031">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="undo" title="取り消し">
+                        <button class="paint-tool-btn" data-tool="undo" title="取り消し" data-i18n-title="U032">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
                             </svg>
                         </button>
 
-                        <button class="paint-tool-btn" data-tool="select" title="選択">
+                        <button class="paint-tool-btn" data-tool="select" title="選択" data-i18n-title="U033">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="copy" title="コピー">
+                        <button class="paint-tool-btn" data-tool="copy" title="コピー" data-i18n-title="U405" data-i18n-title="U034">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="paste" title="ペースト">
+                        <button class="paint-tool-btn" data-tool="paste" title="ペースト" data-i18n-title="U035">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn flip-v-btn" data-tool="flip-v" title="上下反転">
+                        <button class="paint-tool-btn flip-v-btn" data-tool="flip-v" title="上下反転" data-i18n-title="U036">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="flip-h" title="左右反転">
+                        <button class="paint-tool-btn" data-tool="flip-h" title="左右反転" data-i18n-title="U037">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="guide" title="おてほん">
+                        <button class="paint-tool-btn" data-tool="guide" title="おてほん" data-i18n-title="U038">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
@@ -345,7 +345,7 @@
 
                 <!-- カラーパレットエリア（追加ボタン左固定 + スクロール可能リスト） -->
                 <div id="color-area" class="gallery-row">
-                    <button id="add-color-btn" class="gallery-add-btn">+</button>
+                    <button id="add-color-btn" class="gallery-add-btn" data-i18n="U027">+</button>
                     <div id="color-scroll-container" class="gallery-scroll">
                         <div id="color-list">
                             <!-- JSで生成 -->
@@ -362,14 +362,14 @@
             <!-- ステージ設定パネル（折りたたみ可能、デフォルト非表示） -->
             <div id="stage-settings-panel" class="collapsed">
                 <div id="stage-settings-header">
-                    <span id="stage-settings-toggle">▼</span>
+                    <span id="stage-settings-toggle" data-i18n="U039">▼</span>
                     <span data-i18n="U040">ステージ設定</span>
                 </div>
                 <div id="stage-settings-content">
                     <!-- ステージタイトル -->
                     <div class="setting-row">
-                        <label data-i18n="U041">ゲームタイトル</label>
-                        <input type="text" id="stage-name-input" placeholder="NEW GAME">
+                        <label data-i18n="U041" data-i18n="U404">ゲームタイトル</label>
+                        <input type="text" id="stage-name-input" placeholder="NEW GAME" data-i18n-placeholder="U042">
                     </div>
                     <!-- 作成者名 -->
                     <div class="setting-row">
@@ -381,7 +381,7 @@
                         <label data-i18n="U044">エディットキー</label>
                         <div class="editkey-container">
                             <input type="text" id="stage-editkey-display" readonly>
-                            <button id="copy-editkey-btn" class="editkey-copy-btn" title="コピー">
+                            <button id="copy-editkey-btn" class="editkey-copy-btn" title="コピー" data-i18n-title="U405" data-i18n-title="U034">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -394,18 +394,18 @@
                         <label data-i18n="U045">ステージサイズ</label>
                         <div class="size-row">
                             <span class="size-label" data-i18n="U046">縦</span>
-                            <button id="area-h-minus" class="size-btn">－</button>
+                            <button id="area-h-minus" class="size-btn" data-i18n="U047">－</button>
                             <span id="area-h-value">1</span>
-                            <button id="area-h-plus" class="size-btn">＋</button>
+                            <button id="area-h-plus" class="size-btn" data-i18n="U048">＋</button>
                         </div>
                     </div>
                     <div class="setting-row setting-row-size-sub">
                         <label></label>
                         <div class="size-row">
                             <span class="size-label" data-i18n="U049">横</span>
-                            <button id="area-w-minus" class="size-btn">－</button>
+                            <button id="area-w-minus" class="size-btn" data-i18n="U047">－</button>
                             <span id="area-w-value">1</span>
-                            <button id="area-w-plus" class="size-btn">＋</button>
+                            <button id="area-w-plus" class="size-btn" data-i18n="U048">＋</button>
                         </div>
                     </div>
                     <!-- 背景色 -->
@@ -427,16 +427,16 @@
                                     data-bgm-type="invincible">なし</button>
                             </div>
                             <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U415">クリア</span>
+                                <span class="bgm-label" data-i18n="U415" data-i18n="U053">クリア</span>
                                 <button id="bgm-clear-btn" class="bgm-select-btn" data-bgm-type="clear">なし</button>
                             </div>
                             <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U416">ゲームオーバー</span>
+                                <span class="bgm-label" data-i18n="U416" data-i18n="U054">ゲームオーバー</span>
                                 <button id="bgm-gameover-btn" class="bgm-select-btn"
                                     data-bgm-type="gameover">なし</button>
                             </div>
                             <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U417">ボス</span>
+                                <span class="bgm-label" data-i18n="U417" data-i18n="U055">ボス</span>
                                 <button id="bgm-boss-btn" class="bgm-select-btn" data-bgm-type="boss">なし</button>
                             </div>
                         </div>
@@ -482,62 +482,62 @@
                 <div id="paint-main-area">
                     <!-- 編集ツール（左側縦1列） -->
                     <div id="stage-tools" class="paint-tools-wrapper">
-                        <button class="paint-tool-btn active" data-tool="pen" title="配置">
+                        <button class="paint-tool-btn active" data-tool="pen" title="配置" data-i18n-title="U066">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                             </svg>
                         </button>
 
-                        <button class="paint-tool-btn" data-tool="eraser" title="消しゴム">
+                        <button class="paint-tool-btn" data-tool="eraser" title="消しゴム" data-i18n-title="U029">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 01-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="fill" title="塗りつぶし">
+                        <button class="paint-tool-btn" data-tool="fill" title="塗りつぶし" data-i18n-title="U030">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="eyedropper" title="スポイト">
+                        <button class="paint-tool-btn" data-tool="eyedropper" title="スポイト" data-i18n-title="U031">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="undo" title="取り消し">
+                        <button class="paint-tool-btn" data-tool="undo" title="取り消し" data-i18n-title="U032">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M12.5 8c-2.65 0-5.05 1.04-6.82 2.75L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="select" title="選択">
+                        <button class="paint-tool-btn" data-tool="select" title="選択" data-i18n-title="U033">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="copy" title="コピー">
+                        <button class="paint-tool-btn" data-tool="copy" title="コピー" data-i18n-title="U405" data-i18n-title="U034">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="paste" title="ペースト">
+                        <button class="paint-tool-btn" data-tool="paste" title="ペースト" data-i18n-title="U035">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn flip-v-btn" data-tool="flip-v" title="上下反転">
+                        <button class="paint-tool-btn flip-v-btn" data-tool="flip-v" title="上下反転" data-i18n-title="U036">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z" />
                             </svg>
                         </button>
-                        <button class="paint-tool-btn" data-tool="flip-h" title="左右反転">
+                        <button class="paint-tool-btn" data-tool="flip-h" title="左右反転" data-i18n-title="U037">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z" />
@@ -553,7 +553,7 @@
 
                 <!-- タイルエリア（追加ボタン左固定 + スクロール可能リスト） -->
                 <div id="tile-area" class="gallery-row">
-                    <button id="add-tile-btn" class="gallery-add-btn">+</button>
+                    <button id="add-tile-btn" class="gallery-add-btn" data-i18n="U027">+</button>
                     <div class="gallery-scroll">
                         <div id="tile-list">
                             <!-- JSで生成 -->
@@ -564,10 +564,10 @@
                 <!-- タイル設定パネル（インライン展開） -->
                 <div id="tile-config-panel" class="hidden">
                     <!-- 閉じるボタン -->
-                    <button id="config-close-btn" class="panel-close-btn">✕</button>
+                    <button id="config-close-btn" class="panel-close-btn" data-i18n="U067">✕</button>
 
                     <!-- 属性表示（ラベルのみ、変更不可） -->
-                    <div id="tile-type-label" class="config-type-label">素材</div>
+                    <div id="tile-type-label" class="config-type-label" data-i18n="U068">素材</div>
 
                     <!-- スプライト設定（属性によって表示内容変更） -->
                     <div id="sprite-config-section">
@@ -592,7 +592,7 @@
             <div class="popup-content sprite-select-content">
                 <div class="popup-header">
                     <span class="popup-title" data-i18n="U069">スプライトを選択</span>
-                    <button id="sprite-select-cancel" class="popup-close">×</button>
+                    <button id="sprite-select-cancel" class="popup-close" data-i18n="U070">×</button>
                 </div>
                 <div class="sprite-select-scroll">
                     <div id="sprite-select-list">
@@ -628,7 +628,7 @@
             <div class="popup-content type-select-content">
                 <div class="popup-header">
                     <span class="popup-title" data-i18n="U072">タイプを選択</span>
-                    <button id="type-select-cancel" class="popup-close">✕</button>
+                    <button id="type-select-cancel" class="popup-close" data-i18n="U067">✕</button>
                 </div>
                 <div class="type-list">
                     <button class="type-select-item" data-type="player" data-i18n="U073">プレイヤー</button>
@@ -643,8 +643,8 @@
         <div id="text-edit-popup" class="popup-overlay hidden">
             <div class="popup-content song-name-content">
                 <div class="popup-header">
-                    <span class="popup-title" id="text-edit-popup-title">編集</span>
-                    <button id="text-edit-cancel" class="popup-close">✕</button>
+                    <span class="popup-title" id="text-edit-popup-title" data-i18n="U077">編集</span>
+                    <button id="text-edit-cancel" class="popup-close" data-i18n="U067">✕</button>
                 </div>
                 <div class="popup-body" style="padding: 16px; display: flex; justify-content: center;">
                     <input type="text" id="text-edit-input" maxlength="20" placeholder=""
@@ -660,11 +660,11 @@
         <div id="song-name-popup" class="popup-overlay hidden">
             <div class="popup-content song-name-content">
                 <div class="popup-header">
-                    <span class="popup-title">BGM名変更</span>
-                    <button id="song-name-cancel" class="popup-close">✕</button>
+                    <span class="popup-title" data-i18n="U078">BGM名変更</span>
+                    <button id="song-name-cancel" class="popup-close" data-i18n="U067">✕</button>
                 </div>
                 <div class="popup-body" style="padding: 16px; display: flex; justify-content: center;">
-                    <input type="text" id="song-name-input" maxlength="16" placeholder="BGM名を入力"
+                    <input type="text" id="song-name-input" maxlength="16" placeholder="BGM名を入力" data-i18n-placeholder="U079"
                         style="width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
                 <div class="popup-actions">
@@ -677,13 +677,13 @@
         <div id="numcopy-popup" class="popup-overlay hidden">
             <div class="popup-content song-name-content">
                 <div class="popup-header">
-                    <span class="popup-title">コピー＆ペースト</span>
-                    <button id="numcopy-cancel" class="popup-close">✕</button>
+                    <span class="popup-title" data-i18n="U080">コピー＆ペースト</span>
+                    <button id="numcopy-cancel" class="popup-close" data-i18n="U067">✕</button>
                 </div>
                 <div class="popup-body" style="padding: 12px;">
                     <!-- トラック選択 -->
                     <div class="numcopy-section">
-                        <label class="numcopy-label">トラック</label>
+                        <label class="numcopy-label" data-i18n="U081">トラック</label>
                         <div class="numcopy-track-btns">
                             <button class="numcopy-track-btn" data-track="0">1</button>
                             <button class="numcopy-track-btn" data-track="1">2</button>
@@ -694,17 +694,17 @@
                     </div>
                     <!-- コピー範囲 -->
                     <div class="numcopy-section">
-                        <label class="numcopy-label">コピー範囲</label>
+                        <label class="numcopy-label" data-i18n="U082">コピー範囲</label>
                         <div class="numcopy-range">
                             <span class="numcopy-drag-value" id="numcopy-from">0</span>
-                            <span class="numcopy-separator">～</span>
+                            <span class="numcopy-separator" data-i18n="U083">～</span>
                             <span class="numcopy-drag-value" id="numcopy-to">15</span>
                             <span class="numcopy-unit">STEP</span>
                         </div>
                     </div>
                     <!-- ペースト先 -->
                     <div class="numcopy-section">
-                        <label class="numcopy-label">ペースト先</label>
+                        <label class="numcopy-label" data-i18n="U084">ペースト先</label>
                         <div class="numcopy-range">
                             <span class="numcopy-drag-value" id="numcopy-paste-at">0</span>
                             <span class="numcopy-unit">STEP</span>
@@ -712,7 +712,7 @@
                     </div>
                 </div>
                 <div class="popup-actions">
-                    <button id="numcopy-exec" class="popup-btn primary">実行</button>
+                    <button id="numcopy-exec" class="popup-btn primary" data-i18n="U085">実行</button>
                 </div>
             </div>
         </div>
@@ -724,19 +724,19 @@
             <!-- 1. ヘッダー：ソング制御盤 -->
             <div id="bgm-console-header">
                 <div class="console-lcd-group right">
-                    <button id="song-delete-btn" class="console-nav-btn song-action-btn" title="BGM削除">-</button>
-                    <button id="song-prev-btn" class="console-nav-btn">〈</button>
-                    <div id="song-title-display" class="console-lcd title-lcd" title="タップで名前変更"><span>BGM 1</span></div>
-                    <button id="song-next-btn" class="console-nav-btn">〉</button>
-                    <button id="song-add-btn" class="console-nav-btn song-action-btn" title="BGM追加">+</button>
+                    <button id="song-delete-btn" class="console-nav-btn song-action-btn" title="BGM削除" data-i18n-title="U086">-</button>
+                    <button id="song-prev-btn" class="console-nav-btn" data-i18n="U087">〈</button>
+                    <div id="song-title-display" class="console-lcd title-lcd" title="タップで名前変更" data-i18n-title="U088"><span>BGM 1</span></div>
+                    <button id="song-next-btn" class="console-nav-btn" data-i18n="U089">〉</button>
+                    <button id="song-add-btn" class="console-nav-btn song-action-btn" title="BGM追加" data-i18n-title="U090" data-i18n="U027">+</button>
 
                     <div class="console-param">
                         <span class="label">SPEED</span>
-                        <span id="bpm-display" class="console-lcd value-lcd" title="上下ドラッグで変更">120</span>
+                        <span id="bpm-display" class="console-lcd value-lcd" title="上下ドラッグで変更" data-i18n-title="U091">120</span>
                     </div>
                     <div class="console-param">
                         <span class="label">STEP</span>
-                        <span id="bar-display" class="console-lcd value-lcd" title="上下ドラッグで変更">4</span>
+                        <span id="bar-display" class="console-lcd value-lcd" title="上下ドラッグで変更" data-i18n-title="U091">4</span>
                     </div>
                 </div>
             </div>
@@ -745,31 +745,31 @@
             <div id="sound-main-area">
                 <!-- 編集ツール（左側縦列：ペン・消しゴム・選択・コピー・ペースト） -->
                 <div id="sound-controls">
-                    <button id="sound-pen-btn" class="sound-ctrl-btn" title="ペン（入力モード）">
+                    <button id="sound-pen-btn" class="sound-ctrl-btn" title="ペン（入力モード）" data-i18n-title="U095">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
                     </button>
-                    <button id="sound-eraser-btn" class="sound-ctrl-btn" title="消しゴム (Long: Clear)">
+                    <button id="sound-eraser-btn" class="sound-ctrl-btn" title="消しゴム (Long: Clear)" data-i18n-title="U096">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 01-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z" />
                         </svg>
                     </button>
-                    <button id="sound-select-btn" class="sound-ctrl-btn" title="選択">
+                    <button id="sound-select-btn" class="sound-ctrl-btn" title="選択" data-i18n-title="U033">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z" />
                         </svg>
                     </button>
-                    <button id="sound-copy-btn" class="sound-ctrl-btn" title="コピー">
+                    <button id="sound-copy-btn" class="sound-ctrl-btn" title="コピー" data-i18n-title="U405" data-i18n-title="U034">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                         </svg>
                     </button>
-                    <button id="sound-paste-btn" class="sound-ctrl-btn" title="ペースト">
+                    <button id="sound-paste-btn" class="sound-ctrl-btn" title="ペースト" data-i18n-title="U035">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z" />
@@ -785,7 +785,7 @@
 
             <!-- 2.5. ピアノロール下部ボタンバー -->
             <div id="sound-bottom-bar">
-                <button id="sound-del-btn" class="sound-bottom-btn" title="戻る">
+                <button id="sound-del-btn" class="sound-bottom-btn" title="戻る" data-i18n-title="U094">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
                     </svg>
@@ -800,12 +800,12 @@
                         <path d="M4 16 C4 8, 20 8, 20 16" stroke-linecap="round" />
                     </svg>
                 </button>
-                <button id="sound-step-rec-btn" class="sound-bottom-btn step-rec" title="STEP REC">
+                <button id="sound-step-rec-btn" class="sound-bottom-btn step-rec" title="STEP REC" data-i18n-title="U093">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <circle cx="12" cy="12" r="8" />
                     </svg>
                 </button>
-                <button id="sound-play-btn" class="sound-bottom-btn play-stop" title="PLAY/STOP">
+                <button id="sound-play-btn" class="sound-bottom-btn play-stop" title="PLAY/STOP" data-i18n-title="U092">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8 5v14l11-7z" />
                     </svg>
@@ -860,33 +860,33 @@
     <!-- 種別選択モーダル -->
     <div id="type-select-modal" class="modal-overlay hidden">
         <div class="modal-content modal-small">
-            <div class="modal-header">タイル種別を選択</div>
+            <div class="modal-header" data-i18n="U097">タイル種別を選択</div>
             <div class="modal-body">
                 <div class="type-grid">
                     <button class="type-btn" data-type="player">
-                        <span class="type-icon">🎮</span>
+                        <span class="type-icon" data-i18n="U098">🎮</span>
                         <span class="type-label">プレイヤー</span>
                     </button>
                     <button class="type-btn" data-type="enemy">
-                        <span class="type-icon">👾</span>
-                        <span class="type-label">敵</span>
+                        <span class="type-icon" data-i18n="U099">👾</span>
+                        <span class="type-label" data-i18n="U100">敵</span>
                     </button>
                     <button class="type-btn" data-type="material">
-                        <span class="type-icon">🧱</span>
-                        <span class="type-label">素材</span>
+                        <span class="type-icon" data-i18n="U101">🧱</span>
+                        <span class="type-label" data-i18n="U068">素材</span>
                     </button>
                     <button class="type-btn" data-type="item">
-                        <span class="type-icon">⭐</span>
+                        <span class="type-icon" data-i18n="U102">⭐</span>
                         <span class="type-label">アイテム</span>
                     </button>
                     <button class="type-btn" data-type="goal">
-                        <span class="type-icon">🚩</span>
-                        <span class="type-label">ゴール</span>
+                        <span class="type-icon" data-i18n="U103">🚩</span>
+                        <span class="type-label" data-i18n="U104">ゴール</span>
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
             </div>
         </div>
     </div>
@@ -894,44 +894,44 @@
     <!-- プレイヤー設定モーダル -->
     <div id="player-config-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header">🎮 プレイヤー設定</div>
+            <div class="modal-header" data-i18n="U106">🎮 プレイヤー設定</div>
             <div class="modal-body">
                 <div class="config-section">
-                    <label class="config-label">メイン (必須)</label>
+                    <label class="config-label" data-i18n="U107">メイン (必須)</label>
                     <button class="sprite-select-btn" data-slot="main">選択</button>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">アニメーション (任意)</label>
+                    <label class="config-label" data-i18n="U108">アニメーション (任意)</label>
                     <div class="anim-grid">
                         <div class="anim-item"><span>WALK</span><button class="sprite-select-btn small"
-                                data-slot="walk">+</button></div>
+                                data-slot="walk" data-i18n="U027">+</button></div>
                         <div class="anim-item"><span>JUMP</span><button class="sprite-select-btn small"
-                                data-slot="jump">+</button></div>
+                                data-slot="jump" data-i18n="U027">+</button></div>
                         <div class="anim-item"><span>ATTACK</span><button class="sprite-select-btn small"
-                                data-slot="attack">+</button></div>
+                                data-slot="attack" data-i18n="U027">+</button></div>
                         <div class="anim-item"><span>SHOT</span><button class="sprite-select-btn small"
-                                data-slot="shot">+</button></div>
+                                data-slot="shot" data-i18n="U027">+</button></div>
                     </div>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">LIFE表示</label>
-                    <button class="sprite-select-btn small" data-slot="life">+</button>
-                    <label class="config-label inline">LIFE数</label>
+                    <label class="config-label" data-i18n="U109">LIFE表示</label>
+                    <button class="sprite-select-btn small" data-slot="life" data-i18n="U027">+</button>
+                    <label class="config-label inline" data-i18n="U110">LIFE数</label>
                     <select class="config-select" id="player-life-count">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3" selected>3</option>
                         <option value="5">5</option>
                         <option value="10">10</option>
-                        <option value="-1">∞</option>
+                        <option value="-1" data-i18n="U111">∞</option>
                     </select>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">攻撃方法</label>
+                    <label class="config-label" data-i18n="U112">攻撃方法</label>
                     <div class="radio-group">
                         <label><input type="radio" name="attack-type" value="none" checked> なし</label>
-                        <label><input type="radio" name="attack-type" value="stomp"> 踏む</label>
-                        <label><input type="radio" name="attack-type" value="weapon"> 武器</label>
+                        <label><input type="radio" name="attack-type" value="stomp" data-i18n="U113"> 踏む</label>
+                        <label><input type="radio" name="attack-type" value="weapon" data-i18n="U114"> 武器</label>
                         <select class="config-select small" id="weapon-range">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -941,18 +941,18 @@
                     </div>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">効果音</label>
+                    <label class="config-label" data-i18n="U115">効果音</label>
                     <div class="sound-grid">
-                        <button class="sound-btn" data-sound="jump">Jump ♪</button>
-                        <button class="sound-btn" data-sound="attack">Attack ♪</button>
-                        <button class="sound-btn" data-sound="damage">Damage ♪</button>
-                        <button class="sound-btn" data-sound="ko">KO ♪</button>
+                        <button class="sound-btn" data-sound="jump" data-i18n="U116">Jump ♪</button>
+                        <button class="sound-btn" data-sound="attack" data-i18n="U117">Attack ♪</button>
+                        <button class="sound-btn" data-sound="damage" data-i18n="U118">Damage ♪</button>
+                        <button class="sound-btn" data-sound="ko" data-i18n="U119">KO ♪</button>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -960,56 +960,56 @@
     <!-- 敵設定モーダル -->
     <div id="enemy-config-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header">👾 敵設定</div>
+            <div class="modal-header" data-i18n="U121">👾 敵設定</div>
             <div class="modal-body">
                 <div class="config-section">
-                    <label class="config-label">メイン (必須)</label>
+                    <label class="config-label" data-i18n="U107">メイン (必須)</label>
                     <button class="sprite-select-btn" data-slot="main">選択</button>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">アニメーション (任意)</label>
+                    <label class="config-label" data-i18n="U108">アニメーション (任意)</label>
                     <div class="anim-grid">
                         <div class="anim-item"><span>WALK</span><button class="sprite-select-btn small"
-                                data-slot="walk">+</button></div>
+                                data-slot="walk" data-i18n="U027">+</button></div>
                         <div class="anim-item"><span>JUMP</span><button class="sprite-select-btn small"
-                                data-slot="jump">+</button></div>
+                                data-slot="jump" data-i18n="U027">+</button></div>
                         <div class="anim-item"><span>ATTACK</span><button class="sprite-select-btn small"
-                                data-slot="attack">+</button></div>
+                                data-slot="attack" data-i18n="U027">+</button></div>
                     </div>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">LIFE数</label>
+                    <label class="config-label" data-i18n="U110">LIFE数</label>
                     <select class="config-select" id="enemy-life-count">
                         <option value="1" selected>1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="5">5</option>
                         <option value="10">10</option>
-                        <option value="-1">∞</option>
+                        <option value="-1" data-i18n="U111">∞</option>
                     </select>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">移動パターン</label>
+                    <label class="config-label" data-i18n="U122">移動パターン</label>
                     <div class="radio-group">
                         <label><input type="radio" name="enemy-move" value="none" checked> なし</label>
-                        <label><input type="radio" name="enemy-move" value="patrol"> 往復</label>
-                        <label><input type="radio" name="enemy-move" value="jump"> ジャンプ</label>
-                        <label><input type="radio" name="enemy-move" value="chase"> 追跡</label>
+                        <label><input type="radio" name="enemy-move" value="patrol" data-i18n="U123"> 往復</label>
+                        <label><input type="radio" name="enemy-move" value="jump" data-i18n="U124"> ジャンプ</label>
+                        <label><input type="radio" name="enemy-move" value="chase" data-i18n="U125"> 追跡</label>
                     </div>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">効果音</label>
+                    <label class="config-label" data-i18n="U115">効果音</label>
                     <div class="sound-grid">
-                        <button class="sound-btn" data-sound="jump">Jump ♪</button>
-                        <button class="sound-btn" data-sound="attack">Attack ♪</button>
-                        <button class="sound-btn" data-sound="damage">Damage ♪</button>
-                        <button class="sound-btn" data-sound="ko">KO ♪</button>
+                        <button class="sound-btn" data-sound="jump" data-i18n="U116">Jump ♪</button>
+                        <button class="sound-btn" data-sound="attack" data-i18n="U117">Attack ♪</button>
+                        <button class="sound-btn" data-sound="damage" data-i18n="U118">Damage ♪</button>
+                        <button class="sound-btn" data-sound="ko" data-i18n="U119">KO ♪</button>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1017,22 +1017,22 @@
     <!-- 素材設定モーダル -->
     <div id="material-config-modal" class="modal-overlay hidden">
         <div class="modal-content modal-small">
-            <div class="modal-header">🧱 素材設定</div>
+            <div class="modal-header" data-i18n="U126">🧱 素材設定</div>
             <div class="modal-body">
                 <div class="config-section">
-                    <label class="config-label">メイン (必須)</label>
+                    <label class="config-label" data-i18n="U107">メイン (必須)</label>
                     <button class="sprite-select-btn" data-slot="main">選択</button>
-                    <label class="config-label inline">アニメ</label>
-                    <button class="sprite-select-btn small" data-slot="anim">+</button>
+                    <label class="config-label inline" data-i18n="U127">アニメ</label>
+                    <button class="sprite-select-btn small" data-slot="anim" data-i18n="U027">+</button>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">当たり判定</label>
+                    <label class="config-label" data-i18n="U128">当たり判定</label>
                     <label class="checkbox-label"><input type="checkbox" id="material-collision" checked> ON</label>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">LIFE数</label>
+                    <label class="config-label" data-i18n="U110">LIFE数</label>
                     <select class="config-select" id="material-life-count">
-                        <option value="-1" selected>∞</option>
+                        <option value="-1" selected data-i18n="U111">∞</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -1042,8 +1042,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1051,31 +1051,31 @@
     <!-- アイテム設定モーダル -->
     <div id="item-config-modal" class="modal-overlay hidden">
         <div class="modal-content modal-small">
-            <div class="modal-header">⭐ アイテム設定</div>
+            <div class="modal-header" data-i18n="U129">⭐ アイテム設定</div>
             <div class="modal-body">
                 <div class="config-section">
-                    <label class="config-label">メイン (必須)</label>
+                    <label class="config-label" data-i18n="U107">メイン (必須)</label>
                     <button class="sprite-select-btn" data-slot="main">選択</button>
-                    <label class="config-label inline">アニメ</label>
-                    <button class="sprite-select-btn small" data-slot="anim">+</button>
+                    <label class="config-label inline" data-i18n="U127">アニメ</label>
+                    <button class="sprite-select-btn small" data-slot="anim" data-i18n="U027">+</button>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">効果</label>
+                    <label class="config-label" data-i18n="U130">効果</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="item-effect" value="invincible"> 無敵</label>
-                        <label><input type="radio" name="item-effect" value="lifeup" checked> ライフアップ</label>
-                        <label><input type="radio" name="item-effect" value="weapon"> 武器取得</label>
-                        <label><input type="radio" name="item-effect" value="bomb"> ボム</label>
+                        <label><input type="radio" name="item-effect" value="invincible" data-i18n="U052"> 無敵</label>
+                        <label><input type="radio" name="item-effect" value="lifeup" checked data-i18n="U131"> ライフアップ</label>
+                        <label><input type="radio" name="item-effect" value="weapon" data-i18n="U132"> 武器取得</label>
+                        <label><input type="radio" name="item-effect" value="bomb" data-i18n="U133"> ボム</label>
                     </div>
                 </div>
                 <div class="config-section">
-                    <label class="config-label">効果音</label>
-                    <button class="sound-btn" data-sound="get">Get ♪</button>
+                    <label class="config-label" data-i18n="U115">効果音</label>
+                    <button class="sound-btn" data-sound="get" data-i18n="U134">Get ♪</button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1083,18 +1083,18 @@
     <!-- ゴール設定モーダル -->
     <div id="goal-config-modal" class="modal-overlay hidden">
         <div class="modal-content modal-small">
-            <div class="modal-header">🚩 ゴール設定</div>
+            <div class="modal-header" data-i18n="U135">🚩 ゴール設定</div>
             <div class="modal-body">
                 <div class="config-section">
-                    <label class="config-label">メイン (必須)</label>
+                    <label class="config-label" data-i18n="U107">メイン (必須)</label>
                     <button class="sprite-select-btn" data-slot="main">選択</button>
-                    <label class="config-label inline">アニメ</label>
-                    <button class="sprite-select-btn small" data-slot="anim">+</button>
+                    <label class="config-label inline" data-i18n="U127">アニメ</label>
+                    <button class="sprite-select-btn small" data-slot="anim" data-i18n="U027">+</button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1107,9 +1107,9 @@
                 <div class="config-section">
                     <label class="config-label">クリア条件</label>
                     <div class="radio-group vertical">
-                        <label><input type="radio" name="clear-condition" value="goal" checked> ゴールにたどり着く</label>
-                        <label><input type="radio" name="clear-condition" value="items"> 全アイテム取得</label>
-                        <label><input type="radio" name="clear-condition" value="enemies"> 敵全滅</label>
+                        <label><input type="radio" name="clear-condition" value="goal" checked data-i18n="U136"> ゴールにたどり着く</label>
+                        <label><input type="radio" name="clear-condition" value="items" data-i18n="U137"> 全アイテム取得</label>
+                        <label><input type="radio" name="clear-condition" value="enemies" data-i18n="U138"> 敵全滅</label>
                     </div>
                 </div>
                 <div class="config-section">
@@ -1119,33 +1119,33 @@
                             <span>BGM</span>
                             <select class="config-select" id="stage-bgm">
                                 <option value="">なし</option>
-                                <option value="default">デフォルト</option>
+                                <option value="default" data-i18n="U139">デフォルト</option>
                             </select>
                         </div>
                         <div class="sound-config-item">
                             <span>CLEAR</span>
                             <select class="config-select" id="stage-clear">
-                                <option value="default" selected>デフォルト</option>
+                                <option value="default" selected data-i18n="U139">デフォルト</option>
                             </select>
                         </div>
                         <div class="sound-config-item">
                             <span>GAMEOVER</span>
                             <select class="config-select" id="stage-gameover">
-                                <option value="default" selected>デフォルト</option>
+                                <option value="default" selected data-i18n="U139">デフォルト</option>
                             </select>
                         </div>
                         <div class="sound-config-item">
                             <span>STAR</span>
                             <select class="config-select" id="stage-star">
-                                <option value="default" selected>デフォルト</option>
+                                <option value="default" selected data-i18n="U139">デフォルト</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1160,7 +1160,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
             </div>
         </div>
     </div>
@@ -1267,7 +1267,7 @@
             <div class="modal-header-simple" data-i18n="U150">あたらしいゲームをつくる</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label data-i18n="U403">ゲームタイトル</label>
+                    <label data-i18n="U403" data-i18n="U404">ゲームタイトル</label>
                     <input type="text" id="new-game-name" value="NEW GAME" class="simple-input">
                 </div>
             </div>
@@ -1287,27 +1287,27 @@
                 <div class="preset-item" data-value="famitory">
                     <div class="preset-item-arrow"></div>
                     <span class="preset-name" data-i18n="U153">ファミトリー</span>
-                    <span class="preset-count">(28色)</span>
+                    <span class="preset-count" data-i18n="U154">(28色)</span>
                 </div>
                 <div class="preset-item" data-value="pastel">
                     <div class="preset-item-arrow"></div>
                     <span class="preset-name" data-i18n="U155">パステル</span>
-                    <span class="preset-count">(16色)</span>
+                    <span class="preset-count" data-i18n="U156">(16色)</span>
                 </div>
                 <div class="preset-item" data-value="famicom">
                     <div class="preset-item-arrow"></div>
                     <span class="preset-name" data-i18n="U157">ファミコン</span>
-                    <span class="preset-count">(54色)</span>
+                    <span class="preset-count" data-i18n="U158">(54色)</span>
                 </div>
                 <div class="preset-item" data-value="gameboy">
                     <div class="preset-item-arrow"></div>
                     <span class="preset-name" data-i18n="U159">ゲームボーイ</span>
-                    <span class="preset-count">(4色)</span>
+                    <span class="preset-count" data-i18n="U160">(4色)</span>
                 </div>
                 <div class="preset-item" data-value="mono">
                     <div class="preset-item-arrow"></div>
                     <span class="preset-name" data-i18n="U161">モノクロ</span>
-                    <span class="preset-count">(8色)</span>
+                    <span class="preset-count" data-i18n="U162">(8色)</span>
                 </div>
             </div>
 
@@ -1325,7 +1325,7 @@
     <!-- 数値入力モーダル (iOS対策: prompt回避) -->
     <div id="number-input-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple" id="number-input-title">値を入力を</div>
+            <div class="modal-header-simple" id="number-input-title" data-i18n="U166">値を入力を</div>
             <div class="modal-body">
                 <div class="input-group">
                     <input type="number" id="number-input-value" class="simple-input"
@@ -1334,7 +1334,7 @@
             </div>
             <div class="modal-footer-actions">
                 <button class="modal-action-btn primary" id="number-input-ok">OK</button>
-                <button class="modal-action-btn cancel" id="number-input-cancel">キャンセル</button>
+                <button class="modal-action-btn cancel" id="number-input-cancel" data-i18n="U105">キャンセル</button>
             </div>
         </div>
     </div>
@@ -1382,8 +1382,8 @@
             <div class="modal-header-simple" data-i18n="U170">なまえをつけてセーブ</div>
             <div class="modal-body">
                 <div class="input-group">
-                    <label data-i18n="U403">ゲームタイトル</label>
-                    <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name">
+                    <label data-i18n="U403" data-i18n="U404">ゲームタイトル</label>
+                    <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name" data-i18n-placeholder="U171">
                 </div>
             </div>
             <div class="modal-footer-actions">
@@ -1398,14 +1398,14 @@
         <div class="modal-content modal-small">
             <div class="modal-body">
                 <p style="font-size:12px;color:#8888aa;margin-bottom:12px;" data-i18n="U174">このゲームを編集するには<br>エディットキーが必要です</p>
-                <input type="text" id="editkey-input" placeholder="8桁のキーを入力"
+                <input type="text" id="editkey-input" placeholder="8桁のキーを入力" data-i18n-placeholder="U175"
                     maxlength="8" autocomplete="off" style="width:100%;padding:10px;font-size:16px;text-align:center;letter-spacing:4px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;">
                 <p id="editkey-error" class="hidden" style="color:#ff6b6b;font-size:12px;margin-top:8px;text-align:center;">
                     キーが一致しません
                 </p>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" id="editkey-cancel">キャンセル</button>
+                <button class="modal-btn cancel-btn" id="editkey-cancel" data-i18n="U105">キャンセル</button>
                 <button class="modal-btn ok-btn" id="editkey-ok" data-i18n="U176">認証</button>
             </div>
         </div>

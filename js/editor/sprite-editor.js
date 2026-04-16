@@ -168,9 +168,9 @@ const SpriteEditor = {
                 longPressTimer = setTimeout(() => {
                     isLongPress = true;
                     App.showActionMenu(null, [
-                        { text: '複製', action: () => this.duplicateColor(index) },
-                        { text: '削除', style: 'destructive', action: () => this.deleteColor(index, false) },
-                        { text: 'キャンセル', style: 'cancel' }
+                        { text: App.I18N['U177']?.[App.currentLang] || App.t('U286'), action: () => this.duplicateColor(index) },
+                        { text: App.I18N['U178']?.[App.currentLang] || App.t('U287'), style: 'destructive', action: () => this.deleteColor(index, false) },
+                        { text: App.I18N['U179']?.[App.currentLang] || App.t('U288'), style: 'cancel' }
                     ]);
                 }, 600);
             };
@@ -268,7 +268,7 @@ const SpriteEditor = {
     applyPresetAdd() {
         const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
-            alert('プリセットを選択してください');
+            alert((typeof App !== 'undefined' && App.I18N['U180'] ? (App.I18N['U180'][App.currentLang] || 'プリセットを選択してください') : 'プリセットを選択してください'));
             return;
         }
         const preset = App.PALETTE_PRESETS[selected.dataset.value];
@@ -288,10 +288,10 @@ const SpriteEditor = {
     applyPresetReplace() {
         const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
-            alert('プリセットを選択してください');
+            alert((typeof App !== 'undefined' && App.I18N['U180'] ? (App.I18N['U180'][App.currentLang] || 'プリセットを選択してください') : 'プリセットを選択してください'));
             return;
         }
-        if (!confirm('現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。')) {
+        if (!confirm(App.I18N['U181']?.[App.currentLang] || '現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。')) {
             return;
         }
         const preset = App.PALETTE_PRESETS[selected.dataset.value];
@@ -323,7 +323,7 @@ const SpriteEditor = {
                 });
                 item.classList.add('selected');
                 const arrow = item.querySelector('.preset-item-arrow');
-                if (arrow) arrow.textContent = '▶';
+                if (arrow) arrow.textContent = (typeof App !== 'undefined' && App.I18N['U182'] ? (App.I18N['U182'][App.currentLang] || App.t('U284')) : App.t('U284'));
             });
         });
 
@@ -338,10 +338,10 @@ const SpriteEditor = {
     // 色を削除（確認あり）
     deleteColor(index, needConfirm = true) {
         if (App.nesPalette.length <= 1) {
-            alert('最低1色は必要です');
+            alert(App.I18N['U183']?.[App.currentLang] || '最低1色は必要です');
             return;
         }
-        if (needConfirm && !confirm('この色を削除しますか？\n（使用されているドットは透明になります）')) {
+        if (needConfirm && !confirm((typeof App !== 'undefined' && App.I18N['U184'] ? (App.I18N['U184'][App.currentLang] || 'この色を削除しますか？\n（使用されているドットは透明になります）') : 'この色を削除しますか？\n（使用されているドットは透明になります）'))) {
             return;
         }
 
@@ -414,7 +414,7 @@ const SpriteEditor = {
             return { h, s: max === 0 ? 0 : (d / max) * 100, v: max * 100 };
         };
 
-        const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase();
+        const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, App.t('U320'))}${g.toString(16).padStart(2, App.t('U320'))}${b.toString(16).padStart(2, App.t('U320'))}`.toUpperCase();
 
         const hexToRgb = (hex) => {
             hex = hex.replace('#', '');
@@ -755,9 +755,9 @@ const SpriteEditor = {
                         isLongPress = true;
                         // アクションメニュー表示
                         App.showActionMenu(null, [
-                            { text: '複製', action: () => this.duplicateSprite(index) },
-                            { text: '削除', style: 'destructive', action: () => this.deleteSprite(index, false) },
-                            { text: 'キャンセル', style: 'cancel' }
+                            { text: App.I18N['U177']?.[App.currentLang] || App.t('U286'), action: () => this.duplicateSprite(index) },
+                            { text: App.I18N['U178']?.[App.currentLang] || App.t('U287'), style: 'destructive', action: () => this.deleteSprite(index, false) },
+                            { text: App.I18N['U179']?.[App.currentLang] || App.t('U288'), style: 'cancel' }
                         ]);
                     }
                 }, 800);
@@ -1216,7 +1216,7 @@ const SpriteEditor = {
 
         // 32x32 -> 16x16 の場合、警告
         if (currentSize === 2) {
-            if (!confirm('縮小すると細かい情報が失われます。続行しますか？')) {
+            if (!confirm((typeof App !== 'undefined' && App.I18N['U185'] ? (App.I18N['U185'][App.currentLang] || '縮小すると細かい情報が失われます。続行しますか？') : '縮小すると細かい情報が失われます。続行しますか？'))) {
                 return;
             }
         }
@@ -1264,11 +1264,11 @@ const SpriteEditor = {
 
     deleteSprite(index, needConfirm = true) {
         if (App.projectData.sprites.length <= 1) {
-            alert('これ以上削除できません');
+            alert(App.I18N['U186']?.[App.currentLang] || 'これ以上削除できません');
             return;
         }
 
-        if (needConfirm && !confirm('このスプライトを削除しますか？\n（使用されている箇所は削除されます）')) {
+        if (needConfirm && !confirm((typeof App !== 'undefined' && App.I18N['U187'] ? (App.I18N['U187'][App.currentLang] || 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）') : 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）'))) {
             return;
         }
 
@@ -1906,7 +1906,7 @@ const SpriteEditor = {
     },
 
     clearSprite() {
-        if (!confirm('スプライトをクリアしますか？')) return;
+        if (!confirm((typeof App !== 'undefined' && App.I18N['U188'] ? (App.I18N['U188'][App.currentLang] || 'スプライトをクリアしますか？') : 'スプライトをクリアしますか？'))) return;
 
         this.saveHistory();
         const sprite = App.projectData.sprites[this.currentSprite];
@@ -2653,7 +2653,7 @@ const SpriteEditor = {
                             touchGhost.style.pointerEvents = 'none';
                             touchGhost.style.zIndex = '9999';
                             touchGhost.style.opacity = '0.7';
-                            touchGhost.style.margin = '0';
+                            touchGhost.style.margin = App.t('U320');
                             document.body.appendChild(touchGhost);
                         }
                     }
@@ -2817,10 +2817,10 @@ const SpriteEditor = {
         if (!el) return;
 
         if (this.previewFrames.length === 0) {
-            el.textContent = 'Frame: — / —';
+            el.textContent = (typeof App !== 'undefined' && App.I18N['U191'] ? (App.I18N['U191'][App.currentLang] || 'Frame: — / —') : 'Frame: — / —');
             if (controls) controls.classList.add('disabled-preview');
         } else {
-            el.textContent = `Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+            el.textContent = (typeof App !== 'undefined' && App.I18N['U192'] ? (App.I18N['U192'][App.currentLang] || 'Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}') : 'Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}');
             if (controls) controls.classList.remove('disabled-preview');
         }
     },

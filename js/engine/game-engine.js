@@ -82,7 +82,7 @@ const GameEngine = {
         // サバイバルモードで制限時間が0の場合はエラー
         const stage = App.projectData.stage;
         if (stage.clearCondition === 'survival' && (!stage.timeLimit || stage.timeLimit <= 0)) {
-            alert('サバイバルモードでは制限時間を設定してください');
+            alert((typeof App !== 'undefined' && App.I18N['U394'] ? (App.I18N['U394'][App.currentLang] || 'サバイバルモードでは制限時間を設定してください') : 'サバイバルモードでは制限時間を設定してください'));
             return;
         }
 
@@ -391,7 +391,7 @@ const GameEngine = {
 
         // スコア初期化
         this.score = 0;
-        this.highScore = parseInt(localStorage.getItem('pgk_highscore') || '0', 10);
+        this.highScore = parseInt(localStorage.getItem('pgk_highscore') || App.t('U320'), 10);
         this.newHighScore = false; // 今回のプレイで更新したか
 
         // ゲームオーバー待機状態をリセット
@@ -824,7 +824,7 @@ const GameEngine = {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 2);
+        ctx.fillText((typeof App !== 'undefined' && App.I18N['U398'] ? (App.I18N['U398'][App.currentLang] || 'GAME OVER') : 'GAME OVER'), this.canvas.width / 2, this.canvas.height / 2);
     },
 
     renderGameOver() {
@@ -1118,7 +1118,7 @@ const GameEngine = {
         // ボタンテキスト
         ctx.fillStyle = '#FFFFFF';
         ctx.font = '14px monospace';
-        ctx.fillText('とじる', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+        ctx.fillText((typeof App !== 'undefined' && App.I18N['U395'] ? (App.I18N['U395'][App.currentLang] || 'とじる') : 'とじる'), buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 
         // クリック判定用にボタン位置を保存
         this.easterCloseButton = {
@@ -1387,7 +1387,7 @@ const GameEngine = {
                     // イースターエッグの場合はメッセージウィンドウを表示
                     if (item.itemType === 'easter') {
                         console.log('>>> Easter egg detected! Showing message window');
-                        const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
+                        const message = item.template?.config?.easterMessage || (typeof App !== 'undefined' && App.I18N['U396'] ? (App.I18N['U396'][App.currentLang] || 'ひみつのメッセージ') : 'ひみつのメッセージ');
                         console.log('>>> Easter message:', message);
                         this.showEasterMessage(message);
                         // アイテムゲット音を鳴らす
@@ -1705,7 +1705,7 @@ const GameEngine = {
                 // イースターエッグの場合はメッセージウィンドウを表示
                 if (item.itemType === 'easter') {
                     console.log('>>> Easter egg detected! Showing message window');
-                    const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
+                    const message = item.template?.config?.easterMessage || (typeof App !== 'undefined' && App.I18N['U396'] ? (App.I18N['U396'][App.currentLang] || 'ひみつのメッセージ') : 'ひみつのメッセージ');
                     console.log('>>> Easter message:', message);
                     this.showEasterMessage(message);
                     // イースターエッグもアイテムゲット音を鳴らす
@@ -2088,7 +2088,7 @@ const GameEngine = {
         ctx.fillStyle = '#ff4444';
         ctx.shadowColor = 'black';
         ctx.shadowBlur = 4;
-        ctx.fillText('GAME OVER', w / 2, h / 2);
+        ctx.fillText((typeof App !== 'undefined' && App.I18N['U398'] ? (App.I18N['U398'][App.currentLang] || 'GAME OVER') : 'GAME OVER'), w / 2, h / 2);
         ctx.shadowBlur = 0;
 
         // 3秒後にリザルトへ（クリエイターモードはrenderResultScreen内でスキップ）
@@ -2586,7 +2586,7 @@ const GameEngine = {
         if (this.hasTimeLimit && this.titleState === 'playing') {
             const min = Math.floor(this.remainingTime / 60);
             const sec = this.remainingTime % 60;
-            const timeText = `${min}:${sec.toString().padStart(2, '0')}`;
+            const timeText = `${min}:${sec.toString().padStart(2, App.t('U320'))}`;
 
             this.ctx.font = 'bold 16px Arial';
             this.ctx.textAlign = 'right';
@@ -2619,7 +2619,7 @@ const GameEngine = {
 
         // スコア表示（中央上）
         if (App.projectData.stage.showScore) {
-            const scoreText = this.score.toString().padStart(6, '0');
+            const scoreText = this.score.toString().padStart(6, App.t('U320'));
 
             this.ctx.font = 'bold 16px Arial';
             this.ctx.textAlign = 'center';
@@ -3471,10 +3471,10 @@ const GameEngine = {
 
         // タイトル設定
         if (this.isCleared) {
-            title.textContent = 'STAGE CLEAR!';
+            title.textContent = (typeof App !== 'undefined' && App.I18N['U397'] ? (App.I18N['U397'][App.currentLang] || 'STAGE CLEAR!') : 'STAGE CLEAR!');
             title.style.color = '#ffd700'; // Gold
         } else {
-            title.textContent = 'GAME OVER';
+            title.textContent = (typeof App !== 'undefined' && App.I18N['U398'] ? (App.I18N['U398'][App.currentLang] || 'GAME OVER') : 'GAME OVER');
             title.style.color = '#ff4444'; // Red
         }
 
@@ -3482,8 +3482,8 @@ const GameEngine = {
         const showScore = App.projectData.stage.showScore !== false;
         if (showScore && scoreContainer) {
             scoreContainer.classList.remove('hidden');
-            if (scoreVal) scoreVal.textContent = this.score.toString().padStart(6, '0');
-            if (highVal) highVal.textContent = this.highScore.toString().padStart(6, '0');
+            if (scoreVal) scoreVal.textContent = this.score.toString().padStart(6, App.t('U320'));
+            if (highVal) highVal.textContent = this.highScore.toString().padStart(6, App.t('U320'));
             if (shareBtn) shareBtn.classList.remove('hidden');
         } else {
             if (scoreContainer) scoreContainer.classList.add('hidden');
