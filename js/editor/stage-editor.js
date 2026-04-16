@@ -490,7 +490,7 @@ const StageEditor = {
             // ⑤ 軌道
             html += `
                 <div class="param-row">
-                    <span class="param-label">軌道</span>
+                    <span class="param-label">${this.t('U428')}</span>
                     <select class="param-select" data-key="shotType">
                         <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>${this.t('U229')}</option>
                         <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>${this.t('U230')}</option>

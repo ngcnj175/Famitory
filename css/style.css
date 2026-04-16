@@ -136,11 +136,7 @@ body {
     color: var(--color-dark);
 }
 
-/* ローカライズボタン：言語ラベルのスタイル */
-#lang-icon-btn .icon-label {
-    font-size: 7px;
-    font-weight: 400;
-}
+
 
 #lang-icon-btn.lang-eng {
     color: var(--color-dark);

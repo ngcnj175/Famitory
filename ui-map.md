@@ -6,21 +6,21 @@
 
 | ID | Text_JPN | Text_ENG | 属性・種類 | ファイル名 | i18n対応 |
 |----|---------|----------|-----------|-----------|---------|
-| U001 | 新規 | New | HTML attribute (title) | index.html | |
+| U001 | 新規 | New | HTML attribute (title) | index.html | ✓ |
 | U002 | NEW | NEW | HTML text node (icon-label) | index.html | ✓ |
-| U003 | 読み込み | Open | HTML attribute (title) | index.html | |
+| U003 | 読み込み | Open | HTML attribute (title) | index.html | ✓ |
 | U004 | OPEN | OPEN | HTML text node (icon-label) | index.html | ✓ |
-| U005 | 保存 | Save | HTML attribute (title) | index.html | |
+| U005 | 保存 | Save | HTML attribute (title) | index.html | ✓ |
 | U006 | SAVE | SAVE | HTML text node (icon-label) | index.html | ✓ |
-| U007 | 共有 | Share | HTML attribute (title) | index.html | |
+| U007 | 共有 | Share | HTML attribute (title) | index.html | ✓ |
 | U008 | SHARE | SHARE | HTML text node (icon-label) | index.html | ✓ |
-| U009 | プレイ | Play | HTML attribute (title) | index.html | |
+| U009 | プレイ | Play | HTML attribute (title) | index.html | ✓ |
 | U010 | PLAY | PLAY | HTML text node (icon-label) | index.html | ✓ |
-| U011 | ピクセル | Pixel | HTML attribute (title) | index.html | |
+| U011 | ピクセル | Pixel | HTML attribute (title) | index.html | ✓ |
 | U012 | PIXEL | PIXEL | HTML text node (icon-label) | index.html | ✓ |
-| U013 | ステージ | Stage | HTML attribute (title) | index.html | |
+| U013 | ステージ | Stage | HTML attribute (title) | index.html | ✓ |
 | U014 | STAGE | STAGE | HTML text node (icon-label) | index.html | ✓ |
-| U015 | サウンド | Sound | HTML attribute (title) | index.html | |
+| U015 | サウンド | Sound | HTML attribute (title) | index.html | ✓ |
 | U016 | BGM | BGM | HTML text node (icon-label) | index.html | ✓ |
 | U017 | My Game | My Game | HTML attribute (value) | index.html | |
 | U018 | ゲームタイトル | Game Title | HTML attribute (placeholder) | index.html | |
@@ -433,3 +433,4 @@
 | U425 | ドロップ | Drop Item | JS HTML template | stage-editor.js | ✓ |
 | U426 | ギミック | Gimmick | JS HTML template | stage-editor.js | ✓ |
 | U427 | 種類 | Type | JS HTML template | stage-editor.js | ✓ |
+| U428 | 軌道 | Trajectory | JS HTML template | stage-editor.js | ✓ |

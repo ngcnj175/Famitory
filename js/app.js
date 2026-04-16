@@ -1867,14 +1867,22 @@ const App = {
     // UIテキスト翻訳テーブル（IDキー→{JPN, ENG}）
     I18N: {
         // ---- ヘッダーツールバー ----
-        'U002': { JPN: 'NEW',   ENG: 'NEW' },
-        'U004': { JPN: 'OPEN',  ENG: 'OPEN' },
-        'U006': { JPN: 'SAVE',  ENG: 'SAVE' },
-        'U008': { JPN: 'SHARE', ENG: 'SHARE' },
-        'U010': { JPN: 'PLAY',  ENG: 'PLAY' },
-        'U012': { JPN: 'PIXEL', ENG: 'PIXEL' },
-        'U014': { JPN: 'STAGE', ENG: 'STAGE' },
-        'U016': { JPN: 'BGM',  ENG: 'BGM' },
+        'U001': { JPN: '新規',      ENG: 'New' },
+        'U002': { JPN: 'NEW',       ENG: 'NEW' },
+        'U003': { JPN: '読み込み',  ENG: 'Open' },
+        'U004': { JPN: 'OPEN',      ENG: 'OPEN' },
+        'U005': { JPN: '保存',      ENG: 'Save' },
+        'U006': { JPN: 'SAVE',      ENG: 'SAVE' },
+        'U007': { JPN: '共有',      ENG: 'Share' },
+        'U008': { JPN: 'SHARE',     ENG: 'SHARE' },
+        'U009': { JPN: 'プレイ',    ENG: 'Play' },
+        'U010': { JPN: 'PLAY',      ENG: 'PLAY' },
+        'U011': { JPN: 'ピクセル',  ENG: 'Pixel' },
+        'U012': { JPN: 'PIXEL',     ENG: 'PIXEL' },
+        'U013': { JPN: 'ステージ',  ENG: 'Stage' },
+        'U014': { JPN: 'STAGE',     ENG: 'STAGE' },
+        'U015': { JPN: 'サウンド',  ENG: 'Sound' },
+        'U016': { JPN: 'BGM',       ENG: 'BGM' },
         // ---- ステージ設定パネル ----
         'U040': { JPN: 'ステージ設定',    ENG: 'Stage Settings' },
         'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
@@ -2064,6 +2072,7 @@ const App = {
         'U280': { JPN: 'その他05(爆発)',       ENG: 'Other05(Explosion)' },
         'U281': { JPN: 'ダメージ',            ENG: 'Damage' },
         'U282': { JPN: 'ゲット',              ENG: 'Get' },
+        'U428': { JPN: '軌道',               ENG: 'Trajectory' },
     },
 
     /**
@@ -2076,6 +2085,13 @@ const App = {
             const entry = this.I18N[id];
             if (entry && entry[lang] !== undefined) {
                 el.textContent = entry[lang];
+            }
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(el => {
+            const id = el.getAttribute('data-i18n-title');
+            const entry = this.I18N[id];
+            if (entry && entry[lang] !== undefined) {
+                el.title = entry[lang];
             }
         });
         // lang-labelは特別処理
