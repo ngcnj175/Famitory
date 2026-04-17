@@ -574,7 +574,7 @@ const App = {
         document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
             btn.classList.remove('locked');
         });
-        this.showToast('編集モードに切り替わりました');
+        this.showToast(this.I18N['U354']?.[this.currentLang] || '編集モードに切り替わりました');
         // 現在の画面をリフレッシュ
         this.refreshCurrentScreen();
     },
@@ -1257,8 +1257,10 @@ const App = {
                     counter++;
                 }
 
-                // 保存
-                data.meta.name = importName;
+                // 保存（既存のメタデータ名があればそれを優先し、なければファイル名を使用）
+                if (!data.meta.name) {
+                    data.meta.name = importName;
+                }
                 data.meta.createdAt = Date.now();
                 Storage.saveProject(importName, data);
 
@@ -2159,6 +2161,7 @@ const App = {
         'U366': { JPN: 'インポートしました。「開く」メニューから選択できます。', ENG: 'Imported. You can open it from the "Open" menu.' },
         'U368': { JPN: 'そのなまえは すでに つかわれています', ENG: 'That name is already in use' },
         'U369': { JPN: 'あたらしいゲームを つくりました', ENG: 'New game created!' },
+        'U354': { JPN: '編集モードに切り替わりました',     ENG: 'Switched to Edit Mode' },
         'U373': { JPN: 'この作品を公開しますか？',    ENG: 'Publish this game?' },
         'U374': { JPN: '公開中の作品を更新しますか？', ENG: 'Update the published game?' },
         'U375': { JPN: 'URLが発行され、だれでもプレイできるようになります', ENG: 'A URL will be generated so anyone can play' },

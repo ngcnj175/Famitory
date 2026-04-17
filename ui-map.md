@@ -358,6 +358,8 @@
 | U350 | パステル | Pastel | JS message/literal | app.js | |
 | U351 | ファミコン | Famicom | JS message/literal | app.js | |
 | U352 | ゲームボーイ | Game Boy | JS message/literal | app.js | |
+| U353 | モノクロ | Mono | JS message/literal | app.js | |
+| U354 | 編集モードに切り替わりました | Switched to Edit Mode | JS message/literal | app.js | ✓ |
 | U435 | いいえ | No | JS message/literal | app.js | ✓ |
 | U436 | エディットキーをコピーしました | Edit key copied | JS message/literal | app.js | ✓ |
 | U437 | スコアを共有 | Share Score | HTML text node (button) | index.html | ✓ |
