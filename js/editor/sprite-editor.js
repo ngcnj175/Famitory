@@ -268,7 +268,7 @@ const SpriteEditor = {
     applyPresetAdd() {
         const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
-            alert('プリセットを選択してください');
+            alert(App.I18N['U180']?.[App.currentLang] || 'プリセットを選択してください');
             return;
         }
         const preset = App.PALETTE_PRESETS[selected.dataset.value];
@@ -288,7 +288,7 @@ const SpriteEditor = {
     applyPresetReplace() {
         const selected = document.querySelector('#palette-preset-list .preset-item.selected');
         if (!selected) {
-            alert('プリセットを選択してください');
+            alert(App.I18N['U180']?.[App.currentLang] || 'プリセットを選択してください');
             return;
         }
 

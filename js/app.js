@@ -2118,6 +2118,7 @@ const App = {
         'U177': { JPN: '複製',               ENG: 'Duplicate' },
         'U178': { JPN: '削除',               ENG: 'Delete' },
         'U179': { JPN: 'キャンセル',          ENG: 'Cancel' },
+        'U180': { JPN: 'プリセットを選択してください', ENG: 'Please select a preset' },
         'U181': { JPN: '現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。', ENG: 'Replace the current palette?\nSprite colors may change.' },
         'U183': { JPN: '最低1色は必要です',    ENG: 'At least 1 color is required' },
         'U186': { JPN: 'これ以上削除できません', ENG: 'Cannot delete any more' },
