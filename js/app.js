@@ -2129,6 +2129,7 @@ const App = {
         'U433': { JPN: 'よく使う色',         ENG: 'Recent Colors' },
         'U434': { JPN: 'はい',               ENG: 'Yes' },
         'U435': { JPN: 'いいえ',             ENG: 'No' },
+        'U306': { JPN: '閉じる',             ENG: 'Close' },
     },
 
     /**

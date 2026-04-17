@@ -705,7 +705,7 @@ const SoundEditor = {
         // 閉じるボタン（背景クリックで閉じる機能があれば不要だが、念のため）
         const closeBtn = document.createElement('button');
         closeBtn.className = 'tone-menu-close';
-        closeBtn.innerText = '閉じる';
+        closeBtn.innerText = App.I18N['U306']?.[App.currentLang] || '閉じる';
         closeBtn.onclick = () => menu.remove();
         menu.appendChild(closeBtn);
 
