@@ -1209,9 +1209,11 @@ const App = {
             this.updateGameInfo();
             this.refreshCurrentScreen();
             Storage.save('currentProject', this.projectData);
-            alert(`「${name}」を開きました`);
+            const msg = (this.I18N['U363']?.[this.currentLang] || '「${name}」を開きました').replace('${name}', name);
+            this.showAlert(msg);
         } else {
-            alert('プロジェクトの読み込みに失敗しました');
+            const failMsg = this.I18N['U364']?.[this.currentLang] || 'プロジェクトの読み込みに失敗しました';
+            this.showAlert(failMsg);
         }
     },
 
@@ -1260,13 +1262,14 @@ const App = {
                 data.meta.createdAt = Date.now();
                 Storage.saveProject(importName, data);
 
-                if (confirm(`「${importName}」としてインポートしました。\n今すぐ開きますか？`)) {
+                const msg = (App.I18N['U365']?.[App.currentLang] || '「${importName}」としてインポートしました。\n今すぐ開きますか？').replace('${importName}', importName);
+                this.showConfirm(msg, '', () => {
                     this.loadProject(importName);
                     // モーダル閉じる
                     document.getElementById('share-dialog').classList.add('hidden');
-                } else {
-                    alert('インポートしました。「開く」メニューから選択できます。');
-                }
+                }, () => {
+                    alert(App.I18N['U366']?.[App.currentLang] || 'インポートしました。「開く」メニューから選択できます。');
+                });
 
             } catch (err) {
                 console.error(err);
@@ -1338,7 +1341,7 @@ const App = {
             this.updateGameInfo();
             this.refreshCurrentScreen();
 
-            this.showToast('あたらしいゲームを つくりました');
+            this.showToast(this.I18N['U369']?.[this.currentLang] || 'あたらしいゲームを つくりました');
             close();
         };
 
@@ -1526,11 +1529,11 @@ const App = {
         if (!modal || !okBtn || !cancelBtn) return;
 
         msgEl.textContent = isFirstTime
-            ? 'この作品を公開しますか？'
-            : '公開中の作品を更新しますか？';
+            ? (this.I18N['U373']?.[this.currentLang] || 'この作品を公開しますか？')
+            : (this.I18N['U374']?.[this.currentLang] || '公開中の作品を更新しますか？');
         subEl.textContent = isFirstTime
-            ? 'URLが発行され、だれでもプレイできるようになります'
-            : '現在の内容で上書き保存されます';
+            ? (this.I18N['U375']?.[this.currentLang] || 'URLが発行され、だれでもプレイできるようになります')
+            : (this.I18N['U376']?.[this.currentLang] || '現在の内容で上書き保存されます');
 
         modal.classList.remove('hidden');
 
@@ -2148,6 +2151,15 @@ const App = {
         'U187': { JPN: 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）', ENG: 'Delete this sprite?\n(All usages will be removed.)' },
         'U188': { JPN: 'スプライトをクリアしますか？', ENG: 'Clear this sprite?' },
         'U317': { JPN: 'クリップボードが空です',   ENG: 'Clipboard is empty' },
+        'U363': { JPN: '「${name}」を開きました',       ENG: 'Opened "${name}"' },
+        'U365': { JPN: '「${importName}」としてインポートしました。\n今すぐ開きますか？', ENG: 'Imported as "${importName}".\nOpen now?' },
+        'U366': { JPN: 'インポートしました。「開く」メニューから選択できます。', ENG: 'Imported. You can open it from the "Open" menu.' },
+        'U368': { JPN: 'そのなまえは すでに つかわれています', ENG: 'That name is already in use' },
+        'U369': { JPN: 'あたらしいゲームを つくりました', ENG: 'New game created!' },
+        'U373': { JPN: 'この作品を公開しますか？',    ENG: 'Publish this game?' },
+        'U374': { JPN: '公開中の作品を更新しますか？', ENG: 'Update the published game?' },
+        'U375': { JPN: 'URLが発行され、だれでもプレイできるようになります', ENG: 'A URL will be generated so anyone can play' },
+        'U376': { JPN: '現在の内容で上書き保存されます', ENG: 'The current content will be overwritten' },
     },
 
     /**
