@@ -180,11 +180,11 @@
 | U172 | セーブ | Save | HTML text node (button) | index.html | ✓ |
 | U173 | (削除: エディットキー入力) | (removed: edit key label) | HTML text node | index.html | |
 | U174 | このゲームを編集するには<br>エディットキーが必要です | An edit key is required<br>to edit this game. | HTML text node | index.html | ✓ |
-| U175 | 8桁のキーを入力 | Enter 8-character key | HTML attribute (placeholder) | index.html | |
+| U175 | 8桁のキーを入力 | Enter 8-character key | HTML attribute (placeholder) | index.html | ✓ |
 | U176 | 認証 | Verify | HTML text node (button) | index.html | ✓ |
 | U177 | 複製 | Duplicate | JS message/literal | sprite-editor.js | ✓ |
 | U178 | 削除 | Delete | JS message/literal | sprite-editor.js | ✓ |
-| U179 | キャンセル | Cancel | JS message/literal | sprite-editor.js | ✓ |
+| U179 | キャンセル | Cancel | HTML button / JS literal | index.html / sprite-editor.js | ✓ |
 | U180 | プリセットを選択してください | Please select a preset | JS message/literal | sprite-editor.js | ✓ |
 | U181 | 現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。 | Replace the current palette?\nSprite colors may change. | JS message/literal | sprite-editor.js | ✓ |
 | U182 | ▶ | ▶ | JS dom text assign | sprite-editor.js | |
@@ -450,3 +450,7 @@
 | U438 | もう一度 | Retry | HTML text node (button) | index.html | ✓ |
 | U439 | リミックスする | Remix | HTML text node (button) | index.html | ✓ |
 | U440 | 編集に戻る | Back to Edit | HTML text node (button) | index.html | ✓ |
+| U441 | スコアを共有 | Share Score | HTML text node (header) | index.html | ✓ |
+| U442 | もどる | Back | HTML text node (button) | index.html | ✓ |
+| U443 | ✓ コピーしました | ✓ Copied | HTML text node | index.html | ✓ |
+| U444 | キーが一致しません | Key mismatch | HTML text node | index.html | ✓ |

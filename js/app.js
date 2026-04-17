@@ -1986,7 +1986,10 @@ const App = {
         'U166': { JPN: '値を入力を',          ENG: 'Enter Value' },
         // ---- エディットキーモーダル ----
         'U174': { JPN: 'このゲームを編集するには<br>エディットキーが必要です', ENG: 'An edit key is required<br>to edit this game.' },
+        'U175': { JPN: '8桁のキーを入力',       ENG: 'Enter 8-character key' },
         'U176': { JPN: '認証',               ENG: 'Verify' },
+        'U179': { JPN: 'キャンセル',          ENG: 'Cancel' },
+        'U444': { JPN: 'キーが一致しません',    ENG: 'Key mismatch' },
         // ---- BGMエディタ（ソング制御） ----
         'U078': { JPN: 'BGM名変更',         ENG: 'Rename BGM' },
         'U080': { JPN: 'コピー＆ペースト',     ENG: 'Copy & Paste' },
@@ -2164,6 +2167,9 @@ const App = {
         'U438': { JPN: 'もう一度',        ENG: 'Retry' },
         'U439': { JPN: 'リミックスする',  ENG: 'Remix' },
         'U440': { JPN: '編集に戻る',      ENG: 'Back to Edit' },
+        'U441': { JPN: 'スコアを共有',    ENG: 'Share Score' },
+        'U442': { JPN: 'もどる',          ENG: 'Back' },
+        'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },
     },
 
     /**
