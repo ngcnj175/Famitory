@@ -2041,7 +2041,7 @@ const App = {
         'U202': { JPN: '攻撃',               ENG: 'Attack' },
         'U203': { JPN: '基本',               ENG: 'Base' },
         'U204': { JPN: 'ライフ',             ENG: 'Life' },
-        'U205': { JPN: '変身アイテム',        ENG: 'Morph Item' },
+        'U205': { JPN: '変身\nアイテム',        ENG: 'Morph Item' },
         'U206': { JPN: '能力',               ENG: 'Abilities' },
         'U207': { JPN: '足の速さ',            ENG: 'Move Speed' },
         'U208': { JPN: 'ジャンプ力',          ENG: 'Jump Power' },

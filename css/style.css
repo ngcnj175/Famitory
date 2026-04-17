@@ -1120,12 +1120,15 @@ body {
 }
 
 .sprite-row-label {
-    width: 60px;
-    /* 少し広げる */
+    width: 66px;
+    /* 60px -> 66px */
     font-size: 12px;
-    /* 11px -> 12pxに拡大 */
+    line-height: 1.2;
+    /* 改行時の間隔 */
     font-weight: bold;
     color: var(--text-dark);
+    white-space: pre-line;
+    /* \n で改行させる */
 }
 
 /* スプライトスロット */
