@@ -434,3 +434,9 @@
 | U426 | ギミック | Gimmick | JS HTML template | stage-editor.js | ✓ |
 | U427 | 種類 | Type | JS HTML template | stage-editor.js | ✓ |
 | U428 | 軌道 | Trajectory | JS HTML template | stage-editor.js | ✓ |
+| U430 | カラー編集 | Color Edit | JS text | sprite-editor.js | |
+| U431 | 現在 | Current | JS text | sprite-editor.js | |
+| U432 | 編集中 | Editing | JS text | sprite-editor.js | |
+| U433 | よく使う色 | Recent Colors | JS text | sprite-editor.js | |
+| U434 | はい | Yes | JS text (button) | app.js | |
+| U435 | いいえ | No | JS text (button) | app.js | |

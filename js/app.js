@@ -1034,15 +1034,15 @@ const App = {
         btnContainer.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
 
         const saveBtn = document.createElement('button');
-        saveBtn.textContent = '保存する';
+        saveBtn.textContent = this.I18N['U005']?.[this.currentLang] || '保存する';
         saveBtn.style.cssText = 'padding:12px;border:none;background:#4a4a4a;color:white;border-radius:4px;cursor:pointer;font-size:14px;';
 
         const noSaveBtn = document.createElement('button');
-        noSaveBtn.textContent = '保存しない';
+        noSaveBtn.textContent = this.I18N['U435']?.[this.currentLang] || '保存しない';
         noSaveBtn.style.cssText = 'padding:12px;border:1px solid #4a4a4a;background:white;border-radius:4px;cursor:pointer;font-size:14px;';
 
         const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'キャンセル';
+        cancelBtn.textContent = this.I18N['U105']?.[this.currentLang] || 'キャンセル';
         cancelBtn.style.cssText = 'padding:12px;border:1px solid #ccc;background:#f5f5f5;border-radius:4px;cursor:pointer;font-size:14px;';
 
         btnContainer.appendChild(saveBtn);
@@ -1112,7 +1112,7 @@ const App = {
         // キャンセルボタン
         const cancelAction = actions.find(a => a.style === 'cancel');
         const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = cancelAction ? cancelAction.text : 'キャンセル';
+        cancelBtn.textContent = cancelAction ? (cancelAction.text || this.I18N['U105']?.[this.currentLang] || 'キャンセル') : (this.I18N['U105']?.[this.currentLang] || 'キャンセル');
         cancelBtn.style.cssText = 'width:100%;padding:16px;border:none;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);border-radius:14px;font-size:16px;font-weight:600;color:#007aff;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.1);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
 
         cancelBtn.addEventListener('click', () => {
@@ -1145,6 +1145,45 @@ const App = {
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) closeModal();
         });
+    },
+
+    /**
+     * 汎用確認ダイアログ（カスタム版）
+     */
+    showConfirm(message, subMessage, onOk, onCancel) {
+        const modal = document.getElementById('generic-confirm-modal');
+        const msgEl = document.getElementById('generic-confirm-msg');
+        const subEl = document.getElementById('generic-confirm-body');
+        const okBtn = document.getElementById('generic-confirm-ok');
+        const cancelBtn = document.getElementById('generic-confirm-cancel');
+
+        if (!modal || !okBtn || !cancelBtn) {
+            // フォールバック
+            if (confirm(message + (subMessage ? "\n" + subMessage : ""))) {
+                if (onOk) onOk();
+            } else {
+                if (onCancel) onCancel();
+            }
+            return;
+        }
+
+        msgEl.textContent = message;
+        subEl.textContent = subMessage || '';
+        modal.classList.remove('hidden');
+
+        const close = () => {
+            modal.classList.add('hidden');
+            okBtn.onclick = null;
+            cancelBtn.onclick = null;
+            modal.onclick = null;
+        };
+
+        okBtn.onclick = () => { close(); if (onOk) onOk(); };
+        cancelBtn.onclick = () => { close(); if (onCancel) onCancel(); };
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+
+        // ローカライズ強制適用
+        this.applyLang();
     },
 
     // プロジェクトをロードして反映
@@ -2083,6 +2122,12 @@ const App = {
         'U183': { JPN: '最低1色は必要です',    ENG: 'At least 1 color is required' },
         'U186': { JPN: 'これ以上削除できません', ENG: 'Cannot delete any more' },
         'U428': { JPN: '軌道',               ENG: 'Trajectory' },
+        'U430': { JPN: 'カラー編集',         ENG: 'Color Edit' },
+        'U431': { JPN: '現在',               ENG: 'Current' },
+        'U432': { JPN: '編集中',             ENG: 'Editing' },
+        'U433': { JPN: 'よく使う色',         ENG: 'Recent Colors' },
+        'U434': { JPN: 'はい',               ENG: 'Yes' },
+        'U435': { JPN: 'いいえ',             ENG: 'No' },
     },
 
     /**

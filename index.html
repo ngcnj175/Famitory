@@ -1008,8 +1008,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1042,8 +1042,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1074,8 +1074,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1093,8 +1093,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1144,8 +1144,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
-                <button class="modal-btn ok-btn" data-action="save">決定</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
+                <button class="modal-btn ok-btn" data-action="save" data-i18n="U120">決定</button>
             </div>
         </div>
     </div>
@@ -1160,7 +1160,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" data-action="close">キャンセル</button>
+                <button class="modal-btn cancel-btn" data-action="close" data-i18n="U105">キャンセル</button>
             </div>
         </div>
     </div>
@@ -1334,7 +1334,7 @@
             </div>
             <div class="modal-footer-actions">
                 <button class="modal-action-btn primary" id="number-input-ok">OK</button>
-                <button class="modal-action-btn cancel" id="number-input-cancel">キャンセル</button>
+                <button class="modal-action-btn cancel" id="number-input-cancel" data-i18n="U149">キャンセル</button>
             </div>
         </div>
     </div>
@@ -1405,8 +1405,20 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel-btn" id="editkey-cancel">キャンセル</button>
+                <button class="modal-btn cancel-btn" id="editkey-cancel" data-i18n="U105">キャンセル</button>
                 <button class="modal-btn ok-btn" id="editkey-ok" data-i18n="U176">認証</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 汎用確認ダイアログ -->
+    <div id="generic-confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header-simple" id="generic-confirm-msg"></div>
+            <div class="modal-body" id="generic-confirm-body" style="font-size:14px; color:#a0a0c0; text-align:center; padding-bottom:20px;"></div>
+            <div class="modal-footer-actions">
+                <button class="modal-action-btn primary" id="generic-confirm-ok" data-i18n="U169">はい</button>
+                <button class="modal-action-btn cancel" id="generic-confirm-cancel" data-i18n="U149">やめる</button>
             </div>
         </div>
     </div>
