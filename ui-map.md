@@ -203,12 +203,12 @@
 | U195 | ブロック・背景 | Block/BG | JS message/literal | stage-editor.js | ✓ |
 | U196 | アイテム | Item | JS message/literal | stage-editor.js | ✓ |
 | U197 | ゴール | Goal | JS message/literal | stage-editor.js | ✓ |
-| U198 | 立ち | Stand | JS message/literal | stage-editor.js | ✓ |
+| U198 | 基本 | Base | JS message/literal | stage-editor.js | ✓ |
 | U199 | 歩き | Walk | JS message/literal | stage-editor.js | ✓ |
 | U200 | のぼる | Climb | JS message/literal | stage-editor.js | ✓ |
 | U201 | ジャンプ | Jump | JS message/literal | stage-editor.js | ✓ |
 | U202 | 攻撃 | Attack | JS message/literal | stage-editor.js | ✓ |
-| U203 | 見た目 | Appearance | JS message/literal | stage-editor.js | ✓ |
+| U203 | 基本 | Base | JS message/literal | stage-editor.js | ✓ |
 | U204 | ライフ | Life | JS message/literal | stage-editor.js | ✓ |
 | U205 | 変身アイテム | Transform Item | JS message/literal | stage-editor.js | ✓ |
 | U206 | 能力 | Abilities | JS message/literal | stage-editor.js | ✓ |
