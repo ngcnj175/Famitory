@@ -3003,7 +3003,7 @@ const StageEditor = {
                     try {
                         await navigator.clipboard.writeText(editKeyDisplay.value);
                         if (App && typeof App.showToast === 'function') {
-                            App.showToast('エディットキーを コピーしました');
+                            App.showToast(this.t('U436') || 'エディットキーをコピーしました');
                         }
                     } catch (err) {
                         console.error('Failed to copy: ', err);
@@ -3011,7 +3011,7 @@ const StageEditor = {
                         editKeyDisplay.select();
                         document.execCommand('copy');
                         if (App && typeof App.showToast === 'function') {
-                            App.showToast('エディットキーを コピーしました');
+                            App.showToast(this.t('U436') || 'エディットキーをコピーしました');
                         }
                     }
                 }

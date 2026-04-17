@@ -2130,6 +2130,7 @@ const App = {
         'U434': { JPN: 'はい',               ENG: 'Yes' },
         'U435': { JPN: 'いいえ',             ENG: 'No' },
         'U306': { JPN: '閉じる',             ENG: 'Close' },
+        'U436': { JPN: 'エディットキーをコピーしました', ENG: 'Edit key copied' },
     },
 
     /**

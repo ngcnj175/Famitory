@@ -185,7 +185,7 @@
 | U177 | 複製 | Duplicate | JS message/literal | sprite-editor.js | ✓ |
 | U178 | 削除 | Delete | JS message/literal | sprite-editor.js | ✓ |
 | U179 | キャンセル | Cancel | JS message/literal | sprite-editor.js | ✓ |
-| U180 | プリセットを選択してください | Please select a preset | JS message/literal | sprite-editor.js | |
+| U180 | プリセットを選択してください | Please select a preset | JS message/literal | sprite-editor.js | ✓ |
 | U181 | 現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。 | Replace the current palette?\nSprite colors may change. | JS message/literal | sprite-editor.js | ✓ |
 | U182 | ▶ | ▶ | JS dom text assign | sprite-editor.js | |
 | U183 | 最低1色は必要です | At least 1 color is required | JS message/literal | sprite-editor.js | ✓ |
@@ -438,5 +438,7 @@
 | U431 | 現在 | Current | JS text | sprite-editor.js | |
 | U432 | 編集中 | Editing | JS text | sprite-editor.js | |
 | U433 | よく使う色 | Recent Colors | JS text | sprite-editor.js | |
-| U434 | はい | Yes | JS text (button) | app.js | |
-| U435 | いいえ | No | JS text (button) | app.js | |
+| U434 | はい | Yes | JS text (button) | app.js | ✓ |
+| U435 | いいえ | No | JS text (button) | app.js | ✓ |
+| U306 | 閉じる | Close | HTML button / JS literal | index.html / bgm-editor.js | ✓ |
+| U436 | エディットキーをコピーしました | Edit key copied | Toast message | stage-editor.js | ✓ |
