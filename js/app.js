@@ -2191,6 +2191,13 @@ const App = {
                 el.title = entry[lang];
             }
         });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const id = el.getAttribute('data-i18n-placeholder');
+            const entry = this.I18N[id];
+            if (entry && entry[lang] !== undefined) {
+                el.placeholder = entry[lang];
+            }
+        });
         // lang-labelは特別処理
         const langLabel = document.getElementById('lang-label');
         if (langLabel) langLabel.textContent = lang;
