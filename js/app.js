@@ -2160,6 +2160,10 @@ const App = {
         'U374': { JPN: '公開中の作品を更新しますか？', ENG: 'Update the published game?' },
         'U375': { JPN: 'URLが発行され、だれでもプレイできるようになります', ENG: 'A URL will be generated so anyone can play' },
         'U376': { JPN: '現在の内容で上書き保存されます', ENG: 'The current content will be overwritten' },
+        'U437': { JPN: 'スコアを共有',    ENG: 'Share Score' },
+        'U438': { JPN: 'もう一度',        ENG: 'Retry' },
+        'U439': { JPN: 'リミックスする',  ENG: 'Remix' },
+        'U440': { JPN: '編集に戻る',      ENG: 'Back to Edit' },
     },
 
     /**

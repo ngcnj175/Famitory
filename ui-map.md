@@ -358,8 +358,12 @@
 | U350 | パステル | Pastel | JS message/literal | app.js | |
 | U351 | ファミコン | Famicom | JS message/literal | app.js | |
 | U352 | ゲームボーイ | Game Boy | JS message/literal | app.js | |
-| U353 | モノクロ | Mono | JS message/literal | app.js | |
-| U354 | 編集モードに切り替わりました | Switched to Edit Mode | JS message/literal | app.js | |
+| U435 | いいえ | No | JS message/literal | app.js | ✓ |
+| U436 | エディットキーをコピーしました | Edit key copied | JS message/literal | app.js | ✓ |
+| U437 | スコアを共有 | Share Score | HTML text node (button) | index.html | ✓ |
+| U438 | もう一度 | Retry | HTML text node (button) | index.html | ✓ |
+| U439 | リミックスする | Remix | HTML text node (button) | index.html | ✓ |
+| U440 | 編集に戻る | Back to Edit | HTML text node (button) | index.html | ✓ |
 | U355 | タイトル変更 | Edit Title | JS message/literal | app.js | |
 | U356 | ゲームタイトルを入力 | Enter Game Title | JS message/literal | app.js | |
 | U357 | なまえ変更 | Edit Name | JS message/literal | app.js | |
@@ -442,3 +446,7 @@
 | U435 | いいえ | No | JS text (button) | app.js | ✓ |
 | U306 | 閉じる | Close | HTML button / JS literal | index.html / bgm-editor.js | ✓ |
 | U436 | エディットキーをコピーしました | Edit key copied | Toast message | stage-editor.js | ✓ |
+| U437 | スコアを共有 | Share Score | HTML text node (button) | index.html | ✓ |
+| U438 | もう一度 | Retry | HTML text node (button) | index.html | ✓ |
+| U439 | リミックスする | Remix | HTML text node (button) | index.html | ✓ |
+| U440 | 編集に戻る | Back to Edit | HTML text node (button) | index.html | ✓ |
