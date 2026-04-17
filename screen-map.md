@@ -6,7 +6,7 @@
 |----|--------|----------------|----------------|
 | S001 | ゲーム画面 (play-screen) | ゲームプレイ画面。キャンバス表示・コントローラー操作・リザルト表示 | index.html, game-engine.js |
 | S002 | ピクセル画面 (paint-screen) | スプライトエディタ。ピクセル描画・ツール・パレット | index.html, sprite-editor.js |
-| S003 | ステージ画面 (stage-screen) | ステージエディタ。タイル配置・ステージ設定・オブジェクト配置 | index.html, stage-editor.js |
+| S003 | ステージ画面 (stage-screen) | ステージエディタ。タイル配置・ゲーム設定・オブジェクト配置 | index.html, stage-editor.js |
 | S004 | サウンド画面 (sound-screen) | BGMエディタ。ピアノロール・シーケンス編集・トラックミキサー | index.html, bgm-editor.js |
 | S005 | リザルトオーバーレイ (result-overlay) | クリア/ゲームオーバー時のスコア表示・いいね・共有・リトライ | index.html, game-engine.js |
 | S006 | 共有ダイアログ (share-dialog) | ゲーム共有・URLコピー・X/Discord投稿・エクスポート/インポート | index.html, app.js, share.js |
@@ -30,9 +30,9 @@
 | S024 | 素材設定モーダル (material-config-modal) | 素材タイルの詳細設定（旧UI・未使用の可能性） | index.html |
 | S025 | アイテム設定モーダル (item-config-modal) | アイテムタイルの詳細設定（旧UI・未使用の可能性） | index.html |
 | S026 | ゴール設定モーダル (goal-config-modal) | ゴールタイルの詳細設定（旧UI・未使用の可能性） | index.html |
-| S027 | ステージ設定モーダル (stage-settings-modal) | ステージ全体設定（旧UI・未使用の可能性） | index.html |
+| S027 | ゲーム設定モーダル (game-settings-modal) | ゲーム全体設定（旧UI・未使用の可能性） | index.html |
 | S028 | スプライト選択モーダル (sprite-select-modal) | スプライト選択（モーダル版・未使用の可能性） | index.html |
-| S029 | ステージ設定パネル (stage-settings-panel) | ステージ画面内の折りたたみ設定パネル | index.html, stage-editor.js |
+| S029 | ゲーム設定パネル (game-settings-panel) | ステージ画面内の折りたたみ設定パネル | index.html, stage-editor.js |
 | S030 | タイル設定パネル (tile-config-panel) | ステージ画面内のインラインタイル設定パネル | index.html, stage-editor.js |
 | S031 | テキスト編集ポップアップ (text-edit-popup) | 汎用テキスト編集（ゲームタイトル/作成者名など） | index.html |
 | S032 | 数値コピー＆ペーストポップアップ (numcopy-popup) | サウンドパターンの指定範囲・トラック間のコピー＆ペースト | index.html, bgm-editor.js |

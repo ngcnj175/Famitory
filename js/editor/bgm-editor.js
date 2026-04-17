@@ -3548,7 +3548,7 @@ const SoundEditor = {
         const track = song.tracks[this.currentTrack];
         const maxSteps = song.bars;
 
-        // 背景（ステージ設定の背景色を使用）
+        // 背景（ゲーム設定の背景色を使用）
         const bgColor = App.projectData?.stage?.bgColor || '#3CBCFC';
         this.ctx.fillStyle = bgColor;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);

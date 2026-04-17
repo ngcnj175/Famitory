@@ -769,7 +769,7 @@ const App = {
         this.initEditKeyModal();
 
         // タイトル・作成者名はPLAY画面では常に読み取り専用
-        // （編集はステージ設定パネルでのみ行う）
+        // （編集はゲーム設定パネルでのみ行う）
 
         // ローカライズボタン初期化
         this.initLangBtn();
@@ -883,7 +883,7 @@ const App = {
         this.closeTextEditPopup();
         this.updateGameInfo();
 
-        // ステージ設定パネルの表示も同期
+        // ゲーム設定パネルの表示も同期
         if (typeof StageEditor !== 'undefined') {
             StageEditor.updateStageSettingsUI?.();
         }
@@ -1883,8 +1883,8 @@ const App = {
         'U014': { JPN: 'STAGE',     ENG: 'STAGE' },
         'U015': { JPN: 'サウンド',  ENG: 'Sound' },
         'U016': { JPN: 'BGM',       ENG: 'BGM' },
-        // ---- ステージ設定パネル ----
-        'U040': { JPN: 'ステージ設定',    ENG: 'Stage Settings' },
+        // ---- ゲーム設定パネル ----
+        'U040': { JPN: 'ゲーム設定',    ENG: 'Game Settings' },
         'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
         'U043': { JPN: 'クリエイター',    ENG: 'Creator' },
         'U044': { JPN: 'エディットキー',  ENG: 'Edit Key' },
