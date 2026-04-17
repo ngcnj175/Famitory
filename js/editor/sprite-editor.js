@@ -1276,31 +1276,39 @@ const SpriteEditor = {
             return;
         }
 
-        if (needConfirm && !confirm('このスプライトを削除しますか？\n（使用されている箇所は削除されます）')) {
-            return;
+        const executeDelete = () => {
+            // マップ上の参照を更新（削除）
+            this.updateMapSpriteReferences('delete', index);
+            // テンプレート内の参照を更新（削除）
+            this.updateTemplateSpriteReferences('delete', index);
+            // オブジェクト配置の参照を更新（削除）
+            this.updateObjectSpriteReferences('delete', index);
+
+            App.projectData.sprites.splice(index, 1);
+            App.projectData.sprites.forEach((s, i) => s.id = i);
+
+            this.currentSprite = Math.max(0, index - 1);
+            this.history = [];
+            this.initSpriteGallery();
+
+            // ステージエディタのサムネイルなども更新
+            if (typeof StageEditor !== 'undefined') {
+                StageEditor.initTemplateList();
+            }
+            this.render();
+        };
+
+        if (needConfirm) {
+            const msg = App.I18N['U187']?.[App.currentLang] || 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）';
+            App.showConfirm(msg, '', () => {
+                executeDelete();
+            });
+        } else {
+            executeDelete();
         }
-
-        // マップ上の参照を更新（削除）
-        this.updateMapSpriteReferences('delete', index);
-        // テンプレート内の参照を更新（削除）
-        this.updateTemplateSpriteReferences('delete', index);
-        // オブジェクト配置の参照を更新（削除）
-        this.updateObjectSpriteReferences('delete', index);
-
-        App.projectData.sprites.splice(index, 1);
-        App.projectData.sprites.forEach((s, i) => s.id = i);
-
-        this.currentSprite = Math.max(0, index - 1);
-        this.history = [];
-        this.initSpriteGallery();
-
-        // ステージエディタのサムネイルなども更新
-        if (typeof StageEditor !== 'undefined') {
-            StageEditor.initTemplateList();
-        }
-
-        this.render();
     },
+
+
 
     // スプライトを複製
     duplicateSprite(index) {
@@ -1914,18 +1922,19 @@ const SpriteEditor = {
     },
 
     clearSprite() {
-        if (!confirm('スプライトをクリアしますか？')) return;
-
-        this.saveHistory();
-        const sprite = App.projectData.sprites[this.currentSprite];
-        const dimension = this.getCurrentSpriteDimension();
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                sprite.data[y][x] = -1;
+        const msg = App.I18N['U188']?.[App.currentLang] || 'スプライトをクリアしますか？';
+        App.showConfirm(msg, '', () => {
+            this.saveHistory();
+            const sprite = App.projectData.sprites[this.currentSprite];
+            const dimension = this.getCurrentSpriteDimension();
+            for (let y = 0; y < dimension; y++) {
+                for (let x = 0; x < dimension; x++) {
+                    sprite.data[y][x] = -1;
+                }
             }
-        }
-        this.render();
-        this.initSpriteGallery();
+            this.render();
+            this.initSpriteGallery();
+        });
     },
 
     clearSelectionArea() {

@@ -3327,7 +3327,7 @@ const SoundEditor = {
 
     startPasteMode() {
         if (!this.rangeClipboard) {
-            alert('クリップボードが空です');
+            alert(App.I18N['U317']?.[App.currentLang] || 'クリップボードが空です');
             return;
         }
 

@@ -2145,6 +2145,9 @@ const App = {
         'U305': { JPN: 'Kick (ピッチ下降)',   ENG: 'Kick (Pitch Down)' },
         'U399': { JPN: 'Noise (ピッチ)',     ENG: 'Noise (Pitch)' },
         'U400': { JPN: 'Drum Kit',           ENG: 'Drum Kit' },
+        'U187': { JPN: 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）', ENG: 'Delete this sprite?\n(All usages will be removed.)' },
+        'U188': { JPN: 'スプライトをクリアしますか？', ENG: 'Clear this sprite?' },
+        'U317': { JPN: 'クリップボードが空です',   ENG: 'Clipboard is empty' },
     },
 
     /**
