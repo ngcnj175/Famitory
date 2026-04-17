@@ -15,6 +15,45 @@ const NesAudio = {
 
     init() {
         // AudioContextは初回ユーザー操作後に初期化
+        // iOS向け: バックグラウンド復帰時にAudioContextを自動再開する
+        this._setupIOSAudioRecovery();
+    },
+
+    /**
+     * iOS/Safari向けオーディオ自動復旧ハンドラ
+     * 通話・バックグラウンド移行でAudioContextがsuspendedになる問題に対処
+     */
+    _setupIOSAudioRecovery() {
+        if (this._iosRecoverySetup) return;
+        this._iosRecoverySetup = true;
+
+        const resume = () => {
+            // SE用AudioContext
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(() => {});
+            }
+            // BGM用AudioContext (GameEngineが持つ)
+            if (window.GameEngine && GameEngine.bgmAudioCtx && GameEngine.bgmAudioCtx.state === 'suspended') {
+                GameEngine.bgmAudioCtx.resume().catch(() => {});
+            }
+        };
+
+        // ページが前面に戻った時
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) resume();
+        });
+
+        // iOS Safari向け: ページ表示時（bfcache復帰含む）
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted || !document.hidden) resume();
+        });
+
+        // ユーザータッチで確実に復旧（iOSはユーザー操作が必要な場合がある）
+        const touchResume = () => {
+            resume();
+        };
+        document.addEventListener('touchstart', touchResume, { passive: true, capture: true });
+        document.addEventListener('pointerdown', touchResume, { passive: true, capture: true });
     },
 
     ensureContext() {
@@ -26,7 +65,7 @@ const NesAudio = {
         }
 
         if (this.ctx.state === 'suspended') {
-            this.ctx.resume();
+            this.ctx.resume().catch(() => {});
         }
     },
 

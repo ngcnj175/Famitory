@@ -2959,7 +2959,7 @@ const GameEngine = {
         }
         // iOSでsuspendedの場合にresume（ユーザーインタラクション時にグローバルで再開する方針へ変更）
         if (this.bgmAudioCtx.state === 'suspended') {
-            this.bgmAudioCtx.resume();
+            this.bgmAudioCtx.resume().catch(() => {});
         }
 
         const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
