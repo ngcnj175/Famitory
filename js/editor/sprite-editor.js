@@ -1217,52 +1217,57 @@ const SpriteEditor = {
 
         const currentSize = sprite.size || 1;
 
+        const executeToggle = () => {
+            const newSize = currentSize === 1 ? 2 : 1;
+            const currentDim = currentSize === 2 ? 32 : 16;
+            const newDim = newSize === 2 ? 32 : 16;
+
+            // 新しいデータ配列を作成
+            const newData = App.create2DArray(newDim, newDim, -1);
+
+            // データを変換
+            if (currentSize === 1 && newSize === 2) {
+                // 16x16 -> 32x32 (200%拡大)
+                for (let y = 0; y < currentDim; y++) {
+                    for (let x = 0; x < currentDim; x++) {
+                        const color = sprite.data[y][x];
+                        newData[y * 2][x * 2] = color;
+                        newData[y * 2 + 1][x * 2] = color;
+                        newData[y * 2][x * 2 + 1] = color;
+                        newData[y * 2 + 1][x * 2 + 1] = color;
+                    }
+                }
+            } else if (currentSize === 2 && newSize === 1) {
+                // 32x32 -> 16x16 (ダウンサンプリング)
+                for (let y = 0; y < newDim; y++) {
+                    for (let x = 0; x < newDim; x++) {
+                        newData[y][x] = sprite.data[y * 2][x * 2];
+                    }
+                }
+            }
+
+            sprite.data = newData;
+            sprite.size = newSize;
+
+            // 現在編集中のスプライトなら、オフセットをリセット
+            if (index === this.currentSprite) {
+                this.viewportOffsetX = 0;
+                this.viewportOffsetY = 0;
+            }
+
+            this.initSpriteGallery();
+            this.render();
+        };
+
         // 32x32 -> 16x16 の場合、警告
         if (currentSize === 2) {
-            if (!confirm('縮小すると細かい情報が失われます。続行しますか？')) {
-                return;
-            }
+            const msg = App.I18N['U185']?.[App.currentLang] || '縮小すると細かい情報が失われます。続行しますか？';
+            App.showConfirm(msg, '', () => {
+                executeToggle();
+            });
+        } else {
+            executeToggle();
         }
-
-        const newSize = currentSize === 1 ? 2 : 1;
-        const currentDim = currentSize === 2 ? 32 : 16;
-        const newDim = newSize === 2 ? 32 : 16;
-
-        // 新しいデータ配列を作成
-        const newData = App.create2DArray(newDim, newDim, -1);
-
-        // データを変換
-        if (currentSize === 1 && newSize === 2) {
-            // 16x16 -> 32x32 (200%拡大)
-            for (let y = 0; y < currentDim; y++) {
-                for (let x = 0; x < currentDim; x++) {
-                    const color = sprite.data[y][x];
-                    newData[y * 2][x * 2] = color;
-                    newData[y * 2 + 1][x * 2] = color;
-                    newData[y * 2][x * 2 + 1] = color;
-                    newData[y * 2 + 1][x * 2 + 1] = color;
-                }
-            }
-        } else if (currentSize === 2 && newSize === 1) {
-            // 32x32 -> 16x16 (ダウンサンプリング)
-            for (let y = 0; y < newDim; y++) {
-                for (let x = 0; x < newDim; x++) {
-                    newData[y][x] = sprite.data[y * 2][x * 2];
-                }
-            }
-        }
-
-        sprite.data = newData;
-        sprite.size = newSize;
-
-        // 現在編集中のスプライトなら、オフセットをリセット
-        if (index === this.currentSprite) {
-            this.viewportOffsetX = 0;
-            this.viewportOffsetY = 0;
-        }
-
-        this.initSpriteGallery();
-        this.render();
     },
 
     deleteSprite(index, needConfirm = true) {

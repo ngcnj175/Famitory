@@ -210,7 +210,7 @@
 | U202 | 攻撃 | Attack | JS message/literal | stage-editor.js | ✓ |
 | U203 | 基本 | Base | JS message/literal | stage-editor.js | ✓ |
 | U204 | ライフ | Life | JS message/literal | stage-editor.js | ✓ |
-| U205 | 変身アイテム | Transform Item | JS message/literal | stage-editor.js | ✓ |
+| U205 | 変身アイテム | Morph Item | JS message/literal | stage-editor.js | ✓ |
 | U206 | 能力 | Abilities | JS message/literal | stage-editor.js | ✓ |
 | U207 | 足の速さ | Move Speed | JS message/literal | stage-editor.js | ✓ |
 | U208 | ジャンプ力 | Jump Power | JS message/literal | stage-editor.js | ✓ |

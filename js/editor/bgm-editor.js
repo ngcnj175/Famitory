@@ -659,38 +659,38 @@ const SoundEditor = {
 
         const title = document.createElement('div');
         title.className = 'tone-menu-title';
-        title.innerText = '音色を選択';
+        title.textContent = App.I18N['U295']?.[App.currentLang] || '音色を選択';
         menu.appendChild(title);
 
         let options = [];
         if (trackType === 'square') {
             options = [
-                { val: 0, label: 'Standard' },
-                { val: 1, label: 'Standard (Short)' },
-                { val: 2, label: 'Standard (FadeIn)' },
-                { val: 3, label: 'Sharp' },
-                { val: 4, label: 'Sharp (Short)' },
-                { val: 5, label: 'Sharp (FadeIn)' },
-                { val: 6, label: 'Tremolo (高速)' }
+                { val: 0, id: 'U296', fallback: 'Standard' },
+                { val: 1, id: 'U297', fallback: 'Standard (Short)' },
+                { val: 2, id: 'U298', fallback: 'Standard (FadeIn)' },
+                { val: 3, id: 'U299', fallback: 'Sharp' },
+                { val: 4, id: 'U300', fallback: 'Sharp (Short)' },
+                { val: 5, id: 'U301', fallback: 'Sharp (FadeIn)' },
+                { val: 6, id: 'U302', fallback: 'Tremolo (高速)' }
             ];
         } else if (trackType === 'triangle') {
             options = [
-                { val: 0, label: 'Standard' },
-                { val: 1, label: 'Soft (Sine)' },
-                { val: 2, label: 'Power (Saw)' },
-                { val: 3, label: 'Kick (ピッチ下降)' }
+                { val: 0, id: 'U296', fallback: 'Standard' },
+                { val: 1, id: 'U303', fallback: 'Soft (Sine)' },
+                { val: 2, id: 'U304', fallback: 'Power (Saw)' },
+                { val: 3, id: 'U305', fallback: 'Kick (ピッチ下降)' }
             ];
         } else if (trackType === 'noise') {
             options = [
-                { val: 0, label: 'Noise (ピッチ)' },
-                { val: 1, label: 'Drum Kit' }
+                { val: 0, id: 'U399', fallback: 'Noise (ピッチ)' },
+                { val: 1, id: 'U400', fallback: 'Drum Kit' }
             ];
         }
 
         options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'tone-menu-btn' + (track.tone === opt.val ? ' active' : '');
-            btn.innerText = opt.label;
+            btn.innerText = App.I18N[opt.id]?.[App.currentLang] || opt.fallback;
             btn.onclick = () => {
                 track.tone = opt.val;
                 // UI反映（必要なら）
