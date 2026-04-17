@@ -622,7 +622,7 @@ const StageEditor = {
                 <div class="block-gauge" data-key="${key}" data-min="${min}" data-max="${max}">
                     ${blocks}
                 </div>
-                <span class="gauge-infinity" style="display: ${infinityDisplay}; margin-left: 6px; font-weight: bold; color: #fff;">∞</span>
+                <span class="gauge-infinity" style="display: ${infinityDisplay}; margin-left: 6px; font-weight: bold; color: #888;">∞</span>
             </div>
         `;
     },

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PixelGameKit - サウンドエディタ（新UI）
  */
 
@@ -1289,7 +1289,7 @@ const SoundEditor = {
                     if (this.selectionStart && this.selectionEnd) {
                         const song = this.getCurrentSong();
                         const track = song.tracks[this.currentTrack];
-                        
+
                         const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
                         const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
                         const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
@@ -2787,8 +2787,8 @@ const SoundEditor = {
 
                     this.movingNotes.forEach(note => {
 
-                            note.step += deltaStep;
-                            note.pitch += deltaPitch;
+                        note.step += deltaStep;
+                        note.pitch += deltaPitch;
 
                     });
 
@@ -2896,7 +2896,7 @@ const SoundEditor = {
                     if (this.isStepInSelection(step, pitch)) {
                         this.isMovingSelection = true;
                         this.selectionMoveStart = { step, pitch };
-                        
+
                         // 移動対象のノートを確定
                         const song = this.getCurrentSong();
                         const track = song.tracks[this.currentTrack];
@@ -2904,7 +2904,7 @@ const SoundEditor = {
                         const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
                         const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
                         const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
-                        this.movingNotes = track.notes.filter(n => 
+                        this.movingNotes = track.notes.filter(n =>
                             n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch
                         );
                     } else {
@@ -2977,7 +2977,7 @@ const SoundEditor = {
                                     const track = song.tracks[this.currentTrack];
                                     const idx = track.notes.indexOf(creatingNote);
                                     if (idx >= 0) track.notes.splice(idx, 1);
-                                    
+
                                     isCreatingNote = false;
                                     creatingNote = null;
                                     this.seekToStep(step);
@@ -3015,7 +3015,7 @@ const SoundEditor = {
                     const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
                     const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
                     const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
-                    this.movingNotes = track.notes.filter(n => 
+                    this.movingNotes = track.notes.filter(n =>
                         n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch
                     );
                 } else {
@@ -3083,7 +3083,7 @@ const SoundEditor = {
                         const track = song.tracks[this.currentTrack];
                         const idx = track.notes.indexOf(creatingNote);
                         if (idx >= 0) track.notes.splice(idx, 1);
-                        
+
                         isCreatingNote = false;
                         creatingNote = null;
                         this.seekToStep(step);
@@ -3451,9 +3451,9 @@ const SoundEditor = {
         if (step >= 0 && step < song.bars) {
             const wasPlaying = this.isPlaying;
             if (wasPlaying) {
-                this.pause(); 
+                this.pause();
                 this.currentStep = step;
-                this.play();  
+                this.play();
             } else {
                 this.currentStep = step;
                 this.isPaused = true;
