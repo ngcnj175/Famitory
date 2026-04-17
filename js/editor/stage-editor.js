@@ -578,7 +578,7 @@ const StageEditor = {
             if (config.itemType === 'easter') {
                 html += `
                     <div class="param-row">
-                        <span class="param-label">メッセージ</span>
+                        <span class="param-label">${this.t('U445')}</span>
                         <input type="text" class="param-input" data-key="easterMessage" 
                                value="${config.easterMessage || ''}" 
                                maxlength="20" placeholder="${this.t('U255')}">
@@ -600,7 +600,7 @@ const StageEditor = {
 
         // 特殊ケース: lifeで-1は無限
         if (key === 'life' && min === -1) {
-            if (value === -1) mappedValue = 0; // 無限は0番目
+            if (value === -1) mappedValue = 5; // 無限は5番目（全点灯）
             else mappedValue = Math.min(value, 5);
         } else {
             // 通常のマッピング: min-max を 1-5 にマッピング
@@ -615,12 +615,14 @@ const StageEditor = {
             blocks += `<span class="block-gauge-item ${active}" data-key="${key}" data-index="${i}"></span>`;
         }
 
+        const infinityDisplay = (key === 'life' && min === -1 && mappedValue === 5) ? 'inline' : 'none';
         return `
             <div class="param-row param-row-gauge">
                 <span class="param-label">${label}</span>
                 <div class="block-gauge" data-key="${key}" data-min="${min}" data-max="${max}">
                     ${blocks}
                 </div>
+                <span class="gauge-infinity" style="display: ${infinityDisplay}; margin-left: 6px; font-weight: bold; color: #fff;">∞</span>
             </div>
         `;
     },
@@ -854,8 +856,8 @@ const StageEditor = {
                     // インデックス(1-5)を実際の値にマッピング
                     let value;
                     if (key === 'life' && min === -1) {
-                        // 特殊ケース: 0=無敵(-1), 1-5=1-5
-                        value = index === 0 ? -1 : index;
+                        // 特殊ケース: 5番目=無敵(-1), 1-4=1-4
+                        value = index === 5 ? -1 : index;
                     } else {
                         // 通常マッピング
                         const range = max - min;
@@ -872,6 +874,12 @@ const StageEditor = {
                             g.classList.remove('active');
                         }
                     });
+
+                    // 無限マークの表示切り替え
+                    const infinitySpan = gaugeContainer.parentElement.querySelector('.gauge-infinity');
+                    if (infinitySpan) {
+                        infinitySpan.style.display = (index === 5 && key === 'life' && min === -1) ? 'inline' : 'none';
+                    }
                 }
             });
         });

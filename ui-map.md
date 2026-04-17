@@ -456,3 +456,4 @@
 | U442 | もどる | Back | HTML text node (button) | index.html | ✓ |
 | U443 | ✓ コピーしました | ✓ Copied | HTML text node | index.html | ✓ |
 | U444 | キーが一致しません | Key mismatch | HTML text node | index.html | ✓ |
+| U445 | メッセージ | Message | JS HTML template | stage-editor.js | ✓ |

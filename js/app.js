@@ -2173,6 +2173,7 @@ const App = {
         'U441': { JPN: 'スコアを共有',    ENG: 'Share Score' },
         'U442': { JPN: 'もどる',          ENG: 'Back' },
         'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },
+        'U445': { JPN: 'メッセージ',      ENG: 'Message' },
     },
 
     /**
