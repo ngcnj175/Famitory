@@ -231,18 +231,8 @@ const App = {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
-        // 基準サイズ: iPhone想定の幅と高さ
-        const baseWidth = 375;
-        const baseHeight = 667;
-
-        // 幅と高さ両方の比率を計算し、小さい方に合わせる
-        const scaleX = screenWidth / baseWidth;
-        const scaleY = screenHeight / baseHeight;
-        const scale = Math.min(scaleX, scaleY);
-
-        // iPhone/スマホサイズ（480px以下）かつ 基準を十分に満たしている場合は拡大スケーリングしない
-        // ただし、基準を下回る場合（scale < 1）は、表示切れを防ぐために縮小スケーリングを許可する
-        if (screenWidth <= 480 && scale >= 1.0) {
+        // iPhone/スマホサイズ（480px以下）ではスケーリングしない
+        if (screenWidth <= 480) {
             app.style.transform = '';
             app.style.transformOrigin = '';
             app.style.width = '';
@@ -257,7 +247,14 @@ const App = {
             return;
         }
 
-        // --- スケーリング処理 ---
+        // 基準サイズ: iPhone想定の幅と高さ
+        const baseWidth = 375;
+        const baseHeight = 667;
+
+        // 幅と高さ両方の比率を計算し、小さい方に合わせる
+        const scaleX = screenWidth / baseWidth;
+        const scaleY = screenHeight / baseHeight;
+        const scale = Math.min(scaleX, scaleY);
 
         // 最大スケールをキャップ（あまり大きくしすぎない）
         const cappedScale = Math.min(scale, 2.5);
