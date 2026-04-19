@@ -251,7 +251,7 @@ const App = {
 
         // CSS transformでスケーリング
         app.style.transform = `scale(${cappedScale})`;
-        app.style.transformOrigin = 'top center';
+        app.style.transformOrigin = 'center center';
 
         // bodyをセンタリング用に設定
         document.body.style.overflow = 'hidden';
@@ -259,15 +259,11 @@ const App = {
         document.body.style.justifyContent = 'center';
         document.body.style.alignItems = 'center';
         document.body.style.backgroundColor = document.body.classList.contains('dark-mode') ? '#000000' : '#ffffff';
+        document.body.style.height = '100dvh';
+        document.body.style.margin = '0';
 
-        // 垂直方向の中央寄せ計算（marginTopを使用）
-        const scaledHeight = baseHeight * cappedScale;
-        if (scaledHeight < screenHeight) {
-            const topMargin = (screenHeight - scaledHeight) / 2;
-            app.style.marginTop = topMargin + 'px';
-        } else {
-            app.style.marginTop = '0';
-        }
+        // マージンや位置の個別調整はFlexboxに任せるためクリア
+        app.style.marginTop = '0';
 
         console.log(`Viewport scaled to ${cappedScale.toFixed(2)} for ${screenWidth}x${screenHeight}`);
     },
