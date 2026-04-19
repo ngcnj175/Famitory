@@ -2195,6 +2195,13 @@ const App = {
         'U442': { JPN: 'もどる',          ENG: 'Back' },
         'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },
         'U445': { JPN: 'メッセージ',      ENG: 'Message' },
+        'U307': { JPN: 'これ以上削除できません', ENG: 'Cannot delete anymore' },
+        'U313': { JPN: '「${songName}」を削除しますか？', ENG: 'Delete "${songName}"?' },
+        'U308': { JPN: 'このBGMを削除しますか？', ENG: 'Delete this BGM?' },
+        'U314': { JPN: 'Tr${trackNum}の全ノートを削除しますか？', ENG: 'Delete all notes in Tr${trackNum}?' },
+        'U317': { JPN: 'クリップボードが空です',   ENG: 'Clipboard is empty' },
+        'U322': { JPN: 'トラックを選択してください', ENG: 'Please select a track' },
+        'U331': { JPN: 'コピー範囲を正しく設定してください', ENG: 'Please set the copy range correctly' },
     },
 
     /**

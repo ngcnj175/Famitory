@@ -2385,7 +2385,8 @@ const SoundEditor = {
             this.stop();
         }
 
-        App.showConfirm(this.t('U314').replace('${this.currentTrack + 1}', this.currentTrack + 1), "", () => {
+        const trackNum = this.currentTrack + 1;
+        App.showConfirm(this.t('U314').replace('${trackNum}', trackNum), "", () => {
 
         // iOSでconfirmダイアログ後にAudioContextが壊れる対策：再作成
         this.resetAudioContext();
