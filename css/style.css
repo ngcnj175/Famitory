@@ -867,7 +867,7 @@ body {
     aspect-ratio: 1;
     flex-shrink: 0;
     /* 閭梧勹濶ｲ: 阮�げ繝ｬ繝ｼ */
-    background: #e8e8e8;
+    background: #ffffff;
     /* 繧ｰ繝ｪ繝�ラ陦ｨ遉ｺ�育區縲�0.5px/50%騾乗� - 繝斐い繝弱Ο繝ｼ繝ｫ縺ｨ蜷後§�� */
     background-image:
         linear-gradient(to right, rgba(255, 255, 255, 0.5) 0.5px, transparent 0.5px),
@@ -980,7 +980,7 @@ body {
     aspect-ratio: 1;
     flex-shrink: 0;
     /* 繝斐け繧ｻ繝ｫ逕ｻ髱｢縺ｨ蜷後§閭梧勹繝ｻ繧ｰ繝ｪ繝�ラ */
-    background: #e8e8e8;
+    background: #ffffff;
     background-image:
         linear-gradient(to right, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
@@ -2825,7 +2825,7 @@ body {
 
 .editkey-container input[type="text"] {
     width: 100%;
-    background: #e8e8e8;
+    background: #ffffff;
     border: 1px dashed #ccc;
     text-align: center;
     font-family: monospace;
@@ -3751,7 +3751,7 @@ body {
     height: 38px;
     border: none;
     border-radius: 50%;
-    background: #e8e8e8;
+    background: #ffffff;
     color: #555;
     cursor: pointer;
     display: flex;
@@ -3818,7 +3818,7 @@ body {
     flex-shrink: 1;
     box-sizing: border-box;
     /* 閭梧勹濶ｲ: 阮�げ繝ｬ繝ｼ */
-    background: #e8e8e8;
+    background: #ffffff;
     /* 繧ｰ繝ｪ繝�ラ陦ｨ遉ｺ�育區縲�1繝斐け繧ｻ繝ｫ豈趣ｼ� */
     background-image:
         linear-gradient(to right, rgba(255, 255, 255, 0.8) 1px, transparent 1px),

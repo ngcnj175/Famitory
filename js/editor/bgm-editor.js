@@ -192,8 +192,7 @@ const SoundEditor = {
         // CSSの aspect-ratio: 1 に完全に任せる
 
         this.render();
-        });
-    ,
+    },
 
     // ========== Console Header (ソング制御盤) ==========
     initConsoleHeader() {
@@ -2419,11 +2418,7 @@ const SoundEditor = {
             this.stop();
         }
 
-        if (!confirm(`Tr${this.currentTrack + 1}の全ノートを削除しますか？`)) {
-            // iOSでconfirmダイアログ後にAudioContextが壊れる対策：再作成
-            this.resetAudioContext();
-            return;
-        }
+        App.showConfirm(this.t('U314').replace('${this.currentTrack + 1}', this.currentTrack + 1), "", () => {
 
         // iOSでconfirmダイアログ後にAudioContextが壊れる対策：再作成
         this.resetAudioContext();
@@ -2431,6 +2426,7 @@ const SoundEditor = {
         track.notes = [];
         this.currentStep = 0;
         this.render();
+        });
     },
 
     // ========== コピー/ペースト（範囲選択方式） ==========
