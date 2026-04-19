@@ -3751,7 +3751,7 @@ body {
     height: 38px;
     border: none;
     border-radius: 50%;
-    background: #ffffff;
+    background: #e0e0e0;
     color: #555;
     cursor: pointer;
     display: flex;
@@ -4069,6 +4069,32 @@ body {
 
 .jukebox-add-btn:active {
     background: var(--color-medium);
+}
+
+/* 短画面デバイス用調整 (iPhone SE等) */
+@media (max-height: 700px) {
+    #bgm-console-header {
+        height: 38px !important;
+        margin-bottom: 2px !important;
+    }
+    #sound-main-area {
+        gap: 6px !important;
+    }
+    #piano-roll-canvas {
+        max-width: calc(100% - 70px) !important;
+    }
+    #piano-keyboard, .piano-key.white {
+        height: 70px !important;
+    }
+    .piano-key.black {
+        height: 45px !important;
+    }
+    #bgm-channel-strip {
+        height: 54px !important;
+    }
+    .channel-strip-track {
+        padding: 4px 6px !important;
+    }
 }
 
 /* 髻ｳ濶ｲ驕ｸ謚槭Γ繝九Η繝ｼ */
