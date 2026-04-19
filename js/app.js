@@ -1154,6 +1154,10 @@ const App = {
         // OKのみ表示にするためキャンセルを隠す
         cancelBtn.classList.add('hidden');
 
+        // ボタンのテキストを「閉じる」に設定
+        const btnText = this.I18N['U306']?.[this.currentLang] || 'Close';
+        okBtn.textContent = btnText;
+
         const close = () => {
             modal.classList.add('hidden');
             cancelBtn.classList.remove('hidden'); // 次回のために戻す
