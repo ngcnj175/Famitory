@@ -12,10 +12,8 @@ const SoundEditor = {
     ctx: null,
 
     // ソング管理
-    songs: [],
-    currentSongIdx: 0,
-
-    // トラック
+    songManager: null,
+    // currentTrack等はUI状態として残す
     currentTrack: 0, // 0-3: Tr1-Tr4
     trackTypes: ['square', 'square', 'triangle', 'noise'],
 
@@ -72,12 +70,10 @@ const SoundEditor = {
         // Web Audio初期化
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // ソングデータ初期化（マイグレーション含む）
-        this.migrateSongData();
-
-        this.songs = App.projectData.songs;
-        if (this.songs.length === 0) {
-            this.addSong();
+        // ソングデータ管理の初期化
+        this.songManager = new SongManager(App.projectData.songs);
+        if (this.songManager.songs.length === 0) {
+            this.songManager.add();
         }
 
         // 新UI初期化
@@ -98,9 +94,11 @@ const SoundEditor = {
         if (!App.projectData.songs) {
             App.projectData.songs = [];
         }
-        this.songs = App.projectData.songs;
-        if (this.songs.length === 0) {
-            this.addSong();
+        
+        // 再初期化
+        this.songManager = new SongManager(App.projectData.songs);
+        if (this.songManager.songs.length === 0) {
+            this.songManager.add();
         }
 
         // iOS対応: audioCtxがsuspendedなら再開を試みる
@@ -118,21 +116,7 @@ const SoundEditor = {
         this.updateChannelStripUI();
     },
 
-    // データ構造のマイグレーション (Vol/Pan追加)
-    migrateSongData() {
-        if (!App.projectData.songs) {
-            App.projectData.songs = [];
-            return;
-        }
-        App.projectData.songs.forEach(song => {
-            if (!song.tracks) return;
-            song.tracks.forEach(track => {
-                if (typeof track.volume === 'undefined') track.volume = 0.65;
-                if (typeof track.pan === 'undefined') track.pan = 0.0;
-                if (typeof track.tone === 'undefined') track.tone = 0; // 音色バリエーション (0=Default)
-            });
-        });
-    },
+    // migrateSongDataはSongManagerに移動したため削除
 
     // 波形キャッシュ
     waveCache: {},
@@ -208,16 +192,12 @@ const SoundEditor = {
 
         // 前へ
         document.getElementById('song-prev-btn')?.addEventListener('click', () => {
-            let nextIdx = this.currentSongIdx - 1;
-            if (nextIdx < 0) nextIdx = this.songs.length - 1;
-            this.selectSong(nextIdx);
+            this.selectSong(this.songManager.getPrevIdx());
         });
 
         // 次へ
         document.getElementById('song-next-btn')?.addEventListener('click', () => {
-            let nextIdx = this.currentSongIdx + 1;
-            if (nextIdx >= this.songs.length) nextIdx = 0;
-            this.selectSong(nextIdx);
+            this.selectSong(this.songManager.getNextIdx());
         });
 
         // 数値入力モーダル初期化
@@ -879,8 +859,8 @@ const SoundEditor = {
         if (!listContainer) return;
 
         let html = '';
-        this.songs.forEach((song, idx) => {
-            const isCurrent = idx === this.currentSongIdx ? 'current' : '';
+        this.songManager.songs.forEach((song, idx) => {
+            const isCurrent = idx === this.songManager.currentIdx ? 'current' : '';
             html += `
                 <div class="se-select-item ${isCurrent}" data-song-index="${idx}">
                     <span class="se-name">${song.name}</span>
@@ -911,11 +891,11 @@ const SoundEditor = {
             item.addEventListener('mousedown', () => {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
-                    if (this.songs.length <= 1) {
+                    if (this.songManager.songs.length <= 1) {
                         App.showAlert(this.t('U307'));
                         return;
                     }
-                    App.showConfirm(this.t('U308'), this.songs[idx].name, () => {
+                    App.showConfirm(this.t('U308'), this.songManager.songs[idx].name, () => {
                         this.deleteSong(idx);
                         this.renderJukeboxList();
                     });
@@ -924,11 +904,11 @@ const SoundEditor = {
             item.addEventListener('touchstart', () => {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
-                    if (this.songs.length <= 1) {
+                    if (this.songManager.songs.length <= 1) {
                         App.showAlert(this.t('U307'));
                         return;
                     }
-                    App.showConfirm(this.t('U308'), this.songs[idx].name, () => {
+                    App.showConfirm(this.t('U308'), this.songManager.songs[idx].name, () => {
                         this.deleteSong(idx);
                         this.renderJukeboxList();
                     });
@@ -946,7 +926,7 @@ const SoundEditor = {
                 const idx = parseInt(btn.dataset.songIndex);
 
                 // トグル動作: 再生中で同じ曲なら停止
-                if (this.currentSongIdx === idx && this.isPlaying) {
+                if (this.songManager.currentIdx === idx && this.isPlaying) {
                     this.stop();
                     // ボタンを停止状態に戻す
                     btn.textContent = '▶';
@@ -979,7 +959,7 @@ const SoundEditor = {
             this.duplicateSong(idx);
             this.renderJukeboxList();
         } else if (action.toLowerCase() === 'rename') {
-            const song = this.songs[idx];
+            const song = this.songManager.songs[idx];
             const newName = prompt('新しい名前', song.name);
             if (newName) {
                 song.name = newName;
@@ -995,57 +975,44 @@ const SoundEditor = {
         const duplicatedSong = JSON.parse(JSON.stringify(currentSong));
 
         duplicatedSong.name = currentSong.name + "のコピー";
-        this.songs.push(duplicatedSong);
+        this.songManager.songs.push(duplicatedSong);
 
         // 追加したソングへ移動
-        this.selectSong(this.songs.length - 1);
+        this.selectSong(this.songManager.songs.length - 1);
 
         // 保存
         if (window.Storage) Storage.saveProject();
     },
 
     addSong() {
-        const newSong = {
-            name: `BGM ${this.songs.length + 1}`,
-            bpm: 120,
-            bars: 16,
-            tracks: [
-                { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
-                { type: 'square', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
-                { type: 'triangle', volume: 0.65, pan: 0.0, tone: 0, notes: [] },
-                { type: 'noise', volume: 0.65, pan: 0.0, tone: 0, notes: [] }
-            ]
-        };
-        this.songs.push(newSong);
-        this.selectSong(this.songs.length - 1);
+        this.songManager.add();
+        // 追加したソングへ移動
+        this.selectSong(this.songManager.currentIdx);
+        // 保存
+        if (window.Storage) Storage.saveProject();
     },
 
     deleteSong() {
-        if (this.songs.length <= 1) {
+        if (this.songManager.songs.length <= 1) {
             App.showAlert(this.t('U307'));
             return;
         }
 
-        App.showConfirm(this.t('U313').replace('${this.getCurrentSong().name}', this.getCurrentSong().name), "", () => {
+        const songName = this.songManager.current.name;
+        App.showConfirm(this.t('U313').replace('${songName}', songName), "", () => {
+            // Web Audioリセット
+            this.resetAudioContext();
 
-        // --- Web Audio API 初期化 ---
-        this.resetAudioContext();
+            // データ削除
+            this.songManager.remove();
 
-        // --- パレット読み込み ---
-        this.songs.splice(this.currentSongIdx, 1);
+            // 表示更新
+            this.selectSong(this.songManager.currentIdx);
 
-        // インデックス調整（末尾を削除した場合は一つ前へ）
-        if (this.currentSongIdx >= this.songs.length) {
-            this.currentSongIdx = this.songs.length - 1;
-        }
-
-        // 表示更新
-        this.selectSong(this.currentSongIdx);
-
-        // ステージエディタ等のBGM選択肢更新
-        if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
-            StageEditor.updateBgmSelects();
-        }
+            // ステージエディタ等のBGM選択肢更新
+            if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
+                StageEditor.updateBgmSelects();
+            }
         });
     },
 
@@ -1057,7 +1024,7 @@ const SoundEditor = {
             this.stop();
         }
 
-        this.currentSongIdx = idx;
+        this.songManager.select(idx);
         this.scrollX = 0;
         this.currentStep = 0;
         this.updateConsoleDisplay();
@@ -1071,7 +1038,7 @@ const SoundEditor = {
     },
 
     getCurrentSong() {
-        return this.songs[this.currentSongIdx] || this.songs[0];
+        return this.songManager.current;
     },
 
     // ========== 編集ツール ==========
