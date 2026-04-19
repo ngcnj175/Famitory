@@ -1149,18 +1149,24 @@ const App = {
 
         msgEl.textContent = message;
         subEl.textContent = subMessage || '';
+        // 表示
         modal.classList.remove('hidden');
+
+        // ローカライズを一旦全体に適用（ボタンが「はい」等になる）
+        this.applyLang();
 
         // OKのみ表示にするためキャンセルを隠す
         cancelBtn.classList.add('hidden');
 
-        // ボタンのテキストを「閉じる」に設定
+        // 警告用なのでボタンを「閉じる」に上書き
         const btnText = this.I18N['U306']?.[this.currentLang] || 'Close';
         okBtn.textContent = btnText;
 
         const close = () => {
             modal.classList.add('hidden');
             cancelBtn.classList.remove('hidden'); // 次回のために戻す
+            // ボタンテキストを本来の data-i18n に戻すため再適用
+            this.applyLang();
             okBtn.onclick = null;
             modal.onclick = null;
         };
