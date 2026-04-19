@@ -3,6 +3,10 @@
  */
 
 const SoundEditor = {
+    // I18N
+    t(id) {
+        return App.I18N[id]?.[App.currentLang] || "";
+    },
     // キャンバス
     canvas: null,
     ctx: null,
@@ -188,7 +192,8 @@ const SoundEditor = {
         // CSSの aspect-ratio: 1 に完全に任せる
 
         this.render();
-    },
+        });
+    ,
 
     // ========== Console Header (ソング制御盤) ==========
     initConsoleHeader() {
@@ -908,26 +913,26 @@ const SoundEditor = {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert('最後のBGMは削除できません');
+                        App.showAlert(this.t('U307'));
                         return;
                     }
-                    if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
+                    App.showConfirm(this.t('U308'), this.songs[idx].name, () => {
                         this.deleteSong(idx);
                         this.renderJukeboxList();
-                    }
+                    });
                 }, 800);
             });
             item.addEventListener('touchstart', () => {
                 longPressTimer = setTimeout(() => {
                     const idx = parseInt(item.dataset.songIndex);
                     if (this.songs.length <= 1) {
-                        alert('最後のBGMは削除できません');
+                        App.showAlert(this.t('U307'));
                         return;
                     }
-                    if (confirm(`"${this.songs[idx].name}" を削除しますか？`)) {
+                    App.showConfirm(this.t('U308'), this.songs[idx].name, () => {
                         this.deleteSong(idx);
                         this.renderJukeboxList();
-                    }
+                    });
                 }, 800);
             }, { passive: true });
             item.addEventListener('mouseup', () => clearTimeout(longPressTimer));
@@ -1018,13 +1023,11 @@ const SoundEditor = {
 
     deleteSong() {
         if (this.songs.length <= 1) {
-            alert('最後のBGMは削除できません');
+            App.showAlert(this.t('U307'));
             return;
         }
 
-        if (!confirm(`「${this.getCurrentSong().name}」を削除しますか？`)) {
-            return;
-        }
+        App.showConfirm(this.t('U313').replace('${this.getCurrentSong().name}', this.getCurrentSong().name), "", () => {
 
         // --- Web Audio API 初期化 ---
         this.resetAudioContext();
@@ -1044,6 +1047,7 @@ const SoundEditor = {
         if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
             StageEditor.updateBgmSelects();
         }
+        });
     },
 
     selectSong(idx) {
@@ -1642,8 +1646,6 @@ const SoundEditor = {
     },
 
     // 現在再生中のオシレーターとゲイン
-    currentKeyOsc: null,
-    // 現在再生中のオシレーターとゲイン、パン
     currentKeyOsc: null,
     currentKeyGain: null,
 
@@ -3327,7 +3329,7 @@ const SoundEditor = {
 
     startPasteMode() {
         if (!this.rangeClipboard) {
-            alert(App.I18N['U317']?.[App.currentLang] || 'クリップボードが空です');
+            App.showAlert(this.t('U317'));
             return;
         }
 
@@ -3888,7 +3890,7 @@ const SoundEditor = {
         const tracks = this._numcopyTracks;
 
         if (tracks.length === 0) {
-            alert('トラックを選択してください');
+            App.showAlert(this.t('U322'));
             return;
         }
 
@@ -3897,7 +3899,7 @@ const SoundEditor = {
         const pasteAt = parseInt(document.getElementById('numcopy-paste-at').textContent) || 0;
 
         if (fromStep > toStep) {
-            alert('コピー範囲が不正です');
+            App.showAlert(this.t('U331'));
             return;
         }
 

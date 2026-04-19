@@ -1148,6 +1148,44 @@ const App = {
     },
 
     /**
+     * 汎用アラートダイアログ（カスタム版）
+     */
+    showAlert(message, subMessage, onOk) {
+        const modal = document.getElementById('generic-confirm-modal');
+        const msgEl = document.getElementById('generic-confirm-msg');
+        const subEl = document.getElementById('generic-confirm-body');
+        const okBtn = document.getElementById('generic-confirm-ok');
+        const cancelBtn = document.getElementById('generic-confirm-cancel');
+
+        if (!modal || !okBtn || !cancelBtn) {
+            // フォールバック
+            alert(message + (subMessage ? "\n" + subMessage : ""));
+            if (onOk) onOk();
+            return;
+        }
+
+        msgEl.textContent = message;
+        subEl.textContent = subMessage || '';
+        modal.classList.remove('hidden');
+
+        // OKのみ表示にするためキャンセルを隠す
+        cancelBtn.classList.add('hidden');
+
+        const close = () => {
+            modal.classList.add('hidden');
+            cancelBtn.classList.remove('hidden'); // 次回のために戻す
+            okBtn.onclick = null;
+            modal.onclick = null;
+        };
+
+        okBtn.onclick = () => { close(); if (onOk) onOk(); };
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+
+        // ローカライズ強制適用
+        this.applyLang();
+    },
+
+    /**
      * 汎用確認ダイアログ（カスタム版）
      */
     showConfirm(message, subMessage, onOk, onCancel) {
