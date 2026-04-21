@@ -663,8 +663,11 @@ const SoundEditor = {
         const note = 'C';
         const octave = 4;
         this.currentTrack = trackIdx;
+        const song = this.getCurrentSong();
+        const track = song.tracks[trackIdx];
+        const trackType = this.trackTypes[trackIdx];
         // 単音再生（プレビュー）
-        this.player.playNote(note, octave, 0.4);
+        this.player.playNote(note, octave, trackType, track, 0.4);
     },
 
     updateChannelStripUI() {
@@ -2270,7 +2273,9 @@ const SoundEditor = {
                             creatingNote = newNote;
                             createStartStep = pendingInputData.step;
                             const { note: noteName, octave } = this.player.pitchToNote(pendingInputData.pitch);
-                            this.player.playNote(noteName, octave);
+                            const trackType = this.trackTypes[this.currentTrack];
+                            const trackInfo = song.tracks[this.currentTrack];
+                            this.player.playNote(noteName, octave, trackType, trackInfo);
                             this.render();
 
                             // 長押しでシークとみなしノート作成をキャンセル
@@ -2376,7 +2381,9 @@ const SoundEditor = {
                 creatingNote = newNote;
                 createStartStep = step;
                 const { note: noteName, octave } = this.player.pitchToNote(pitch);
-                this.player.playNote(noteName, octave);
+                const trackType = this.trackTypes[this.currentTrack];
+                const trackInfo = song.tracks[this.currentTrack];
+                this.player.playNote(noteName, octave, trackType, trackInfo);
                 this.render();
 
                 // 長押しでシークとみなしノート作成をキャンセル
@@ -2478,7 +2485,9 @@ const SoundEditor = {
                             const song = this.getCurrentSong();
                             song.tracks[this.currentTrack].notes.push(newNote);
                             const { note: noteName, octave } = this.player.pitchToNote(pendingInputData.pitch);
-                            this.player.playNote(noteName, octave);
+                            const trackType = this.trackTypes[this.currentTrack];
+                            const trackInfo = song.tracks[this.currentTrack];
+                            this.player.playNote(noteName, octave, trackType, trackInfo);
                             this.render();
                         }
                         pendingInputData = null;
@@ -2722,7 +2731,8 @@ const SoundEditor = {
         } else {
             // 追加
             const { note, octave } = this.player.pitchToNote(pitch);
-            this.player.playNote(note, octave);
+            const trackType = this.trackTypes[this.currentTrack];
+            this.player.playNote(note, octave, trackType, track);
             track.notes.push({ step, pitch, length: 1 });
         }
         this.render();
