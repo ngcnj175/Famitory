@@ -59,16 +59,17 @@ const SoundEditor = {
     // 音階定義（5オクターブ = C1-B5）
     noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
 
-    // Web Audio
-    audioCtx: null,
+    // Web Audio (BgmPlayer に委譲)
+    player: null,
 
     init() {
         this.canvas = document.getElementById('piano-roll-canvas');
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
 
-        // Web Audio初期化
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Web Audio (BgmPlayer)初期化
+        this.player = new BgmPlayer();
+        this.player.init();
 
         // ソングデータ管理の初期化
         this.songManager = new SongManager(App.projectData.songs);
@@ -101,14 +102,12 @@ const SoundEditor = {
             this.songManager.add();
         }
 
-        // iOS対応: audioCtxがsuspendedなら再開を試みる
-        if (this.audioCtx) {
-            if (this.audioCtx.state === 'suspended') {
-                this.audioCtx.resume().catch(e => console.log('AudioContext resume failed:', e));
-            }
+        // iOS対応: suspendedなら再開を試みる
+        if (this.player) {
+            this.player.resume();
         } else {
-            // audioCtxがnullなら再作成
-            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            this.player = new BgmPlayer();
+            this.player.init();
         }
 
         this.resize(); // キャンバスサイズ設定
@@ -117,48 +116,12 @@ const SoundEditor = {
     },
 
     // migrateSongDataはSongManagerに移動したため削除
+    // waveCache / getPeriodicWave は BgmPlayer に移動済み
 
-    // 波形キャッシュ
-    waveCache: {},
-
-    getPeriodicWave(duty) {
-        if (!this.audioCtx) return null;
-
-        const cacheKey = `pulse_${duty}`;
-        if (this.waveCache[cacheKey]) return this.waveCache[cacheKey];
-
-        const n = 4096;
-        const real = new Float32Array(n);
-        const imag = new Float32Array(n);
-        for (let i = 1; i < n; i++) {
-            imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
-        }
-        const wave = this.audioCtx.createPeriodicWave(real, imag);
-        this.waveCache[cacheKey] = wave;
-        return wave;
-    },
 
     // iOSでconfirmダイアログ後にAudioContextが壊れる問題対策
     resetAudioContext() {
-        // 古いコンテキストをクローズ
-        if (this.audioCtx) {
-            try {
-                this.audioCtx.close();
-            } catch (e) { }
-        }
-        // 新しいコンテキストを作成
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // アクティブオシレーターをクリア
-        this.activeOscillators = [null, null, null, null];
-
-        // ゲームエンジンのコンテキストもリセット
-        if (typeof GameEngine !== 'undefined' && GameEngine.bgmAudioCtx) {
-            try {
-                GameEngine.bgmAudioCtx.close();
-            } catch (e) { }
-            GameEngine.bgmAudioCtx = null;
-        }
+        if (this.player) this.player.reset();
     },
 
     resize() {
@@ -218,8 +181,8 @@ const SoundEditor = {
                 }
                 numModal.classList.add('hidden');
                 // iOS: User gesture (click) resumes AudioContext
-                if (this.audioCtx && this.audioCtx.state === 'suspended') {
-                    this.audioCtx.resume();
+                if (this.player.audioCtx && this.player.audioCtx.state === 'suspended') {
+                    this.player.audioCtx.resume();
                 }
             });
             numCancelBtn.addEventListener('click', (e) => {
@@ -230,8 +193,8 @@ const SoundEditor = {
                 this.onNumberInputCallback = null; // クリア
                 numModal.classList.add('hidden');
                 // iOS: Ensure resume even on cancel if needed
-                if (this.audioCtx && this.audioCtx.state === 'suspended') {
-                    this.audioCtx.resume();
+                if (this.player.audioCtx && this.player.audioCtx.state === 'suspended') {
+                    this.player.audioCtx.resume();
                 }
             });
         }
@@ -322,7 +285,7 @@ const SoundEditor = {
                 const wasTarget = e.target === bpmDisplay || bpmDisplay.contains(e.target);
 
                 if (!wasTarget || hasDraggedBpm) {
-                    if (hasDraggedBpm && this.isPlaying) {
+                    if (hasDraggedBpm && this.player.isPlaying) {
                         // ドラッグで値が変わった場合のみ再開
                         this.stop();
                         this.play();
@@ -397,7 +360,7 @@ const SoundEditor = {
                 const wasTarget = e.target === barDisplay || barDisplay.contains(e.target);
 
                 if (!wasTarget || hasDraggedBar) {
-                    if (hasDraggedBar && this.isPlaying) {
+                    if (hasDraggedBar && this.player.isPlaying) {
                         // ドラッグで値が変わった場合のみ再開
                         this.stop();
                         this.play();
@@ -456,7 +419,7 @@ const SoundEditor = {
         // For iOS, let's keep playing if possible, or pause?
         // Let's pause to avoid confusion, and resume in OK callback.
         /*
-        const wasPlaying = this.isPlaying;
+        const wasPlaying = this.player.isPlaying;
         if (wasPlaying) this.pause();
         */
 
@@ -469,7 +432,7 @@ const SoundEditor = {
             const value = parseInt(val);
             if (!isNaN(value) && value >= 60 && value <= 240) {
                 // Stop & play to restart scheduler with new BPM
-                const wasPlaying = this.isPlaying;
+                const wasPlaying = this.player.isPlaying;
                 if (wasPlaying) this.stop();
 
                 this.getCurrentSong().bpm = value;
@@ -487,7 +450,7 @@ const SoundEditor = {
             const value = parseInt(val);
             if (!isNaN(value) && value >= 1 && value <= 256) {
                 // Restart scheduler if size changed (though less critical for bars)
-                const wasPlaying = this.isPlaying;
+                const wasPlaying = this.player.isPlaying;
                 if (wasPlaying) this.stop();
 
                 this.getCurrentSong().bars = value;
@@ -531,7 +494,7 @@ const SoundEditor = {
             input.value = song.name;
             popup.classList.remove('hidden');
             // iOSでのバースト防止：再生停止
-            if (this.isPlaying) {
+            if (this.player.isPlaying) {
                 this.wasPlayingBeforeModal = true;
                 this.pause();
             } else {
@@ -701,7 +664,7 @@ const SoundEditor = {
         const octave = 4;
         this.currentTrack = trackIdx;
         // 単音再生（プレビュー）
-        this.playNote(note, octave, 0.4);
+        this.player.playNote(note, octave, 0.4);
     },
 
     updateChannelStripUI() {
@@ -926,7 +889,7 @@ const SoundEditor = {
                 const idx = parseInt(btn.dataset.songIndex);
 
                 // トグル動作: 再生中で同じ曲なら停止
-                if (this.songManager.currentIdx === idx && this.isPlaying) {
+                if (this.songManager.currentIdx === idx && this.player.isPlaying) {
                     this.stop();
                     // ボタンを停止状態に戻す
                     btn.textContent = '▶';
@@ -1017,10 +980,10 @@ const SoundEditor = {
     },
 
     selectSong(idx) {
-        const wasPlaying = this.isPlaying;
+        const wasPlaying = this.player.isPlaying;
 
         // 再生中なら一旦停止
-        if (this.isPlaying) {
+        if (this.player.isPlaying) {
             this.stop();
         }
 
@@ -1073,10 +1036,10 @@ const SoundEditor = {
                 if (now - lastClickTime < 300) {
                     // ダブルクリック: 停止（位置リセット）
                     this.stop();
-                } else if (this.isPlaying) {
+                } else if (this.player.isPlaying) {
                     // 再生中シングルクリック: 一時停止
                     this.pause();
-                } else if (this.isPaused) {
+                } else if (this.player.isPaused) {
                     // 一時停止中シングルクリック: 再開
                     this.resume();
                 } else {
@@ -1593,11 +1556,14 @@ const SoundEditor = {
     },
 
     onKeyPress(note, octave) {
-        // 音再生
-        this.playNote(note, octave);
+        // 音再生 (BgmPlayer に委譲; track情報付き)
+        const song = this.getCurrentSong();
+        const track = song.tracks[this.currentTrack];
+        const trackType = this.trackTypes[this.currentTrack];
+        this.player.playNote(note, octave, trackType, track);
 
         // ピアノロールのハイライト
-        const pitch = this.noteToPitch(note, octave);
+        const pitch = this.player.noteToPitch(note, octave);
         this.highlightPitch = pitch;
         this.render();
         setTimeout(() => {
@@ -1611,133 +1577,15 @@ const SoundEditor = {
         }
     },
 
-    // 現在再生中のオシレーターとゲイン
-    currentKeyOsc: null,
-    currentKeyGain: null,
-
     startKeySound(note, octave) {
-        // 既に再生中なら停止
-        this.stopKeySound();
-
-        if (!this.audioCtx) return;
-
+        if (!this.player) return;
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
         const trackType = this.trackTypes[this.currentTrack];
-        const pitch = this.noteToPitch(note, octave);
-        const tone = track.tone || 0;
+        const pitch = this.player.noteToPitch(note, octave);
 
-        // ノイズトラック
-        if (trackType === 'noise') {
-            let result;
-            if (tone === 0) {
-                result = this.playPitchedNoise(pitch, 0.5, track.volume, track.pan);
-            } else {
-                result = this.playDrum(pitch, 0.5, track.volume, track.pan, tone);
-            }
-            if (result) {
-                this.currentKeyOsc = result.noise;
-                this.currentKeyGain = result.gain;
-            }
-        } else if (trackType === 'triangle' && tone === 3) {
-            // Kickトーン：ピッチ下降音を再生
-            this.playKickTone(note, octave, track.volume, track.pan);
-        } else if (trackType === 'square' && tone === 6) {
-            // Tremoloトーン：1オクターブ上と交互に高速切替
-            const freq1 = this.getFrequency(note, octave);
-            const freq2 = freq1 * 2;
-            const osc = this.audioCtx.createOscillator();
-            const gain = this.audioCtx.createGain();
-            const panner = this.audioCtx.createStereoPanner();
-
-            panner.pan.value = track.pan;
-            gain.connect(panner);
-            panner.connect(this.audioCtx.destination);
-
-            osc.type = 'square';
-
-            // 高速で周波数を交互に切り替える（約30Hzで交互、5秒分スケジュール）
-            const tremoloRate = 30;
-            const maxDuration = 5;
-            const numCycles = tremoloRate * maxDuration;
-            const cycleTime = 1 / tremoloRate;
-
-            for (let i = 0; i < numCycles; i++) {
-                const t = this.audioCtx.currentTime + i * cycleTime;
-                osc.frequency.setValueAtTime(i % 2 === 0 ? freq1 : freq2, t);
-            }
-
-            // Tremoloの音量
-            gain.gain.value = 0.05 * track.volume;
-
-            osc.connect(gain);
-            osc.start();
-
-            this.currentKeyOsc = osc;
-            this.currentKeyGain = gain;
-        } else {
-            const freq = this.getFrequency(note, octave);
-            const osc = this.audioCtx.createOscillator();
-            const gain = this.audioCtx.createGain();
-
-            // パンポット（定位）
-            const panner = this.audioCtx.createStereoPanner();
-            panner.pan.value = track.pan;
-
-            gain.connect(panner);
-            panner.connect(this.audioCtx.destination);
-
-            let volumeScale = 1.0;
-
-            // 波形タイプと音色
-            if (trackType === 'square') {
-                // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
-                if (tone >= 3 && tone <= 5) {
-                    const wave = this.getPeriodicWave(0.125);
-                    if (wave) osc.setPeriodicWave(wave);
-                    else osc.type = 'square';
-                } else {
-                    osc.type = 'square';
-                }
-            } else if (trackType === 'triangle') {
-                if (tone === 0) {
-                    osc.type = 'triangle';
-                } else if (tone === 1) {
-                    osc.type = 'sine';
-                } else if (tone === 2) {
-                    osc.type = 'sawtooth';
-                    volumeScale = 0.6;
-                }
-            }
-
-            osc.frequency.value = freq;
-            // tone別の基本音量
-            let baseVol;
-            if (trackType === 'square') {
-                switch (tone) {
-                    case 0: baseVol = 0.12; break; // Standard
-                    case 1: baseVol = 0.15; break; // Standard (Short)
-                    case 2: baseVol = 0.15; break; // Standard (FadeIn)
-                    case 3: baseVol = 0.25; break; // Sharp
-                    case 4: baseVol = 0.35; break; // Sharp (Short)
-                    case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
-                    case 6: baseVol = 0.05; break; // Tremolo
-                    default: baseVol = 0.12; break;
-                }
-            } else {
-                baseVol = 0.2; // Triangle等
-            }
-            if (trackType === 'triangle' && tone === 2) {
-                volumeScale = 0.6; // Sawtooth
-            }
-            gain.gain.value = baseVol * track.volume * volumeScale;
-
-            osc.connect(gain);
-            osc.start();
-
-            this.currentKeyOsc = osc;
-            this.currentKeyGain = gain;
-        }
+        // 音声再生は BgmPlayer に委譲
+        this.player.startKeySound(note, octave, trackType, track);
 
         // ピアノロールのハイライト
         this.highlightPitch = pitch;
@@ -1745,7 +1593,7 @@ const SoundEditor = {
 
         // ステップ録音/リアルタイム録音
         if (this.isStepRecording) {
-            if (this.isPlaying) {
+            if (this.player.isPlaying) {
                 // リアルタイム録音：開始位置とピッチを記録
                 this.rtNoteStartStep = this.currentStep;
                 this.rtNotePitch = pitch;
@@ -1758,7 +1606,7 @@ const SoundEditor = {
 
     stopKeySound() {
         // リアルタイム録音の確定
-        if (this.isStepRecording && this.isPlaying && this.rtNoteStartStep !== -1) {
+        if (this.isStepRecording && this.player.isPlaying && this.rtNoteStartStep !== -1) {
             const song = this.getCurrentSong();
             const track = song.tracks[this.currentTrack];
             const maxSteps = song.bars;
@@ -1786,15 +1634,8 @@ const SoundEditor = {
             this.rtNotePitch = -1;
         }
 
-        if (this.currentKeyGain) {
-            // フェードアウト
-            this.currentKeyGain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.1);
-        }
-        if (this.currentKeyOsc) {
-            this.currentKeyOsc.stop(this.audioCtx.currentTime + 0.1);
-            this.currentKeyOsc = null;
-            this.currentKeyGain = null;
-        }
+        // 音声停止は BgmPlayer に委譲
+        if (this.player) this.player.stopKeySound();
 
         // ハイライト解除
         this.highlightPitch = -1;
@@ -1802,530 +1643,25 @@ const SoundEditor = {
     },
 
     // Kickトーン（短くピッチ下降する音）
-    playKickTone(note, octave, volume, pan, duration = 0.15) {
-        if (!this.audioCtx) return;
-
-        const freq = this.getFrequency(note, octave);
-        const osc = this.audioCtx.createOscillator();
-        const gain = this.audioCtx.createGain();
-        const panner = this.audioCtx.createStereoPanner();
-
-        panner.pan.value = pan;
-        gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freq * 0.25, this.audioCtx.currentTime + duration);
-
-        gain.gain.setValueAtTime(0.5 * volume, this.audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-
-        osc.connect(gain);
-        osc.start();
-        osc.stop(this.audioCtx.currentTime + duration);
-    },
 
     // トレモロ（1オクターブ上と交互に高速切替）
-    playTremolo(note, octave, volume, pan, duration) {
-        if (!this.audioCtx) return;
 
-        const freq1 = this.getFrequency(note, octave);
-        const freq2 = freq1 * 2; // 1オクターブ上
-        const osc = this.audioCtx.createOscillator();
-        const gain = this.audioCtx.createGain();
-        const panner = this.audioCtx.createStereoPanner();
-
-        panner.pan.value = pan;
-        gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
-
-        osc.type = 'square';
-
-        // 高速で周波数を交互に切り替える（約30Hzで交互）
-        const tremoloRate = 30;
-        const numCycles = Math.ceil(duration * tremoloRate);
-        const cycleTime = 1 / tremoloRate;
-
-        for (let i = 0; i < numCycles; i++) {
-            const t = this.audioCtx.currentTime + i * cycleTime;
-            osc.frequency.setValueAtTime(i % 2 === 0 ? freq1 : freq2, t);
-        }
-
-        // Tremoloの音量
-        gain.gain.setValueAtTime(0.05 * volume, this.audioCtx.currentTime);
-        const sustainTime = duration * 0.8;
-        gain.gain.setValueAtTime(0.05 * volume, this.audioCtx.currentTime + sustainTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-
-        osc.connect(gain);
-        osc.start();
-        osc.stop(this.audioCtx.currentTime + duration);
-    },
-
-    playNote(note, octave, duration = 0.2) {
-        if (!this.audioCtx) return;
-
-        const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-        const trackType = this.trackTypes[this.currentTrack];
-        const tone = track.tone || 0;
-
-        // ノイズトラック
-        if (trackType === 'noise') {
-            const pitch = this.noteToPitch(note, octave);
-            if (tone === 0) {
-                // Noise (ピッチ): 音程に連動する持続ノイズ
-                this.playPitchedNoise(pitch, duration, track.volume, track.pan);
-            } else {
-                // Drum Kit: 従来のドラム音
-                this.playDrum(pitch, duration, track.volume, track.pan, tone);
-            }
-            return;
-        }
-
-        // TRIANGLE Kickトーン
-        if (trackType === 'triangle' && tone === 3) {
-            this.playKickTone(note, octave, track.volume, track.pan, duration);
-            return;
-        }
-
-        // SQUARE Tremoloトーン
-        if (trackType === 'square' && tone === 6) {
-            this.playTremolo(note, octave, track.volume, track.pan, duration);
-            return;
-        }
-
-        // 通常の音色
-        const gain = this.audioCtx.createGain();
-        const panner = this.audioCtx.createStereoPanner();
-        panner.pan.value = track.pan;
-        gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
-
-        const freq = this.getFrequency(note, octave);
-        const osc = this.audioCtx.createOscillator();
-        let volumeScale = 1.0;
-
-        // 波形タイプ
-        if (trackType === 'square') {
-            // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
-            if (tone >= 3 && tone <= 5) {
-                const wave = this.getPeriodicWave(0.125);
-                if (wave) osc.setPeriodicWave(wave);
-                else osc.type = 'square';
-            } else {
-                osc.type = 'square';
-            }
-        } else if (trackType === 'triangle') {
-            if (tone === 0) osc.type = 'triangle';
-            else if (tone === 1) osc.type = 'sine';
-            else if (tone === 2) {
-                osc.type = 'sawtooth';
-                volumeScale = 0.6;
-            }
-        }
-
-        osc.frequency.value = freq;
-
-        // tone別の基本音量
-        let baseVol;
-        if (trackType === 'square') {
-            switch (tone) {
-                case 0: baseVol = 0.12; break; // Standard
-                case 1: baseVol = 0.15; break; // Standard (Short)
-                case 2: baseVol = 0.15; break; // Standard (FadeIn)
-                case 3: baseVol = 0.25; break; // Sharp
-                case 4: baseVol = 0.35; break; // Sharp (Short)
-                case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
-                case 6: baseVol = 0.05; break; // Tremolo
-                default: baseVol = 0.12; break;
-            }
-        } else {
-            baseVol = 0.2; // Triangle等
-        }
-        const volume = baseVol * track.volume * volumeScale;
-
-        // エンベロープ設定
-        const isShort = (tone === 1 || tone === 4); // Standard Short or Sharp Short
-        const isFadeIn = (tone === 2 || tone === 5); // Standard FadeIn or Sharp FadeIn
-
-        if (isShort) {
-            // Short: 短くスタッカート気味
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration * 0.5);
-        } else if (isFadeIn) {
-            // FadeIn: アタックがなく徐々に大きくなる
-            gain.gain.setValueAtTime(0.01, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(volume, this.audioCtx.currentTime + duration * 0.7);
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime + duration * 0.9);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-        } else {
-            // Normal: 通常のエンベロープ
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime);
-            const sustainTime = duration * 0.8;
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime + sustainTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-        }
-
-        osc.connect(gain);
-        osc.start();
-        osc.stop(this.audioCtx.currentTime + duration);
-    },
 
     // 再生用（トラックごとに同時発音数1に制限）
-    playNoteMonophonic(note, octave, duration, trackIdx) {
-        if (!this.audioCtx) return;
 
-        const song = this.getCurrentSong();
-        const track = song.tracks[trackIdx];
-        const trackType = this.trackTypes[trackIdx];
-        const tone = track.tone || 0;
 
-        // 前の音を停止
-        if (this.activeOscillators[trackIdx]) {
-            try {
-                this.activeOscillators[trackIdx].osc.stop();
-            } catch (e) { }
-            this.activeOscillators[trackIdx] = null;
-        }
 
-        // ノイズトラック
-        if (trackType === 'noise') {
-            const pitch = this.noteToPitch(note, octave);
-            if (tone === 0) {
-                this.playPitchedNoise(pitch, duration, track.volume, track.pan);
-            } else {
-                this.playDrum(pitch, duration, track.volume, track.pan, tone);
-            }
-            return;
-        }
-
-        // TRIANGLE Kickトーン
-        if (trackType === 'triangle' && tone === 3) {
-            this.playKickTone(note, octave, track.volume, track.pan, duration);
-            return;
-        }
-
-        // SQUARE Tremoloトーン
-        if (trackType === 'square' && tone === 6) {
-            this.playTremolo(note, octave, track.volume, track.pan, duration);
-            return;
-        }
-
-        // 通常の音色
-        const gain = this.audioCtx.createGain();
-        const panner = this.audioCtx.createStereoPanner();
-        panner.pan.value = track.pan;
-        gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
-
-        const freq = this.getFrequency(note, octave);
-        const osc = this.audioCtx.createOscillator();
-        let volumeScale = 1.0;
-
-        // 波形タイプ
-        if (trackType === 'square') {
-            // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
-            if (tone >= 3 && tone <= 5) {
-                const wave = this.getPeriodicWave(0.125);
-                if (wave) osc.setPeriodicWave(wave);
-                else osc.type = 'square';
-            } else {
-                osc.type = 'square';
-            }
-        } else if (trackType === 'triangle') {
-            if (tone === 0) osc.type = 'triangle';
-            else if (tone === 1) osc.type = 'sine';
-            else if (tone === 2) {
-                osc.type = 'sawtooth';
-                volumeScale = 0.6;
-            }
-        }
-
-        osc.frequency.value = freq;
-
-        // tone別の基本音量
-        let baseVol;
-        if (trackType === 'square') {
-            switch (tone) {
-                case 0: baseVol = 0.12; break; // Standard
-                case 1: baseVol = 0.15; break; // Standard (Short)
-                case 2: baseVol = 0.15; break; // Standard (FadeIn)
-                case 3: baseVol = 0.25; break; // Sharp
-                case 4: baseVol = 0.35; break; // Sharp (Short)
-                case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
-                case 6: baseVol = 0.05; break; // Tremolo
-                default: baseVol = 0.12; break;
-            }
-        } else {
-            baseVol = 0.2; // Triangle等
-        }
-        const volume = baseVol * track.volume * volumeScale;
-
-        // エンベロープ設定
-        const isShort = (tone === 1 || tone === 4); // Standard Short or Sharp Short
-        const isFadeIn = (tone === 2 || tone === 5); // Standard FadeIn or Sharp FadeIn
-
-        if (isShort) {
-            // Short: 短くスタッカート気味
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration * 0.5);
-        } else if (isFadeIn) {
-            // FadeIn: アタックがなく徐々に大きくなる
-            gain.gain.setValueAtTime(0.01, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(volume, this.audioCtx.currentTime + duration * 0.7);
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime + duration * 0.9);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-        } else {
-            // Normal: 通常のエンベロープ
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime);
-            gain.gain.setValueAtTime(volume, this.audioCtx.currentTime + duration - 0.05);
-            gain.gain.linearRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-        }
-
-        osc.connect(gain);
-        osc.start();
-        osc.stop(this.audioCtx.currentTime + duration + 0.05);
-
-        this.activeOscillators[trackIdx] = { osc, gain };
-
-        // 停止後にクリア
-        setTimeout(() => {
-            if (this.activeOscillators[trackIdx] && this.activeOscillators[trackIdx].osc === osc) {
-                this.activeOscillators[trackIdx] = null;
-            }
-        }, duration * 1000);
-    },
-
-    getFrequency(note, octave) {
-        const noteIdx = this.noteNames.indexOf(note);
-        // A4 = 440Hz
-        const semitone = (octave - 4) * 12 + noteIdx - 9;
-        return 440 * Math.pow(2, semitone / 12);
-    },
-
-    noteToPitch(note, octave) {
-        // C1 = 0, B5 = 59
-        const noteIdx = this.noteNames.indexOf(note);
-        return (octave - 1) * 12 + noteIdx;
-    },
-
-    pitchToNote(pitch) {
-        const octave = Math.floor(pitch / 12) + 1;
-        const noteIdx = pitch % 12;
-        return { note: this.noteNames[noteIdx], octave };
-    },
 
     // ========== Noise (ピッチ) - 音程対応の持続ノイズ ==========
-    playPitchedNoise(pitch, duration, volume = 1.0, pan = 0.0) {
-        if (!this.audioCtx) return null;
-
-        const ctx = this.audioCtx;
-        const t = ctx.currentTime;
-
-        // ピアノロールの音程から周波数を取得
-        const { note, octave } = this.pitchToNote(pitch);
-        const freq = this.getFrequency(note, octave);
-
-        const actualDuration = duration * 0.6; // データの長さを60%に調整
-
-        // LFSRノイズバッファ生成（入力データの長さに合わせて持続）
-        const bufferDuration = actualDuration + 0.05;
-        const bufferSize = Math.floor(ctx.sampleRate * bufferDuration);
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-
-        let lfsr = 1;
-        for (let i = 0; i < bufferSize; i++) {
-            const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
-            data[i] = (lfsr & 1) ? 1.0 : -1.0;
-            lfsr = (lfsr >> 1) | (bit << 14);
-        }
-
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        // バンドパスフィルタで音程感を付与
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = freq;
-        filter.Q.value = 1.2; // 抜け感のある「ザーッ」にするためQを低めに設定
-
-        // ゲインノード
-        const gain = ctx.createGain();
-        const noiseVol = 0.44 * volume; // 元の0.55から80%に音量を調整
-
-        // パンポット
-        const panner = ctx.createStereoPanner();
-        panner.pan.value = pan;
-
-        // エンベロープ: 入力の長さに合わせて持続し、最後に短い減衰
-        gain.gain.setValueAtTime(noiseVol, t);
-        gain.gain.setValueAtTime(noiseVol, t + Math.max(0, actualDuration - 0.03));
-        gain.gain.linearRampToValueAtTime(0.01, t + actualDuration);
-
-        // 接続
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(panner);
-        panner.connect(ctx.destination);
-
-        noise.start(t);
-        noise.stop(t + bufferDuration);
-
-        return { noise: noise, gain: gain };
-    },
 
     // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）
     // Oct1=Low Kick, Oct2=Tight Snare, Oct3=Open Snare/Clap,
     // Oct4=Closed Hi-Hat, Oct5=Open Hi-Hat, Oct6=Noise Roll
-    playDrum(pitch, duration, volume = 1.0, pan = 0.0, tone = 0) {
-        if (!this.audioCtx) return null;
-
-        const ctx = this.audioCtx;
-        const t = ctx.currentTime;
-
-        // オクターブ判定（pitch 0-11=Oct1, 12-23=Oct2, ...）
-        const octave = Math.floor(pitch / 12) + 1;
-
-        // --- ドラムタイプ別パラメータ ---
-        let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown, attackTime, holdTime, isRoll;
-
-        switch (octave) {
-            case 1: // Low Kick — 丸く、空気感のある「ボッ」
-                filterType = 'lowpass'; filterFreq = 120; filterQ = 1.5;
-                drumVol = 0.9 * volume; decayTime = 0.14;
-                useShortNoise = false; pitchEnvDown = true;
-                attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
-            case 2: // Tight Snare — シャープ、タイト
-                filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
-                drumVol = 0.5 * volume; decayTime = 0.13;
-                useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.002; holdTime = 0.00; isRoll = false; break;
-            case 3: // Open Snare / Clap — 自然なスネア感「タンッ」
-                filterType = 'bandpass'; filterFreq = 2200; filterQ = 0.6;
-                drumVol = 0.3 * volume; decayTime = 0.22;
-                useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.003; holdTime = 0.015; isRoll = false; break;
-            case 4: // Closed Hi-Hat — ホワイトノイズ寄り、極短「サッ」
-                filterType = 'highpass'; filterFreq = 7000; filterQ = 0.5;
-                drumVol = 0.3 * volume; decayTime = 0.05;
-                useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
-            case 5: // Open Hi-Hat — ホワイトノイズ寄り、広がり「サー」
-                filterType = 'highpass'; filterFreq = 5000; filterQ = 0.5;
-                drumVol = 0.3 * volume; decayTime = 0.25;
-                useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
-            case 6: // Noise Roll — 連続ロール「タタタタタ」
-            default:
-                filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
-                drumVol = 0.3 * volume;
-                // 音長が0.15s（1STEP強）より長い場合のみロール（高速リトリガー）にする
-                isRoll = (duration > 0.15);
-                decayTime = isRoll ? duration : 0.15; // 短い場合は単発のディケイ
-                useShortNoise = false; pitchEnvDown = false;
-                attackTime = 0.005; holdTime = 0.00; break;
-        }
-
-        // 同一オクターブ内のノート位置で微妙にパラメータ変化
-        const noteInOct = pitch % 12;
-        filterFreq *= (1 + noteInOct * 0.02); // ノートが上がるとフィルタ周波数が少し上がる
-        if (!isRoll) decayTime *= (1 + noteInOct * 0.015);
-
-        // --- NES APU 15-bit LFSR風ノイズ生成 ---
-        const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
-        const bufferSize = Math.floor(ctx.sampleRate * actualDuration);
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-
-        if (useShortNoise) {
-            // 短周期ノイズ（NES short-mode LFSR: 93サンプル周期をループ）
-            const period = 93;
-            const shortBuf = new Float32Array(period);
-            let lfsr = 1;
-            for (let i = 0; i < period; i++) {
-                const bit = ((lfsr >> 0) ^ (lfsr >> 6)) & 1;
-                shortBuf[i] = (lfsr & 1) ? 1.0 : -1.0;
-                lfsr = (lfsr >> 1) | (bit << 14);
-            }
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = shortBuf[i % period];
-            }
-        } else {
-            // 長周期ノイズ（NES long-mode LFSR）
-            let lfsr = 1;
-            for (let i = 0; i < bufferSize; i++) {
-                const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
-                data[i] = (lfsr & 1) ? 1.0 : -1.0;
-                lfsr = (lfsr >> 1) | (bit << 14);
-            }
-        }
-
-        // ロール用の高速リトリガー（内部的な音量変調で粒立ちを作る）
-        if (isRoll) {
-            const rollRate = 24; // 1秒間のパルス数
-            for (let i = 0; i < bufferSize; i++) {
-                const sec = i / ctx.sampleRate;
-                const phase = (sec * rollRate) % 1.0;
-                const amp = 0.2 + 0.8 * Math.pow(1.0 - phase, 2); // 減衰するパルス形状
-                data[i] *= amp;
-            }
-        }
-
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        // フィルタ
-        const filter = ctx.createBiquadFilter();
-        filter.type = filterType;
-        filter.frequency.value = filterFreq;
-        filter.Q.value = filterQ;
-
-        // ピッチダウンエンベロープ（Low Kick用）
-        if (pitchEnvDown) {
-            filter.frequency.setValueAtTime(filterFreq * 2.5, t); // 少し浅く
-            filter.frequency.exponentialRampToValueAtTime(filterFreq, t + decayTime * 0.4);
-        }
-
-        // ゲインノード
-        const gain = ctx.createGain();
-
-        // パンポット
-        const panner = ctx.createStereoPanner();
-        panner.pan.value = pan;
-
-        // 接続
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(panner);
-        panner.connect(ctx.destination);
-
-        // エンベロープ
-        gain.gain.setValueAtTime(0.01, t);
-        gain.gain.linearRampToValueAtTime(drumVol, t + attackTime);
-        if (isRoll) {
-            // ロールは指定durationまで音を持続させ、最後に減衰
-            gain.gain.setValueAtTime(drumVol, t + Math.max(0, duration - 0.05));
-            gain.gain.linearRampToValueAtTime(0.01, t + duration);
-        } else if (holdTime > 0) {
-            gain.gain.setValueAtTime(drumVol, t + attackTime + holdTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + attackTime + holdTime + decayTime);
-        } else {
-            gain.gain.exponentialRampToValueAtTime(0.01, t + attackTime + decayTime);
-        }
-
-        noise.start(t);
-        noise.stop(t + actualDuration);
-
-        return { noise: noise, gain: gain };
-    },
     // ========== ノート入力 ==========
     inputNote(note, octave, length = 1) {
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
-        const pitch = this.noteToPitch(note, octave);
+        const pitch = this.player.noteToPitch(note, octave);
         const maxSteps = song.bars;
 
         if (this.currentStep < maxSteps) {
@@ -2380,7 +1716,7 @@ const SoundEditor = {
         if (track.notes.length === 0) return;
 
         // iOSでconfirmダイアログ中に音が溜まる問題対策：再生停止
-        const wasPlaying = this.isPlaying;
+        const wasPlaying = this.player.isPlaying;
         if (wasPlaying) {
             this.stop();
         }
@@ -2933,8 +2269,8 @@ const SoundEditor = {
                             isCreatingNote = true;
                             creatingNote = newNote;
                             createStartStep = pendingInputData.step;
-                            const { note: noteName, octave } = this.pitchToNote(pendingInputData.pitch);
-                            this.playNote(noteName, octave);
+                            const { note: noteName, octave } = this.player.pitchToNote(pendingInputData.pitch);
+                            this.player.playNote(noteName, octave);
                             this.render();
 
                             // 長押しでシークとみなしノート作成をキャンセル
@@ -3039,8 +2375,8 @@ const SoundEditor = {
                 isCreatingNote = true;
                 creatingNote = newNote;
                 createStartStep = step;
-                const { note: noteName, octave } = this.pitchToNote(pitch);
-                this.playNote(noteName, octave);
+                const { note: noteName, octave } = this.player.pitchToNote(pitch);
+                this.player.playNote(noteName, octave);
                 this.render();
 
                 // 長押しでシークとみなしノート作成をキャンセル
@@ -3141,8 +2477,8 @@ const SoundEditor = {
                             const newNote = { step: pendingInputData.step, pitch: pendingInputData.pitch, length: 1 };
                             const song = this.getCurrentSong();
                             song.tracks[this.currentTrack].notes.push(newNote);
-                            const { note: noteName, octave } = this.pitchToNote(pendingInputData.pitch);
-                            this.playNote(noteName, octave);
+                            const { note: noteName, octave } = this.player.pitchToNote(pendingInputData.pitch);
+                            this.player.playNote(noteName, octave);
                             this.render();
                         }
                         pendingInputData = null;
@@ -3385,8 +2721,8 @@ const SoundEditor = {
             }
         } else {
             // 追加
-            const { note, octave } = this.pitchToNote(pitch);
-            this.playNote(note, octave);
+            const { note, octave } = this.player.pitchToNote(pitch);
+            this.player.playNote(note, octave);
             track.notes.push({ step, pitch, length: 1 });
         }
         this.render();
@@ -3415,14 +2751,14 @@ const SoundEditor = {
     seekToStep(step) {
         const song = this.getCurrentSong();
         if (step >= 0 && step < song.bars) {
-            const wasPlaying = this.isPlaying;
+            const wasPlaying = this.player.isPlaying;
             if (wasPlaying) {
                 this.pause(); 
                 this.currentStep = step;
                 this.play();  
             } else {
                 this.currentStep = step;
-                this.isPaused = true;
+                this.player.isPaused = true;
                 this.render();
             }
         }
@@ -3430,47 +2766,21 @@ const SoundEditor = {
 
     // ========== 再生 ==========
     play() {
-        if (this.isPlaying) return;
-        this.isPlaying = true;
-
+        if (this.player.isPlaying) return;
         this.updatePlayButton('play');
 
         const song = this.getCurrentSong();
-        const stepDuration = 60 / song.bpm / 4; // 16分音符
-        const startStep = this.isPaused ? this.currentStep : 0;
-        let step = startStep;
-        const maxSteps = song.bars;
+        const startStep = this.player.isPaused ? this.currentStep : 0;
 
-        this.isPaused = false;
-        this.playInterval = setInterval(() => {
-            // 全トラック再生
-            song.tracks.forEach((track, trackIdx) => {
-                track.notes.forEach(note => {
-                    if (note.step === step) {
-                        const { note: noteName, octave } = this.pitchToNote(note.pitch);
-                        // 同時発音数1に制限（トラックごと）
-                        this.playNoteMonophonic(noteName, octave, stepDuration * note.length, trackIdx);
-                    }
-                });
-            });
-
+        this.player.play(song, this.trackTypes, startStep, (step) => {
+            // onStep コールバック: UIを更新する
             this.currentStep = step;
             this.render();
-
-            step++;
-            if (step >= maxSteps) {
-                step = 0;
-            }
-        }, stepDuration * 1000);
+        });
     },
 
     pause() {
-        this.isPlaying = false;
-        this.isPaused = true;
-        if (this.playInterval) {
-            clearInterval(this.playInterval);
-            this.playInterval = null;
-        }
+        this.player.pause();
         this.updatePlayButton('pause');
     },
 
@@ -3479,13 +2789,8 @@ const SoundEditor = {
     },
 
     stop() {
-        this.isPlaying = false;
-        this.isPaused = false;
+        this.player.stop();
         this.currentStep = 0;
-        if (this.playInterval) {
-            clearInterval(this.playInterval);
-            this.playInterval = null;
-        }
         this.updatePlayButton('stop');
         this.render();
     },
@@ -3675,7 +2980,7 @@ const SoundEditor = {
         const x = this.currentStep * this.cellSize - this.scrollX;
         let strokeColor = '#00FF00'; // 再生時
         if (this.isStepRecording) strokeColor = '#FF0000';
-        else if (!this.isPlaying) strokeColor = 'rgba(0, 255, 0, 0.5)'; // 停止中/一時停止中
+        else if (!this.player.isPlaying) strokeColor = 'rgba(0, 255, 0, 0.5)'; // 停止中/一時停止中
 
         if (x >= 0 && x <= this.canvas.width) {
             this.ctx.strokeStyle = strokeColor;
@@ -3716,7 +3021,7 @@ const SoundEditor = {
         });
 
         // 再生中なら一時停止
-        if (this.isPlaying) {
+        if (this.player.isPlaying) {
             this._wasPlayingBeforeNumcopy = true;
             this.pause();
         } else {
