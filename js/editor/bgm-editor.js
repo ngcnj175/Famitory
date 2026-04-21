@@ -67,6 +67,9 @@ const SoundEditor = {
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
 
+        // 描画エンジン初期化
+        this.renderer = new BgmRenderer(this.canvas);
+
         // Web Audio (BgmPlayer)初期化
         this.player = new BgmPlayer();
         this.player.init();
@@ -2823,183 +2826,26 @@ const SoundEditor = {
 
     // ========== レンダリング ==========
     render() {
-        if (!this.ctx) return;
-
-        const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-        const maxSteps = song.bars;
-
-        // 背景（ゲーム設定の背景色を使用）
-        const bgColor = App.projectData?.stage?.bgColor || '#3CBCFC';
-        this.ctx.fillStyle = bgColor;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // 偶数拍（2拍、4拍）の背景を薄くする
-        const beatWidth = 4 * this.cellSize; // 1拍 = 4ステップ
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-        for (let bar = 0; bar < song.bars; bar++) {
-            for (let beat = 0; beat < 4; beat++) {
-                // 偶数拍（2拍目=beat1、4拍目=beat3）を暗くする
-                if (beat === 1 || beat === 3) {
-                    const x = (bar * 16 + beat * 4) * this.cellSize - this.scrollX;
-                    if (x + beatWidth >= 0 && x <= this.canvas.width) {
-                        this.ctx.fillRect(x, 0, beatWidth, this.canvas.height);
-                    }
-                }
-            }
-        }
-
-        // グリッド（白色）
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        this.ctx.lineWidth = 0.5;
-        const scrollY = this.scrollY || 0;
-
-        // 縦線
-        for (let i = 0; i <= Math.ceil(this.canvas.width / this.cellSize) + 1; i++) {
-            this.ctx.beginPath();
-            const x = i * this.cellSize - this.scrollX % this.cellSize;
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
-        }
-
-        // 横線（scrollYを適用）
-        for (let i = 0; i <= Math.ceil(this.canvas.height / this.cellSize) + 1; i++) {
-            this.ctx.beginPath();
-            const y = i * this.cellSize - scrollY % this.cellSize;
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.canvas.width, y);
-            this.ctx.stroke();
-        }
-
-        // オクターブ区切り（Cの音、白1px）
-        const maxPitch = 71; // C1-B6 (6オクターブ)
-        this.ctx.strokeStyle = '#fff';
-        this.ctx.lineWidth = 1;
-        for (let octave = 1; octave <= 6; octave++) {
-            const cPitch = (octave - 1) * 12; // C1=0, C2=12, C3=24, etc.
-            const y = (maxPitch - cPitch + 1) * this.cellSize - scrollY;
-            if (y >= 0 && y <= this.canvas.height) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, y);
-                this.ctx.lineTo(this.canvas.width, y);
-                this.ctx.stroke();
-            }
-        }
-
-        // 小節区切り（白1px）
-        this.ctx.strokeStyle = '#fff';
-        this.ctx.lineWidth = 1;
-        const barWidth = 16 * this.cellSize;
-        for (let bar = 0; bar <= song.bars; bar++) {
-            const x = bar * barWidth - this.scrollX;
-            if (x >= 0 && x <= this.canvas.width) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, 0);
-                this.ctx.lineTo(x, this.canvas.height);
-                this.ctx.stroke();
-            }
-        }
-
-        // 指定小節数外の範囲をグレーアウト
-        const maxX = maxSteps * this.cellSize - this.scrollX;
-        if (maxX < this.canvas.width) {
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            this.ctx.fillRect(maxX, 0, this.canvas.width - maxX, this.canvas.height);
-        }
-
-        // ハイライト行
-        // maxPitchは既に宣言済み
-        if (this.highlightPitch >= 0 && this.highlightPitch <= 71) {
-            const y = (maxPitch - this.highlightPitch) * this.cellSize - scrollY;
-            if (y + this.cellSize >= 0 && y < this.canvas.height) {
-                this.ctx.fillStyle = 'rgba(74, 124, 89, 0.3)';
-                this.ctx.fillRect(0, y, this.canvas.width, this.cellSize);
-            }
-        }
-
-        // ノート描画（白色）
-        this.ctx.fillStyle = '#fff';
-
-        track.notes.forEach(note => {
-            const x = note.step * this.cellSize - this.scrollX;
-            const y = (maxPitch - note.pitch) * this.cellSize - scrollY;
-            const w = note.length * this.cellSize - 2;
-
-            if (x + w >= 0 && x <= this.canvas.width && y + this.cellSize >= 0 && y < this.canvas.height) {
-                this.ctx.fillRect(x + 1, y + 1, w, this.cellSize - 2);
-            }
+        if (!this.renderer) return;
+        this.renderer.render({
+            song:           this.getCurrentSong(),
+            trackIndex:     this.currentTrack,
+            scrollX:        this.scrollX,
+            scrollY:        this.scrollY || 0,
+            cellSize:       this.cellSize,
+            highlightPitch: this.highlightPitch,
+            currentStep:    this.currentStep,
+            isPlaying:      this.player.isPlaying,
+            isStepRecording: this.isStepRecording,
+            bgColor:        App.projectData?.stage?.bgColor || '#3CBCFC',
+            selectionMode:  this.selectionMode,
+            selectionStart: this.selectionStart,
+            selectionEnd:   this.selectionEnd,
+            isSelecting:    this.isSelecting,
+            pasteMode:      this.pasteMode,
+            pasteData:      this.pasteData,
+            pasteOffset:    this.pasteOffset,
         });
-
-        // 選択範囲の描画
-        // 選択範囲の描画
-        if (this.selectionMode && this.selectionStart && this.selectionEnd) {
-            const step1 = Math.min(this.selectionStart.step, this.selectionEnd.step);
-            const step2 = Math.max(this.selectionStart.step, this.selectionEnd.step);
-            const pitch1 = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
-            const pitch2 = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
-
-            const x = step1 * this.cellSize - this.scrollX;
-            const y = (maxPitch - pitch2) * this.cellSize - scrollY;
-            const w = (step2 - step1 + 1) * this.cellSize;
-            const h = (pitch2 - pitch1 + 1) * this.cellSize;
-
-            this.ctx.setLineDash([4, 4]); // 点線
-            this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(x, y, w, h);
-            this.ctx.fillStyle = 'rgba(144, 238, 144, 0.2)'; // Semi-transparent LightGreen
-            this.ctx.fillRect(x, y, w, h);
-            this.ctx.setLineDash([]);
-        }
-
-        // ペーストプレビューの描画
-        if (this.pasteMode && this.pasteData) {
-            this.ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-            this.pasteData.notes.forEach(note => {
-                const newStep = this.pasteOffset.step + note.step;
-                const newPitch = this.pasteOffset.pitch + note.pitch;
-                const x = newStep * this.cellSize - this.scrollX;
-                const y = (maxPitch - newPitch) * this.cellSize - scrollY;
-                const w = note.length * this.cellSize - 2;
-
-                if (x + w >= 0 && x <= this.canvas.width && y + this.cellSize >= 0 && y < this.canvas.height) {
-                    this.ctx.fillRect(x + 1, y + 1, w, this.cellSize - 2);
-                }
-            });
-
-            // ペースト枠も表示
-            if (this.pasteData.width && this.pasteData.height) {
-                const width = this.pasteData.width;
-                const height = this.pasteData.height;
-
-                const x = this.pasteOffset.step * this.cellSize - this.scrollX;
-                const y = (maxPitch - (this.pasteOffset.pitch + height - 1)) * this.cellSize - scrollY;
-                const w = width * this.cellSize;
-                const h = height * this.cellSize;
-
-                this.ctx.setLineDash([4, 4]);
-                this.ctx.strokeStyle = '#FFFFFF';
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeRect(x, y, w, h);
-                this.ctx.setLineDash([]);
-            }
-        }
-
-        // 現在位置
-        const x = this.currentStep * this.cellSize - this.scrollX;
-        let strokeColor = '#00FF00'; // 再生時
-        if (this.isStepRecording) strokeColor = '#FF0000';
-        else if (!this.player.isPlaying) strokeColor = 'rgba(0, 255, 0, 0.5)'; // 停止中/一時停止中
-
-        if (x >= 0 && x <= this.canvas.width) {
-            this.ctx.strokeStyle = strokeColor;
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
-        }
     },
 
     // ========== 数値コピー＆ペースト ポップアップ ==========
