@@ -335,11 +335,12 @@ class StageCanvasInput {
                 handleEnd();
             }
         });
-    },
+    }
 
 
 
     getTileFromEvent(e) {
+        const o = this.owner;
         // 1. PC (Mouse): offsetX / offsetY を優先利用
         // これらは要素のパディングボックス座標系（枠線除外・変換適用前）で返されるため、
         // CSS transform や border の計算を自動的に回避できて最も正確。
@@ -389,18 +390,20 @@ class StageCanvasInput {
         const y = Math.floor(((clientY - rect.top - borderTop) * scaleY) / o.tileSize) + scrollOffsetY;
 
         return { x, y };
-    },
+    }
 
     isPointInSelection(x, y) {
+        const o = this.owner;
         if (!o.selectionStart || !o.selectionEnd) return false;
         const x1 = Math.min(o.selectionStart.x, o.selectionEnd.x);
         const y1 = Math.min(o.selectionStart.y, o.selectionEnd.y);
         const x2 = Math.max(o.selectionStart.x, o.selectionEnd.x);
         const y2 = Math.max(o.selectionStart.y, o.selectionEnd.y);
         return x >= x1 && x <= x2 && y >= y1 && y <= y2;
-    },
+    }
 
     startSelectionMode() {
+        const o = this.owner;
         o.selectionMode = true;
         o.pasteMode = false;
 
@@ -414,9 +417,10 @@ class StageCanvasInput {
             b.classList.toggle('active', b.dataset.tool === 'select');
         });
         o.render();
-    },
+    }
 
     cancelSelectionMode() {
+        const o = this.owner;
         if (!o.selectionMode) return;
 
         if (o.isFloating) {
@@ -430,9 +434,10 @@ class StageCanvasInput {
         o.isMovingSelection = false;
         o.selectionMoveStart = null;
         o.render();
-    },
+    }
 
     copySelection() {
+        const o = this.owner;
         if (!o.selectionStart || !o.selectionEnd) {
             return;
         }
@@ -482,9 +487,10 @@ class StageCanvasInput {
         o.selectionEnd = null;
 
         o.render();
-    },
+    }
 
     pasteTiles() {
+        const o = this.owner;
         if (!o.rangeClipboard) return;
 
         // Verify clipboard format
@@ -525,9 +531,10 @@ class StageCanvasInput {
             b.classList.toggle('active', b.dataset.tool === 'paste');
         });
         o.render();
-    },
+    }
 
     confirmPaste() {
+        const o = this.owner;
         if (!o.pasteData || !o.pasteData.tiles) return;
 
         o.saveToHistory();
@@ -571,9 +578,10 @@ class StageCanvasInput {
         o.pasteData = null;
         o.currentTool = 'select';
         o.startSelectionMode();
-    },
+    }
 
     flipVertical() {
+        const o = this.owner;
         if (o.pasteMode && o.pasteData) {
             o.flipData(o.pasteData, 'v');
             o.render();
@@ -630,9 +638,10 @@ class StageCanvasInput {
             o.render();
             return;
         }
-    },
+    }
 
     flipHorizontal() {
+        const o = this.owner;
         if (o.pasteMode && o.pasteData) {
             o.flipData(o.pasteData, 'h');
             o.render();
@@ -686,9 +695,10 @@ class StageCanvasInput {
             o.render();
             return;
         }
-    },
+    }
 
     processPixel(e) {
+        const o = this.owner;
         if (App.currentScreen !== 'stage') return;
 
         // 繧､繝吶Φ繝医°繧峨け繝ｩ繧､繧｢繝ｳ繝亥ｺｧ讓吶ｒ蜿門ｾ暦ｼ・ndefined蟇ｾ遲厄ｼ・
@@ -899,6 +909,7 @@ class StageCanvasInput {
     }
 
     floodFill(startX, startY, targetValue, newValue) {
+        const o = this.owner;
         if (targetValue === newValue) return;
 
         const stage = App.projectData.stage;

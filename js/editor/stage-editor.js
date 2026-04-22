@@ -1394,6 +1394,47 @@ const StageEditor = {
         if (this.canvasInput) this.canvasInput.floodFill(startX, startY, targetValue, newValue);
     },
 
+    // Canvas Input method wrappers
+    getTileFromEvent(e) {
+        return this.canvasInput ? this.canvasInput.getTileFromEvent(e) : { x: 0, y: 0 };
+    },
+
+    isPointInSelection(x, y) {
+        return this.canvasInput ? this.canvasInput.isPointInSelection(x, y) : false;
+    },
+
+    startSelectionMode() {
+        if (this.canvasInput) this.canvasInput.startSelectionMode();
+    },
+
+    cancelSelectionMode() {
+        if (this.canvasInput) this.canvasInput.cancelSelectionMode();
+    },
+
+    copySelection() {
+        if (this.canvasInput) this.canvasInput.copySelection();
+    },
+
+    pasteTiles() {
+        if (this.canvasInput) this.canvasInput.pasteTiles();
+    },
+
+    confirmPaste() {
+        if (this.canvasInput) this.canvasInput.confirmPaste();
+    },
+
+    flipVertical() {
+        if (this.canvasInput) this.canvasInput.flipVertical();
+    },
+
+    flipHorizontal() {
+        if (this.canvasInput) this.canvasInput.flipHorizontal();
+    },
+
+    processPixel(e) {
+        if (this.canvasInput) this.canvasInput.processPixel(e);
+    },
+
 
     resize() {
         const container = document.getElementById('stage-canvas-area');
