@@ -850,14 +850,14 @@ class StageCanvasInput {
             case 'fill':
                 if (o.selectedTemplate !== null) {
                     const tmpl = getTemplate(o.selectedTemplate);
-                    // 繧ｨ繝ｳ繝・ぅ繝・ぅ縺ｮ蝪励ｊ縺､縺ｶ縺励・繧ｵ繝昴・繝医＠縺ｪ縺・ｼ医・繝・・縺ｮ縺ｿ・・
+                    // エンティティの塗りつぶしはサポートしない（マップのみ）
                     if (tmpl && ['player', 'enemy', 'item'].includes(tmpl.type)) {
-                        alert('繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧・い繧､繝・Β縺ｧ蝪励ｊ縺､縺ｶ縺励・縺ｧ縺阪∪縺帙ｓ');
+                        alert('キャラクターやアイテムで塗りつぶしはできません');
                         return;
                     }
 
                     const newValue = o.selectedTemplate + 100;
-                    self.floodFill(x, y, layer[y][x], newValue);
+                    this.floodFill(x, y, layer[y][x], newValue);
                 }
                 break;
 
