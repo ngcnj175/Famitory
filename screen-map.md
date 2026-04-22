@@ -9,12 +9,16 @@
 > - **game-engine.js** 描画処理の分離（フェーズ4前半）✅
 >   - 描画メソッド（renderGameScreen, renderLayer, renderLayerFiltered, renderSprite）を GameRenderer クラスに抽出
 >   - game-engine.js: 3,000行 → 約2,660行（削除分）
+> - **ピクセル描画コアの共通化（フェーズ4後半）** ✅
+>   - SpriteUtils.drawPixels を新設し、StageRenderer / GameRenderer の重複ピクセルループを統合
+>   - GameRenderer.renderSprite に flipX・2xスプライト対応を追加
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
 | 全体管理 / アプリ基盤 | `js/app.js` | 初期化、共通UI（ダイアログ、I18N）、プロジェクト管理 |
 | ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | 物理演算、描画ループ統括、衝突判定、オーディオ実行 |
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力 |
+| 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
 | スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | ドット絵作成、パレット管理、アニメーション編集 |
 | ステージエディタ (Stage Editor) | `js/editor/stage-editor.js` | 中核・初期化・Undo/Redo・委譲管理 |
 | └─ テンプレート管理 | `js/editor/stage-template-manager.js` | タイル/エンティティテンプレートのCRUD |

@@ -331,23 +331,11 @@ class GameRenderer {
     }
 
     // ========== スプライト描画 ==========
-    renderSprite(sprite, x, y, palette) {
+    renderSprite(sprite, x, y, palette, flipX = false) {
         if (!sprite) return;
-        const pixelSize = this.owner.TILE_SIZE / 16;
-
-        for (let py = 0; py < 16; py++) {
-            for (let px = 0; px < 16; px++) {
-                const colorIndex = sprite.data[py][px];
-                if (colorIndex >= 0) {
-                    this.owner.ctx.fillStyle = palette[colorIndex];
-                    this.owner.ctx.fillRect(
-                        x + px * pixelSize,
-                        y + py * pixelSize,
-                        pixelSize + 0.5,
-                        pixelSize + 0.5
-                    );
-                }
-            }
-        }
+        const spriteSize = sprite.size || 1;
+        const tileCount  = spriteSize === 2 ? 2 : 1;
+        const pixelSize  = (this.owner.TILE_SIZE * tileCount) / (spriteSize === 2 ? 32 : 16);
+        SpriteUtils.drawPixels(this.owner.ctx, sprite, x, y, pixelSize, palette, flipX);
     }
 }

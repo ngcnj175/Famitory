@@ -101,27 +101,11 @@ class StageRenderer {
 
     _renderSprite(ctx, sprite, tileX, tileY, tileSize, scrollX, scrollY, palette, flipX = false) {
         const spriteSize = sprite.size || 1;
-        const dimension  = spriteSize === 2 ? 32 : 16;
         const tileCount  = spriteSize === 2 ? 2 : 1;
-        const pixelSize  = (tileSize * tileCount) / dimension;
-
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                const colorIndex = sprite.data[y]?.[x];
-                if (colorIndex >= 0) {
-                    ctx.fillStyle = palette[colorIndex];
-                    const drawX = flipX
-                        ? tileX * tileSize + (dimension - 1 - x) * pixelSize + scrollX
-                        : tileX * tileSize + x * pixelSize + scrollX;
-                    ctx.fillRect(
-                        drawX,
-                        tileY * tileSize + y * pixelSize + scrollY,
-                        pixelSize + 0.5,
-                        pixelSize + 0.5
-                    );
-                }
-            }
-        }
+        const pixelSize  = (tileSize * tileCount) / (spriteSize === 2 ? 32 : 16);
+        const screenX    = tileX * tileSize + scrollX;
+        const screenY    = tileY * tileSize + scrollY;
+        SpriteUtils.drawPixels(ctx, sprite, screenX, screenY, pixelSize, palette, flipX);
     }
 
     /**
@@ -139,15 +123,7 @@ class StageRenderer {
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, dimension, dimension);
 
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                const colorIndex = sprite.data[y]?.[x];
-                if (colorIndex >= 0) {
-                    ctx.fillStyle = palette[colorIndex];
-                    ctx.fillRect(x, y, 1.1, 1.1);
-                }
-            }
-        }
+        SpriteUtils.drawPixels(ctx, sprite, 0, 0, 1, palette);
     }
 
     // ─────────────────────────────────────────
