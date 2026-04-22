@@ -105,7 +105,17 @@ class StageCanvasInput {
                         }
                         o.selectionMoveStart = { x, y };
                         o.isMovingSelection = true;
+                        // 移動操作なので退避不要
+                        o._savedSelStart = null;
+                        o._savedSelEnd = null;
                     } else {
+                        // 新規選択開始前に既存の有効な選択範囲を退避
+                        const hasValidSel = o.selectionStart && o.selectionEnd &&
+                            (o.selectionStart.x !== o.selectionEnd.x ||
+                             o.selectionStart.y !== o.selectionEnd.y);
+                        o._savedSelStart = hasValidSel ? { ...o.selectionStart } : null;
+                        o._savedSelEnd   = hasValidSel ? { ...o.selectionEnd }   : null;
+
                         if (o.isFloating) {
                             o.commitFloatingData();
                         }
@@ -243,8 +253,16 @@ class StageCanvasInput {
                 o.isSelecting = false;
 
                 if (!hasMoved && !o.isMovingSelection) {
-                    o.cancelSelectionMode();
+                    // ドラッグなしのクリック：退避した有効な選択があれば復元、なければキャンセル
+                    if (o._savedSelStart && o._savedSelEnd) {
+                        o.selectionStart = o._savedSelStart;
+                        o.selectionEnd   = o._savedSelEnd;
+                    } else {
+                        o.cancelSelectionMode();
+                    }
                 }
+                o._savedSelStart = null;
+                o._savedSelEnd   = null;
                 o.isMovingSelection = false;
                 o.selectionMoveStart = null;
                 o.render();
@@ -273,6 +291,16 @@ class StageCanvasInput {
             if (o.currentTool === 'select') {
                 o.isSelecting = false;
                 // mouseleave では hasMoved に関わらず選択を維持する
+                // ただしドラッグなしのクリックで離れた場合は退避した選択を復元
+                if (!hasMoved && !o.isMovingSelection) {
+                    if (o._savedSelStart && o._savedSelEnd) {
+                        o.selectionStart = o._savedSelStart;
+                        o.selectionEnd   = o._savedSelEnd;
+                    }
+                    // savedがなければ新規単点選択のまま（消しゴムで1タイル削除可能）
+                }
+                o._savedSelStart = null;
+                o._savedSelEnd   = null;
                 o.isMovingSelection = false;
                 o.selectionMoveStart = null;
                 o.render();
