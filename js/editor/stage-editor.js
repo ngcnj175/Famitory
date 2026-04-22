@@ -76,6 +76,9 @@ const StageEditor = {
             this.ctx = this.canvas.getContext('2d');
         }
 
+        // 描画エンジン初期化
+        this.renderer = new StageRenderer();
+
         this.initTools();
         this.initAddTileButton();
         this.initConfigPanel();
@@ -1014,49 +1017,6 @@ const StageEditor = {
                 this.configAnimationIntervals.push(animInterval);
             }
         });
-    },
-
-    // SE繝励Ξ繝薙Η繝ｼ蜀咲函
-    playSePreview(seIndex) {
-        console.log('[SE Preview] Called with index:', seIndex);
-        const sounds = App.projectData?.sounds;
-        console.log('[SE Preview] sounds array:', sounds);
-        if (!sounds || seIndex < 0 || seIndex >= sounds.length) {
-            console.log('[SE Preview] Invalid index or no sounds');
-            return;
-        }
-
-        const se = sounds[seIndex];
-        console.log('[SE Preview] SE data:', se);
-        if (se && se.type) {
-            // NesAudio縺ｾ縺溘・AudioManager繧剃ｽｿ縺｣縺ｦ蜀咲函
-            const audioEngine = window.NesAudio || window.AudioManager || (typeof NesAudio !== 'undefined' ? NesAudio : null);
-            console.log('[SE Preview] Audio engine found:', !!audioEngine);
-
-            if (audioEngine && audioEngine.playSE) {
-                // 繧ｳ繝ｳ繝・く繧ｹ繝亥・髢九ｒ隧ｦ縺ｿ繧具ｼ・OS蟇ｾ蠢懶ｼ・
-                try {
-                    if (audioEngine.ensureContext) {
-                        audioEngine.ensureContext();
-                    }
-                    // AudioContext縺茎uspended縺ｮ蝣ｴ蜷医・ resume 繧貞ｾ・▽
-                    if (audioEngine.ctx && audioEngine.ctx.state === 'suspended') {
-                        console.log('[SE Preview] AudioContext suspended, resuming...');
-                        audioEngine.ctx.resume().then(() => {
-                            console.log('[SE Preview] AudioContext resumed, playing:', se.type);
-                            audioEngine.playSE(se.type);
-                        });
-                    } else {
-                        console.log('[SE Preview] Playing immediately:', se.type);
-                        audioEngine.playSE(se.type);
-                    }
-                } catch (err) {
-                    console.error('[SE Preview] Error:', err);
-                }
-            } else {
-                console.log('[SE Preview] No audio engine or playSE method');
-            }
-        }
     },
 
     // ========== SE驕ｸ謚槭・繝・・繧｢繝・・ ==========
@@ -2697,216 +2657,38 @@ const StageEditor = {
         this.render();
     },
 
+
+    // ========== 描画（StageRenderer に委譲）==========
     render() {
-        if (!this.canvas || !this.ctx) return;
+        if (!this.canvas || !this.ctx || !this.renderer) return;
         if (App.currentScreen !== 'stage') return;
-
-        // 背景色
-        this.ctx.fillStyle = this.getBackgroundColor();
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // FGレイヤーのみ描画
-        this.renderLayer('fg', 1);
-
-        // エンティティ描画
-        this.renderEntities();
-
-        this.renderGrid();
-        this.renderSelection();
-    },
-
-    renderEntities() {
-        const stage = App.projectData.stage;
-        if (!stage.entities) return;
-
-        const templates = App.projectData.templates || [];
-        const sprites = App.projectData.sprites;
-        const palette = App.nesPalette;
-        const basePlayerIdx = templates.findIndex(t => t.type === 'player');
-
-        stage.entities.forEach(entity => {
-            const template = templates[entity.templateId];
-            if (!template) return;
-
-            // 変身プレイヤー: 変身アイテムのスプライトを表示
-            let spriteIdx;
-            if (template.type === 'player' && basePlayerIdx >= 0 && entity.templateId !== basePlayerIdx) {
-                spriteIdx = template.sprites?.transformItem?.frames?.[0]
-                    ?? template.sprites?.idle?.frames?.[0]
-                    ?? template.sprites?.main?.frames?.[0];
-            } else {
-                spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-            }
-            const sprite = sprites[spriteIdx];
-            if (sprite) {
-                // 謨ｵ縺ｯ蟾ｦ蜷代″縺ｫ蜿崎ｻ｢縺励※謠冗判
-                const flipX = template.type === 'enemy';
-                this.renderSprite(sprite, entity.x, entity.y, palette, flipX);
-            }
+        this.renderer.render({
+            canvas:          this.canvas,
+            ctx:             this.ctx,
+            tileSize:        this.tileSize,
+            stage:           App.projectData.stage,
+            sprites:         App.projectData.sprites,
+            templates:       App.projectData.templates || [],
+            palette:         App.nesPalette,
+            bgColor:         this.getBackgroundColor(),
+            scrollX:         this.canvasScrollX || 0,
+            scrollY:         this.canvasScrollY || 0,
+            selectionMode:   this.selectionMode,
+            selectionStart:  this.selectionStart,
+            selectionEnd:    this.selectionEnd,
+            isSelecting:     this.isSelecting,
+            isFloating:      this.isFloating,
+            floatingData:    this.floatingData,
+            floatingEntities: this.floatingEntities,
+            floatingPos:     this.floatingPos,
+            pasteMode:       this.pasteMode,
+            pasteData:       this.pasteData,
+            pasteOffset:     this.pasteOffset,
         });
     },
 
-    renderLayer(layerName, alpha) {
-        const stage = App.projectData.stage;
-        const layer = stage.layers[layerName];
-        const sprites = App.projectData.sprites;
-        const templates = App.projectData.templates || [];
-        const palette = App.nesPalette;
-        const basePlayerIdx = templates.findIndex(t => t.type === 'player');
-
-        this.ctx.globalAlpha = alpha;
-
-        for (let y = 0; y < stage.height; y++) {
-            for (let x = 0; x < stage.width; x++) {
-                const tileId = layer[y][x];
-
-                // 2x2繝槭・繧ｫ繝ｼ繧ｿ繧､繝ｫ縺ｯ繧ｹ繧ｭ繝・・・亥ｷｦ荳翫ち繧､繝ｫ縺ｮ縺ｿ謠冗判・・
-                if (tileId <= -1000) continue;
-
-                let sprite;
-                if (tileId >= 100) {
-                    const template = templates[tileId - 100];
-                    const templateIdx = tileId - 100;
-                    let spriteIdx;
-                    if (template?.type === 'player' && basePlayerIdx >= 0 && templateIdx !== basePlayerIdx) {
-                        spriteIdx = template?.sprites?.transformItem?.frames?.[0]
-                            ?? template?.sprites?.idle?.frames?.[0]
-                            ?? template?.sprites?.main?.frames?.[0];
-                    } else {
-                        spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                    }
-                    sprite = sprites[spriteIdx];
-                } else if (tileId >= 0 && tileId < sprites.length) {
-                    // 繧ｹ繝励Λ繧､繝・D繝吶・繧ｹ・域立蠖｢蠑擾ｼ・ 莠呈鋤諤ｧ
-                    sprite = sprites[tileId];
-                }
-                if (sprite) {
-                    this.renderSprite(sprite, x, y, palette);
-                }
-            }
-        }
-
-        this.ctx.globalAlpha = 1;
-    },
-
-    renderSprite(sprite, tileX, tileY, palette, flipX = false, targetCtx = null) {
-        const ctx = targetCtx || this.ctx;
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
-
-        // スプライトサイズを判定
-        const spriteSize = sprite.size || 1;
-        const dimension = spriteSize === 2 ? 32 : 16;
-        const tileCount = spriteSize === 2 ? 2 : 1;  // 占有するタイル数
-        const pixelSize = (this.tileSize * tileCount) / dimension;
-
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                const colorIndex = sprite.data[y]?.[x];
-                if (colorIndex >= 0) {
-                    ctx.fillStyle = palette[colorIndex];
-                    // flipXの場合はX座標を反転
-                    const drawX = flipX
-                        ? tileX * this.tileSize + (dimension - 1 - x) * pixelSize + scrollX
-                        : tileX * this.tileSize + x * pixelSize + scrollX;
-                    ctx.fillRect(
-                        drawX,
-                        tileY * this.tileSize + y * pixelSize + scrollY,
-                        pixelSize + 0.5,
-                        pixelSize + 0.5
-                    );
-                }
-            }
-        }
-    },
-
     renderSpriteToMiniCanvas(sprite, canvas, bgColor = '#3CBCFC') {
-        const ctx = canvas.getContext('2d');
-        const palette = App.nesPalette;
-
-        // 繧ｹ繝励Λ繧､繝医し繧､繧ｺ繧貞愛螳・
-        const spriteSize = sprite.size || 1;
-        const dimension = spriteSize === 2 ? 32 : 16;
-
-        // 繧ｭ繝｣繝ｳ繝舌せ繧ｵ繧､繧ｺ繧偵せ繝励Λ繧､繝医し繧､繧ｺ縺ｫ蜷医ｏ縺帙ｋ
-        canvas.width = dimension;
-        canvas.height = dimension;
-
-        // 閭梧勹濶ｲ繧呈緒逕ｻ・亥虚逧・↓險ｭ螳壼庄閭ｽ・・
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, dimension, dimension);
-
-        // 繧ｹ繧ｱ繝ｼ繝ｫ菫よ焚・・:1縺ｧ謠冗判・・
-        const scale = 1;
-
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                const colorIndex = sprite.data[y]?.[x];
-                if (colorIndex >= 0) {
-                    ctx.fillStyle = palette[colorIndex];
-                    ctx.fillRect(
-                        x * scale,
-                        y * scale,
-                        scale + 0.1,
-                        scale + 0.1
-                    );
-                }
-            }
-        }
-    },
-
-    renderGrid() {
-        const stage = App.projectData.stage;
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
-
-        // 騾壼ｸｸ縺ｮ繧ｰ繝ｪ繝・ラ邱夲ｼ郁埋繧・ｼ・
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        this.ctx.lineWidth = 0.5;
-
-        for (let x = 0; x <= stage.width; x++) {
-            const px = x * this.tileSize + scrollX;
-            if (px >= 0 && px <= this.canvas.width) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(px, 0);
-                this.ctx.lineTo(px, this.canvas.height);
-                this.ctx.stroke();
-            }
-        }
-
-        for (let y = 0; y <= stage.height; y++) {
-            const py = y * this.tileSize + scrollY;
-            if (py >= 0 && py <= this.canvas.height) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, py);
-                this.ctx.lineTo(this.canvas.width, py);
-                this.ctx.stroke();
-            }
-        }
-
-        // 16繧ｿ繧､繝ｫ豈弱・繧ｬ繧､繝臥ｷ夲ｼ郁ｦ九ｄ縺吶＞襍､邱夲ｼ・
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-        this.ctx.lineWidth = 2;
-
-        for (let x = 16; x < stage.width; x += 16) {
-            const px = x * this.tileSize + scrollX;
-            if (px >= 0 && px <= this.canvas.width) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(px, 0);
-                this.ctx.lineTo(px, this.canvas.height);
-                this.ctx.stroke();
-            }
-        }
-
-        for (let y = 16; y < stage.height; y += 16) {
-            const py = y * this.tileSize + scrollY;
-            if (py >= 0 && py <= this.canvas.height) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, py);
-                this.ctx.lineTo(this.canvas.width, py);
-                this.ctx.stroke();
-            }
-        }
+        if (this.renderer) this.renderer.renderSpriteToMiniCanvas(sprite, canvas, bgColor);
     },
 
     // ========== UNDO讖溯・ ==========
@@ -3636,126 +3418,6 @@ const StageEditor = {
             audio.playSE(se.type);
         } else {
             console.error('Audio engine (NesAudio/AudioManager) not found.');
-        }
-    },
-
-    renderSelection() {
-        const scrollX = this.canvasScrollX || 0;
-        const scrollY = this.canvasScrollY || 0;
-        const palette = App.nesPalette;
-        const sprites = App.projectData.sprites;
-        const templates = App.projectData.templates || [];
-
-        // 重なりによるドット格子の発生を防ぐため、一度オフスクリーンに不透明で描画してから透過合成する
-        if (!this.offscreenCanvas) {
-            this.offscreenCanvas = document.createElement('canvas');
-        }
-        if (this.offscreenCanvas.width !== this.canvas.width || this.offscreenCanvas.height !== this.canvas.height) {
-            this.offscreenCanvas.width = this.canvas.width;
-            this.offscreenCanvas.height = this.canvas.height;
-        }
-        const offCtx = this.offscreenCanvas.getContext('2d');
-        offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
-
-        // Helper to render an entity/sprite at pos to offCtx
-        const renderSpriteAt = (tileIdOrTemplateId, tx, ty, isEntity = false) => {
-            if (tileIdOrTemplateId <= -1000 || tileIdOrTemplateId === -1) return;
-
-            let sprite;
-            let flipX = false;
-
-            if (isEntity) {
-                const template = templates[tileIdOrTemplateId];
-                if (template) {
-                    const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-                    sprite = sprites[spriteIdx];
-                    flipX = template.type === 'enemy';
-                }
-            } else {
-                // Tile logic
-                if (tileIdOrTemplateId >= 100) {
-                    const template = templates[tileIdOrTemplateId - 100];
-                    const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-                    sprite = sprites[spriteIdx];
-                } else if (tileIdOrTemplateId >= 0 && tileIdOrTemplateId < sprites.length) {
-                    sprite = sprites[tileIdOrTemplateId];
-                }
-            }
-
-            if (sprite) {
-                this.renderSprite(sprite, tx, ty, palette, flipX, offCtx);
-            }
-        };
-
-        // ペーストプレビュー
-        if (this.pasteMode && this.pasteData && this.pasteData.tiles) {
-            const h = this.pasteData.tiles.length;
-            const w = this.pasteData.tiles[0].length;
-
-            offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
-            for (let dy = 0; dy < h; dy++) {
-                for (let dx = 0; dx < w; dx++) {
-                    renderSpriteAt(this.pasteData.tiles[dy][dx], this.pasteOffset.x + dx, this.pasteOffset.y + dy);
-                }
-            }
-            if (this.pasteData.entities) {
-                this.pasteData.entities.forEach(e => {
-                    renderSpriteAt(e.templateId, this.pasteOffset.x + e.relX, this.pasteOffset.y + e.relY, true);
-                });
-            }
-            // 0.7の不透明度でメインキャンバスへ
-            this.ctx.globalAlpha = 0.7;
-            this.ctx.drawImage(this.offscreenCanvas, 0, 0);
-            this.ctx.globalAlpha = 1.0;
-
-            // 枠線
-            const rectX = this.pasteOffset.x * this.tileSize + scrollX;
-            const rectY = this.pasteOffset.y * this.tileSize + scrollY;
-            const rectW = w * this.tileSize;
-            const rectH = h * this.tileSize;
-            this.ctx.strokeStyle = '#00ff00';
-            this.ctx.lineWidth = 2;
-            this.ctx.setLineDash([4, 4]);
-            this.ctx.strokeRect(rectX, rectY, rectW, rectH);
-            this.ctx.setLineDash([]);
-        }
-
-        if (this.selectionStart && this.selectionEnd) {
-            // 浮動レイヤー
-            if (this.isFloating && this.floatingData) {
-                offCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
-                for (let y = 0; y < this.floatingData.length; y++) {
-                    for (let x = 0; x < this.floatingData[0].length; x++) {
-                        renderSpriteAt(this.floatingData[y][x], this.floatingPos.x + x, this.floatingPos.y + y);
-                    }
-                }
-                if (this.floatingEntities) {
-                    this.floatingEntities.forEach(e => {
-                        renderSpriteAt(e.templateId, this.floatingPos.x + e.relX, this.floatingPos.y + e.relY, true);
-                    });
-                }
-                // 0.5の不透明度でメインキャンバスへ
-                this.ctx.globalAlpha = 0.5;
-                this.ctx.drawImage(this.offscreenCanvas, 0, 0);
-                this.ctx.globalAlpha = 1.0;
-            }
-
-            // 選択枠
-            const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-            const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-            const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-            const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-
-            const rectX = x1 * this.tileSize + scrollX;
-            const rectY = y1 * this.tileSize + scrollY;
-            const rectW = (x2 - x1 + 1) * this.tileSize;
-            const rectH = (y2 - y1 + 1) * this.tileSize;
-
-            this.ctx.strokeStyle = this.isSelecting ? '#ffffff' : '#90EE90';
-            this.ctx.lineWidth = 2;
-            this.ctx.setLineDash([4, 4]);
-            this.ctx.strokeRect(rectX, rectY, rectW, rectH);
-            this.ctx.setLineDash([]);
         }
     },
 
