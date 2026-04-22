@@ -205,8 +205,8 @@ const App = {
         // iOS/Safari向けのグローバルなAudioContext復帰処理（ユーザーインタラクション時に発火）
         const resumeAudioContexts = () => {
             if (typeof GameEngine !== 'undefined') {
-                if (GameEngine.bgmAudioCtx && GameEngine.bgmAudioCtx.state === 'suspended') {
-                    GameEngine.bgmAudioCtx.resume();
+                if (GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
+                    GameEngine.gameBgmPlayer.audioCtx.resume();
                 }
                 if (GameEngine.audioCtx && GameEngine.audioCtx.state === 'suspended') {
                     GameEngine.audioCtx.resume();

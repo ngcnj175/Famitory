@@ -298,7 +298,7 @@ class StageSettings {
 
     updateBgmSelects() {
         const bgmTypes = ['stage', 'invincible', 'clear', 'gameover', 'boss'];
-        const songs = (typeof SoundEditor !== 'undefined' && SoundEditor.songs) ? SoundEditor.songs : [];
+        const songs = App.projectData.songs || [];
         const bgm = App.projectData.stage?.bgm || {};
 
         bgmTypes.forEach(type => {

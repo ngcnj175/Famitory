@@ -1141,8 +1141,8 @@ const StageEditor = {
         const list = document.getElementById('bgm-select-list');
         if (!popup || !list) return;
 
-        // BGM一覧を取得（SoundEditorから）
-        const songs = (typeof SoundEditor !== 'undefined' && SoundEditor.songs) ? SoundEditor.songs : [];
+        // BGM一覧を取得
+        const songs = App.projectData.songs || [];
         const currentValue = App.projectData.stage?.bgm?.[this.selectedBgmType] || '';
 
         let html = `
@@ -1216,7 +1216,7 @@ const StageEditor = {
         }
 
         this.stopBgmPreview();
-        if (typeof SoundEditor !== 'undefined' && SoundEditor.songs?.[idx]) {
+        if (typeof SoundEditor !== 'undefined' && App.projectData.songs?.[idx]) {
             SoundEditor.selectSong(idx);
             SoundEditor.play();
             this.bgmPreviewPlaying = true;

@@ -14,6 +14,7 @@ class BgmPlayer {
         this.isPaused = false;
         this.playInterval = null;
         this.activeOscillators = [null, null, null, null];
+        this.outputNode = null; // 外部から設定可能な出力先（未設定時はaudioCtx.destination）
 
         // キーボードプレビュー用
         this.currentKeyOsc = null;
@@ -36,6 +37,13 @@ class BgmPlayer {
     }
 
     /**
+     * 出力先を取得する（outputNodeが設定されていればそちら、なければdestination）
+     */
+    getOutput() {
+        return this.outputNode || this.audioCtx.destination;
+    }
+
+    /**
      * AudioContextを再作成する（iOS確認ダイアログ後の対策）
      */
     reset() {
@@ -46,10 +54,10 @@ class BgmPlayer {
         this.waveCache = {};
         this.activeOscillators = [null, null, null, null];
 
-        // ゲームエンジンのBGMコンテキストもクリア
-        if (typeof GameEngine !== 'undefined' && GameEngine.bgmAudioCtx) {
-            try { GameEngine.bgmAudioCtx.close(); } catch (e) { }
-            GameEngine.bgmAudioCtx = null;
+        // ゲームエンジンのBGMプレイヤーもクリア
+        if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer) {
+            try { GameEngine.gameBgmPlayer.audioCtx?.close(); } catch (e) { }
+            GameEngine.gameBgmPlayer.outputNode = null;
         }
     }
 
@@ -136,7 +144,7 @@ class BgmPlayer {
         const panner = this.audioCtx.createStereoPanner();
         panner.pan.value = track.pan;
         gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
+        panner.connect(this.getOutput());
 
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
@@ -243,7 +251,7 @@ class BgmPlayer {
         const panner = this.audioCtx.createStereoPanner();
         panner.pan.value = track.pan;
         gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
+        panner.connect(this.getOutput());
 
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
@@ -326,7 +334,7 @@ class BgmPlayer {
         const panner = this.audioCtx.createStereoPanner();
         panner.pan.value = pan;
         gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
+        panner.connect(this.getOutput());
 
         osc.type = 'triangle';
         const t = this.audioCtx.currentTime;
@@ -350,7 +358,7 @@ class BgmPlayer {
         const panner = this.audioCtx.createStereoPanner();
         panner.pan.value = pan;
         gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
+        panner.connect(this.getOutput());
 
         osc.type = 'square';
         const tremoloRate = 30;
@@ -414,7 +422,7 @@ class BgmPlayer {
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(panner);
-        panner.connect(ctx.destination);
+        panner.connect(this.getOutput());
 
         noise.start(t);
         noise.stop(t + bufferDuration);
@@ -527,7 +535,7 @@ class BgmPlayer {
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(panner);
-        panner.connect(ctx.destination);
+        panner.connect(this.getOutput());
 
         gain.gain.setValueAtTime(0.01, t);
         gain.gain.linearRampToValueAtTime(drumVol, t + attackTime);
@@ -590,7 +598,7 @@ class BgmPlayer {
             const panner = this.audioCtx.createStereoPanner();
             panner.pan.value = track.pan;
             gain.connect(panner);
-            panner.connect(this.audioCtx.destination);
+            panner.connect(this.getOutput());
 
             osc.type = 'square';
             const tremoloRate = 30;
@@ -616,7 +624,7 @@ class BgmPlayer {
         const panner = this.audioCtx.createStereoPanner();
         panner.pan.value = track.pan;
         gain.connect(panner);
-        panner.connect(this.audioCtx.destination);
+        panner.connect(this.getOutput());
 
         let volumeScale = 1.0;
         if (trackType === 'square') {
@@ -685,7 +693,7 @@ class BgmPlayer {
      * @param {number} startStep - 開始ステップ（一時停止後は resume から渡す）
      * @param {Function} onStep - ステップ更新コールバック (step) => void
      */
-    play(song, trackTypes, startStep, onStep) {
+    play(song, trackTypes, startStep, onStep, loop = true, isPausedFn = null) {
         if (this.isPlaying) return;
         this.isPlaying = true;
 
@@ -695,6 +703,10 @@ class BgmPlayer {
         this.isPaused = false;
 
         this.playInterval = setInterval(() => {
+            // 一時停止中はスキップ
+            if (this.isPaused) return;
+            if (isPausedFn && isPausedFn()) return;
+
             song.tracks.forEach((track, trackIdx) => {
                 track.notes.forEach(note => {
                     if (note.step === step) {
@@ -713,7 +725,13 @@ class BgmPlayer {
             if (onStep) onStep(step);
 
             step++;
-            if (step >= maxSteps) step = 0;
+            if (step >= maxSteps) {
+                if (loop) {
+                    step = 0;
+                } else {
+                    this.stop();
+                }
+            }
         }, stepDuration * 1000);
     }
 

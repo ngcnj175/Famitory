@@ -37,9 +37,8 @@ const GameEngine = {
     tileAnimationFrame: 0,
 
     // BGM再生
-    bgmAudioCtx: null,
-    bgmPlayInterval: null,
-    currentBgmType: null, // 'stage', 'invincible', 'clear', 'gameover', 'boss'
+    gameBgmPlayer: null,   // ゲームBGM再生用BgmPlayerインスタンス
+    currentBgmType: null,  // 'stage', 'invincible', 'clear', 'gameover', 'boss'
 
     // ボス演出
     bossSpawned: false,        // ボスが画面に出現したか
@@ -2646,120 +2645,6 @@ const GameEngine = {
         }
     },
 
-    renderLayer(layer, sprites, palette) {
-        const stage = this.stageData || App.projectData.stage;
-        const templates = App.projectData.templates || [];
-
-        // ヘルパー: tileIdからスプライトとテンプレートを取得（アニメーション対応）
-        const getTileInfo = (tileId) => {
-            if (tileId >= 100) {
-                // テンプレートIDベース（新形式）
-                const templateIdx = tileId - 100;
-                const template = templates[templateIdx];
-                if (template) {
-                    // 全アニメーションスロットからframesを取得
-                    const spriteSlots = template.sprites || {};
-                    const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
-                    let frames = [];
-                    for (const slotName of slotNames) {
-                        if (spriteSlots[slotName]?.frames?.length > 0) {
-                            frames = spriteSlots[slotName].frames;
-                            break; // 最初に見つかったスロットを使用
-                        }
-                    }
-                    if (frames.length > 0) {
-                        // アニメーション速度: 10フレームごとにスプライトを切り替え
-                        const frameSpeed = 10;
-                        const frameIndex = Math.floor(this.tileAnimationFrame / frameSpeed) % frames.length;
-                        const spriteIdx = frames[frameIndex];
-                        const sprite = spriteIdx !== undefined ? sprites[spriteIdx] : null;
-                        return { template, sprite, spriteIdx };
-                    }
-                }
-            } else if (tileId >= 0) {
-                // スプライトIDベース（旧形式）- 互換性
-                const sprite = sprites[tileId];
-                if (sprite) {
-                    const template = templates.find(t =>
-                        (t.sprites?.idle?.frames?.[0] === tileId) || (t.sprites?.main?.frames?.[0] === tileId)
-                    );
-                    return { template, sprite, spriteIdx: tileId };
-                }
-            }
-            return { template: null, sprite: null, spriteIdx: -1 };
-        };
-
-        // ギミックブロック位置をセットに登録
-        const gimmickPositions = new Set();
-        if (this.gimmickBlocks) {
-            this.gimmickBlocks.forEach(block => {
-                gimmickPositions.add(`${block.tileX},${block.tileY}`);
-            });
-        }
-
-        // 全タイルを描画（player/enemy/itemタイプは除外）
-        for (let y = 0; y < stage.height; y++) {
-            for (let x = 0; x < stage.width; x++) {
-                const tileId = layer[y][x];
-                // 空タイル(-1)および2x2マーカータイル(-1000以下)はスキップ
-                if (tileId < 0) continue;
-
-                // 破壊されたタイルは描画しない
-                if (this.destroyedTiles && this.destroyedTiles.has(`${x},${y}`)) {
-                    continue;
-                }
-
-                // ギミックブロックは別途描画するのでスキップ
-                if (gimmickPositions.has(`${x},${y}`)) {
-                    continue;
-                }
-
-                const { template, sprite } = getTileInfo(tileId);
-                if (!sprite) continue;
-
-                // player/enemy/itemタイプはゲームオブジェクトとして別途描画
-                if (template && (template.type === 'player' || template.type === 'enemy' || template.type === 'item')) {
-                    continue;
-                }
-
-                this.renderSprite(sprite, x, y, palette);
-            }
-        }
-    },
-
-    renderSprite(sprite, tileX, tileY, palette) {
-        // スプライトサイズを判定
-        const spriteSize = sprite.size || 1;
-        const dimension = spriteSize === 2 ? 32 : 16;
-        const tileCount = spriteSize === 2 ? 2 : 1;  // 占有するタイル数
-        const renderSize = this.TILE_SIZE * tileCount;
-        const pixelSize = renderSize / dimension;
-
-        const screenX = (tileX - this.camera.x) * this.TILE_SIZE;
-        const screenY = (tileY - this.camera.y) * this.TILE_SIZE;
-
-        // 画面外スキップ（2x2の場合は拡大領域を考慮）
-        if (screenX + renderSize < 0 || screenX > this.canvas.width ||
-            screenY + renderSize < 0 || screenY > this.canvas.height) {
-            return;
-        }
-
-        for (let y = 0; y < dimension; y++) {
-            for (let x = 0; x < dimension; x++) {
-                const colorIndex = sprite.data[y]?.[x];
-                if (colorIndex >= 0) {
-                    this.ctx.fillStyle = palette[colorIndex];
-                    this.ctx.fillRect(
-                        screenX + x * pixelSize,
-                        screenY + y * pixelSize,
-                        pixelSize + 0.5,
-                        pixelSize + 0.5
-                    );
-                }
-            }
-        }
-    },
-
     renderLayer(layer, startX, startY, endX, endY) {
         if (!layer) return;
         const templates = App.projectData.templates || [];
@@ -2931,10 +2816,10 @@ const GameEngine = {
         }
     },
 
-    // ========== BGM再生 ==========
+    // ========== BGM再生（BgmPlayerに委譲） ==========
     playBgm(type, loop = true) {
         // 同じBGMが再生中なら何もしない
-        if (this.currentBgmType === type && this.bgmPlayInterval) return;
+        if (this.currentBgmType === type && this.gameBgmPlayer && this.gameBgmPlayer.isPlaying) return;
 
         this.stopBgm();
 
@@ -2948,383 +2833,32 @@ const GameEngine = {
         const song = songs[songIdx];
         if (!song) return;
 
-        // Web Audio初期化
-        if (!this.bgmAudioCtx) {
-            this.bgmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            // BGM専用マスターゲイン（SE対比で音量を下げる）
-            this.bgmMasterGain = this.bgmAudioCtx.createGain();
-            this.bgmMasterGain.gain.value = 0.65; // ゲームプレイ時のBGM音量
-            this.bgmMasterGain.connect(this.bgmAudioCtx.destination);
-
+        // BgmPlayerインスタンスを初期化
+        if (!this.gameBgmPlayer) {
+            this.gameBgmPlayer = new BgmPlayer();
         }
-        // iOSでsuspendedの場合にresume（ユーザーインタラクション時にグローバルで再開する方針へ変更）
-        if (this.bgmAudioCtx.state === 'suspended') {
-            this.bgmAudioCtx.resume().catch(() => {});
+        this.gameBgmPlayer.init();
+        this.gameBgmPlayer.resume();
+
+        // ゲームBGM用マスターゲイン（SE対比で音量を下げる）
+        if (!this.gameBgmPlayer.outputNode) {
+            const ctx = this.gameBgmPlayer.audioCtx;
+            const masterGain = ctx.createGain();
+            masterGain.gain.value = 0.65;
+            masterGain.connect(ctx.destination);
+            this.gameBgmPlayer.outputNode = masterGain;
         }
 
-        const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const trackTypes = ['square', 'square', 'triangle', 'noise'];
-
-        // 各トラックのアクティブな発音を追跡（同時発音数1制限用）
-        const activeNodes = [null, null, null, null];
-
-        const getFrequency = (pitch) => {
-            const octave = Math.floor(pitch / 12) + 1;
-            const noteIdx = pitch % 12;
-            const semitone = (octave - 4) * 12 + noteIdx - 9;
-            return 440 * Math.pow(2, semitone / 12);
-        };
-
-        const playNote = (freq, waveType, duration, pitch, trackIdx, tone, trackVolume = 0.8, trackPan = 0.0) => {
-            const ctx = this.bgmAudioCtx;
-
-            // 前の音を停止（同時発音数1制限）
-            if (activeNodes[trackIdx]) {
-                try {
-                    activeNodes[trackIdx].stop();
-                } catch (e) { }
-                activeNodes[trackIdx] = null;
-            }
-
-            if (waveType === 'noise') {
-
-                if (tone === 0) {
-                    const actualDuration = duration * 0.6; // データの長さを60%に調整
-
-                    // Noise (ピッチ): バンドパスフィルタで音程感のある持続ノイズ
-                    const bufferDuration = actualDuration + 0.05;
-                    const bufferSize = Math.floor(ctx.sampleRate * bufferDuration);
-                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                    const data = buffer.getChannelData(0);
-
-                    let lfsr = 1;
-                    for (let i = 0; i < bufferSize; i++) {
-                        const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
-                        data[i] = (lfsr & 1) ? 1.0 : -1.0;
-                        lfsr = (lfsr >> 1) | (bit << 14);
-                    }
-
-                    const noise = ctx.createBufferSource();
-                    noise.buffer = buffer;
-
-                    const filter = ctx.createBiquadFilter();
-                    filter.type = 'bandpass';
-                    filter.frequency.value = freq;
-                    filter.Q.value = 1.2;
-
-                    const gain = ctx.createGain();
-                    const noiseVol = 0.44 * (trackVolume > 1.0 ? trackVolume / 100 : trackVolume); // 元の0.55から80%に音量を調整
-
-                    const panner = ctx.createStereoPanner();
-                    panner.pan.value = trackPan;
-
-                    gain.gain.setValueAtTime(noiseVol, ctx.currentTime);
-                    gain.gain.setValueAtTime(noiseVol, ctx.currentTime + Math.max(0, actualDuration - 0.03));
-                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + actualDuration);
-
-                    noise.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(panner);
-                    panner.connect(this.bgmMasterGain);
-
-                    noise.start();
-                    noise.stop(ctx.currentTime + bufferDuration);
-
-                    activeNodes[trackIdx] = noise;
-                    return;
-                }
-
-                // tone=1: Drum Kit（従来のドラム音）
-                // NES APU風ドラムキット（オクターブ1-6で異なるドラム音）
-                const octave = Math.floor(pitch / 12) + 1;
-
-                // --- ドラムタイプ別パラメータ ---
-                let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown, attackTime, holdTime, isRoll;
-
-                switch (octave) {
-                    case 1: // Low Kick — 丸く、空気感のある「ボッ」
-                        filterType = 'lowpass'; filterFreq = 120; filterQ = 1.5;
-                        drumVol = 0.9; decayTime = 0.14;
-                        useShortNoise = false; pitchEnvDown = true;
-                        attackTime = 0.008; holdTime = 0.00; isRoll = false; break;
-                    case 2: // Tight Snare — シャープ、タイト
-                        filterType = 'bandpass'; filterFreq = 1200; filterQ = 1.5;
-                        drumVol = 0.5; decayTime = 0.13;
-                        useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.002; holdTime = 0.00; isRoll = false; break;
-                    case 3: // Open Snare / Clap — 自然なスネア感「タンッ」
-                        filterType = 'bandpass'; filterFreq = 2200; filterQ = 0.6;
-                        drumVol = 0.3; decayTime = 0.22;
-                        useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.003; holdTime = 0.015; isRoll = false; break;
-                    case 4: // Closed Hi-Hat — ホワイトノイズ寄り、極短「サッ」
-                        filterType = 'highpass'; filterFreq = 7000; filterQ = 0.5;
-                        drumVol = 0.3; decayTime = 0.05;
-                        useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
-                    case 5: // Open Hi-Hat — ホワイトノイズ寄り、広がり「サー」
-                        filterType = 'highpass'; filterFreq = 5000; filterQ = 0.5;
-                        drumVol = 0.3; decayTime = 0.25;
-                        useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
-                    case 6: // Noise Roll — 連続ロール「タタタタタ」
-                    default:
-                        filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
-                        drumVol = 0.3;
-                        isRoll = (duration > 0.15);
-                        decayTime = isRoll ? duration : 0.15;
-                        useShortNoise = false; pitchEnvDown = false;
-                        attackTime = 0.005; holdTime = 0.00; break;
-                }
-
-                // 同一オクターブ内の微調整
-                const noteInOct = pitch % 12;
-                filterFreq *= (1 + noteInOct * 0.02);
-                if (!isRoll) decayTime *= (1 + noteInOct * 0.015);
-
-                // トラック音量を適用
-                drumVol *= trackVolume;
-
-                // NES APU 15-bit LFSR風ノイズ生成
-                const actualDuration = Math.max(decayTime + attackTime + holdTime + 0.02, 0.05);
-                const bufferSize = Math.floor(ctx.sampleRate * actualDuration);
-                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-
-                if (useShortNoise) {
-                    const period = 93;
-                    const shortBuf = new Float32Array(period);
-                    let lfsr = 1;
-                    for (let i = 0; i < period; i++) {
-                        const bit = ((lfsr >> 0) ^ (lfsr >> 6)) & 1;
-                        shortBuf[i] = (lfsr & 1) ? 1.0 : -1.0;
-                        lfsr = (lfsr >> 1) | (bit << 14);
-                    }
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = shortBuf[i % period];
-                    }
-                } else {
-                    let lfsr = 1;
-                    for (let i = 0; i < bufferSize; i++) {
-                        const bit = ((lfsr >> 0) ^ (lfsr >> 1)) & 1;
-                        data[i] = (lfsr & 1) ? 1.0 : -1.0;
-                        lfsr = (lfsr >> 1) | (bit << 14);
-                    }
-                }
-
-                // ロール用の高速リトリガー（内部的な音量変調で粒立ちを作る）
-                if (isRoll) {
-                    const rollRate = 24; // 1秒間のパルス数
-                    for (let i = 0; i < bufferSize; i++) {
-                        const sec = i / ctx.sampleRate;
-                        const phase = (sec * rollRate) % 1.0;
-                        const amp = 0.2 + 0.8 * Math.pow(1.0 - phase, 2); // 減衰するパルス形状
-                        data[i] *= amp;
-                    }
-                }
-
-                const noise = ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = ctx.createBiquadFilter();
-                filter.type = filterType;
-                filter.frequency.value = filterFreq;
-                filter.Q.value = filterQ;
-
-                if (pitchEnvDown) {
-                    filter.frequency.setValueAtTime(filterFreq * 2.5, ctx.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(filterFreq, ctx.currentTime + decayTime * 0.4);
-                }
-
-                const gain = ctx.createGain();
-
-                // パンポット
-                const panner = ctx.createStereoPanner();
-                panner.pan.value = trackPan;
-
-                gain.gain.setValueAtTime(0.01, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(drumVol, ctx.currentTime + attackTime);
-
-                if (isRoll) {
-                    gain.gain.setValueAtTime(drumVol, ctx.currentTime + Math.max(0, duration - 0.05));
-                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + duration);
-                } else if (holdTime > 0) {
-                    gain.gain.setValueAtTime(drumVol, ctx.currentTime + attackTime + holdTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + attackTime + holdTime + decayTime);
-                } else {
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + attackTime + decayTime);
-                }
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(panner);
-                panner.connect(this.bgmMasterGain);
-
-                noise.start();
-                noise.stop(ctx.currentTime + actualDuration);
-
-                activeNodes[trackIdx] = noise;
-                return;
-            }
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const panner = ctx.createStereoPanner();
-            panner.pan.value = trackPan;
-
-            // tone 6 = Tremolo（Square専用: 1オクターブ上と高速切替）
-            if (waveType === 'square' && tone === 6) {
-                osc.type = 'square';
-                const freq2 = freq * 2;
-                const tremoloRate = 30;
-                const numCycles = Math.ceil(tremoloRate * duration);
-                const cycleTime = 1 / tremoloRate;
-                for (let i = 0; i < numCycles; i++) {
-                    const t = ctx.currentTime + i * cycleTime;
-                    osc.frequency.setValueAtTime(i % 2 === 0 ? freq : freq2, t);
-                }
-            } else if (waveType === 'square') {
-                // tone 0-2: Standard (50%), tone 3-5: Sharp (12.5%)
-                if (tone >= 3 && tone <= 5) {
-                    // Sharp: 12.5% duty cycle via PeriodicWave
-                    const cacheKey = 'bgm_pulse_0.125';
-                    if (!this._bgmWaveCache) this._bgmWaveCache = {};
-                    if (!this._bgmWaveCache[cacheKey]) {
-                        const n = 4096;
-                        const real = new Float32Array(n);
-                        const imag = new Float32Array(n);
-                        const duty = 0.125;
-                        for (let i = 1; i < n; i++) {
-                            imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
-                        }
-                        this._bgmWaveCache[cacheKey] = ctx.createPeriodicWave(real, imag);
-                    }
-                    osc.setPeriodicWave(this._bgmWaveCache[cacheKey]);
-                } else {
-                    osc.type = 'square';
-                }
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            } else if (waveType === 'triangle') {
-                // tone に応じた波形タイプ設定
-                if (tone === 1) osc.type = 'sine';
-                else if (tone === 2) osc.type = 'sawtooth';
-                else if (tone === 3) {
-                    // Kickトーン (ピッチ下降)
-                    const actualTrackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(freq * 0.25, ctx.currentTime + duration);
-
-                    // 短い音にする
-                    gain.gain.setValueAtTime(0.5 * actualTrackVol, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Math.min(duration, 0.15));
-
-                    osc.connect(gain);
-                    gain.connect(panner);
-                    panner.connect(this.bgmMasterGain);
-                    osc.start();
-                    osc.stop(ctx.currentTime + Math.min(duration, 0.15));
-
-                    activeNodes[trackIdx] = osc;
-                    return; // ここで完了
-                }
-                else osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            } else {
-                osc.type = waveType;
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            }
-
-            // トラック固有音量（0.0〜1.0）
-            const trackVol = trackVolume > 1.0 ? trackVolume / 100 : trackVolume;
-            // tone別の基本音量
-            let baseVol;
-            if (waveType === 'square') {
-                switch (tone) {
-                    case 0: baseVol = 0.12; break; // Standard
-                    case 1: baseVol = 0.15; break; // Standard (Short)
-                    case 2: baseVol = 0.15; break; // Standard (FadeIn)
-                    case 3: baseVol = 0.25; break; // Sharp
-                    case 4: baseVol = 0.35; break; // Sharp (Short)
-                    case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
-                    case 6: baseVol = 0.05; break; // Tremolo
-                    default: baseVol = 0.12; break;
-                }
-            } else {
-                baseVol = 0.2; // Triangle等はそのまま
-            }
-            let volumeScale = 1.0;
-
-            // 音量設定（toneによるバリエーション）
-            if (waveType === 'triangle' && tone === 2) {
-                volumeScale = 0.6; // Sawtooth
-            }
-            let volume = baseVol * trackVol * volumeScale;
-
-            const isShort = (tone === 1 || tone === 4);
-            const isFadeIn = (tone === 2 || tone === 5);
-
-            if (isShort) {
-                // Short: 短くスタッカート気味
-                gain.gain.setValueAtTime(volume, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration * 0.5);
-            } else if (isFadeIn) {
-                // FadeIn: フェードイン
-                gain.gain.setValueAtTime(0.01, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(volume, ctx.currentTime + duration * 0.7);
-                gain.gain.setValueAtTime(volume, ctx.currentTime + duration * 0.9);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-            } else {
-                // Normal: 通常のエンベロープ
-                gain.gain.setValueAtTime(volume, ctx.currentTime);
-                gain.gain.setValueAtTime(volume, ctx.currentTime + Math.max(0, duration - 0.05));
-                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + duration);
-            }
-
-            osc.connect(gain);
-            gain.connect(panner);
-            panner.connect(this.bgmMasterGain);
-            osc.start();
-            osc.stop(ctx.currentTime + duration + 0.05);
-
-            activeNodes[trackIdx] = { stop: () => { try { osc.stop(); } catch (e) { } } };
-        };
-
-        // BGM再生ループ
         this.currentBgmType = type;
-        const stepDuration = 60 / song.bpm / 4; // 16分音符
-        let step = 0;
-        const maxSteps = song.bars;
 
-        this.bgmPlayInterval = setInterval(() => {
-            if (this.isPaused) return;
-
-            song.tracks.forEach((track, trackIdx) => {
-                const trackVolume = track.volume !== undefined ? track.volume : 0.8;
-                track.notes.forEach(note => {
-                    if (note.step === step) {
-                        const freq = getFrequency(note.pitch);
-                        const tone = track.tone || 0;
-                        playNote(freq, trackTypes[trackIdx], stepDuration * note.length, note.pitch, trackIdx, tone, trackVolume);
-                    }
-                });
-            });
-
-            step++;
-            if (step >= maxSteps) {
-                if (loop) {
-                    step = 0; // ループ再生
-                } else {
-                    this.stopBgm(); // 1回再生のみで終了
-                }
-            }
-        }, stepDuration * 1000);
+        // isPausedFnでゲームの一時停止と同期
+        this.gameBgmPlayer.play(song, trackTypes, 0, null, loop, () => this.isPaused);
     },
 
     stopBgm() {
-        if (this.bgmPlayInterval) {
-            clearInterval(this.bgmPlayInterval);
-            this.bgmPlayInterval = null;
+        if (this.gameBgmPlayer) {
+            this.gameBgmPlayer.stop();
         }
         this.currentBgmType = null;
     },

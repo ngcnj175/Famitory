@@ -33,8 +33,8 @@ const NesAudio = {
                 this.ctx.resume().catch(() => {});
             }
             // BGM用AudioContext (GameEngineが持つ)
-            if (window.GameEngine && GameEngine.bgmAudioCtx && GameEngine.bgmAudioCtx.state === 'suspended') {
-                GameEngine.bgmAudioCtx.resume().catch(() => {});
+            if (window.GameEngine && GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
+                GameEngine.gameBgmPlayer.audioCtx.resume().catch(() => {});
             }
         };
 
