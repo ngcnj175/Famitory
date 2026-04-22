@@ -138,7 +138,7 @@ const GameEngine = {
             }
         } else if (this.isRunning) {
             this.isPaused = true;
-            this.render(); // PAUSE表示のため再描画
+            this.renderer.render(); // PAUSE表示のため再描画
         }
     },
 
@@ -165,17 +165,6 @@ const GameEngine = {
         this.gameLoop();
     },
 
-    renderLoading() {
-        const ctx = this.ctx;
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('Loading...', this.canvas.width / 2, this.canvas.height / 2);
-    },
-
     // リスタート（Startボタン長押し用）
     restart() {
         this.stop();
@@ -185,7 +174,7 @@ const GameEngine = {
         this.wipeTimer = 0;
         this.initGame();
         this.resize();
-        this.renderTitleScreen();
+        this.renderer.renderTitleScreen();
         console.log('Game restarted');
     },
 
@@ -216,7 +205,7 @@ const GameEngine = {
         this.renderer.renderGameScreen();
 
         // タイトル画面表示
-        this.renderTitleScreen();
+        this.renderer.renderTitleScreen();
     },
 
     resize() {
@@ -617,7 +606,7 @@ const GameEngine = {
                 this.titleState = 'playing';
                 this.playBgm('stage'); // ステージBGM開始
             }
-            this.renderWipe();
+            this.renderer.renderWipe();
             this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
         }
@@ -637,10 +626,10 @@ const GameEngine = {
             }
 
             // ゲーム画面を描画（敵やアイテムは静止）
-            this.render();
+            this.renderer.render();
 
             // STAGE CLEARテキストと暗転エフェクト
-            this.renderClearEffect();
+            this.renderer.renderClearEffect();
 
             // フェーズ終了: 210フレーム後にリザルトへ（クリエイターモードはSTAGE CLEAR表示後、リザルトをスキップしてPUSH STARTへ）
             if (this.clearTimer >= 210) {
@@ -660,7 +649,7 @@ const GameEngine = {
                     return;
                 }
                 this.titleState = 'result';
-                this.renderResultScreen();
+                this.renderer.renderResultScreen();
                 return;
             }
 
@@ -674,11 +663,11 @@ const GameEngine = {
 
             // フェーズ1: 閉じるワイプ（0-30フレーム）
             if (this.gameOverTimer <= 30) {
-                this.renderCloseWipe();
+                this.renderer.renderCloseWipe();
             }
             // フェーズ2: GAME OVER表示（30-150フレーム）
             else if (this.gameOverTimer <= 150) {
-                this.renderGameOverText();
+                this.renderer.renderGameOverText();
             }
             // フェーズ3: リザルトへ（クリエイターモードはGAME OVER表示後、リザルトをスキップしてPUSH STARTへ）
             else {
@@ -699,7 +688,7 @@ const GameEngine = {
                     return;
                 }
                 this.titleState = 'result';
-                this.renderResultScreen(); // DOM表示
+                this.renderer.renderResultScreen(); // DOM表示
                 // リザルト中はループ停止（またはresultステートでループ継続して描画のみ？）
                 // ここではループを継続させて、resultステート処理に任せる
                 this.animationId = requestAnimationFrame(() => this.gameLoop());
@@ -713,7 +702,7 @@ const GameEngine = {
         // リザルト画面
         if (this.titleState === 'result') {
             // ゲーム画面は静止画として描画し続ける（背景）
-            this.render();
+            this.renderer.render();
             // 特に更新処理はなし（DOMオーバーレイ操作待ち）
             this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
@@ -749,7 +738,7 @@ const GameEngine = {
                 }
             }
         }
-        this.render();
+        this.renderer.render();
 
         // プレイヤー落下チェック（画面外に出たらゲームオーバーへ）
         if (this.titleState === 'playing' && this.player) {
@@ -795,92 +784,6 @@ const GameEngine = {
         this.animationId = requestAnimationFrame(() => this.gameLoop());
     },
 
-    renderCloseWipe() {
-        const ctx = this.ctx;
-        const progress = this.gameOverTimer / 30;
-
-        // 全体をゲーム画面で描画
-        this.renderer.renderGameScreen();
-
-        // 外側から中央に閉じる正方形
-        const maxSize = Math.max(this.canvas.width, this.canvas.height);
-        // Math.floorで整数化して白線のギャップを防ぐ
-        const size = Math.floor(maxSize * (1 - progress));
-        const x = Math.floor((this.canvas.width - size) / 2);
-        const y = Math.floor((this.canvas.height - size) / 2);
-
-        // 外側をダークグレーで塗りつぶし（少し余分に塗ってギャップを防ぐ）
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, this.canvas.width, y + 1); // 上（+1で隙間を埋める）
-        ctx.fillRect(0, y + size - 1, this.canvas.width, this.canvas.height - y - size + 2); // 下
-        ctx.fillRect(0, y, x + 1, size); // 左
-        ctx.fillRect(x + size - 1, y, this.canvas.width - x - size + 2, size); // 右
-    },
-
-    renderGameOverText() {
-        const ctx = this.ctx;
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 2);
-    },
-
-    renderGameOver() {
-        // 互換性のため残す
-        this.renderGameOverText();
-    },
-
-    renderTitleScreen() {
-        const ctx = this.ctx;
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.titleBlinkTimer++;
-        if (Math.floor(this.titleBlinkTimer / 30) % 2 === 0) {
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('PUSH START', this.canvas.width / 2, this.canvas.height / 2);
-        }
-
-        // タイトル画面のループ
-        if (this.titleState === 'title') {
-            this.animationId = requestAnimationFrame(() => this.renderTitleScreen());
-        }
-    },
-
-    renderWipe() {
-        const ctx = this.ctx;
-        const progress = this.wipeTimer / 30;
-
-        // まず全体をダークグレーで塗りつぶし（残像防止）
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // ワイプ効果（中央から広がる正方形）
-        const maxSize = Math.max(this.canvas.width, this.canvas.height);
-        const size = maxSize * progress;
-        const x = (this.canvas.width - size) / 2;
-        const y = (this.canvas.height - size) / 2;
-
-        // クリップ領域として正方形を設定
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(x, y, size, size);
-        ctx.clip();
-
-        // ゲーム画面を描画
-        this.renderer.renderGameScreen();
-
-        ctx.restore();
-    },
-
-
     // イースターエッグメッセージを表示
     showEasterMessage(message) {
         this.easterMessage = message;
@@ -893,154 +796,6 @@ const GameEngine = {
         this.easterMessageActive = false;
         this.easterMessage = null;
         this.isPaused = false; // ゲームを再開
-    },
-
-    // DQ風ウィンドウを描画
-    renderEasterWindow() {
-        const ctx = this.ctx;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        const message = this.easterMessage || '';
-
-        // テキストを10文字ごとに改行
-        const maxCharsPerLine = 10;
-        const lines = [];
-        for (let i = 0; i < message.length; i += maxCharsPerLine) {
-            lines.push(message.slice(i, i + maxCharsPerLine));
-        }
-
-        // ウィンドウサイズ計算（ひらがな対応で広めに）
-        const padding = 24;
-        const lineHeight = 22;
-        const buttonHeight = 24;
-        const charWidth = 16; // ひらがな用に広めに
-
-        const textWidth = maxCharsPerLine * charWidth + padding * 2;
-        const windowWidth = Math.max(textWidth, 180);
-        const windowHeight = (lines.length * lineHeight) + buttonHeight + padding * 3;
-
-        const windowX = (w - windowWidth) / 2;
-        const windowY = (h - windowHeight) / 2;
-
-        // 外枠（白）
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(windowX - 4, windowY - 4, windowWidth + 8, windowHeight + 8);
-
-        // 内枠（黒背景）
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
-
-        // メッセージテキスト（ピクセルフォント風）
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '16px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        lines.forEach((line, idx) => {
-            const textY = windowY + padding + lineHeight * idx + lineHeight / 2;
-            ctx.fillText(line, w / 2, textY);
-        });
-
-        // 「とじる」ボタン
-        const buttonWidth = 80;
-        const buttonX = (w - buttonWidth) / 2;
-        const buttonY = windowY + windowHeight - buttonHeight - padding;
-
-        // ボタン背景
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-        // ボタンテキスト
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '14px monospace';
-        ctx.fillText('とじる', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
-
-        // クリック判定用にボタン位置を保存
-        this.easterCloseButton = {
-            x: buttonX,
-            y: buttonY,
-            width: buttonWidth,
-            height: buttonHeight
-        };
-    },
-
-    renderProjectileOrItem(obj) {
-        // アニメーション対応: templateからフレームを取得
-        let spriteIdx = obj.spriteIdx;
-        if (obj.templateIdx !== undefined) {
-            const template = App.projectData.templates[obj.templateIdx];
-            if (template) {
-                // animationSlotが指定されている場合はそのスロットを優先
-                const spriteSlots = template.sprites || {};
-                let frames = [];
-
-                if (obj.animationSlot && spriteSlots[obj.animationSlot]?.frames?.length > 0) {
-                    frames = spriteSlots[obj.animationSlot].frames;
-                } else if (obj.itemType === 'transform' && spriteSlots['transformItem']?.frames?.length > 0) {
-                    // 変身アイテムはtransformItemスロットを優先
-                    frames = spriteSlots['transformItem'].frames;
-                } else {
-                    // 指定がない場合は全スロットから検索
-                    const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
-                    for (const slotName of slotNames) {
-                        if (spriteSlots[slotName]?.frames?.length > 0) {
-                            frames = spriteSlots[slotName].frames;
-                            break;
-                        }
-                    }
-                }
-                if (frames.length > 1) {
-                    // アニメーション速度: スプライトごとの設定を取得
-                    let speed = 5;
-                    if (obj.animationSlot && spriteSlots[obj.animationSlot]?.speed !== undefined) {
-                        speed = spriteSlots[obj.animationSlot].speed;
-                    } else {
-                        for (const slotName of ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life']) {
-                            if (spriteSlots[slotName]?.frames?.length > 0 && spriteSlots[slotName]?.speed !== undefined) {
-                                speed = spriteSlots[slotName].speed;
-                                break;
-                            }
-                        }
-                    }
-                    const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-
-                    if (interval !== Infinity) {
-                        let frameIndex;
-                        if (obj.shotType === 'melee') {
-                            // 近接の場合はループさせず、生成からの経過時間（age）を使用し最後のフレームで止める
-                            frameIndex = Math.min(Math.floor((obj.age || 0) / interval), frames.length - 1);
-                        } else {
-                            // 通常はタイマーによるループ
-                            frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
-                        }
-                        spriteIdx = frames[frameIndex];
-                    } else {
-                        spriteIdx = frames[0];
-                    }
-                } else if (frames.length === 1) {
-                    spriteIdx = frames[0];
-                }
-            }
-        }
-
-        const sprite = App.projectData.sprites[spriteIdx];
-        if (!sprite) return;
-
-        const screenX = (obj.x - this.camera.x) * this.TILE_SIZE;
-        const screenY = (obj.y - this.camera.y) * this.TILE_SIZE;
-        const palette = App.nesPalette;
-        const pixelSize = this.TILE_SIZE / 16;
-        const flipX = obj.facingRight === false;
-
-        for (let y = 0; y < 16; y++) {
-            for (let x = 0; x < 16; x++) {
-                const colorIndex = sprite.data[y][x];
-                if (colorIndex >= 0) {
-                    this.ctx.fillStyle = palette[colorIndex];
-                    const drawX = flipX ? screenX + (15 - x) * pixelSize : screenX + x * pixelSize;
-                    this.ctx.fillRect(drawX, screenY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
-                }
-            }
-        }
     },
 
     update() {
@@ -1177,7 +932,7 @@ const GameEngine = {
         this.updateProjectiles();
 
         // パーティクル更新
-        this.updateParticles();
+        this.renderer.updateParticles();
 
         // アイテム更新（衝突判定含む）
         this.updateItems();
@@ -1868,72 +1623,6 @@ const GameEngine = {
         }
     },
 
-    renderClearEffect() {
-        const ctx = this.ctx;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-
-        // フェーズ1: 最初の120フレーム（2秒）はテキストのみ
-        // フェーズ2: 120〜150フレーム（30フレーム）で両サイドから暗転
-
-        // 両サイドからの暗転（120フレーム後から開始、30フレームで完了）
-        if (this.clearTimer > 120) {
-            const wipeProgress = Math.min((this.clearTimer - 120) / 30, 1);
-            const darkWidth = (w / 2) * wipeProgress;
-
-            ctx.fillStyle = '#333333'; // GAME OVERと同じ色
-            ctx.fillRect(0, 0, darkWidth, h); // 左から
-            ctx.fillRect(w - darkWidth, 0, darkWidth, h); // 右から
-        }
-
-        // STAGE CLEAR テキスト（点滅、GAME OVERと同じフォント）
-        if (Math.floor(this.clearTimer / 10) % 2 === 0) {
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('STAGE CLEAR', w / 2, h / 2);
-        }
-
-        // 3.5秒後にリザルトへ
-        if (this.clearTimer > 210) {
-            this.titleState = 'result';
-            this.renderResultScreen(); // クリエイターモードは内部でスキップ
-        }
-    },
-
-
-
-    renderGameOver() {
-        const ctx = this.ctx;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-
-        this.gameOverTimer++;
-
-        // 暗転
-        ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(this.gameOverTimer / 60, 0.6)})`;
-        ctx.fillRect(0, 0, w, h);
-
-        // テキスト表示
-        ctx.font = '24px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ff4444';
-        ctx.shadowColor = 'black';
-        ctx.shadowBlur = 4;
-        ctx.fillText('GAME OVER', w / 2, h / 2);
-        ctx.shadowBlur = 0;
-
-        // 3秒後にリザルトへ（クリエイターモードはrenderResultScreen内でスキップ）
-        if (this.gameOverTimer > 180) {
-            this.titleState = 'result';
-            this.renderResultScreen();
-            // ループを止めるためにisRunningをfalseにするか、ステートで止めるか
-            // resultステートならgameLoop内で処理が止まるようにする
-        }
-    },
-
     getCollision(x, y) {
         // ステージデータ参照（ギミックブロック削除済みコピーを使用）
         const stage = this.stageData || App.projectData.stage;
@@ -2073,107 +1762,6 @@ const GameEngine = {
         }
     },
 
-    // とびら白点灯エフェクト描画
-    renderDoorFlash() {
-        if (!this.doorFlashTiles || this.doorFlashTiles.length === 0) return;
-
-        const ctx = this.ctx;
-        const tileSize = this.TILE_SIZE;
-        const camX = this.camera.x;
-        const camY = this.camera.y;
-
-        this.doorFlashTiles = this.doorFlashTiles.filter(flash => {
-            if (flash.phase === 'wait') {
-                // 待機フェーズ：スプライトをそのまま描画（FGから削除済みなので手動描画）
-                flash.waitTimer--;
-                if (flash.waitTimer <= 0) {
-                    flash.phase = 'flash';
-                }
-
-                // 待機中はスプライトを通常描画
-                if (flash.spriteData) {
-                    const sprite = flash.spriteData;
-                    const palette = App.nesPalette;
-                    const spriteSize = sprite.size || 1;
-                    const dimension = spriteSize === 2 ? 32 : 16;
-                    const pixelSize = tileSize / 16;
-                    const screenX = (flash.x - camX) * tileSize;
-                    const screenY = (flash.y - camY) * tileSize;
-
-                    for (let y = 0; y < dimension; y++) {
-                        for (let x = 0; x < dimension; x++) {
-                            const colorIndex = sprite.data[y]?.[x];
-                            if (colorIndex >= 0) {
-                                ctx.fillStyle = palette[colorIndex];
-                                ctx.fillRect(
-                                    screenX + x * pixelSize,
-                                    screenY + y * pixelSize,
-                                    pixelSize + 0.5,
-                                    pixelSize + 0.5
-                                );
-                            }
-                        }
-                    }
-                }
-                return true;
-            }
-
-            // 白点灯フェーズ：スプライト形状を白で描画→フェードアウト
-            flash.flashTimer--;
-            const alpha = flash.flashTimer / 20;
-
-            if (flash.flashTimer <= 0) {
-                // 演出完了: 衝突を解除
-                if (flash.tileKey) {
-                    if (!this.destroyedTiles) this.destroyedTiles = new Set();
-                    this.destroyedTiles.add(flash.tileKey);
-                }
-                return false;
-            }
-
-            if (flash.spriteData) {
-                const sprite = flash.spriteData;
-                const spriteSize = sprite.size || 1;
-                const dimension = spriteSize === 2 ? 32 : 16;
-                const pixelSize = tileSize / 16;
-                const screenX = (flash.x - camX) * tileSize;
-                const screenY = (flash.y - camY) * tileSize;
-
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#FFFFFF';
-                for (let y = 0; y < dimension; y++) {
-                    for (let x = 0; x < dimension; x++) {
-                        const colorIndex = sprite.data[y]?.[x];
-                        if (colorIndex >= 0) {
-                            ctx.fillRect(
-                                screenX + x * pixelSize,
-                                screenY + y * pixelSize,
-                                pixelSize + 0.5,
-                                pixelSize + 0.5
-                            );
-                        }
-                    }
-                }
-                ctx.globalAlpha = 1.0;
-            } else {
-                // スプライトなしの場合はタイル全体を白く
-                const screenX = (flash.x - camX) * tileSize;
-                const screenY = (flash.y - camY) * tileSize;
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(screenX, screenY, tileSize, tileSize);
-                ctx.globalAlpha = 1.0;
-            }
-
-            return true;
-        });
-
-        // 全エフェクト完了後にゲーム再開
-        if (this.doorAnimating && this.doorFlashTiles.length === 0) {
-            this.doorAnimating = false;
-        }
-    },
-
     damageTile(tileX, tileY) {
         const stage = App.projectData.stage;
         const templates = App.projectData.templates || [];
@@ -2293,193 +1881,6 @@ const GameEngine = {
             }
         }
     },
-
-    updateParticles() {
-        this.particles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.015; // 重力
-            p.life--;
-        });
-        this.particles = this.particles.filter(p => p.life > 0);
-    },
-
-    renderParticles() {
-        const ctx = this.ctx;
-        const camX = this.camera.x;
-        const camY = this.camera.y;
-        const tileSize = this.TILE_SIZE;
-        const pixelScale = tileSize / 16;
-
-        this.particles.forEach(p => {
-            const screenX = (p.x - camX) * tileSize;
-            const screenY = (p.y - camY) * tileSize;
-            const size = p.size * pixelScale;
-
-            ctx.fillStyle = p.color;
-            ctx.fillRect(screenX, screenY, size, size);
-        });
-    },
-
-    render() {
-        this.renderer.renderGameScreen();
-    },
-
-    renderUI() {
-        // ライフ表示
-        if (this.player && !this.player.isDead) {
-            const lifeSprites = this.player.template?.sprites?.life;
-            const frames = lifeSprites?.frames || [];
-
-            // アニメーション対応: 複数フレームがある場合は切り替え
-            let spriteIdx;
-            if (frames.length > 1) {
-                const speed = lifeSprites.speed || 5;
-                const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-                if (interval !== Infinity) {
-                    const frameIndex = Math.floor(this.tileAnimationFrame / interval) % frames.length;
-                    spriteIdx = frames[frameIndex];
-                } else {
-                    spriteIdx = frames[0];
-                }
-            } else if (frames.length === 1) {
-                spriteIdx = frames[0];
-            }
-
-            const sprite = spriteIdx !== undefined ? App.projectData.sprites[spriteIdx] : null;
-
-            const heartSize = 20;
-            // スプライトが登録されている場合のみ表示
-            if (sprite) {
-                for (let i = 0; i < this.player.lives; i++) {
-                    const posX = 10 + i * (heartSize + 2);
-                    const posY = 10;
-
-                    const palette = App.nesPalette;
-                    const pixelSize = heartSize / 16;
-                    for (let sy = 0; sy < 16; sy++) {
-                        for (let sx = 0; sx < 16; sx++) {
-                            const colorIndex = sprite.data[sy][sx];
-                            if (colorIndex >= 0) {
-                                this.ctx.fillStyle = palette[colorIndex];
-                                this.ctx.fillRect(
-                                    posX + sx * pixelSize,
-                                    posY + sy * pixelSize,
-                                    pixelSize + 0.5,
-                                    pixelSize + 0.5
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // PAUSE表示
-        if (this.isPaused && !this.restartBlink) {
-            const centerX = this.canvas.width / 2;
-            const centerY = this.canvas.height / 2;
-
-            this.ctx.font = '16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillText('PAUSE', centerX, centerY);
-        }
-
-        // RE:START 長押しUI
-        if (this.restartBlink) {
-            const centerX = this.canvas.width / 2;
-            const centerY = this.canvas.height / 2;
-
-            // 常時点灯
-            this.ctx.font = '16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillText('RE:START', centerX, centerY);
-
-            // プログレスバー（progress > 0 の時のみ）
-            if (this.restartProgress > 0) {
-                const barWidth = 80;
-                const barHeight = 4;
-                const barX = centerX - barWidth / 2;
-                const barY = centerY + 14;
-
-                // バー背景
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-                this.ctx.fillRect(barX, barY, barWidth, barHeight);
-
-                // バー進捗
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.fillRect(barX, barY, barWidth * this.restartProgress, barHeight);
-            }
-        }
-
-        // タイマー表示（右上）
-        if (this.hasTimeLimit && this.titleState === 'playing') {
-            const min = Math.floor(this.remainingTime / 60);
-            const sec = this.remainingTime % 60;
-            const timeText = `${min}:${sec.toString().padStart(2, '0')}`;
-
-            this.ctx.font = 'bold 16px Arial';
-            this.ctx.textAlign = 'right';
-            this.ctx.textBaseline = 'top';
-
-            // 残り10秒以下は赤、それ以外は白
-            if (this.remainingTime <= 10) {
-                this.ctx.fillStyle = '#ff4444';
-            } else {
-                this.ctx.fillStyle = '#ffffff';
-            }
-
-            // 影
-            this.ctx.fillStyle = '#000000';
-            this.ctx.fillText(timeText, this.canvas.width - 9, 11);
-
-            // 本体
-            if (this.remainingTime <= 10) {
-                this.ctx.fillStyle = '#ff4444';
-            } else {
-                this.ctx.fillStyle = '#ffffff';
-            }
-            if (this.remainingTime <= 10) {
-                this.ctx.fillStyle = '#ff4444';
-            } else {
-                this.ctx.fillStyle = '#ffffff';
-            }
-            this.ctx.fillText(timeText, this.canvas.width - 10, 10);
-        }
-
-        // スコア表示（中央上）
-        if (App.projectData.stage.showScore) {
-            const scoreText = this.score.toString().padStart(6, '0');
-
-            this.ctx.font = 'bold 16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'top';
-
-            // 影
-            this.ctx.fillStyle = '#000000';
-            this.ctx.fillText(scoreText, this.canvas.width / 2 + 1, 11);
-
-            // 本体
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillText(scoreText, this.canvas.width / 2, 10);
-        }
-    },
-
-    renderStage() {
-        const stage = this.stageData || App.projectData.stage;
-        const sprites = App.projectData.sprites;
-        const palette = App.nesPalette;
-
-        // FGレイヤーのみ描画（BGは単色背景としてrender()で処理済み）
-        if (stage.layers.fg) {
-            this.renderLayer(stage.layers.fg, sprites, palette);
-        }
-    },
-
 
     // ========== BGM再生（BgmPlayerに委譲） ==========
     playBgm(type, loop = true) {
@@ -2635,106 +2036,4 @@ const GameEngine = {
         }
     },
 
-    // リザルト画面表示
-    renderResultScreen() {
-        const app = (typeof window !== 'undefined' && window.App) || (typeof App !== 'undefined' && App);
-        const isCreatorMode = app && !app.isPlayOnlyMode;
-
-        // クリエイターモード: リザルトは絶対に表示せず、PUSH STARTへ戻す
-        if (isCreatorMode) {
-            const overlay = document.getElementById('result-overlay');
-            if (overlay) overlay.classList.add('hidden');
-            this.stop();
-            this.hasStarted = false;
-            this.titleState = 'title';
-            this.clearTimer = 0;
-            this.gameOverTimer = 0;
-            this.gameOverPending = false;
-            app.switchScreen('play');
-            if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-            document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-            const navPlayBtn = document.getElementById('nav-play-btn');
-            if (navPlayBtn) navPlayBtn.classList.add('active-nav');
-            return;
-        }
-
-        // 背景は最後のゲーム画面のまま（再描画しない）
-        const overlay = document.getElementById('result-overlay');
-        const scoreContainer = document.getElementById('result-score-container');
-        const scoreVal = document.getElementById('result-score-value');
-        const highVal = document.getElementById('result-highscore-value');
-        const shareBtn = document.getElementById('result-share-btn');
-        const title = document.getElementById('result-title');
-
-        if (!overlay) return;
-
-        // タイトル設定
-        if (this.isCleared) {
-            title.textContent = 'STAGE CLEAR!';
-            title.style.color = '#ffd700'; // Gold
-        } else {
-            title.textContent = 'GAME OVER';
-            title.style.color = '#ff4444'; // Red
-        }
-
-        // スコア表示設定 (デフォルトON)
-        const showScore = App.projectData.stage.showScore !== false;
-        if (showScore && scoreContainer) {
-            scoreContainer.classList.remove('hidden');
-            if (scoreVal) scoreVal.textContent = this.score.toString().padStart(6, '0');
-            if (highVal) highVal.textContent = this.highScore.toString().padStart(6, '0');
-            if (shareBtn) shareBtn.classList.remove('hidden');
-        } else {
-            if (scoreContainer) scoreContainer.classList.add('hidden');
-            if (shareBtn) shareBtn.classList.add('hidden');
-        }
-
-        // いいねエリア表示（公開URLから開いた場合のみ）
-        const likeArea = document.getElementById('result-like-area');
-        if (App._sharedGameId && App.isPlayOnlyMode) {
-            if (likeArea) likeArea.classList.remove('hidden');
-            const likeCount = document.getElementById('result-like-count');
-            if (likeCount) likeCount.textContent = App._likesCount || 0;
-        } else {
-            if (likeArea) likeArea.classList.add('hidden');
-        }
-
-        // リミックスボタンの出し分け (プレイヤーモード かつ remixOK の時のみ表示)
-        const remixBtn = document.getElementById('result-remix-btn');
-        if (remixBtn) {
-            if (App.isPlayOnlyMode && App.projectData?.meta?.remixOK) {
-                remixBtn.classList.remove('hidden');
-            } else {
-                remixBtn.classList.add('hidden');
-            }
-        }
-        const likeBtn = document.getElementById('result-like-btn');
-        const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
-        if (likeArea) {
-            if (gameId) {
-                likeArea.classList.remove('hidden');
-                if (likeBtn) {
-                    if (App._hasLikedThisSession) {
-                        likeBtn.classList.add('liked');
-                        likeBtn.disabled = true;
-                    } else {
-                        likeBtn.classList.remove('liked');
-                        likeBtn.disabled = false;
-                    }
-                }
-                const countEl = document.getElementById('result-like-count');
-                if (countEl) countEl.textContent = App._likesCount || 0;
-            } else {
-                likeArea.classList.add('hidden');
-            }
-        }
-
-        // プレイヤーモードでは「編集に戻る」を非表示
-        const editBtn = document.getElementById('result-edit-btn');
-        if (editBtn) {
-            editBtn.classList.toggle('hidden', App.isPlayOnlyMode);
-        }
-
-        overlay.classList.remove('hidden');
-    }
 };
