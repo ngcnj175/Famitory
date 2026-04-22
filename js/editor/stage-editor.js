@@ -1509,8 +1509,11 @@ const StageEditor = {
         this.lastSaveTime = now;
 
         const stage = App.projectData.stage;
-        // FG繝ｬ繧､繝､繝ｼ縺ｮ迴ｾ蝨ｨ縺ｮ迥ｶ諷九ｒ繝・ぅ繝ｼ繝励さ繝斐・
-        const snapshot = stage.layers.fg.map(row => [...row]);
+        // FG レイヤーと entities の状態を保存
+        const snapshot = {
+            fg: stage.layers.fg.map(row => [...row]),
+            entities: stage.entities ? JSON.parse(JSON.stringify(stage.entities)) : []
+        };
 
         this.undoHistory.push(snapshot);
 
@@ -1530,7 +1533,8 @@ const StageEditor = {
         const stage = App.projectData.stage;
 
         // 繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ繧貞ｾｩ蜈・
-        stage.layers.fg = snapshot;
+        stage.layers.fg = snapshot.fg;
+        stage.entities = snapshot.entities || [];
 
         this.render();
         console.log('Undo applied');
