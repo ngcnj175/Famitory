@@ -162,8 +162,16 @@ const StageEditor = {
                     case 'flip-h':
                         this.flipHorizontal();
                         return;
+                    case 'eraser':
+                        // 選択範囲がある場合は範囲内を削除
+                        if (this.selectionMode && this.selectionStart && this.selectionEnd) {
+                            this.eraseSelection();
+                            return;
+                        }
+                        this.cancelSelectionMode();
+                        break;
                     default:
-                        // 驕ｸ謚槭Δ繝ｼ繝峨く繝｣繝ｳ繧ｻ繝ｫ
+                        // 選択モードキャンセル
                         this.cancelSelectionMode();
                         break;
                 }
@@ -1433,6 +1441,10 @@ const StageEditor = {
 
     processPixel(e) {
         if (this.canvasInput) this.canvasInput.processPixel(e);
+    },
+
+    eraseSelection() {
+        if (this.canvasInput) this.canvasInput.eraseSelection();
     },
 
 

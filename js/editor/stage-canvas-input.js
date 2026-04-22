@@ -925,4 +925,41 @@ class StageCanvasInput {
             stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
         }
     }
+
+    // 選択範囲内のタイル・エンティティをすべて削除
+    eraseSelection() {
+        const o = this.owner;
+        if (!o.selectionStart || !o.selectionEnd) return false;
+
+        const stage = App.projectData.stage;
+        if (!stage) return false;
+
+        const layer = stage.layers[o.currentLayer];
+        if (!layer) return false;
+
+        const x1 = Math.min(o.selectionStart.x, o.selectionEnd.x);
+        const y1 = Math.min(o.selectionStart.y, o.selectionEnd.y);
+        const x2 = Math.max(o.selectionStart.x, o.selectionEnd.x);
+        const y2 = Math.max(o.selectionStart.y, o.selectionEnd.y);
+
+        o.saveToHistory();
+
+        for (let y = y1; y <= y2; y++) {
+            for (let x = x1; x <= x2; x++) {
+                if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) continue;
+                layer[y][x] = -1;
+            }
+        }
+
+        // 選択範囲内のエンティティも削除
+        if (stage.entities) {
+            stage.entities = stage.entities.filter(e =>
+                !(e.x >= x1 && e.x <= x2 && e.y >= y1 && e.y <= y2)
+            );
+        }
+
+        this.cancelSelectionMode();
+        o.render();
+        return true;
+    }
 }
