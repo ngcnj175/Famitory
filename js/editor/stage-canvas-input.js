@@ -97,6 +97,9 @@ class StageCanvasInput {
 
             // 矩形選択モード
             if (o.currentTool === 'select') {
+                // currentTool が 'select' ならselectionMode を常に true に保つ
+                // （cancelSelectionMode はcurrentToolを変えないためずれが生じる）
+                o.selectionMode = true;
                 try {
                     if (o.selectionStart && o.selectionEnd && o.isPointInSelection(x, y)) {
                         if (!o.isFloating) {
