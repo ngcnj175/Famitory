@@ -257,13 +257,41 @@ class StageCanvasInput {
             }
         };
 
+        // mouseleave 専用ハンドラ：選択ツールの場合は選択をキャンセルしない
+        // （ユーザーが消しゴムボタン等に移動した際に選択が消えるバグを防ぐ）
+        const handleLeave = () => {
+            o.stopAutoScroll();
+            o.lastPointerEvent = null;
+
+            if (isPanning) {
+                isPanning = false;
+                return;
+            }
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            if (o.currentTool === 'select') {
+                o.isSelecting = false;
+                // mouseleave では hasMoved に関わらず選択を維持する
+                o.isMovingSelection = false;
+                o.selectionMoveStart = null;
+                o.render();
+                return;
+            }
+            if (o.currentTool === 'paste') {
+                o.selectionMoveStart = null;
+                o.confirmPaste();
+                return;
+            }
+        };
+
         // handleAutoScrollMove を this に紐づけて setInterval から呼べるようにする
         o.handleAutoScrollMove = handleMove;
 
         o.canvas.addEventListener('mousedown', handleStart);
         o.canvas.addEventListener('mousemove', handleMove);
         o.canvas.addEventListener('mouseup', handleEnd);
-        o.canvas.addEventListener('mouseleave', handleEnd);
+        o.canvas.addEventListener('mouseleave', handleLeave);
 
         // 2譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢逕ｨ
         let pendingDrawTimer = null;
