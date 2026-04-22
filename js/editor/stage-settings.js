@@ -101,7 +101,7 @@ class StageSettings {
         }
         if (areaHPlus) {
             areaHPlus.addEventListener('click', () => {
-                if (this.owner.pendingAreaH < 10) {
+                if (this.owner.pendingAreaH < 32) {
                     this.owner.pendingAreaH++;
                     if (areaHValue) areaHValue.textContent = this.owner.pendingAreaH;
                 }
