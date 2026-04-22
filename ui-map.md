@@ -4,6 +4,13 @@
 
 > IDをキーとして部分修正可能。`i18n対応` 列が ✓ のものは lang ボタンで切替が有効。
 
+> **2025年更新**
+> - stage-editor.js のリファクタリングに伴い、U291～U445のメッセージ出力元が以下に分散
+>   - stage-template-manager.js: U286-U288（テンプレート操作）
+>   - stage-canvas-input.js: U291（塗りつぶし制限）ほか
+>   - stage-settings.js: ステージ設定関連
+>   - stage-editor.js: 中核・Undo関連
+
 | ID | Text_JPN | Text_ENG | 属性・種類 | ファイル名 | i18n対応 |
 |----|---------|----------|-----------|-----------|---------|
 | U001 | 新規 | New | HTML attribute (title) | index.html | ✓ |
@@ -296,7 +303,7 @@
 | U288 | キャンセル | Cancel | JS message/literal | stage-editor.js | ✓ |
 | U289 | このタイルを削除しますか？ | Delete this tile? | JS message/literal | stage-editor.js | |
 | U290 | ステージエディタの反転機能は未実装です | Flip function is not yet implemented in the stage editor | JS message/literal | stage-editor.js | |
-| U291 | (文字化け: キャラクターやアイテムでは飛びつぶしはできません) | Cannot stompt with characters or items | JS message/literal | stage-editor.js | |
+| U291 | キャラクターやアイテムで塗りつぶしはできません | Cannot fill with characters or items | JS message/literal | stage-canvas-input.js | ✓ |
 | U292 | すべてのタイルを削除しますか？ | Delete all tiles? | JS message/literal | stage-editor.js | |
 | U293 | サバイバル時間 | Survival Time | JS message/literal | stage-editor.js | |
 | U294 | 制限時間 | Time Limit | JS message/literal | stage-editor.js | |
