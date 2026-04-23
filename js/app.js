@@ -2,35 +2,6 @@
  * PixelGameKit - メインアプリケーション
  */
 
-// デフォルトSEリスト（createDefaultProject と migrateProjectData で共用）
-const DEFAULT_SOUNDS = [
-    { id: 0, name: 'ジャンプ_01', type: 'jump_01' },
-    { id: 1, name: 'ジャンプ_02', type: 'jump_02' },
-    { id: 2, name: 'ジャンプ_03', type: 'jump_03' },
-    { id: 3, name: 'ジャンプ_04', type: 'jump_04' },
-    { id: 4, name: 'ジャンプ_05', type: 'jump_05' },
-    { id: 5, name: '攻撃_01', type: 'attack_01' },
-    { id: 6, name: '攻撃_02', type: 'attack_02' },
-    { id: 7, name: '攻撃_03', type: 'attack_03' },
-    { id: 8, name: '攻撃_04', type: 'attack_04' },
-    { id: 9, name: '攻撃_05', type: 'attack_05' },
-    { id: 10, name: 'ダメージ_01', type: 'damage_01' },
-    { id: 11, name: 'ダメージ_02', type: 'damage_02' },
-    { id: 12, name: 'ダメージ_03', type: 'damage_03' },
-    { id: 13, name: 'ダメージ_04', type: 'damage_04' },
-    { id: 14, name: 'ダメージ_05', type: 'damage_05' },
-    { id: 15, name: 'ゲット_01', type: 'itemGet_01' },
-    { id: 16, name: 'ゲット_02', type: 'itemGet_02' },
-    { id: 17, name: 'ゲット_03', type: 'itemGet_03' },
-    { id: 18, name: 'ゲット_04', type: 'itemGet_04' },
-    { id: 19, name: 'ゲット_05', type: 'itemGet_05' },
-    { id: 20, name: 'その他_01(決定)', type: 'other_01' },
-    { id: 21, name: 'その他_02(キャンセル)', type: 'other_02' },
-    { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-    { id: 23, name: 'その他_04(ポーズ)', type: 'other_04' },
-    { id: 24, name: 'その他_05(爆発)', type: 'other_05' }
-];
-
 // グローバル状態
 const App = {
     currentScreen: 'play',
@@ -84,81 +55,6 @@ const App = {
     // デフォルトパレット（パステル）
     nesPalette: null, // initで設定
 
-    // エディットキー生成（8文字英数字）
-    generateEditKey() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let key = '';
-        for (let i = 0; i < 8; i++) {
-            key += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return key;
-    },
-
-    // デフォルトプロジェクト
-    createDefaultProject() {
-        return {
-            version: 1,
-            meta: {
-                name: 'NEW GAME',
-                author: '',
-                locked: false,
-                createdAt: Date.now(),
-                editKey: this.generateEditKey()
-            },
-            palette: this.nesPalette.slice(0, 16),
-            sprites: [this.createEmptySprite()],
-            stage: {
-                name: '',
-                width: 16,
-                height: 16,
-                bgColor: '#3CBCFC',
-                transparentIndex: 0,
-                bgm: {
-                    stage: '',
-                    invincible: '',
-                    clear: '',
-                    gameover: ''
-                },
-                clearCondition: 'none', // none, item, enemies, survival
-                timeLimit: 0,
-                showScore: true, // スコア表示（デフォルトON）
-                layers: {
-                    bg: this.create2DArray(16, 16, -1),
-                    fg: this.create2DArray(16, 16, -1),
-                    collision: this.create2DArray(16, 16, 0)
-                }
-            },
-            objects: [
-                { type: 'player', x: 2, y: 14, sprite: 0 }
-            ],
-            bgm: {
-                bpm: 120,
-                steps: 16,
-                tracks: {
-                    pulse1: [],
-                    pulse2: [],
-                    triangle: [],
-                    noise: []
-                }
-            },
-            sounds: DEFAULT_SOUNDS.map(s => ({ ...s }))
-        };
-    },
-
-    createEmptySprite(size = 1) {
-        const dimension = size === 2 ? 32 : 16;
-        return {
-            id: 0,
-            name: 'sprite_0',
-            data: this.create2DArray(dimension, dimension, -1),
-            size: size  // 1 = 16x16, 2 = 32x32
-        };
-    },
-
-    create2DArray(width, height, fillValue) {
-        return Array(height).fill(null).map(() => Array(width).fill(fillValue));
-    },
-
     // 初期化
     init() {
         console.log('FAMITORY initializing...');
@@ -169,9 +65,9 @@ const App = {
         }
 
         this.registerServiceWorker();
-        this.loadOrCreateProject();
+        AppProject.loadOrCreateProject();
         this.initMenu();
-        this.checkUrlData();
+        AppProject.checkUrlData();
 
         // 各エディタ初期化
         if (typeof SpriteEditor !== 'undefined') SpriteEditor.init();
@@ -397,142 +293,6 @@ const App = {
         }
     },
 
-    loadOrCreateProject() {
-        const saved = Storage.load('currentProject');
-        if (saved) {
-            this.projectData = saved;
-            this.migrateProjectData(); // データ移行
-            console.log('Project loaded from storage');
-            // パレットを復元
-            if (this.projectData.palette) {
-                this.nesPalette = this.projectData.palette;
-            }
-        } else {
-            this.projectData = this.createDefaultProject();
-            console.log('New project created');
-        }
-    },
-
-    async checkUrlData() {
-        // ?g=xxx パラメータをチェック（Firebase短縮URL）
-        const urlParams = new URLSearchParams(window.location.search);
-        const gameId = urlParams.get('g');
-
-        if (gameId) {
-            console.log('Loading game from Firebase:', gameId);
-            const data = await Share.loadGame(gameId);
-            if (data) {
-                this.projectData = data;
-                this.migrateProjectData();
-                this.isPlayOnlyMode = true;
-                this._sharedGameId = gameId;
-                this._hasLikedThisSession = false;
-                console.log('Project loaded from Firebase (play-only mode)');
-                if (this.projectData.palette) {
-                    this.nesPalette = this.projectData.palette;
-                }
-                // history.replaceState(null, '', window.location.pathname);
-                this.applyPlayOnlyMode();
-                this.refreshCurrentScreen();
-                this.fetchAndShowLikes(gameId);
-            } else {
-                console.warn('Failed to load game:', gameId);
-            }
-            return;
-        }
-
-        // 従来のハッシュ形式もサポート（後方互換）
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-            try {
-                const data = Share.decode(hash);
-                if (data) {
-                    this.projectData = data;
-                    this.isPlayOnlyMode = true;
-                    this._hasLikedThisSession = false;
-                    console.log('Project loaded from URL hash (play-only mode)');
-                    if (this.projectData.palette) {
-                        this.nesPalette = this.projectData.palette;
-                    }
-                    // history.replaceState(null, '', window.location.pathname);
-                    this.applyPlayOnlyMode();
-                }
-            } catch (e) {
-                console.warn('Failed to load from URL hash:', e);
-            }
-        }
-    },
-
-    // データ構造のマイグレーション（エンティティ分離）
-    migrateProjectData() {
-        // editKey がなければ自動生成（v2.8.8以前のデータ対応）
-        if (this.projectData.meta && !this.projectData.meta.editKey) {
-            this.projectData.meta.editKey = this.generateEditKey();
-        }
-
-        const stage = this.projectData.stage;
-        if (!stage) return;
-
-        // entities配列がなければ作成
-        if (!stage.entities) {
-            stage.entities = [];
-        }
-
-        const map = stage.map;
-        const width = stage.width;
-        const height = stage.height;
-
-        // map配列が存在しない場合はスキップ
-        if (!map || !Array.isArray(map)) return;
-
-        // map配列からエンティティを探して移動
-        for (let y = 0; y < height; y++) {
-            if (!map[y]) continue; // 行が存在しない場合スキップ
-            for (let x = 0; x < width; x++) {
-                const tileId = map[y][x];
-                // テンプレートID (100+)
-                if (tileId >= 100) {
-                    const tmplIdx = tileId - 100;
-                    const tmpl = this.projectData.templates[tmplIdx];
-                    if (tmpl && (tmpl.type === 'player' || tmpl.type === 'enemy' || tmpl.type === 'item')) {
-                        // entitiesに追加
-                        // 重複チェック（念のため）
-                        const exists = stage.entities.some(e => e.x === x && e.y === y);
-                        if (!exists) {
-                            stage.entities.push({
-                                x: x,
-                                y: y,
-                                templateId: tmplIdx
-                            });
-                        }
-                        // mapからは消去（空気=0）
-                        map[y][x] = 0;
-                    }
-                }
-            }
-        }
-
-        // SEリストの拡張とマイグレーション
-        if (this.projectData.sounds && this.projectData.sounds.length <= 5) {
-            this.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
-
-            // 2. テンプレート設定のマイグレーション（IDの振り直し）
-            if (this.projectData.templates) {
-                const seMap = { 0: 0, 1: 5, 2: 10, 3: 15 };
-                this.projectData.templates.forEach(tmpl => {
-                    if (tmpl.type === 'player' && tmpl.config) {
-                        ['seJump', 'seAttack', 'seDamage', 'seItemGet'].forEach(key => {
-                            const oldVal = tmpl.config[key];
-                            if (oldVal !== undefined && seMap[oldVal] !== undefined) {
-                                tmpl.config[key] = seMap[oldVal];
-                            }
-                        });
-                    }
-                });
-            }
-        }
-    },
-
     // プレイ専用モードのUI適用（ヘッダーはクリエイターと同じ配置、許可外はグレーアウト）
     applyPlayOnlyMode() {
         // ファイルツールバー: NEW のみ有効、OPEN / SAVE / SHARE はグレーアウト
@@ -625,12 +385,12 @@ const App = {
 
         // 新規プロジェクト（NEW）
         document.getElementById('new-icon-btn')?.addEventListener('click', () => {
-            this.showNewGameModal();
+            AppProject.showNewGameModal();
         });
 
         // 開く（OPEN） -> プロジェクトリスト
         document.getElementById('load-icon-btn')?.addEventListener('click', () => {
-            this.showSimpleProjectList();
+            AppProject.showSimpleProjectList();
         });
 
         // 保存（SAVE） - 長押し対応（プレイヤーモードではエディットキー入力モーダルを表示）
@@ -646,7 +406,7 @@ const App = {
                 pressTimer = setTimeout(() => {
                     pressTimer = null;
                     // 長押しイベント発生
-                    this.showSaveAsModal();
+                    AppProject.showSaveAsModal();
                 }, 800); // 800ms長押し
             };
 
@@ -671,7 +431,7 @@ const App = {
                     // タイマーが残っている＝短押し
                     clearTimeout(pressTimer);
                     pressTimer = null;
-                    this.saveProject(); // 通常保存
+                    AppProject.saveProject(); // 通常保存
                 }
             };
 
@@ -693,7 +453,7 @@ const App = {
         }
 
         // 名前をつけて保存モーダル初期化
-        this.initSaveAsModal();
+        AppProject.initSaveAsModal();
 
         // 共有ボタン
         const shareBtn = document.getElementById('share-icon-btn');
@@ -949,32 +709,6 @@ const App = {
         }
     },
 
-    hasUnsavedChanges() {
-        const savedData = Storage.load('currentProject');
-        if (!savedData) return true;
-        return JSON.stringify(savedData) !== JSON.stringify(this.projectData);
-    },
-
-    saveProject() {
-        // パレット同期
-        this.projectData.palette = this.nesPalette.slice();
-
-        if (!this.currentProjectName) {
-            this.currentProjectName = this.projectData.meta.name || 'MyGame';
-        }
-
-        // メタデータ更新
-        this.projectData.meta.name = this.currentProjectName;
-        this.projectData.meta.updatedAt = Date.now();
-
-        // 内部ストレージへ保存
-        Storage.saveProject(this.currentProjectName, this.projectData);
-        Storage.save('currentProject', this.projectData);
-
-        // 静かに通知
-        this.showToast('セーブしました');
-    },
-
     showToast(message) {
         // 特別なセーブトースト
         if (message === 'セーブしました') {
@@ -1000,333 +734,6 @@ const App = {
         setTimeout(() => {
             toast.style.opacity = '0';
         }, 2000);
-    },
-
-    // プロジェクトをロードして反映
-    loadProject(name) {
-        const data = Storage.loadProject(name);
-        if (data) {
-            this.projectData = data;
-            this.currentProjectName = name;
-
-            // ローカルプロジェクトを開いたときも共有状態をリセット
-            this._sharedGameId = null;
-            this._likesCount = 0;
-            this._hasLikedThisSession = false;
-            this.isPlayOnlyMode = false;
-            
-            // パレット復元
-            if (this.projectData.palette) {
-                this.nesPalette = this.projectData.palette;
-            } else {
-                this.nesPalette = ['#000000'];
-            }
-
-            this.updateGameInfo();
-            this.refreshCurrentScreen();
-            Storage.save('currentProject', this.projectData);
-            const msg = (AppI18N.I18N['U363']?.[AppI18N.currentLang] || '「${name}」を開きました').replace('${name}', name);
-            AppDialogs.showAlert(msg);
-        } else {
-            const failMsg = AppI18N.I18N['U364']?.[AppI18N.currentLang] || 'プロジェクトの読み込みに失敗しました';
-            AppDialogs.showAlert(failMsg);
-        }
-    },
-
-    // プロジェクト書き出し（旧ダウンロード）
-    exportProject(filename) {
-        // パレット同期
-        this.projectData.palette = this.nesPalette.slice();
-
-        const data = JSON.stringify(this.projectData, null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        // yyyy-mm-dd形式の日付を取得
-        const date = new Date();
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDate()).padStart(2, '0');
-        const dateStr = `${yyyy}-${mm}-${dd}`;
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Famitory_${filename}_${dateStr}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    },
-
-    // プロジェクト読み込み（インポート）
-    importProject(file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const data = JSON.parse(event.target.result);
-                // 名前決定
-                let baseName = file.name.replace(/\.(json|pgk)$/i, '');
-                let importName = baseName;
-                let counter = 1;
-
-                // 重複回避
-                while (Storage.projectExists(importName)) {
-                    importName = `${baseName} (${counter})`;
-                    counter++;
-                }
-
-                // 保存（既存のメタデータ名があればそれを優先し、なければファイル名を使用）
-                if (!data.meta.name) {
-                    data.meta.name = importName;
-                }
-                data.meta.createdAt = Date.now();
-                Storage.saveProject(importName, data);
-
-                const msg = (AppI18N.I18N['U365']?.[AppI18N.currentLang] || '「${importName}」としてインポートしました。\n今すぐ開きますか？').replace('${importName}', importName);
-                AppDialogs.showConfirm(msg, '', () => {
-                    this.loadProject(importName);
-                    // モーダル閉じる
-                    document.getElementById('share-dialog').classList.add('hidden');
-                }, () => {
-                    alert(AppI18N.I18N['U366']?.[AppI18N.currentLang] || 'インポートしました。「開く」メニューから選択できます。');
-                });
-
-            } catch (err) {
-                console.error(err);
-                alert('ファイルの読み込みに失敗しました');
-            }
-        };
-        reader.readAsText(file);
-    },
-
-    // 新規作成モーダルを表示
-    showNewGameModal() {
-        const modal = document.getElementById('new-game-modal');
-        const input = document.getElementById('new-game-name');
-        const createBtn = document.getElementById('new-game-create-btn');
-        const cancelBtn = document.getElementById('new-game-cancel-btn');
-
-        if (!modal) return;
-
-        // 初期化
-        input.value = "NEW GAME";
-
-        modal.classList.remove('hidden');
-        input.focus();
-        input.select();
-
-        const close = () => {
-            modal.classList.add('hidden');
-            input.onkeydown = null;
-            createBtn.onclick = null;
-            cancelBtn.onclick = null;
-        };
-
-        const create = () => {
-            const name = input.value.trim();
-            if (!name) return;
-
-            if (Storage.projectExists(name)) {
-                alert('そのなまえは すでに つかわれています');
-                return;
-            }
-
-            // デフォルトパレット（ファミトリー）で作成
-            this.nesPalette = this.PALETTE_PRESETS.famitory.colors.slice();
-            this.projectData = this.createDefaultProject();
-            this.projectData.meta.name = name;
-            this.projectData.stage.name = name;
-            this.currentProjectName = name;
-
-            // リミックス元はクリア（NEWから新規作成した場合は独立した作品として扱う）
-            delete this.projectData.meta.originalAuthor;
-            delete this.projectData.meta.originalTitle;
-            delete this.projectData.meta.originalShareId;
-
-            // 発行済みデータを開いた状態からNEWした場合のリセット処理
-            this._sharedGameId = null;
-            this._likesCount = 0;
-            this._hasLikedThisSession = false;
-            this.isPlayOnlyMode = false;
-            this.updateLikesDisplay(0);
-            
-            // クリエイターモードUIへの復帰
-            document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
-                btn.classList.remove('locked');
-            });
-
-            Storage.saveProject(name, this.projectData);
-            Storage.save('currentProject', this.projectData);
-
-            this.updateGameInfo();
-            this.refreshCurrentScreen();
-
-            this.showToast(AppI18N.I18N['U369']?.[AppI18N.currentLang] || 'あたらしいゲームを つくりました');
-            close();
-        };
-
-        createBtn.onclick = create;
-        cancelBtn.onclick = close;
-
-        input.onkeydown = (e) => {
-            if (e.key === 'Enter') create();
-            if (e.key === 'Escape') close();
-        };
-    },
-
-    // プロジェクトリストを表示（選択式）
-    showSimpleProjectList() {
-        const modal = document.getElementById('project-list-modal');
-        const listContainer = document.getElementById('project-list');
-        const scrollContainer = document.getElementById('project-list-scroll');
-        const closeBtn = document.getElementById('project-list-close');
-
-        // iOSスクロール対策
-        if (scrollContainer) {
-            scrollContainer.addEventListener('touchmove', (e) => {
-                e.stopPropagation();
-            }, { passive: true });
-        }
-
-        // アクションボタン
-        const openBtn = document.getElementById('project-open-btn');
-        const copyBtn = document.getElementById('project-copy-btn');
-        const deleteBtn = document.getElementById('project-delete-btn');
-
-        if (!modal || !listContainer) return;
-
-        let selectedName = null;
-
-        // ボタン状態更新
-        const updateButtons = () => {
-            const disabled = !selectedName;
-            openBtn.disabled = disabled;
-            copyBtn.disabled = disabled;
-            deleteBtn.disabled = disabled;
-        };
-
-        // リスト描画
-        const renderList = () => {
-            listContainer.innerHTML = '';
-            const list = Storage.getProjectList();
-
-            // 更新日時順
-            list.sort((a, b) => b.updatedAt - a.updatedAt);
-
-            if (list.length === 0) {
-                const msg = AppI18N.I18N['U370'][AppI18N.currentLang];
-                listContainer.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">${msg}</div>`;
-                updateButtons();
-                return;
-            }
-
-            list.forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                if (p.name === selectedName) {
-                    item.classList.add('selected');
-                }
-
-                // 日付フォーマット (例: 2/2 21:00)
-                const d = new Date(p.updatedAt);
-                const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
-
-                item.innerHTML = `
-                    <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
-                    <div class="list-item-content">
-                        <div class="list-item-name-wrapper">
-                            <span class="list-item-name">${p.name.replace(/\u200B/g, '')}</span>
-                        </div>
-                        <div class="list-item-date">${dateStr}</div>
-                    </div>
-                `;
-
-                item.onclick = () => {
-                    if (selectedName !== p.name) {
-                        selectedName = p.name;
-                        renderList();
-                        updateButtons();
-                    }
-                };
-
-                item.ondblclick = () => {
-                    selectedName = p.name;
-                    openBtn.click();
-                };
-
-                listContainer.appendChild(item);
-            });
-            updateButtons();
-
-            // 描画後にスクロール判定を行う
-            setTimeout(() => {
-                const items = listContainer.querySelectorAll('.list-item');
-                items.forEach(item => {
-                    const nameEl = item.querySelector('.list-item-name');
-                    const wrapper = item.querySelector('.list-item-name-wrapper');
-
-                    if (nameEl && wrapper) {
-                        if (nameEl.scrollWidth > wrapper.clientWidth) {
-                            nameEl.classList.add('long-text');
-                        } else {
-                            nameEl.classList.remove('long-text');
-                        }
-
-                        if (item.classList.contains('selected') && nameEl.classList.contains('long-text')) {
-                            nameEl.classList.add('scrolling');
-                        } else {
-                            nameEl.classList.remove('scrolling');
-                        }
-                    }
-                });
-            }, 50);
-        };
-
-        selectedName = null;
-        modal.classList.remove('hidden');
-
-        // モーダルが表示されてから描画しないと幅が取れないため、微小遅延させるか直後に呼ぶ
-        // ここでは直後に呼びつつ、内部でレイアウト判定を遅延させる
-        renderList();
-
-        const close = () => {
-            modal.classList.add('hidden');
-        };
-        closeBtn.onclick = close;
-
-        openBtn.onclick = () => {
-            if (!selectedName) return;
-            if (this.currentProjectName && this.currentProjectName !== selectedName) {
-                // 保存確認なし（シンプル）
-            }
-            this.loadProject(selectedName);
-            close();
-        };
-
-        copyBtn.onclick = () => {
-            if (!selectedName) return;
-            let baseName = selectedName;
-            let newName = baseName + '\u200B';
-            while (Storage.projectExists(newName)) {
-                newName += '\u200B';
-            }
-
-            if (Storage.duplicateProject(selectedName, newName)) {
-                renderList();
-            }
-        };
-
-        deleteBtn.onclick = () => {
-            if (!selectedName) return;
-            Storage.deleteProject(selectedName);
-            if (this.currentProjectName === selectedName) {
-                this.currentProjectName = null;
-            }
-            selectedName = null;
-            renderList();
-        };
-
-        modal.onclick = (e) => {
-            if (e.target === modal) close();
-        };
     },
 
     // 共有ダイアログの公開ステータスバッジを更新
@@ -1563,7 +970,7 @@ const App = {
         // 書き出し
         exportBtn.onclick = () => {
             const name = this.currentProjectName || this.projectData.meta.name || 'MyGame';
-            this.exportProject(name);
+            AppProject.exportProject(name);
         };
 
         // スコア共有用: Xに投稿
@@ -1632,7 +1039,7 @@ const App = {
         fileInput.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                this.importProject(file);
+                AppProject.importProject(file);
             }
             e.target.value = '';
         };
@@ -1647,76 +1054,6 @@ const App = {
         };
     },
 
-    // 名前をつけて保存モーダル初期化
-    initSaveAsModal() {
-        const modal = document.getElementById('save-as-modal');
-        const okBtn = document.getElementById('save-as-ok-btn');
-        const cancelBtn = document.getElementById('save-as-cancel-btn');
-        const input = document.getElementById('save-as-name-input');
-
-        if (!modal) return;
-
-        const close = () => modal.classList.add('hidden');
-
-        okBtn.addEventListener('click', () => {
-            const newName = input.value.trim();
-            if (newName) {
-                this.saveProjectAs(newName);
-                close();
-            } else {
-                alert('プロジェクト名を入力してください');
-            }
-        });
-
-        cancelBtn.addEventListener('click', close);
-
-        // 背景クリックで閉じる
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) close();
-        });
-    },
-
-    showSaveAsModal() {
-        const modal = document.getElementById('save-as-modal');
-        const input = document.getElementById('save-as-name-input');
-        if (modal && input) {
-            // 現在のプロジェクト名を初期値に
-            let initialName = this.currentProjectName || 'MyGame';
-            input.value = initialName.replace(/\u200B/g, '');
-            modal.classList.remove('hidden');
-            input.focus();
-        }
-    },
-
-    // 名前をつけて保存（複製保存して切り替え）
-    saveProjectAs(newName) {
-        // 現在のデータをコピー
-        const newData = JSON.parse(JSON.stringify(this.projectData));
-
-        // メタデータ更新（ステージタイトルとプレイ画面タイトルも連動して変更）
-        newData.meta.updatedAt = Date.now();
-        newData.meta.name = newName;
-        if (newData.stage) {
-            newData.stage.name = newName;
-        }
-        // 内部変数更新
-        this.projectData = newData;
-        this.currentProjectName = newName;
-
-        // UI反映
-        this.updateGameInfo();
-        if (typeof StageEditor !== 'undefined' && StageEditor.updateStageSettingsUI) {
-            StageEditor.updateStageSettingsUI();
-        }
-
-        // 保存実行
-        Storage.saveProject(newName, newData);
-        Storage.save('currentProject', newData);
-
-        this.showToast(`「${newName}」として保存しました`);
-        console.log(`Project saved as: ${newName}`);
-    },
-
 };
 
 // AppI18N / AppDialogs への後方互換プロキシ
@@ -1729,6 +1066,15 @@ App.applyLang       = ()                   => AppI18N.applyLang();
 App.showAlert       = (msg, sub, ok)       => AppDialogs.showAlert(msg, sub, ok);
 App.showConfirm     = (msg, sub, ok, ng)   => AppDialogs.showConfirm(msg, sub, ok, ng);
 App.showActionMenu  = (title, actions)     => AppDialogs.showActionMenu(title, actions);
+
+// AppProject への後方互換プロキシ
+App.generateEditKey   = ()         => AppProject.generateEditKey();
+App.create2DArray     = (w, h, v)  => AppProject.create2DArray(w, h, v);
+App.hasUnsavedChanges = ()         => AppProject.hasUnsavedChanges();
+App.saveProject       = ()         => AppProject.saveProject();
+App.loadProject       = (name)     => AppProject.loadProject(name);
+App.exportProject     = (f)        => AppProject.exportProject(f);
+App.importProject     = (file)     => AppProject.importProject(file);
 
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {

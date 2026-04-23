@@ -35,10 +35,16 @@
 >   - currentLang/I18N/applyLang/initLangBtn を AppI18N に抽出（278行削減）、app-i18n.js: 283行
 >   - showActionMenu/showAlert/showConfirm を AppDialogs に抽出（157行削減）、app-dialogs.js: 147行
 >   - app.js: 2,294行 → 1,859行（435行削減）
+> - **app.js プロジェクト管理の分割（フェーズ10）** ✅
+>   - DEFAULT_SOUNDS/generateEditKey/create2DArray 等17メソッドを AppProject に抽出
+>   - app.js: 1,859行 → 1,082行（777行削減）、app-project.js: 596行
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
-| 全体管理 / アプリ基盤 | `js/app.js` | 初期化、共通UI（ダイアログ、I18N）、プロジェクト管理 |
+| 全体管理 / アプリ基盤 | `js/app.js` | 初期化、共通UI、画面切り替え、シェア管理 |
+| └─ I18N (New) | `js/app-i18n.js` | 多言語対応・ローカライズテキスト管理 |
+| └─ ダイアログ (New) | `js/app-dialogs.js` | アクションメニュー・アラート・確認ダイアログ |
+| └─ プロジェクト管理 (New) | `js/app-project.js` | プロジェクトCRUD・保存・読み込み・エクスポート |
 | ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | ゲームループ統括・状態管理・オーディオ・スコア |
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
 | └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
