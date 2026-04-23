@@ -12,12 +12,19 @@
 > - **ピクセル描画コアの共通化（フェーズ4後半）** ✅
 >   - SpriteUtils.drawPixels を新設し、StageRenderer / GameRenderer の重複ピクセルループを統合
 >   - GameRenderer.renderSprite に flipX・2xスプライト対応を追加
+> - **UI/エフェクト描画の分離（フェーズ5a）** ✅
+>   - renderTitleScreen/renderWipe/renderClearEffect 等15メソッドを GameRenderer に移動
+>   - game-engine.js: ~2660行 → 1518行
+> - **物理演算・衝突判定の分離（フェーズ5b）** ✅
+>   - getCollision/checkCollisions/damageTile 等13メソッドを GamePhysics に移動
+>   - game-engine.js: 1518行（304行削減）、game-physics.js: 384行
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
 | 全体管理 / アプリ基盤 | `js/app.js` | 初期化、共通UI（ダイアログ、I18N）、プロジェクト管理 |
-| ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | 物理演算、描画ループ統括、衝突判定、オーディオ実行 |
-| └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力 |
+| ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | ゲームループ統括・状態管理・オーディオ・スコア |
+| └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
+| └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
 | スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | ドット絵作成、パレット管理、アニメーション編集 |
 | ステージエディタ (Stage Editor) | `js/editor/stage-editor.js` | 中核・初期化・Undo/Redo・委譲管理 |

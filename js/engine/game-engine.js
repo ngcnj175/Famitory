@@ -60,6 +60,9 @@ const GameEngine = {
         // 描画エンジン初期化
         this.renderer = new GameRenderer(this);
 
+        // 物理演算エンジン初期化
+        this.physics = new GamePhysics(this);
+
         // イースターエッグウィンドウ用クリックハンドラ
         this.canvas.addEventListener('click', (e) => {
             if (this.easterMessageActive && this.easterCloseButton) {
@@ -940,7 +943,7 @@ const GameEngine = {
         // ギミックブロック更新
         this.updateGimmickBlocks();
 
-        this.checkCollisions();
+        this.physics.checkCollisions();
         this.checkClearCondition();
     },
 
@@ -958,7 +961,7 @@ const GameEngine = {
                 // 着地判定
                 const footY = Math.floor(item.y + item.height);
                 const tileX = Math.floor(item.x + item.width / 2);
-                if (this.getCollision(tileX, footY) === 1) {
+                if (this.physics.getCollision(tileX, footY) === 1) {
                     item.y = footY - item.height;
                     item.vy = 0;
                 }
@@ -969,7 +972,7 @@ const GameEngine = {
                 // イースターエッグウィンドウが表示中は収集しない
                 if (this.easterMessageActive) return;
 
-                if (this.projectileHits(item, this.player)) {
+                if (this.physics.projectileHits(item, this.player)) {
                     console.log(`>>> Collecting item: type=${item.itemType}, easterMessage=${item.template?.config?.easterMessage}`);
                     item.collected = true;
 
@@ -986,7 +989,7 @@ const GameEngine = {
 
                     // ボム: 画面上の全敵に1ダメージ＋爆発音
                     if (item.itemType === 'bomb') {
-                        this.damageAllEnemiesOnScreen(1);
+                        this.physics.damageAllEnemiesOnScreen(1);
                         if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
                     }
                     // 変身: プレイヤー設定を切り替え
@@ -1015,7 +1018,7 @@ const GameEngine = {
         });
 
         // とびらチェック（カギ所持時）
-        this.checkDoorInteraction();
+        this.physics.checkDoorInteraction();
     },
 
     updateProjectiles() {
@@ -1115,7 +1118,7 @@ const GameEngine = {
             const cy = 0.5;
 
             // 壁との衝突（近接・回転はブロックを貫通）
-            if (shotType !== 'melee' && shotType !== 'orbit' && this.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
+            if (shotType !== 'melee' && shotType !== 'orbit' && this.physics.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
                 if (shotType === 'pinball' && proj.bounceCount < 4) {
                     // ピンポン: 反射
                     const tileX = Math.floor(proj.x + cx);
@@ -1123,10 +1126,10 @@ const GameEngine = {
                     const prevX = proj.x - proj.vx;
                     const prevY = proj.y - proj.vy;
 
-                    if (this.getCollision(tileX, Math.floor(prevY + cy)) === 1) {
+                    if (this.physics.getCollision(tileX, Math.floor(prevY + cy)) === 1) {
                         proj.vx = -proj.vx;
                     }
-                    if (this.getCollision(Math.floor(prevX + cx), tileY) === 1) {
+                    if (this.physics.getCollision(Math.floor(prevX + cx), tileY) === 1) {
                         proj.vy = -proj.vy;
                     }
                     proj.bounceCount++;
@@ -1153,7 +1156,7 @@ const GameEngine = {
                 } else {
                     for (const enemy of this.enemies) {
                         if (enemy.frozen) continue; // フリーズ中（ボス出現等）は無敵
-                        if (!enemy.isDying && this.projectileHits(proj, enemy)) {
+                        if (!enemy.isDying && this.physics.projectileHits(proj, enemy)) {
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
                             if (enemy.lives <= 0) {
@@ -1170,7 +1173,7 @@ const GameEngine = {
 
             // 敵のSHOT → プレイヤーとの衝突
             if (proj.owner === 'enemy' && this.player && !this.player.isDead) {
-                if (this.projectileHits(proj, this.player)) {
+                if (this.physics.projectileHits(proj, this.player)) {
                     const fromRight = proj.vx > 0;
                     this.player.takeDamage(fromRight);
                     if (shotType !== 'melee') {
@@ -1210,7 +1213,7 @@ const GameEngine = {
                 block.x += block.vx;
                 // 障害物チェック
                 const nextTileX = block.vx > 0 ? Math.floor(block.x + 1) : Math.floor(block.x);
-                if (nextTileX < 0 || nextTileX >= stage.width || this.getCollision(nextTileX, Math.floor(block.y)) === 1) {
+                if (nextTileX < 0 || nextTileX >= stage.width || this.physics.getCollision(nextTileX, Math.floor(block.y)) === 1) {
                     block.vx = -block.vx;
                     block.x += block.vx * 2;
                 }
@@ -1221,7 +1224,7 @@ const GameEngine = {
                 block.y += block.vy;
                 // 障害物チェック
                 const nextTileY = block.vy > 0 ? Math.floor(block.y + 1) : Math.floor(block.y);
-                if (nextTileY < 0 || nextTileY >= stage.height || this.getCollision(Math.floor(block.x), nextTileY) === 1) {
+                if (nextTileY < 0 || nextTileY >= stage.height || this.physics.getCollision(Math.floor(block.x), nextTileY) === 1) {
                     block.vy = -block.vy;
                     block.y += block.vy * 2;
                 }
@@ -1272,279 +1275,13 @@ const GameEngine = {
         });
     },
 
-    checkItemCollisions() {
-        if (!this.player || this.player.isDead) return;
-        // イースターエッグウィンドウが表示中は収集しない
-        if (this.easterMessageActive) return;
+    // ========== GamePhysics への外部呼び出しラッパー ==========
+    // player.js / enemy.js から engine.xxx() として呼ばれるため薄いラッパーを残す
 
-        this.items.forEach((item, idx) => {
-            if (item.collected) return;
-
-            // 毎フレームログは多すぎるので、近くにいる時だけ
-            const dx = Math.abs(this.player.x - item.x);
-            const dy = Math.abs(this.player.y - item.y);
-            if (dx < 3 && dy < 3) {
-                console.log(`Player near item[${idx}]: player(${this.player.x.toFixed(2)}, ${this.player.y.toFixed(2)}) item(${item.x}, ${item.y}) dx=${dx.toFixed(2)} dy=${dy.toFixed(2)}`);
-            }
-
-            if (this.player.collidesWith(item)) {
-                console.log(`>>> Collecting item[${idx}] at (${item.x}, ${item.y}), type=${item.itemType}, template=${item.template?.name}, easterMessage=${item.template?.config?.easterMessage}`);
-                item.collected = true;
-
-                // イースターエッグの場合はメッセージウィンドウを表示
-                if (item.itemType === 'easter') {
-                    console.log('>>> Easter egg detected! Showing message window');
-                    const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
-                    console.log('>>> Easter message:', message);
-                    this.showEasterMessage(message);
-                    // イースターエッグもアイテムゲット音を鳴らす
-                    this.player.playSE('itemGet');
-                    // イースターエッグはスコア加算なし
-                    return;
-                }
-
-                // ボム: 画面上の全敵に1ダメージ＋爆発音
-                if (item.itemType === 'bomb') {
-                    this.damageAllEnemiesOnScreen(1);
-                    if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
-                }
-                // 変身: プレイヤー設定を切り替え
-                if (item.itemType === 'transform') {
-                    this.player.transform(item.transformTarget);
-                } else {
-                    this.player.collectItem(item.itemType);
-                }
-
-                // CLEARアイテムの場合、取得数をカウント
-                if (item.itemType === 'clear') {
-                    this.collectedClearItems++;
-                    console.log(`Clear Item Collected: ${this.collectedClearItems} / ${this.totalClearItems}`);
-                    // アイテムクリア条件チェック
-                    if (App.projectData.stage.clearCondition === 'item' || App.projectData.stage.clearCondition === 'none') {
-                        this.checkClearCondition();
-                    }
-                }
-
-                // スコア加算（アイテムタイプに応じて変える）
-                let pts = 100;
-                if (item.itemType === 'coin') pts = 50;  // コイン
-                if (item.itemType === 'star' || item.itemType === 'muteki') pts = 500;
-                if (item.itemType === 'weapon') pts = 200;
-                if (item.itemType === 'bomb') pts = 100;
-                if (item.itemType === 'transform') pts = 200;
-                if (item.itemType === 'key') pts = 50;
-                if (item.itemType === 'clear') pts = 1000;
-                this.addScore(pts);
-            }
-        });
-    },
-
-    // 画面上の全敵にダメージ（ボム用）
-    damageAllEnemiesOnScreen(damage) {
-        const viewWidth = this.canvas.width / this.TILE_SIZE;
-        const viewHeight = this.canvas.height / this.TILE_SIZE;
-        const left = this.camera.x;
-        const right = this.camera.x + viewWidth;
-        const top = this.camera.y;
-        const bottom = this.camera.y + viewHeight;
-        this.enemies.forEach(enemy => {
-            if (enemy.isDying || enemy.frozen) return; // フリーズ中（ボス出現等）は無敵
-            const inView = enemy.x >= left && enemy.x < right && enemy.y >= top && enemy.y < bottom;
-            if (inView) {
-                for (let i = 0; i < damage; i++) {
-                    const fromRight = this.player && this.player.x > enemy.x;
-                    enemy.takeDamage(fromRight);
-                }
-            }
-        });
-    },
-
-    checkCollisions() {
-        if (!this.player || this.player.isDead) return;
-
-        this.enemies.forEach((enemy, index) => {
-            if (enemy.isDying || enemy.frozen) return; // フリーズ中（ボス出現等）は無敵とし接触処理をスキップ
-
-            if (this.player.collidesWith(enemy)) {
-                // スターパワー中は敵即死
-                if (this.player.starPower) {
-                    const fromRight = this.player.x > enemy.x;
-                    enemy.takeDamage(fromRight);
-                    enemy.lives = 0;
-                    enemy.die(fromRight);
-                    enemy.die(fromRight);
-                    // SE再生
-                    this.player.playSE('enemyDefeat');
-                    // スコア加算
-                    this.addScore(100);
-                    return;
-                }
-
-                // ダメージ無敵中（starPowerでない）は踏み攻撃も無効
-                if (this.player.invincible && !this.player.starPower) {
-                    return;
-                }
-
-                // 上から踏みつけ判定
-                if (this.player.vy > 0 && this.player.y + this.player.height < enemy.y + enemy.height * 0.5) {
-                    const fromRight = this.player.x > enemy.x;
-                    enemy.takeDamage(fromRight);
-                    this.player.vy = -0.25;
-                    // SE再生（敵がダメージを受けた時）
-                    this.player.playSE('enemyDefeat');
-                    // スコア加算（倒した時のみにすべきか？とりあえず踏み成功で加算、倒したらさらに加算も検討だが、ここでは倒した判定はenemy側で管理）
-                    // 敵のHPが0になったら加算すべき。enemy.livesを確認
-                    if (enemy.lives <= 0) {
-                        this.addScore(100);
-                    }
-                } else if (!this.player.invincible) {
-                    const fromRight = enemy.x > this.player.x;
-                    this.player.takeDamage(fromRight);
-                }
-            }
-        });
-
-        // 消滅した敵を削除（画面外に落下した敵）
-        this.enemies = this.enemies.filter(e => {
-            // ボスが落下で消える場合の特別処理
-            if (e.template?.config?.isBoss && e.y > App.projectData.stage.height + 5) {
-                // 落下による死亡もボス撃破として扱う
-                if (this.bossEnemy === e) {
-                    // 他の生存ボスがいるか確認
-                    const remainingBosses = this.enemies.filter(other =>
-                        other !== e && other.template?.config?.isBoss && !other.isDying && other.y <= App.projectData.stage.height + 5
-                    );
-                    if (remainingBosses.length > 0) {
-                        // 中ボス撃破：BGMをステージ曲に戻す
-                        console.log('Intermediate boss fell off stage.');
-                        this.bossEnemy = null;
-                        this.bossSpawned = false;
-                        this.playBgm('stage');
-                    } else {
-                        // 最終ボス撃破
-                        const stage = App.projectData.stage;
-                        const clearCondition = stage.clearCondition || 'none';
-                        // クリア条件が'boss'の場合のみクリアシーケンス開始
-                        if (clearCondition === 'boss' && !this.bossDefeatPhase && !this.isCleared) {
-                            console.log('Final boss fell off stage. Triggering clear.');
-                            this.bossEnemy = null;
-                            this.triggerClear();
-                        } else {
-                            console.log('Final boss fell off stage. (clear condition not boss)');
-                            this.bossEnemy = null;
-                        }
-                    }
-                }
-                // ボスもドロップアイテムを出す
-                this.spawnDropItem(e);
-                return false; // このボスを配列から削除
-            }
-            if (e.isDying && e.deathTimer > 120) {
-                // 死亡演出完了時にドロップアイテムを出現
-                this.spawnDropItem(e);
-                return false;
-            }
-            // 画面外に落下した敵
-            if (e.y > App.projectData.stage.height + 5) {
-                // 死亡中の敵が落下した場合もドロップアイテムを出す
-                if (e.isDying) {
-                    this.spawnDropItem(e);
-                }
-                return false;
-            }
-            return true;
-        });
-
-        // 死亡判定はgameLoopで処理（ここでは何もしない）
-    },
-
-    // 敵がドロップするアイテムを出現させる
-    spawnDropItem(enemy) {
-        const dropItem = enemy.template?.config?.dropItem;
-        console.log('spawnDropItem called for enemy:', enemy.template?.name, 'dropItem:', dropItem);
-        if (!dropItem || dropItem === 'none') {
-            console.log('No drop item configured');
-            return;
-        }
-
-        // アイテムテンプレートを探す
-        const templates = App.projectData.templates || [];
-        console.log('Searching for item template with itemType:', dropItem);
-
-        // muteki/star の互換性対応
-        const searchTypes = [dropItem];
-        if (dropItem === 'muteki') searchTypes.push('star');
-        if (dropItem === 'star') searchTypes.push('muteki');
-
-        let itemTemplate = templates.find(t =>
-            t.type === 'item' && searchTypes.includes(t.config?.itemType)
-        );
-
-        // 見つからない場合、名前で検索
-        if (!itemTemplate) {
-            itemTemplate = templates.find(t =>
-                t.type === 'item' && t.name?.toLowerCase().includes(dropItem.toLowerCase())
-            );
-        }
-
-        // 見つからない場合、任意のitemタイプテンプレートを使う
-        if (!itemTemplate) {
-            itemTemplate = templates.find(t => t.type === 'item');
-        }
-
-        let templateIdx = -1;
-        let spriteIdx = 0; // デフォルトスプライト
-
-        if (itemTemplate) {
-            templateIdx = templates.indexOf(itemTemplate);
-            spriteIdx = itemTemplate.sprites?.idle?.frames?.[0] ?? itemTemplate.sprites?.main?.frames?.[0] ?? 0;
-        } else {
-            // アイテムテンプレートがない場合、最初のスプライトを使用（フォールバック）
-            console.log('No item template found, using fallback sprite for:', dropItem);
-            // スプライト0番を使用（通常は何かが存在する）
-            spriteIdx = 0;
-        }
-
-        // 死亡時の位置を使用（記録されていなければ現在位置）
-        const spawnX = enemy.deathX !== undefined ? enemy.deathX : enemy.x;
-        const spawnY = enemy.deathY !== undefined ? enemy.deathY : enemy.y;
-
-        const item = {
-            x: spawnX,
-            y: spawnY,
-            width: 1,
-            height: 1,
-            template: itemTemplate,
-            templateIdx: templateIdx,
-            spriteIdx: spriteIdx,
-            itemType: dropItem,
-            collected: false,
-            isDropped: true, // ドロップアイテムフラグ（重力適用用）
-            vy: -0.15 // 少し跳ねる
-        };
-
-        this.items.push(item);
-        console.log('Spawned drop item:', dropItem, 'at', spawnX, spawnY, 'spriteIdx:', spriteIdx);
-
-        // クリアアイテムの場合はカウント
-        if (dropItem === 'clear') {
-            this.totalClearItems++;
-        }
-    },
-
-    // 指定位置の休眠敵を起こす（ブロック破壊時に呼ばれる）
-    wakeEnemiesAt(tileX, tileY) {
-        this.enemies.forEach(e => {
-            if (e.frozen) {
-                const ex = Math.floor(e.x);
-                const ey = Math.floor(e.y);
-                if (ex === tileX && ey === tileY) {
-                    e.frozen = false;
-                    console.log('Enemy woke up at', tileX, tileY);
-                }
-            }
-        });
-    },
+    getCollision(x, y)                        { return this.physics.getCollision(x, y); },
+    isOnLadder(x, y, width, height)           { return this.physics.isOnLadder(x, y, width, height); },
+    isAtLadderTop(x, y, width, height)        { return this.physics.isAtLadderTop(x, y, width, height); },
+    damageTile(tileX, tileY)                  { return this.physics.damageTile(tileX, tileY); },
 
     checkClearCondition() {
         if (this.isCleared) return;
@@ -1623,264 +1360,6 @@ const GameEngine = {
         }
     },
 
-    getCollision(x, y) {
-        // ステージデータ参照（ギミックブロック削除済みコピーを使用）
-        const stage = this.stageData || App.projectData.stage;
-        const templates = App.projectData.templates || [];
-        const tileX = Math.floor(x);
-        const tileY = Math.floor(y);
-
-        // 破壊されたタイルは衝突なし
-        if (this.destroyedTiles && this.destroyedTiles.has(`${tileX},${tileY}`)) {
-            return 0;
-        }
-
-        // 左右と上は壁として扱う、下は衝突なし（落下可能）
-        if (tileX < 0 || tileX >= stage.width) {
-            return 1; // 左右は壁
-        }
-        if (tileY < 0) {
-            return 1; // 上は壁
-        }
-        if (tileY >= stage.height) {
-            return 0; // 下は衝突なし（落下）
-        }
-
-        // fgレイヤーからtileIdを取得
-        const tileId = stage.layers.fg?.[tileY]?.[tileX];
-        if (tileId === undefined || tileId < 0) {
-            return 0; // 衝突なし（空タイル）
-        }
-
-        // テンプレートからタイルの種類と衝突設定を判定
-        let template;
-        if (tileId >= 100) {
-            // テンプレートIDベース（新形式）
-            template = templates[tileId - 100];
-        } else {
-            // スプライトIDベース（旧形式）- 互換性
-            template = templates.find(t => {
-                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
-                return idx === tileId;
-            });
-        }
-
-        if (!template) {
-            return 0; // テンプレートが見つからない
-        }
-
-        // はしごタイルは衝突なし（すり抜け可能）
-        if (template.type === 'material' && template.config?.gimmick === 'ladder') {
-            return 0;
-        }
-
-        // とびらタイルは破壊済みでなければ壁として扱う
-        if (template.type === 'material' && template.config?.gimmick === 'door') {
-            return 1; // 壁（カギで開くまでブロック）
-        }
-
-        // 素材タイルで衝突がオン = 壁
-        if (template.type === 'material' && template.config?.collision !== false) {
-            return 1;
-        }
-
-        return 0; // 衝突なし
-    },
-
-    // はしごタイル上にいるか判定
-    isOnLadder(x, y, width, height) {
-        if (!this.ladderTiles || this.ladderTiles.size === 0) return false;
-        // エンティティの中心X、上半分と下半分をチェック
-        const centerX = Math.floor(x + width / 2);
-        const topY = Math.floor(y);
-        const bottomY = Math.floor(y + height - 0.01);
-        return this.ladderTiles.has(`${centerX},${topY}`) ||
-            this.ladderTiles.has(`${centerX},${bottomY}`);
-    },
-
-    // はしごの最上部にいるか判定
-    isAtLadderTop(x, y, width, height) {
-        if (!this.ladderTiles || this.ladderTiles.size === 0) return false;
-        const centerX = Math.floor(x + width / 2);
-        const topY = Math.floor(y);
-        const bottomY = Math.floor(y + height - 0.01);
-
-        // 足元がはしごに乗っており、頭がはしごから出ている状態を「はしごの最上部」とする
-        return !this.ladderTiles.has(`${centerX},${topY}`) &&
-            this.ladderTiles.has(`${centerX},${bottomY}`);
-    },
-
-    // とびらインタラクションチェック
-    checkDoorInteraction() {
-        if (!this.player || this.player.isDead) return;
-        if (!this.player.hasKey) return;
-        if (!this.doorTiles || this.doorTiles.size === 0) return;
-        if (this.doorAnimating) return;
-
-        // プレイヤーの当たり判定をわずかに拡張して接触判定（壁なので重なれないため）
-        const margin = 0.15;
-        const px1 = Math.floor(this.player.x - margin);
-        const py1 = Math.floor(this.player.y - margin);
-        const px2 = Math.floor(this.player.x + this.player.width - 0.01 + margin);
-        const py2 = Math.floor(this.player.y + this.player.height - 0.01 + margin);
-
-        const checkTiles = new Set();
-        for (let ty = py1; ty <= py2; ty++) {
-            for (let tx = px1; tx <= px2; tx++) {
-                checkTiles.add(`${tx},${ty}`);
-            }
-        }
-
-        let doorOpened = false;
-        for (const key of checkTiles) {
-            if (this.doorTiles.has(key)) {
-                const [dx, dy] = key.split(',').map(Number);
-                const doorInfo = this.doorTiles.get(key);
-
-                // まだdestroyedTilesに追加しない（演出完了まで壁を維持）
-                this.doorTiles.delete(key);
-
-                // 待機→白点灯→消滅エフェクト追加
-                this.doorFlashTiles.push({
-                    x: dx,
-                    y: dy,
-                    tileKey: key, // 破壊用に保存
-                    phase: 'wait',
-                    waitTimer: 60,
-                    flashTimer: 20,
-                    spriteData: doorInfo.spriteData
-                });
-
-                doorOpened = true;
-            }
-        }
-
-        if (doorOpened) {
-            this.player.hasKey = false;
-            this.player.playSE('itemGet');
-            this.doorAnimating = true; // ゲーム一時停止
-        }
-    },
-
-    damageTile(tileX, tileY) {
-        const stage = App.projectData.stage;
-        const templates = App.projectData.templates || [];
-
-        // 範囲チェック
-        if (tileX < 0 || tileX >= stage.width || tileY < 0 || tileY >= stage.height) {
-            return;
-        }
-
-        const tileId = stage.layers.fg?.[tileY]?.[tileX];
-        if (tileId === undefined || tileId < 0) return;
-
-        // テンプレート取得（ヘルパーがあればそれを使うが、ここでも簡易実装）
-        let template;
-        if (tileId >= 100) {
-            template = templates[tileId - 100];
-        } else {
-            template = templates.find(t => {
-                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
-                return idx === tileId;
-            });
-        }
-
-        if (!template) return;
-
-        // LIFE設定確認
-        const maxLife = template.config?.life;
-        // lifeが未設定、または-1（無限）の場合は破壊不可
-        if (maxLife === undefined || maxLife === -1) return;
-
-        // 耐久度管理
-        const key = `${tileX},${tileY}`;
-        let currentLife = this.breakableTiles.get(key);
-
-        if (currentLife === undefined) {
-            currentLife = maxLife;
-        }
-
-        // ダメージ処理
-        currentLife--;
-        this.breakableTiles.set(key, currentLife);
-
-        if (currentLife <= 0) {
-            this.destroyTile(tileX, tileY, tileId);
-        }
-    },
-
-    destroyTile(tileX, tileY, tileId) {
-        const stage = App.projectData.stage;
-        const key = `${tileX},${tileY}`;
-
-        // 元データは変更せず、破壊済みリストに追加
-        this.destroyedTiles.add(key);
-
-        this.breakableTiles.delete(key);
-
-        // パーティクル生成
-        this.createTileParticles(tileX, tileY, tileId);
-
-        // 破壊音（EnemyDefeat音などで代用、あるいは専用音が必要なら追加）
-        // 破壊音（EnemyDefeat音などで代用、あるいは専用音が必要なら追加）
-        if (this.player) {
-            this.player.playSE('enemyDefeat');
-        }
-
-        // スコア加算
-        this.addScore(10);
-
-        // 重なっている敵がいれば起こす
-        this.wakeEnemiesAt(tileX, tileY);
-    },
-
-    createTileParticles(tileX, tileY, tileId) {
-        const templates = App.projectData.templates || [];
-        const sprites = App.projectData.sprites || [];
-
-        let spriteIdx;
-        if (tileId >= 100) {
-            const template = templates[tileId - 100];
-            spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-        } else {
-            spriteIdx = tileId;
-        }
-
-        const sprite = sprites[spriteIdx];
-        if (!sprite) return;
-
-        const palette = App.nesPalette;
-        const startX = tileX;
-        const startY = tileY;
-
-        // 4x4ピクセルごとにパーティクル化
-        for (let py = 0; py < 16; py += 4) {
-            for (let px = 0; px < 16; px += 4) {
-                let color = null;
-                // 4x4ブロック内の代表色を探す（あるいは平均色）
-                for (let dy = 0; dy < 4 && !color; dy++) {
-                    for (let dx = 0; dx < 4 && !color; dx++) {
-                        const ci = sprite.data[py + dy]?.[px + dx];
-                        if (ci !== undefined && ci >= 0) {
-                            color = palette[ci];
-                        }
-                    }
-                }
-
-                if (color) {
-                    this.particles.push({
-                        x: startX + px / 16 + 0.125, // 中心補正
-                        y: startY + py / 16 + 0.125,
-                        vx: (Math.random() - 0.5) * 0.15, // 飛び散り
-                        vy: -Math.random() * 0.2 - 0.1, // 上に跳ねる
-                        color: color,
-                        size: 4, // 4x4ピクセル
-                        life: 60 + Math.random() * 30
-                    });
-                }
-            }
-        }
-    },
 
     // ========== BGM再生（BgmPlayerに委譲） ==========
     playBgm(type, loop = true) {
