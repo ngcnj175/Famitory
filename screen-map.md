@@ -21,6 +21,9 @@
 > - **sprite-editor.js プレビュー機能分割（フェーズ6前半）** ✅
 >   - initPreview/renderPreview/previewPlay等12メソッドを SpriteEditorPreview に分割
 >   - sprite-editor.js: 2,909行 → 2,571行（338行削減）、sprite-editor-preview.js: 304行
+> - **sprite-editor.js カラーパレット分割（フェーズ6後半）** ✅
+>   - initColorPalette/editColor/deleteColor等11メソッドを SpriteEditorPalette に分割
+>   - sprite-editor.js: 2,571行 → 2,067行（504行削減）、sprite-editor-palette.js: 496行
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
@@ -29,7 +32,8 @@
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
 | └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
-| スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | ドット絵作成、パレット管理、アニメーション編集 (2,571行) |
+| スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | ドット絵作成・キャンバス操作・ツール管理 (2,067行) |
+| └─ カラーパレット (New) | `js/editor/sprite-editor-palette.js` | パレット表示・色編集・プリセット管理 (496行) |
 | └─ プレビュー機能 (New) | `js/editor/sprite-editor-preview.js` | アニメーションフレーム操作・再生・表示 (304行) |
 | ステージエディタ (Stage Editor) | `js/editor/stage-editor.js` | 中核・初期化・Undo/Redo・委譲管理 |
 | └─ テンプレート管理 | `js/editor/stage-template-manager.js` | タイル/エンティティテンプレートのCRUD |
