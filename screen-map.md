@@ -27,6 +27,9 @@
 > - **重複メソッドのマージ（フェーズ7）** ✅
 >   - cancelSelectionMode/floatSelection/commitFloatingData の重複実装を統合
 >   - sprite-editor.js: 2,067行 → 1,982行（85行削減）
+> - **sprite-editor.js キャンバス入力分割（フェーズ8）** ✅
+>   - initCanvasEvents/onPointerDown/processPixel/flipVertical/floatSelection等24メソッドを SpriteCanvasInput に分割
+>   - sprite-editor.js: 1,982行 → 954行（1,028行削減）、sprite-editor-canvas-input.js: 1,026行
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
@@ -35,8 +38,9 @@
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
 | └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
-| スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | ドット絵作成・キャンバス操作・ツール管理 (1,982行) |
+| スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | 初期化・Undo/Redo・ギャラリー・描画コア (954行) |
 | └─ カラーパレット (New) | `js/editor/sprite-editor-palette.js` | パレット表示・色編集・プリセット管理 (496行) |
+| └─ キャンバス入力 (New) | `js/editor/sprite-editor-canvas-input.js` | イベント・描画・選択・ガイド画像 (1,026行) |
 | └─ プレビュー機能 (New) | `js/editor/sprite-editor-preview.js` | アニメーションフレーム操作・再生・表示 (304行) |
 | ステージエディタ (Stage Editor) | `js/editor/stage-editor.js` | 中核・初期化・Undo/Redo・委譲管理 |
 | └─ テンプレート管理 | `js/editor/stage-template-manager.js` | タイル/エンティティテンプレートのCRUD |
