@@ -1456,26 +1456,6 @@ const SpriteEditor = {
         this.render();
     },
 
-    // 選択モードキャンセル
-    cancelSelectionMode() {
-        if (!this.selectionMode) return;
-
-        this.selectionMode = false;
-        this.selectionStart = null;
-        this.selectionEnd = null;
-
-        // 選択ツールが選択されている場合は、ボタンのアクティブ状態を維持する
-        if (this.currentTool === 'select') {
-            const selectBtn = document.querySelector('#paint-tools button[data-tool="select"]');
-            if (selectBtn) selectBtn.classList.add('active');
-        }
-        this.isMovingSelection = false;
-        this.selectionMoveStart = null;
-        this.render();
-    },
-
-
-
     cancelSelectionMode() {
         if (!this.selectionMode) return;
 
@@ -1517,71 +1497,6 @@ const SpriteEditor = {
         this.render();
     },
 
-    floatSelection() { // Implement floating selection
-        if (!this.selectionStart || !this.selectionEnd) return;
-        const x1 = Math.min(this.selectionStart.x, this.selectionEnd.x);
-        const y1 = Math.min(this.selectionStart.y, this.selectionEnd.y);
-        const x2 = Math.max(this.selectionStart.x, this.selectionEnd.x);
-        const y2 = Math.max(this.selectionStart.y, this.selectionEnd.y);
-        const w = x2 - x1 + 1;
-        const h = y2 - y1 + 1;
-
-        const sprite = App.projectData.sprites[this.currentSprite];
-        const floatingData = [];
-
-        for (let y = 0; y < h; y++) {
-            const row = [];
-            for (let x = 0; x < w; x++) {
-                const ty = y + y1;
-                const tx = x + x1;
-                // Sprite data array extension check
-                if (!sprite.data[ty]) sprite.data[ty] = [];
-
-                if (typeof sprite.data[ty][tx] !== 'undefined') {
-                    row.push(sprite.data[ty][tx]);
-                    sprite.data[ty][tx] = -1; // Clear source
-                } else {
-                    row.push(-1);
-                }
-            }
-            floatingData.push(row);
-        }
-
-        this.floatingData = floatingData;
-        this.floatingPos = { x: x1, y: y1 };
-        this.isFloating = true;
-    },
-
-    commitFloatingData() { // Commit floating selection
-        if (!this.isFloating || !this.floatingData) return;
-        const sprite = App.projectData.sprites[this.currentSprite];
-        const h = this.floatingData.length;
-        const w = this.floatingData[0].length;
-
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                const val = this.floatingData[y][x];
-                // Overwrite everything including transparency to match StageEditor behavior
-                const ty = this.floatingPos.y + y;
-                const tx = this.floatingPos.x + x;
-
-                // Ensure row exists
-                if (!sprite.data[ty]) {
-                    // Check dimension bounds before extending?
-                    // Assuming processPixel logic handles bounds or we should check?
-                    // render loop checks bounds, so we should be safe to just check existence
-                    continue;
-                }
-
-                if (typeof sprite.data[ty][tx] !== 'undefined') {
-                    sprite.data[ty][tx] = val;
-                }
-            }
-        }
-        this.isFloating = false;
-        this.floatingData = null;
-        this.render();
-    },
 
     // 選択範囲をコピー
     copySelection() {
