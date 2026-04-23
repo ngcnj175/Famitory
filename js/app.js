@@ -1719,6 +1719,17 @@ const App = {
 
 };
 
+// AppI18N / AppDialogs への後方互換プロキシ
+Object.defineProperty(App, 'I18N', { get: () => AppI18N.I18N });
+Object.defineProperty(App, 'currentLang', {
+    get: () => AppI18N.currentLang,
+    set: (v) => { AppI18N.currentLang = v; }
+});
+App.applyLang       = ()                   => AppI18N.applyLang();
+App.showAlert       = (msg, sub, ok)       => AppDialogs.showAlert(msg, sub, ok);
+App.showConfirm     = (msg, sub, ok, ng)   => AppDialogs.showConfirm(msg, sub, ok, ng);
+App.showActionMenu  = (title, actions)     => AppDialogs.showActionMenu(title, actions);
+
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
