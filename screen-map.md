@@ -30,6 +30,11 @@
 > - **sprite-editor.js キャンバス入力分割（フェーズ8）** ✅
 >   - initCanvasEvents/onPointerDown/processPixel/flipVertical/floatSelection等24メソッドを SpriteCanvasInput に分割
 >   - sprite-editor.js: 1,982行 → 954行（1,028行削減）、sprite-editor-canvas-input.js: 1,026行
+> - **app.js アプリケーション層の分割（フェーズ9）** ✅
+>   - showThreeChoiceDialog() 削除（未使用メソッド）
+>   - currentLang/I18N/applyLang/initLangBtn を AppI18N に抽出（278行削減）、app-i18n.js: 283行
+>   - showActionMenu/showAlert/showConfirm を AppDialogs に抽出（157行削減）、app-dialogs.js: 147行
+>   - app.js: 2,294行 → 1,859行（435行削減）
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
