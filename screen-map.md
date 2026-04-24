@@ -38,6 +38,9 @@
 > - **app.js プロジェクト管理の分割（フェーズ10）** ✅
 >   - DEFAULT_SOUNDS/generateEditKey/create2DArray 等17メソッドを AppProject に抽出
 >   - app.js: 1,859行 → 1,082行（777行削減）、app-project.js: 596行
+> - **app.js シェア機能の分割（フェーズ11）** ✅
+>   - updateShareStatus/showPublishConfirm/publishAndShare/copyToClipboard/bindShareSimpleEvents を AppShare に抽出
+>   - app.js: 1,082行 → 764行（318行削減）、app-share.js: 289行
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
@@ -45,6 +48,7 @@
 | └─ I18N (New) | `js/app-i18n.js` | 多言語対応・ローカライズテキスト管理 |
 | └─ ダイアログ (New) | `js/app-dialogs.js` | アクションメニュー・アラート・確認ダイアログ |
 | └─ プロジェクト管理 (New) | `js/app-project.js` | プロジェクトCRUD・保存・読み込み・エクスポート |
+| └─ シェア機能 (New) | `js/app-share.js` | URL公開・クリップボード・SNS共有・Firebase保存 |
 | ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | ゲームループ統括・状態管理・オーディオ・スコア |
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
 | └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
