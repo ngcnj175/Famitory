@@ -143,8 +143,14 @@ const SpriteCanvasInput = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                // おてほん調整モードの場合
-                if (this.editor.guideAdjustMode && this.editor.guideImage) {
+                // 32x32の場合は常にキャンバスパン（下書きは固定・移動不可）
+                if (this.editor.getCurrentSpriteSize() === 2) {
+                    this.isPanning = true;
+                    this.pendingTouch = null;
+                    this.panStartX = centerX;
+                    this.panStartY = centerY;
+                } else if (this.editor.guideAdjustMode && this.editor.guideImage) {
+                    // 16x16以下の場合のみ下書き調整モード
                     this.pendingTouch = null;
                     const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX);
                     this.editor.guideAdjustData = {
@@ -157,12 +163,6 @@ const SpriteCanvasInput = {
                         startOffsetX: this.editor.guideOffsetX,
                         startOffsetY: this.editor.guideOffsetY
                     };
-                } else if (this.editor.getCurrentSpriteSize() === 2) {
-                    // 通常の32x32パン
-                    this.isPanning = true;
-                    this.pendingTouch = null;
-                    this.panStartX = centerX;
-                    this.panStartY = centerY;
                 }
             } else if (e.touches.length === 1) {
                 // 1本指の場合、少し待ってから描画開始（2本指検出のため）
