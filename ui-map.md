@@ -110,15 +110,10 @@
 | U095 | ペン（入力モード） | Pen (Input Mode) | HTML attribute (title) | index.html | |
 | U096 | 消しゴム (Long: Clear) | Eraser (Long: Clear) | HTML attribute (title) | index.html | |
 | U097 | タイル種別を選択 | Select Tile Type | HTML text node | index.html | |
-| U098 | 🎮 | 🎮 | HTML text node | index.html | |
-| U099 | 👾 | 👾 | HTML text node | index.html | |
 | U100 | 敵 | Enemy | HTML text node | index.html | |
-| U101 | 🧱 | 🧱 | HTML text node | index.html | |
-| U102 | ⭐ | ⭐ | HTML text node | index.html | |
-| U103 | 🚩 | 🚩 | HTML text node | index.html | |
 | U104 | ゴール | Goal | HTML text node | index.html | |
 | U105 | キャンセル | Cancel | HTML text node (button) | index.html | |
-| U106 | 🎮 プレイヤー設定 | 🎮 Player Settings | HTML text node | index.html | |
+| U106 | プレイヤー設定 | Player Settings | HTML text node | index.html | |
 | U107 | メイン (必須) | Main (Required) | HTML text node | index.html | |
 | U108 | アニメーション (任意) | Animation (Optional) | HTML text node | index.html | |
 | U109 | LIFE表示 | Show LIFE | HTML text node | index.html | |
@@ -133,21 +128,21 @@
 | U118 | Damage ♪ | Damage ♪ | HTML text node | index.html | |
 | U119 | KO ♪ | KO ♪ | HTML text node | index.html | |
 | U120 | 決定 | OK | HTML text node (button) | index.html | |
-| U121 | 👾 敵設定 | 👾 Enemy Settings | HTML text node | index.html | |
+| U121 | 敵設定 | Enemy Settings | HTML text node | index.html | |
 | U122 | 移動パターン | Move Pattern | HTML text node | index.html | |
 | U123 | 往復 | Back & Forth | HTML text node | index.html | |
 | U124 | ジャンプ | Jump | HTML text node | index.html | |
 | U125 | 追跡 | Chase | HTML text node | index.html | |
-| U126 | 🧱 素材設定 | 🧱 Block Settings | HTML text node | index.html | |
+| U126 | 素材設定 | Block Settings | HTML text node | index.html | |
 | U127 | アニメ | Anim | HTML text node | index.html | |
 | U128 | 当たり判定 | Collision | HTML text node | index.html | |
-| U129 | ⭐ アイテム設定 | ⭐ Item Settings | HTML text node | index.html | |
+| U129 | アイテム設定 | Item Settings | HTML text node | index.html | |
 | U130 | 効果 | Effect | HTML text node | index.html | |
 | U131 | ライフアップ | Life Up | HTML text node | index.html | |
 | U132 | 武器取得 | Get Weapon | HTML text node | index.html | |
 | U133 | ボム | Bomb | HTML text node | index.html | |
 | U134 | Get ♪ | Get ♪ | HTML text node | index.html | |
-| U135 | 🚩 ゴール設定 | 🚩 Goal Settings | HTML text node | index.html | |
+| U135 | ゴール設定 | Goal Settings | HTML text node | index.html | |
 | U136 | ゴールにたどり着く | Reach the Goal | HTML text node | index.html | |
 | U137 | 全アイテム取得 | Get All Items | HTML text node | index.html | |
 | U138 | 敵全滅 | Defeat All Enemies | HTML text node | index.html | |
