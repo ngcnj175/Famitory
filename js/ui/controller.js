@@ -24,6 +24,48 @@ const GameController = {
         this.restoreDarkMode();
     },
 
+    // 8方向マッピングテーブル（22.5度刻み、右・左はデフォルト/ラップアラウンドで処理）
+    _DPAD_DIRECTIONS: [
+        { min: -67.5,  max: -22.5,  dirs: ['up', 'right'],  cls: 'press-up-right'   },
+        { min: -112.5, max: -67.5,  dirs: ['up'],            cls: 'press-up'         },
+        { min: -157.5, max: -112.5, dirs: ['up', 'left'],   cls: 'press-up-left'    },
+        { min: 112.5,  max: 157.5,  dirs: ['down', 'left'], cls: 'press-down-left'  },
+        { min: 67.5,   max: 112.5,  dirs: ['down'],          cls: 'press-down'       },
+        { min: 22.5,   max: 67.5,   dirs: ['down', 'right'], cls: 'press-down-right' },
+    ],
+
+    // 入力座標をD-Pad方向に変換して適用
+    processDpadInput(clientX, clientY) {
+        const container = document.getElementById('dpad-container');
+        if (!container) return;
+
+        const rect = container.getBoundingClientRect();
+        const x = clientX - rect.left - rect.width / 2;
+        const y = clientY - rect.top - rect.height / 2;
+
+        // デッドゾーン判定（中心から10px以内は入力なし）
+        if (Math.hypot(x, y) < 10) {
+            this.releaseAllDpad();
+            return;
+        }
+
+        const deg = Math.atan2(y, x) * (180 / Math.PI);
+        this.releaseAllDpad();
+
+        // テーブルから方向を検索
+        const dir = this._DPAD_DIRECTIONS.find(d => deg > d.min && deg <= d.max);
+        if (dir) {
+            dir.dirs.forEach(d => this.press(d));
+            this.setDpadFeedback(dir.cls);
+        } else if (deg > 157.5 || deg <= -157.5) { // 左（±180付近のラップアラウンド）
+            this.press('left');
+            this.setDpadFeedback('press-left');
+        } else { // 右（デフォルト: -22.5 ~ 22.5）
+            this.press('right');
+            this.setDpadFeedback('press-right');
+        }
+    },
+
     initDpad() {
         const container = document.getElementById('dpad-container');
         if (!container) return;
@@ -31,70 +73,9 @@ const GameController = {
         // タッチ操作（仮想D-Pad）
         const handleTouch = (e) => {
             e.preventDefault();
-            // targetTouchesを使用して、この要素上のタッチのみを取得（マルチタッチ対策）
             const touch = e.targetTouches[0];
             if (!touch) return;
-
-            const rect = container.getBoundingClientRect();
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const x = touch.clientX - rect.left - centerX;
-            const y = touch.clientY - rect.top - centerY;
-
-            // デッドゾーン判定（中心から10px以内は入力なし）
-            const distance = Math.sqrt(x * x + y * y);
-            if (distance < 10) {
-                this.releaseAllDpad();
-                return;
-            }
-
-            // 角度計算 (-PI ~ PI)
-            const angle = Math.atan2(y, x);
-            // 度数法に変換 (-180 ~ 180)
-            const deg = angle * (180 / Math.PI);
-
-            // 全方向リセット
-            this.releaseAllDpad();
-
-            // 8方向判定 (22.5度ずつずらして45度刻み)
-            // 右: -22.5 ~ 22.5
-            // 右下: 22.5 ~ 67.5
-            // 下: 67.5 ~ 112.5
-            // 左下: 112.5 ~ 157.5
-            // 左: 157.5 ~ 180, -180 ~ -157.5
-            // 左上: -157.5 ~ -112.5
-            // 上: -112.5 ~ -67.5
-            // 右上: -67.5 ~ -22.5
-
-            if (deg > -67.5 && deg <= -22.5) { // 右上
-                this.press('up');
-                this.press('right');
-                this.setDpadFeedback('press-up-right');
-            } else if (deg > -112.5 && deg <= -67.5) { // 上
-                this.press('up');
-                this.setDpadFeedback('press-up');
-            } else if (deg > -157.5 && deg <= -112.5) { // 左上
-                this.press('up');
-                this.press('left');
-                this.setDpadFeedback('press-up-left');
-            } else if (deg > 157.5 || deg <= -157.5) { // 左
-                this.press('left');
-                this.setDpadFeedback('press-left');
-            } else if (deg > 112.5 && deg <= 157.5) { // 左下
-                this.press('down');
-                this.press('left');
-                this.setDpadFeedback('press-down-left');
-            } else if (deg > 67.5 && deg <= 112.5) { // 下
-                this.press('down');
-                this.setDpadFeedback('press-down');
-            } else if (deg > 22.5 && deg <= 67.5) { // 右下
-                this.press('down');
-                this.press('right');
-                this.setDpadFeedback('press-down-right');
-            } else { // 右
-                this.press('right');
-                this.setDpadFeedback('press-right');
-            }
+            this.processDpadInput(touch.clientX, touch.clientY);
         };
 
         container.addEventListener('touchstart', handleTouch, { passive: false });
@@ -109,16 +90,14 @@ const GameController = {
         container.addEventListener('touchcancel', stopTouch, { passive: false });
         container.addEventListener('mouseleave', stopTouch);
 
-        // PCでのデバッグ用（マウス操作）: マウスダウン中のみ追従
+        // PCデバッグ用マウス操作
         let isMouseDown = false;
         container.addEventListener('mousedown', (e) => {
             isMouseDown = true;
-            handleTouch({ padding: true, preventDefault: () => { }, touches: [{ clientX: e.clientX, clientY: e.clientY }] });
+            this.processDpadInput(e.clientX, e.clientY);
         });
         container.addEventListener('mousemove', (e) => {
-            if (isMouseDown) {
-                handleTouch({ padding: true, preventDefault: () => { }, touches: [{ clientX: e.clientX, clientY: e.clientY }] });
-            }
+            if (isMouseDown) this.processDpadInput(e.clientX, e.clientY);
         });
         container.addEventListener('mouseup', () => {
             isMouseDown = false;
@@ -210,7 +189,7 @@ const GameController = {
             if (!this.startHolding) return;
 
             const elapsed = performance.now() - this.startPressTime;
-            const threshold = this.startLongPressThreshold; // 800ms
+            const threshold = this.startLongPressThreshold;
 
             if (typeof GameEngine !== 'undefined') {
                 if (elapsed >= 200) {
