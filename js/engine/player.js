@@ -363,119 +363,19 @@ class Player {
                 startY += 1;
             }
 
-            if (shotType === 'spread') {
-                // 拡散: 4方向発射（交互に＋と✕パターン）
-                const isPlus = (engine.spreadShotCounter || 0) % 2 === 0;
-                engine.spreadShotCounter = (engine.spreadShotCounter || 0) + 1;
-                const angles = isPlus ? [0, 90, 180, 270] : [45, 135, 225, 315];
-                angles.forEach(angle => {
-                    const rad = angle * Math.PI / 180;
-                    engine.projectiles.push({
-                        x: startX, y: startY,
-                        vx: Math.cos(rad) * baseSpeed,
-                        vy: Math.sin(rad) * baseSpeed,
-                        width: 0.5, height: 0.5,
-                        spriteIdx: shotSprite,
-                        templateIdx: this.templateIdx,
-                        animationSlot: 'shot',
-                        owner: 'player',
-                        maxRange: this.shotMaxRange,
-                        startX: startX, startY: startY,
-                        facingRight: this.facingRight,
-                        shotType: shotType,
-                        bounceCount: 0
-                    });
-                });
-            } else if (shotType === 'drop') {
-                // 真下に落下
-                engine.projectiles.push({
-                    x: startX, y: startY,
-                    vx: 0, vy: baseSpeed,
-                    width: 0.5, height: 0.5,
-                    spriteIdx: shotSprite,
-                    templateIdx: this.templateIdx,
-                    animationSlot: 'shot',
-                    owner: 'player',
-                    maxRange: this.shotMaxRange,
-                    startX: this.x, startY: this.y,
-                    facingRight: this.facingRight,
-                    shotType: shotType,
-                    bounceCount: 0
-                });
-            } else if (shotType === 'melee') {
-                //近接: 目の前に表示（射程関係なし）
-                engine.projectiles.push({
-                    x: this.x + (this.facingRight ? this.width : -1), // プレイヤーサイズ考慮
-                    y: this.y + this.height / 2 - 0.5, // 上下中央付近
-                    vx: 0, vy: 0,
-                    width: 1, height: 1, // 判定大きめ
-                    spriteIdx: shotSprite,
-                    templateIdx: this.templateIdx,
-                    animationSlot: 'shot',
-                    owner: 'player',
-                    maxRange: 999, // 射程無視
-                    startX: this.x, startY: this.y,
-                    facingRight: this.facingRight,
-                    shotType: shotType,
-                    duration: 15, // 15フレームで消滅
-                    bounceCount: 0
-                });
-            } else if (shotType === 'pinball') {
-                // ピンポン: 斜め45度発射
-                const angle = this.facingRight ? -45 : -135; // 上方向に発射
-                const rad = angle * Math.PI / 180;
-                engine.projectiles.push({
-                    x: startX, y: startY,
-                    vx: Math.cos(rad) * baseSpeed,
-                    vy: Math.sin(rad) * baseSpeed,
-                    width: 0.5, height: 0.5,
-                    spriteIdx: shotSprite,
-                    templateIdx: this.templateIdx,
-                    animationSlot: 'shot',
-                    owner: 'player',
-                    maxRange: this.shotMaxRange,
-                    startX: startX, startY: startY,
-                    facingRight: this.facingRight,
-                    shotType: shotType,
-                    bounceCount: 0
-                });
-            } else if (shotType === 'orbit') {
-                // 回転: オーナーの周りを周回
-                engine.projectiles.push({
-                    x: startX, y: startY,
-                    vx: 0, vy: 0,
-                    width: 0.5, height: 0.5,
-                    spriteIdx: shotSprite,
-                    templateIdx: this.templateIdx,
-                    animationSlot: 'shot',
-                    owner: 'player',
-                    maxRange: 999,
-                    startX: startX, startY: startY,
-                    facingRight: this.facingRight,
-                    shotType: shotType,
-                    duration: 200, // 約3.3秒
-                    bounceCount: 0,
-                    orbitAngle: 0
-                });
-            } else {
-                // その他: 通常の単発発射
-                engine.projectiles.push({
-                    x: startX, y: startY,
-                    vx: baseSpeed * direction,
-                    vy: shotType === 'arc' ? -0.15 : 0,
-                    width: 0.5, height: 0.5,
-                    spriteIdx: shotSprite,
-                    templateIdx: this.templateIdx,
-                    animationSlot: 'shot',
-                    owner: 'player',
-                    maxRange: this.shotMaxRange,
-                    startX: startX, startY: startY,
-                    facingRight: this.facingRight,
-                    shotType: shotType,
-                    returning: false,
-                    bounceCount: 0
-                });
-            }
+            // ProjectileManager で統一管理
+            ProjectileManager.createAndAddProjectiles(engine, {
+                shotType: shotType,
+                owner: 'player',
+                ownerEntity: this,
+                startX: startX,
+                startY: startY,
+                facingRight: this.facingRight,
+                baseSpeed: baseSpeed,
+                shotMaxRange: this.shotMaxRange,
+                templateIdx: this.templateIdx,
+                shotSprite: shotSprite
+            });
         }
     }
 
@@ -612,107 +512,28 @@ class Player {
     }
 
     handleHorizontalCollision(engine) {
-        const left = Math.floor(this.x);
-        const right = Math.floor(this.x + this.width);
-        const top = Math.floor(this.y);
-        const bottom = Math.floor(this.y + this.height - 0.01);
-
-        for (let ty = top; ty <= bottom; ty++) {
-            if (engine.getCollision(left, ty) === 1) {
-                this.x = left + 1;
-                this.vx = 0;
-            }
-            if (engine.getCollision(right, ty) === 1) {
-                this.x = right - this.width;
-                this.vx = 0;
-            }
-        }
+        PhysicsHandler.handleHorizontalCollision(this, engine, false);
     }
 
     handleVerticalCollision(engine) {
-        this.onGround = false;
-        this.ridingGimmickBlock = null; // ギミックブロックに乗っているか
-        const left = Math.floor(this.x);
-        const right = Math.floor(this.x + this.width - 0.01);
-        const top = Math.floor(this.y);
-        const bottom = Math.floor(this.y + this.height);
-
-        for (let tx = left; tx <= right; tx++) {
-            if (this.vy < 0 && engine.getCollision(tx, top) === 1) {
-                // 頭突きでブロック破壊
+        PhysicsHandler.handleVerticalCollision(this, engine, {
+            onDamageTile: (tx, ty) => {
                 if (typeof engine.damageTile === 'function') {
-                    engine.damageTile(tx, top);
+                    engine.damageTile(tx, ty);
                 }
-                this.y = top + 1;
-                this.vy = 0;
-            }
-            if (this.vy >= 0 && engine.getCollision(tx, bottom) === 1) {
-                // スプリング判定
-                const posKey = `${tx},${bottom}`;
-                if (engine.springTiles && engine.springTiles.has(posKey)) {
-                    const springData = engine.springTiles.get(posKey);
-                    // power: 1~5 -> vy: -0.5 ~ -0.9
-                    // jumpPowerは通常 -0.215 ~ -0.5 程度。
-                    this.vy = -0.4 - (springData.power * 0.1);
-                    this.y = bottom - this.height;
-                    this.onGround = false;
-                    this.hasDoubleJumped = false;
-                    this.canDoubleJump = this.wJumpEnabled;
-                    this.playSE('jump');
-
-                    // スプリングアニメーションなどのフック用
-                    if (typeof engine.activateSpring === 'function') {
-                        engine.activateSpring(tx, bottom);
-                    }
-
-                    if (this.isKnockback) {
-                        this.isKnockback = false;
-                        this.vx = 0;
-                    }
-                    break; // スプリング処理したので終了
-                }
-
-                this.y = bottom - this.height;
-                this.vy = 0;
-                this.onGround = true;
-                // 着地でノックバック終了
+            },
+            onJumpReset: () => {
+                this.hasDoubleJumped = false;
+                this.canDoubleJump = this.wJumpEnabled;
+                this.playSE('jump');
+            },
+            onKnockbackEnd: () => {
                 if (this.isKnockback) {
                     this.isKnockback = false;
                     this.vx = 0;
                 }
             }
-        }
-
-        // ギミックブロックとの衝突チェック（落下中のみ）
-        if (this.vy >= 0 && engine.gimmickBlocks) {
-            for (const block of engine.gimmickBlocks) {
-                // 落下中のブロックはすり抜ける
-                if (block.state === 'falling') continue;
-
-                // ブロックの上に乗っているか判定
-                const playerBottom = this.y + this.height;
-                const playerLeft = this.x;
-                const playerRight = this.x + this.width;
-                const blockTop = block.y;
-                const blockLeft = block.x;
-                const blockRight = block.x + 1;
-
-                // 横方向に重なっていて、足元がブロック上面付近
-                if (playerRight > blockLeft && playerLeft < blockRight &&
-                    playerBottom >= blockTop && playerBottom < blockTop + 1.0 &&
-                    this.vy >= 0) {
-                    this.y = blockTop - this.height;
-                    this.vy = 0;
-                    this.onGround = true;
-                    this.ridingGimmickBlock = block;
-                    if (this.isKnockback) {
-                        this.isKnockback = false;
-                        this.vx = 0;
-                    }
-                    break;
-                }
-            }
-        }
+        });
     }
 
     collidesWith(other) {

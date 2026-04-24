@@ -41,6 +41,16 @@
 > - **app.js シェア機能の分割（フェーズ11）** ✅
 >   - updateShareStatus/showPublishConfirm/publishAndShare/copyToClipboard/bindShareSimpleEvents を AppShare に抽出
 >   - app.js: 1,082行 → 764行（318行削減）、app-share.js: 289行
+> - **ゲームエンジン共通化・テンプレート化（フェーズ12）** ✅
+>   - **ProjectileManager 作成**: player.js/enemy.js の射撃ロジック統合（spread, drop, melee, pinball, orbit, straight, arc）
+>     - player.js attack(): 155行 → 15行、enemy.js shoot(): 142行 → 10行（削減 272行）
+>   - **PhysicsHandler 作成**: player.js/enemy.js の衝突判定統合（水平・垂直・スプリング・ギミックブロック）
+>     - player.js handleHorizontalCollision(): 16行 → 2行、handleVerticalCollision(): 84行 → 18行
+>     - enemy.js handleHorizontalCollision(): 20行 → 5行、handleVerticalCollision(): 65行 → 6行（削減 183行）
+>   - **audio.js SE テンプレート化**: 3ジェネレータ型で25メソッド簡略化
+>     - playFreqSweep(config)/playMultiNote(config)/playNoiseSE(config) 実装
+>     - playSE_*() メソッド: 平均13行 → 3行（削減 250行）
+>   - **合計効果**: 約700行の重複コード削減 + 保守性・拡張性向上
 
 | 画面名 / 機能名 | 主要ファイル (JS) | 役割 |
 |---|---|---|
@@ -52,6 +62,9 @@
 | ゲームプレイ (Play Mode) | `js/engine/game-engine.js` | ゲームループ統括・状態管理・オーディオ・スコア |
 | └─ ゲーム描画 (New) | `js/engine/game-renderer.js` | 画面描画・レイヤー管理・スプライト出力・UI/エフェクト |
 | └─ ゲーム物理演算 (New) | `js/engine/game-physics.js` | 衝突クエリ・エンティティ衝突・タイルダメージ・とびら処理 |
+| └─ 投射物管理 (New) | `js/engine/projectile-manager.js` | Player/Enemy 射撃ロジック統合（spread, drop, melee等7武器型） |
+| └─ 衝突判定ハンドラ (New) | `js/engine/physics-handler.js` | Player/Enemy 水平・垂直衝突判定の共有化（コールバック機構） |
+| └─ オーディオエンジン | `js/engine/audio.js` | SE生成（3ジェネレータ：周波数スイープ・マルチノート・ノイズ） |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
 | スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | 初期化・Undo/Redo・ギャラリー・描画コア (954行) |
 | └─ カラーパレット (New) | `js/editor/sprite-editor-palette.js` | パレット表示・色編集・プリセット管理 (496行) |
