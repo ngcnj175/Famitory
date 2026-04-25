@@ -147,10 +147,16 @@ class StageSettings {
         const updateTimeLimitLabel = () => {
             const condition = clearCondition?.value || 'none';
             if (condition === 'survival') {
-                if (timeLimitLabel) timeLimitLabel.textContent = 'サバイバル時間';
+                if (timeLimitLabel) {
+                    const survivalTimeText = AppI18N.I18N['U293'][AppI18N.currentLang] || 'サバイバル時間';
+                    timeLimitLabel.textContent = survivalTimeText;
+                }
                 if (timeLimitRow) timeLimitRow.style.display = '';
             } else {
-                if (timeLimitLabel) timeLimitLabel.textContent = '制限時間';
+                if (timeLimitLabel) {
+                    const timeLimitText = AppI18N.I18N['U061'][AppI18N.currentLang] || '制限時間';
+                    timeLimitLabel.textContent = timeLimitText;
+                }
                 if (timeLimitRow) timeLimitRow.style.display = '';
             }
         };
@@ -165,6 +171,27 @@ class StageSettings {
             saveBtn.addEventListener('click', () => {
                 const stage = App.projectData.stage;
                 const meta = App.projectData.meta;
+
+                // クリア条件を一度確認（フォーム値から）
+                if (clearCondition) {
+                    stage.clearCondition = clearCondition.value;
+                }
+
+                // 制限時間を一度確認（フォーム値から）
+                const timeMin = document.getElementById('stage-time-min');
+                const timeSec = document.getElementById('stage-time-sec');
+                if (timeMin && timeSec) {
+                    const min = parseInt(timeMin.value) || 0;
+                    const sec = parseInt(timeSec.value) || 0;
+                    stage.timeLimit = min * 60 + sec;
+                }
+
+                // サバイバルモードで制限時間が0の場合はエラー
+                if (stage.clearCondition === 'survival' && (!stage.timeLimit || stage.timeLimit <= 0)) {
+                    const message = AppI18N.I18N['U394']?.[AppI18N.currentLang] || 'サバイバルモードでは制限時間を設定してください';
+                    alert(message);
+                    return;
+                }
 
                 // タイトル・作成者
                 const nameInput = document.getElementById('stage-name-input');
@@ -187,20 +214,6 @@ class StageSettings {
                 // 背景透過インデックス
                 if (transparentSelect) {
                     stage.transparentIndex = parseInt(transparentSelect.value) || 0;
-                }
-
-                // クリア条件
-                if (clearCondition) {
-                    stage.clearCondition = clearCondition.value;
-                }
-
-                // 制限時間
-                const timeMin = document.getElementById('stage-time-min');
-                const timeSec = document.getElementById('stage-time-sec');
-                if (timeMin && timeSec) {
-                    const min = parseInt(timeMin.value) || 0;
-                    const sec = parseInt(timeSec.value) || 0;
-                    stage.timeLimit = min * 60 + sec;
                 }
 
                 // サイズ変更（最後に実行して再描画処理を含ませる）
@@ -270,7 +283,10 @@ class StageSettings {
             if (clearConditionEl) {
                 clearConditionEl.value = stage.clearCondition || 'none';
                 if (timeLimitLabel) {
-                    timeLimitLabel.textContent = stage.clearCondition === 'survival' ? 'サバイバル時間' : '制限時間';
+                    const labelText = stage.clearCondition === 'survival'
+                        ? AppI18N.I18N['U293'][AppI18N.currentLang] || 'サバイバル時間'
+                        : AppI18N.I18N['U061'][AppI18N.currentLang] || '制限時間';
+                    timeLimitLabel.textContent = labelText;
                 }
             }
             const totalSec = stage.timeLimit || 0;

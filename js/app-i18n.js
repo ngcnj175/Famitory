@@ -42,7 +42,10 @@ const AppI18N = {
         'U062': { JPN: '分',              ENG: 'min' },
         'U063': { JPN: '秒',              ENG: 'sec' },
         'U064': { JPN: 'スコア表示',      ENG: 'Show Score' },
+        'U293': { JPN: 'サバイバル時間',  ENG: 'Survival Time' },
+        'U294': { JPN: '制限時間',        ENG: 'Time Limit' },
         'U065': { JPN: '設定を保存',      ENG: 'Save Settings' },
+        'U394': { JPN: 'サバイバルモードでは制限時間を設定してください', ENG: 'Please set a time limit for Survival mode' },
         // ---- リザルト画面 ----
         'U020': { JPN: 'いいね！',             ENG: 'Like!' },
         'U397': { JPN: 'STAGE CLEAR!',        ENG: 'STAGE CLEAR!' },
