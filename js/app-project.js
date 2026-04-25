@@ -81,7 +81,7 @@ const AppProject = {
                     clear: '',
                     gameover: ''
                 },
-                clearCondition: 'none',
+                clearCondition: 'enemies',
                 timeLimit: 0,
                 showScore: true,
                 layers: {

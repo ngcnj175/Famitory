@@ -84,13 +84,6 @@ const GameEngine = {
     start() {
         if (this.isRunning) return;
 
-        // サバイバルモードで制限時間が0の場合はエラー
-        const stage = App.projectData.stage;
-        if (stage.clearCondition === 'survival' && (!stage.timeLimit || stage.timeLimit <= 0)) {
-            alert('サバイバルモードでは制限時間を設定してください');
-            return;
-        }
-
         this.isRunning = true;
         this.isPaused = false;
         this.hasStarted = true;
