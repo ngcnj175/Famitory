@@ -1832,8 +1832,8 @@ const SoundEditor = {
         this.render();
     },
 
-    // ペースト確定
-    confirmPaste() {
+    // トラック全体ペースト確定
+    confirmTrackPaste() {
         if (!this.noteClipboard) return;
 
         const song = this.getCurrentSong();
