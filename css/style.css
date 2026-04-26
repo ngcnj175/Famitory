@@ -178,6 +178,11 @@ body {
    繝励Ξ繧､逕ｻ髱｢
    ======================================== */
 
+/* ゲーム画面：上下レイアウト調整スペーサー */
+.play-spacer {
+    flex: 1;
+}
+
 #play-screen {
     background: var(--bg-device);
 }
@@ -317,7 +322,6 @@ body {
 
 /* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
 #game-viewport {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -331,26 +335,25 @@ body {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     aspect-ratio: 1 / 1;
-    max-height: 100%;
+    width: 100%;
     max-width: 100%;
     object-fit: contain;
 }
 
 /* 繧ｳ繝ｳ繝医Ο繝ｼ繝ｩ繝ｼ繧ｨ繝ｪ繧｢ */
 #controller-area {
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 16px 24px;
     padding-bottom: calc(24px + var(--safe-area-bottom));
     background: var(--bg-device);
-    gap: 16px;
 }
 
 #controls-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    /* 蜊∝ｭ励く繝ｼ縺ｨ繝懊ち繝ｳ縺ｮ鬮倥＆繧貞粋繧上○繧� */
+    align-items: flex-end;
     width: 100%;
 }
 
@@ -358,7 +361,8 @@ body {
 #dpad-container {
     position: relative;
     width: 132px;
-    height: 132px;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
     /* 蜀�ｽ｢縺ｮ豬�＞遯ｪ縺ｿ閭梧勹�域万繧√°繧峨�蜈会ｼ� */
     background: radial-gradient(circle at 35% 35%,
             rgba(255, 255, 255, 0.8) 0%,
@@ -511,21 +515,22 @@ body {
 
 /* Start繝懊ち繝ｳ */
 #start-btn-container {
+    position: absolute;
+    left: 50%;
+    bottom: calc(24px + var(--safe-area-bottom));
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: -8px;
-    /* 蟆代＠隧ｰ繧√ｋ */
+    align-items: flex-end;
 }
 
 #btn-start {
-    width: 96px;
-    height: 32px;
+    width: 77px;
+    height: 26px;
     border: none;
-    border-radius: 16px;
+    border-radius: 13px;
     background: var(--color-dark);
     color: var(--text-light);
-    font-size: 11px;
+    font-size: 9px;
     font-weight: 600;
     letter-spacing: 1px;
     cursor: pointer;
@@ -540,19 +545,21 @@ body {
 
 /* A/B繝懊ち繝ｳ */
 #action-btns-container {
-    display: flex;
-    gap: 16px;
-    align-items: center;
+    position: relative;
+    width: 132px;
+    height: 132px;
+    flex-shrink: 0;
 }
 
 .action-btn {
-    width: 80px;
-    height: 80px;
+    position: absolute;
+    width: 72px;
+    height: 72px;
     border: none;
     border-radius: 50%;
     background: var(--color-dark);
     color: var(--text-light);
-    font-size: 29px;
+    font-size: 26px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -560,6 +567,16 @@ body {
     justify-content: center;
     box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
     font-family: inherit;
+}
+
+#btn-b {
+    top: 0;
+    left: 0;
+}
+
+#btn-a {
+    bottom: 0;
+    right: 0;
 }
 
 .action-btn:active,

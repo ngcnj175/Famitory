@@ -101,6 +101,9 @@
         <!-- ========== ゲーム画面 ========== -->
         <div id="play-screen" class="screen active">
 
+            <!-- 上下レイアウト調整用スペーサー -->
+            <div class="play-spacer"></div>
+
             <!-- ゲーム情報（読み取り専用、編集はゲーム設定で） -->
             <div id="game-info">
                 <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
@@ -138,14 +141,14 @@
                         </div>
                     </div>
 
-                    <!-- アクションボタン -->
+                    <!-- アクションボタン（B左上・A右下の対角配置） -->
                     <div id="action-btns-container">
                         <button id="btn-b" class="action-btn">B</button>
                         <button id="btn-a" class="action-btn">A</button>
                     </div>
                 </div>
 
-                <!-- スタートボタン（中央下） -->
+                <!-- STARTボタン：controller-area基準で水平中央・独立配置 -->
                 <div id="start-btn-container">
                     <button id="btn-start" class="system-btn">START</button>
                 </div>
