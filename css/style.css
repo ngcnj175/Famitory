@@ -345,7 +345,7 @@ body {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 16px 24px;
+    padding: 16px 12px;
     padding-bottom: calc(24px + var(--safe-area-bottom));
     background: var(--bg-device);
 }
@@ -524,13 +524,13 @@ body {
 }
 
 #btn-start {
-    width: 77px;
-    height: 26px;
+    width: 86px;
+    height: 29px;
     border: none;
-    border-radius: 13px;
+    border-radius: 14px;
     background: var(--color-dark);
     color: var(--text-light);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 1px;
     cursor: pointer;
