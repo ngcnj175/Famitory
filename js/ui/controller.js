@@ -21,6 +21,7 @@ const GameController = {
         this.initActionButtons();
         this.initSystemButtons();
         this.initKeyboard();
+        this.initGamepad();
         this.restoreDarkMode();
     },
 
@@ -413,6 +414,133 @@ const GameController = {
             }
             document.body.classList.add('dark-mode');
         }
+    },
+
+    // ========================================
+    // ゲームパッド（Gamepad API）
+    // ========================================
+
+    // ゲームパッドボタンマッピング（standard / Xboxレイアウト）
+    _GAMEPAD_MAP: {
+        0:  'a',      // A ボタン
+        1:  'b',      // B ボタン
+        9:  'start',  // Start ボタン
+        12: 'up',     // D-Pad 上
+        13: 'down',   // D-Pad 下
+        14: 'left',   // D-Pad 左
+        15: 'right',  // D-Pad 右
+    },
+    _GAMEPAD_AXIS_THRESHOLD: 0.5,  // スティックのデッドゾーン境界
+
+    gamepadIndex: null,
+    gamepadPrevState: {},
+    _gamepadPollingId: null,
+
+    initGamepad() {
+        window.addEventListener('gamepadconnected', (e) => {
+            if (this.gamepadIndex !== null) return; // 既に1台接続中
+            this.gamepadIndex = e.gamepad.index;
+            this.gamepadPrevState = {};
+            console.log(`[Gamepad] 接続: ${e.gamepad.id}`);
+            if (typeof AppDialogs !== 'undefined' && AppDialogs.showToast) {
+                AppDialogs.showToast('🎮 コントローラーが接続されました');
+            }
+            this.startGamepadPolling();
+        });
+
+        window.addEventListener('gamepaddisconnected', (e) => {
+            if (e.gamepad.index !== this.gamepadIndex) return;
+            this.gamepadIndex = null;
+            console.log('[Gamepad] 切断');
+            if (typeof AppDialogs !== 'undefined' && AppDialogs.showToast) {
+                AppDialogs.showToast('🎮 コントローラーが切断されました');
+            }
+            this.stopGamepadPolling();
+        });
+    },
+
+    startGamepadPolling() {
+        const poll = () => {
+            this.pollGamepad();
+            this._gamepadPollingId = requestAnimationFrame(poll);
+        };
+        this._gamepadPollingId = requestAnimationFrame(poll);
+    },
+
+    stopGamepadPolling() {
+        if (this._gamepadPollingId !== null) {
+            cancelAnimationFrame(this._gamepadPollingId);
+            this._gamepadPollingId = null;
+        }
+        this.releaseAll();
+        this.releaseAllDpad();
+    },
+
+    pollGamepad() {
+        if (this.gamepadIndex === null) return;
+        const gamepad = navigator.getGamepads()[this.gamepadIndex];
+        if (!gamepad) return;
+        if (typeof App === 'undefined' || App.currentScreen !== 'play') return;
+
+        // ---- ボタン処理 ----
+        for (const [indexStr, action] of Object.entries(this._GAMEPAD_MAP)) {
+            const index = Number(indexStr);
+            const pressed = gamepad.buttons[index]?.pressed ?? false;
+            const prev = this.gamepadPrevState[index] ?? false;
+            if (pressed === prev) continue;
+
+            this.gamepadPrevState[index] = pressed;
+
+            if (action === 'start') {
+                const el = document.getElementById('btn-start');
+                if (pressed) { el?.classList.add('pressed');    this.onStartPress(); }
+                else         { el?.classList.remove('pressed'); this.onStartRelease(); }
+            } else if (action === 'a' || action === 'b') {
+                const el = document.getElementById('btn-' + action);
+                if (pressed) { el?.classList.add('pressed');    this.press(action); }
+                else         { el?.classList.remove('pressed'); this.release(action); }
+            } else {
+                // 方向（up/down/left/right）
+                pressed ? this.press(action) : this.release(action);
+            }
+        }
+
+        // ---- 左スティック処理 ----
+        const axisX = gamepad.axes[0] ?? 0;
+        const axisY = gamepad.axes[1] ?? 0;
+        const thr = this._GAMEPAD_AXIS_THRESHOLD;
+
+        const states = {
+            sL: axisX < -thr, sR: axisX > thr,
+            sU: axisY < -thr, sD: axisY > thr,
+        };
+        const dirMap = { sL: 'left', sR: 'right', sU: 'up', sD: 'down' };
+
+        for (const [key, dir] of Object.entries(dirMap)) {
+            const cur = states[key];
+            const prev = this.gamepadPrevState[key] ?? false;
+            if (cur !== prev) {
+                cur ? this.press(dir) : this.release(dir);
+                this.gamepadPrevState[key] = cur;
+            }
+        }
+
+        // ---- D-pad UIフィードバック更新 ----
+        this._updateDpadFeedback();
+    },
+
+    // buttons の状態に基づいて D-pad のビジュアルを更新
+    _updateDpadFeedback() {
+        const { up, down, left, right } = this.buttons;
+        if      (up && right)   this.setDpadFeedback('press-up-right');
+        else if (up && left)    this.setDpadFeedback('press-up-left');
+        else if (down && right) this.setDpadFeedback('press-down-right');
+        else if (down && left)  this.setDpadFeedback('press-down-left');
+        else if (up)            this.setDpadFeedback('press-up');
+        else if (down)          this.setDpadFeedback('press-down');
+        else if (left)          this.setDpadFeedback('press-left');
+        else if (right)         this.setDpadFeedback('press-right');
+        else                    this.clearDpadFeedback();
     },
 
     release(button) {
