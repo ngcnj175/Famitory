@@ -532,7 +532,8 @@ body {
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-#btn-start:active {
+#btn-start:active,
+#btn-start.pressed {
     transform: translateY(2px);
     box-shadow: none;
 }
@@ -561,7 +562,8 @@ body {
     font-family: inherit;
 }
 
-.action-btn:active {
+.action-btn:active,
+.action-btn.pressed {
     transform: translateY(3px);
     box-shadow: none;
 }
@@ -5106,7 +5108,8 @@ body {
         0 0 12px rgba(60, 80, 120, 0.12);
 }
 
-#app.dark-mode .action-btn:active {
+#app.dark-mode .action-btn:active,
+#app.dark-mode .action-btn.pressed {
     box-shadow: none;
 }
 
@@ -5116,7 +5119,8 @@ body {
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
-#app.dark-mode #btn-start:active {
+#app.dark-mode #btn-start:active,
+#app.dark-mode #btn-start.pressed {
     box-shadow: none;
 }
 

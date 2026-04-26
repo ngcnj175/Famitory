@@ -136,22 +136,34 @@ const GameController = {
 
             el.addEventListener('mousedown', (e) => {
                 e.preventDefault();
+                el.classList.add('pressed');
                 this.press(btn);
             });
-            el.addEventListener('mouseup', () => this.release(btn));
-            el.addEventListener('mouseleave', () => this.release(btn));
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('pressed');
+                this.release(btn);
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('pressed');
+                this.release(btn);
+            });
 
             el.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                el.classList.add('pressed');
                 this.press(btn);
             }, { passive: false });
 
             el.addEventListener('touchend', (e) => {
                 e.preventDefault();
+                el.classList.remove('pressed');
                 this.release(btn);
             }, { passive: false });
 
-            el.addEventListener('touchcancel', () => this.release(btn));
+            el.addEventListener('touchcancel', () => {
+                el.classList.remove('pressed');
+                this.release(btn);
+            });
         });
     },
 
@@ -162,21 +174,33 @@ const GameController = {
             // マウス操作
             startBtn.addEventListener('mousedown', (e) => {
                 e.preventDefault();
+                startBtn.classList.add('pressed');
                 this.onStartPress();
             });
-            startBtn.addEventListener('mouseup', () => this.onStartRelease());
-            startBtn.addEventListener('mouseleave', () => this.onStartRelease());
+            startBtn.addEventListener('mouseup', () => {
+                startBtn.classList.remove('pressed');
+                this.onStartRelease();
+            });
+            startBtn.addEventListener('mouseleave', () => {
+                startBtn.classList.remove('pressed');
+                this.onStartRelease();
+            });
 
             // タッチ操作
             startBtn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                startBtn.classList.add('pressed');
                 this.onStartPress();
             }, { passive: false });
             startBtn.addEventListener('touchend', (e) => {
                 e.preventDefault();
+                startBtn.classList.remove('pressed');
                 this.onStartRelease();
             }, { passive: false });
-            startBtn.addEventListener('touchcancel', () => this.onStartRelease());
+            startBtn.addEventListener('touchcancel', () => {
+                startBtn.classList.remove('pressed');
+                this.onStartRelease();
+            });
         }
     },
 
