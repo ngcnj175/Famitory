@@ -283,6 +283,14 @@ const GameController = {
             'Space': 'a'
         };
 
+        // 方向キー → D-padフィードバッククラス
+        const dpadFeedbackMap = {
+            'up': 'press-up',
+            'down': 'press-down',
+            'left': 'press-left',
+            'right': 'press-right',
+        };
+
         const isTyping = () => {
             const tag = document.activeElement?.tagName;
             return tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
@@ -295,10 +303,17 @@ const GameController = {
             if (btn && App.currentScreen === 'play') {
                 e.preventDefault();
                 this.press(btn);
+                // UIアニメーション付与
+                if (btn === 'a' || btn === 'b') {
+                    document.getElementById('btn-' + btn)?.classList.add('pressed');
+                } else if (dpadFeedbackMap[btn]) {
+                    this.setDpadFeedback(dpadFeedbackMap[btn]);
+                }
             }
 
             if (e.code === 'Enter' && App.currentScreen === 'play') {
                 e.preventDefault();
+                document.getElementById('btn-start')?.classList.add('pressed');
                 if (typeof GameEngine !== 'undefined') {
                     GameEngine.togglePause();
                 }
@@ -312,6 +327,16 @@ const GameController = {
             if (btn) {
                 e.preventDefault();
                 this.release(btn);
+                // UIアニメーション解除
+                if (btn === 'a' || btn === 'b') {
+                    document.getElementById('btn-' + btn)?.classList.remove('pressed');
+                } else if (dpadFeedbackMap[btn]) {
+                    this.clearDpadFeedback();
+                }
+            }
+
+            if (e.code === 'Enter') {
+                document.getElementById('btn-start')?.classList.remove('pressed');
             }
         });
     },
