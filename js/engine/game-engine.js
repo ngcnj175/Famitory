@@ -1278,6 +1278,7 @@ const GameEngine = {
 
     checkClearCondition() {
         if (this.isCleared) return;
+        if (!this.player) return;
 
         const stage = App.projectData.stage;
         const clearCondition = stage.clearCondition || 'none';
