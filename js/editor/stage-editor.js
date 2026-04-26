@@ -307,7 +307,7 @@ const StageEditor = {
             case 'player':
                 return { life: 3, lifeCount: 3, speed: 5, jumpPower: 10, wJump: false, shotMaxRange: 3 };
             case 'enemy':
-                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 5, shotMaxRange: 3, move: 'idle' };
+                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 5, shotMaxRange: 3, move: 'patrol' };
             case 'material':
                 return { collision: true, life: -1 };
             case 'item':
