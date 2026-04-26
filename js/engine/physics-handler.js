@@ -4,6 +4,9 @@
  */
 
 class PhysicsHandler {
+    // ヒットボックスの横方向縮小率（片側）: 見た目より自然な当たり判定にするため両端を5%内側に
+    static SHRINK_X = 0.05;
+
     /**
      * 水平衝突判定（左右の壁）
      * @param {Player|Enemy} entity プレイヤーまたは敵
@@ -16,14 +19,15 @@ class PhysicsHandler {
     static handleHorizontalCollision(entity, engine, isDying = false, callbacks = {}) {
         if (isDying) return;
 
-        const left = Math.floor(entity.x);
-        const right = Math.floor(entity.x + entity.width);
+        const shrinkX = entity.width * PhysicsHandler.SHRINK_X;
+        const left = Math.floor(entity.x + shrinkX);
+        const right = Math.floor(entity.x + entity.width - shrinkX);
         const top = Math.floor(entity.y);
         const bottom = Math.floor(entity.y + entity.height - 0.01);
 
         for (let ty = top; ty <= bottom; ty++) {
             if (engine.getCollision(left, ty) === 1) {
-                entity.x = left + 1;
+                entity.x = left + 1 - shrinkX;
                 entity.vx = 0;
                 // 敵の場合のみ向きを反転
                 if (callbacks.onFacingRightUpdate) {
@@ -31,7 +35,7 @@ class PhysicsHandler {
                 }
             }
             if (engine.getCollision(right, ty) === 1) {
-                entity.x = right - entity.width;
+                entity.x = right - entity.width + shrinkX;
                 entity.vx = 0;
                 // 敵の場合のみ向きを反転
                 if (callbacks.onFacingRightUpdate) {
@@ -56,8 +60,9 @@ class PhysicsHandler {
         entity.onGround = false;
         entity.ridingGimmickBlock = null;
 
-        const left = Math.floor(entity.x);
-        const right = Math.floor(entity.x + entity.width - 0.01);
+        const shrinkX = entity.width * PhysicsHandler.SHRINK_X;
+        const left = Math.floor(entity.x + shrinkX);
+        const right = Math.floor(entity.x + entity.width - shrinkX - 0.01);
         const top = Math.floor(entity.y);
         const bottom = Math.floor(entity.y + entity.height);
 
@@ -120,9 +125,10 @@ class PhysicsHandler {
                 if (block.state === 'falling') continue;
 
                 // ブロックの上に乗っているか判定
+                const shrinkX = entity.width * PhysicsHandler.SHRINK_X;
                 const entityBottom = entity.y + entity.height;
-                const entityLeft = entity.x;
-                const entityRight = entity.x + entity.width;
+                const entityLeft = entity.x + shrinkX;
+                const entityRight = entity.x + entity.width - shrinkX;
                 const blockTop = block.y;
                 const blockLeft = block.x;
                 const blockRight = block.x + 1;
