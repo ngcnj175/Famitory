@@ -280,6 +280,9 @@ const AppI18N = {
         'U317': { JPN: 'クリップボードが空です',   ENG: 'Clipboard is empty' },
         'U322': { JPN: 'トラックを選択してください', ENG: 'Please select a track' },
         'U331': { JPN: 'コピー範囲を正しく設定してください', ENG: 'Please set the copy range correctly' },
+        // ---- 言語切り替え ----
+        'U446': { JPN: '言語を日本語に変更しました', ENG: 'Language set to Japanese' },
+        'U447': { JPN: 'Language set to English', ENG: 'Language set to English' },
     },
 
     applyLang() {
@@ -335,9 +338,15 @@ const AppI18N = {
             if (this.currentLang === 'JPN') {
                 this.currentLang = 'ENG';
                 langBtn.classList.add('lang-eng');
+                if (typeof App !== 'undefined' && App.showToast) {
+                    App.showToast(this.I18N['U447']?.[this.currentLang] || 'Language set to English');
+                }
             } else {
                 this.currentLang = 'JPN';
                 langBtn.classList.remove('lang-eng');
+                if (typeof App !== 'undefined' && App.showToast) {
+                    App.showToast(this.I18N['U446']?.[this.currentLang] || '言語を日本語に変更しました');
+                }
             }
             localStorage.setItem('pgk_lang', this.currentLang);
             this.applyLang();
