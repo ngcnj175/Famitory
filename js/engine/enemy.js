@@ -46,6 +46,12 @@ class Enemy {
         // 空中モード
         this.isAerial = template?.config?.isAerial || false;
 
+        // はりつき状態
+        this.clingFace = 'floor';  // 'floor' | 'ceiling' | 'wallL' | 'wallR'
+        this.clingDir = -1;        // 床/天井: +1=右, -1=左 / 壁: +1=下, -1=上
+        this.clingAngle = 0;       // 描画回転角（ラジアン）: 0=床, π/2=右壁, π=天井, -π/2=左壁
+        this.clingLanding = true;  // 着地待ちフェーズ
+
         // 状態
         this.state = 'idle';
         this.isAttacking = false;
@@ -121,6 +127,8 @@ class Enemy {
         // 空中か地上かで分岐
         if (this.isAerial) {
             this.updateAerial(engine);
+        } else if (this.behavior === 'clinging') {
+            this.updateClinging(engine);
         } else {
             this.updateGround(engine);
         }
@@ -333,6 +341,197 @@ class Enemy {
         }
 
         // 空中モードは重力なし、移動のみ
+        this.x += this.vx;
+        this.y += this.vy;
+    }
+
+    // ========== はりつきモード ==========
+    // clingAngle: 0=床, π/2=右壁(右90度CW), π=天井, -π/2=左壁
+    // facingRight の対応:
+    //   floor/wallL → clingDir > 0  /  ceiling/wallR → clingDir < 0
+    updateClinging(engine) {
+        const spd = this.moveSpeed;
+
+        // 初期着地フェーズ：重力落下して床に着くまで待つ
+        if (this.clingLanding) {
+            this.vx = 0;
+            this.vy += this.gravity;
+            if (this.vy > this.maxFallSpeed) this.vy = this.maxFallSpeed;
+            this.x += this.vx;
+            this.y += this.vy;
+            const shrink = this.width * 0.05;
+            const botY = Math.floor(this.y + this.height);
+            for (let tx = Math.floor(this.x + shrink); tx <= Math.floor(this.x + this.width - shrink); tx++) {
+                if (this.vy >= 0 && this.checkTileCollision(engine, tx, botY) === 1) {
+                    this.y = botY - this.height;
+                    this.vy = 0;
+                    this.onGround = true;
+                    this.clingLanding = false;
+                    this.clingFace = 'floor';
+                    this.clingAngle = 0;
+                    this.clingDir = this.facingRight ? 1 : -1;
+                    break;
+                }
+            }
+            return;
+        }
+
+        this.vx = 0;
+        this.vy = 0;
+
+        switch (this.clingFace) {
+            case 'floor': {
+                this.onGround = true;
+                this.clingAngle = 0;
+                this.facingRight = this.clingDir > 0;
+
+                // 前方に障害物 → 右90度転換（壁を上向きに移行）
+                const wallX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width + 0.01)
+                    : Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, wallX, Math.floor(this.y + this.height * 0.5)) === 1) {
+                    if (this.clingDir > 0) {
+                        this.x = wallX - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                    } else {
+                        this.x = wallX + 1;
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                    }
+                    this.clingDir = -1;                   // 上向き
+                    this.facingRight = true;               // wallR/wallL: clingDir < 0 → true
+                    return;
+                }
+
+                // 外コーナー：前方の足元が空 → 左90度転換（壁を下向きに移行）
+                const outerX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width)
+                    : Math.floor(this.x) - 1;
+                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height)) === 0) {
+                    if (this.clingDir > 0) {
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = false;          // wallR: clingDir > 0 → false
+                    } else {
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                        this.facingRight = true;           // wallL: clingDir > 0 → true
+                    }
+                    this.clingDir = 1;                     // 下向き
+                    return;
+                }
+
+                this.vx = this.clingDir * spd;
+                break;
+            }
+
+            case 'ceiling': {
+                this.onGround = false;
+                this.clingAngle = Math.PI;
+                this.facingRight = this.clingDir < 0;      // 180°回転後、left=右向きに見える
+
+                // 前方に障害物 → 右90度転換（壁を下向きに移行）
+                const wallX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width + 0.01)
+                    : Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, wallX, Math.floor(this.y + this.height * 0.5)) === 1) {
+                    if (this.clingDir > 0) {
+                        this.x = wallX - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = false;          // wallR: clingDir > 0 → false
+                    } else {
+                        this.x = wallX + 1;
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                        this.facingRight = true;           // wallL: clingDir > 0 → true
+                    }
+                    this.clingDir = 1;                     // 下向き
+                    return;
+                }
+
+                // 外コーナー：前方の頭上が空 → 左90度転換（壁を上向きに移行）
+                const outerX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width)
+                    : Math.floor(this.x) - 1;
+                if (this.checkTileCollision(engine, outerX, Math.floor(this.y) - 1) === 0) {
+                    if (this.clingDir > 0) {
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = true;           // wallR: clingDir < 0 → true
+                    } else {
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                        this.facingRight = false;          // wallL: clingDir < 0 → false
+                    }
+                    this.clingDir = -1;                    // 上向き
+                    return;
+                }
+
+                this.vx = this.clingDir * spd;
+                break;
+            }
+
+            case 'wallL': {
+                this.onGround = false;
+                this.clingAngle = -Math.PI / 2;
+                this.facingRight = this.clingDir > 0;      // down=true(足元が下), up=false
+
+                // 前方に障害物 → 右90度転換（床/天井を右向きに移行）
+                const frontY = this.clingDir > 0
+                    ? Math.floor(this.y + this.height + 0.01)
+                    : Math.floor(this.y - 0.01);
+                if (this.checkTileCollision(engine, Math.floor(this.x + this.width * 0.5), frontY) === 1) {
+                    if (this.clingDir > 0) {
+                        this.y = frontY - this.height;
+                        this.clingFace = 'floor';
+                        this.clingAngle = 0;
+                        this.facingRight = true;           // floor: clingDir > 0 → true
+                    } else {
+                        this.y = frontY + 1;
+                        this.clingFace = 'ceiling';
+                        this.clingAngle = Math.PI;
+                        this.facingRight = false;          // ceiling: clingDir > 0 → false
+                    }
+                    this.clingDir = 1;
+                    return;
+                }
+
+                this.vy = this.clingDir * spd;
+                break;
+            }
+
+            case 'wallR': {
+                this.onGround = false;
+                this.clingAngle = Math.PI / 2;
+                this.facingRight = this.clingDir < 0;      // up=true, down=false
+
+                // 前方に障害物 → 右90度転換（床/天井を左向きに移行）
+                const frontY = this.clingDir > 0
+                    ? Math.floor(this.y + this.height + 0.01)
+                    : Math.floor(this.y - 0.01);
+                if (this.checkTileCollision(engine, Math.floor(this.x + this.width * 0.5), frontY) === 1) {
+                    if (this.clingDir > 0) {
+                        this.y = frontY - this.height;
+                        this.clingFace = 'floor';
+                        this.clingAngle = 0;
+                        this.facingRight = false;          // floor: clingDir < 0 → false
+                    } else {
+                        this.y = frontY + 1;
+                        this.clingFace = 'ceiling';
+                        this.clingAngle = Math.PI;
+                        this.facingRight = true;           // ceiling: clingDir < 0 → true
+                    }
+                    this.clingDir = -1;
+                    return;
+                }
+
+                this.vy = this.clingDir * spd;
+                break;
+            }
+        }
+
         this.x += this.vx;
         this.y += this.vy;
     }
@@ -608,9 +807,9 @@ class Enemy {
             this.state = 'attack';
         } else if (this.onLadder) {
             this.state = 'climb';
-        } else if (!this.onGround && !this.isAerial) {
+        } else if (!this.onGround && !this.isAerial && this.behavior !== 'clinging') {
             this.state = 'jump';
-        } else if (this.vx !== 0) {
+        } else if (this.vx !== 0 || this.vy !== 0) {
             this.state = 'walk';
         } else {
             this.state = 'idle';
@@ -623,7 +822,7 @@ class Enemy {
         // attack スプライトがない場合は、他の状態にフォールバック
         if (slot === 'attack' && !(this.template?.sprites?.attack?.frames?.length > 0)) {
             if (this.onLadder) slot = 'climb';
-            else if (!this.onGround && !this.isAerial) slot = 'jump';
+            else if (!this.onGround && !this.isAerial && this.behavior !== 'clinging') slot = 'jump';
             else if (this.vx !== 0) slot = 'walk';
             else slot = 'idle';
         }
@@ -760,14 +959,24 @@ class Enemy {
             const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
             const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
+            const centerX = spriteDrawX + renderSize / 2;
+            const centerY = spriteDrawY + renderSize / 2;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+
             if (this.isDying) {
-                ctx.save();
-                ctx.translate(spriteDrawX + renderSize / 2, spriteDrawY + renderSize / 2);
+                // 死亡時は上下反転
                 ctx.scale(1, -1);
-                ctx.translate(-(spriteDrawX + renderSize / 2), -(spriteDrawY + renderSize / 2));
+            } else if (this.behavior === 'clinging' && !this.clingLanding) {
+                // はりつき時は面に応じて回転
+                ctx.rotate(this.clingAngle);
             }
 
-            const flipX = !this.facingRight;
+            // 左右反転（facingRight に基づく）
+            if (!this.facingRight) ctx.scale(-1, 1);
+
+            ctx.translate(-renderSize / 2, -renderSize / 2);
 
             for (let y = 0; y < dimension; y++) {
                 for (let x = 0; x < dimension; x++) {
@@ -779,15 +988,12 @@ class Enemy {
                         } else {
                             ctx.fillStyle = palette[colorIndex];
                         }
-                        const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
-                        ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                     }
                 }
             }
 
-            if (this.isDying) {
-                ctx.restore();
-            }
+            ctx.restore();
         }
     }
 }

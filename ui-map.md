@@ -461,3 +461,4 @@
 | U445 | メッセージ | Message | JS HTML template | stage-editor.js | ✓ |
 | U446 | 言語を日本語に変更しました | Language set to Japanese | Toast message | app-i18n.js | ✓ |
 | U447 | Language set to English | Language set to English | Toast message | app-i18n.js | ✓ |
+| U448 | はりつき | Cling | JS HTML template (option) | stage-editor.js | ✓ |

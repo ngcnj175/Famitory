@@ -154,6 +154,7 @@ const AppI18N = {
         'U216': { JPN: '追いかけてくる',      ENG: 'Chase' },
         'U217': { JPN: 'とっしん',            ENG: 'Rush' },
         'U218': { JPN: '空中',               ENG: 'Aerial' },
+        'U448': { JPN: 'はりつき',            ENG: 'Cling' },
         'U219': { JPN: 'ボスてき',            ENG: 'Boss Enemy' },
         'U220': { JPN: 'なし',               ENG: 'None' },
         'U221': { JPN: 'コイン',             ENG: 'Coin' },

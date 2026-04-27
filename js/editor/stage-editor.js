@@ -474,10 +474,10 @@ const StageEditor = {
                             <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>${this.t('U215')}</option>
                             <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>${this.t('U216')}</option>
                             <option value="rush" ${config.move === 'rush' ? 'selected' : ''}>${this.t('U217')}</option>
+                            <option value="clinging" ${config.move === 'clinging' ? 'selected' : ''}>${this.t('U448')}</option>
                         </select>
                     </div>
                 `;
-                html += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
                 html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 html += `
                     <div class="param-row">
