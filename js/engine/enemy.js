@@ -408,7 +408,7 @@ class Enemy {
                 const outerX = this.clingDir > 0
                     ? Math.floor(this.x + this.width)
                     : Math.floor(this.x) - 1;
-                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height)) === 0) {
+                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height + 0.1)) === 0) {
                     if (this.clingDir > 0) {
                         this.clingFace = 'wallR';
                         this.clingAngle = Math.PI / 2;
