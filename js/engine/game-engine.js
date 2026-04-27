@@ -1142,6 +1142,12 @@ const GameEngine = {
                 }
             }
 
+            // 貫通武器：今フレームの接触敵セットをリセット（前フレームと比較して新規接触を検出）
+            if (shotType === 'pinball' || shotType === 'boomerang' || shotType === 'melee') {
+                proj.prevTouchingEnemies = proj.touchingEnemies ?? new Set();
+                proj.touchingEnemies = new Set();
+            }
+
             // プレイヤーのSHOT → 敵との衝突
             if (proj.owner === 'player') {
                 if (this.player && this.player.invincible && !this.player.starPower) {
@@ -1150,6 +1156,11 @@ const GameEngine = {
                     for (const enemy of this.enemies) {
                         if (enemy.frozen) continue; // フリーズ中（ボス出現等）は無敵
                         if (!enemy.isDying && this.physics.projectileHits(proj, enemy)) {
+                            // 貫通武器：前フレームも接触中なら連続ヒット扱いでスキップ
+                            if (shotType === 'pinball' || shotType === 'boomerang' || shotType === 'melee') {
+                                proj.touchingEnemies.add(enemy);
+                                if (proj.prevTouchingEnemies.has(enemy)) continue;
+                            }
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
                             if (enemy.lives <= 0) {
