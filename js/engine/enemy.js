@@ -481,7 +481,7 @@ class Enemy {
 
             case 'wallL': {
                 this.onGround = false;
-                this.clingAngle = -Math.PI / 2;
+                this.clingAngle = Math.PI / 2;
                 this.facingRight = this.clingDir > 0;      // down=true(足元が下), up=false
 
                 // 前方に障害物 → 右90度転換（床/天井を右向きに移行）
@@ -531,7 +531,7 @@ class Enemy {
 
             case 'wallR': {
                 this.onGround = false;
-                this.clingAngle = Math.PI / 2;
+                this.clingAngle = -Math.PI / 2;
                 this.facingRight = this.clingDir < 0;      // up=true, down=false
 
                 // 前方に障害物 → 右90度転換（床/天井を左向きに移行）
