@@ -364,11 +364,12 @@ class GameRenderer {
 
         this.owner.titleBlinkTimer++;
         if (Math.floor(this.owner.titleBlinkTimer / 30) % 2 === 0) {
+            const pushStartText = AppI18N.I18N['U449'][AppI18N.currentLang] || 'PUSH START';
             ctx.font = '16px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('PUSH START', this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
         }
 
         if (this.owner.titleState === 'title') {
@@ -417,13 +418,14 @@ class GameRenderer {
     // ========== ゲームオーバー・クリア演出 ==========
     renderGameOverText() {
         const ctx = this.owner.ctx;
+        const gameOverText = AppI18N.I18N['U398'][AppI18N.currentLang] || 'GAME OVER';
         ctx.fillStyle = '#333333';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
         ctx.font = '16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText('GAME OVER', this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+        ctx.fillText(gameOverText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
     }
 
     renderGameOver() {
@@ -435,6 +437,7 @@ class GameRenderer {
         const ctx = this.owner.ctx;
         const w = this.owner.canvas.width;
         const h = this.owner.canvas.height;
+        const stageClearText = AppI18N.I18N['U397'][AppI18N.currentLang] || 'STAGE CLEAR!';
 
         if (this.owner.clearTimer > 120) {
             const wipeProgress = Math.min((this.owner.clearTimer - 120) / 30, 1);
@@ -449,7 +452,7 @@ class GameRenderer {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('STAGE CLEAR', w / 2, h / 2);
+            ctx.fillText(stageClearText, w / 2, h / 2);
         }
 
         if (this.owner.clearTimer > 210) {
@@ -699,11 +702,12 @@ class GameRenderer {
 
         // PAUSE / RE:START
         if (this.owner.isPaused && !this.owner.restartBlink) {
+            const pauseText = AppI18N.I18N['U450'][AppI18N.currentLang] || 'PAUSE';
             ctx.font = '16px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('PAUSE', this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+            ctx.fillText(pauseText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
         }
 
         if (this.owner.restartBlink) {

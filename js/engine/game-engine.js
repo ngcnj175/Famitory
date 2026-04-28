@@ -110,6 +110,11 @@ const GameEngine = {
 
     // 一時停止トグル（Startボタン用）
     togglePause() {
+        // クリア・ゲームオーバー・リザルト中はポーズ機能を無効化
+        if (this.titleState === 'clear' || this.titleState === 'gameover' || this.titleState === 'result') {
+            return;
+        }
+
         if (this.titleState === 'title') {
             // タイトル画面から開始
             this.startFromTitle();

@@ -462,3 +462,7 @@
 | U446 | 言語を日本語に変更しました | Language set to Japanese | Toast message | app-i18n.js | ✓ |
 | U447 | Language set to English | Language set to English | Toast message | app-i18n.js | ✓ |
 | U448 | はりつき | Cling | JS HTML template (option) | stage-editor.js | ✓ |
+| U397 | STAGE CLEAR! | STAGE CLEAR! | JS dom text assign / i18n | game-renderer.js / app-i18n.js | ✓ |
+| U398 | GAME OVER | GAME OVER | JS dom text assign / i18n | game-renderer.js / app-i18n.js | ✓ |
+| U449 | PUSH START | PUSH START | JS dom text assign | game-renderer.js | ✓ |
+| U450 | PAUSE | PAUSE | JS dom text assign | game-renderer.js | ✓ |
