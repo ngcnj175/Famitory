@@ -404,19 +404,23 @@ class Enemy {
                     return;
                 }
 
-                // 外コーナー：前方の足元が空 → 左90度転換（壁を下向きに移行）
+                // 外コーナー：前方の足元が空 → 右90度転換（壁の外側を下向きに移行）
                 const outerX = this.clingDir > 0
                     ? Math.floor(this.x + this.width)
-                    : Math.floor(this.x) - 1;
+                    : Math.floor(this.x - 0.01);
                 if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height + 0.1)) === 0) {
                     if (this.clingDir > 0) {
-                        this.clingFace = 'wallR';
-                        this.clingAngle = Math.PI / 2;
-                        this.facingRight = false;          // wallR: clingDir > 0 → false
-                    } else {
+                        // 右移動 → 最後の床タイル右端に位置合わせし、右外壁を下向きに
+                        this.x = outerX;
                         this.clingFace = 'wallL';
                         this.clingAngle = -Math.PI / 2;
-                        this.facingRight = true;           // wallL: clingDir > 0 → true
+                        this.facingRight = true;           // wallL: clingDir=1 > 0 → true
+                    } else {
+                        // 左移動 → 最後の床タイル左端に位置合わせし、左外壁を下向きに
+                        this.x = outerX + 1 - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = false;          // wallR: clingDir=1, 1<0 → false
                     }
                     this.clingDir = 1;                     // 下向き
                     return;
