@@ -385,7 +385,26 @@ class Enemy {
                 this.clingAngle = 0;
                 this.facingRight = this.clingDir > 0;
 
-                // 【先に外コーナーをチェック】足元が空 → 外壁を下向きに移行（時計回り優先）
+                // 内コーナー：前方に壁 → 壁を上向きに移行
+                const wallX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width + 0.01)
+                    : Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, wallX, Math.floor(this.y + this.height * 0.5)) === 1) {
+                    if (this.clingDir > 0) {
+                        this.x = wallX - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                    } else {
+                        this.x = wallX + 1;
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                    }
+                    this.clingDir = -1;
+                    this.facingRight = true;
+                    return;
+                }
+
+                // 外コーナー：足元が空 → 外壁を下向きに移行
                 const outerX = this.clingDir > 0
                     ? Math.floor(this.x + this.width)
                     : Math.floor(this.x - 0.01);
@@ -402,25 +421,6 @@ class Enemy {
                         this.facingRight = false;
                     }
                     this.clingDir = 1;
-                    return;
-                }
-
-                // 前方に壁 → 壁を上向きに移行（内コーナー）
-                const wallX = this.clingDir > 0
-                    ? Math.floor(this.x + this.width + 0.01)
-                    : Math.floor(this.x - 0.01);
-                if (this.checkTileCollision(engine, wallX, Math.floor(this.y + this.height * 0.5)) === 1) {
-                    if (this.clingDir > 0) {
-                        this.x = wallX - this.width;
-                        this.clingFace = 'wallR';
-                        this.clingAngle = Math.PI / 2;
-                    } else {
-                        this.x = wallX + 1;
-                        this.clingFace = 'wallL';
-                        this.clingAngle = -Math.PI / 2;
-                    }
-                    this.clingDir = -1;
-                    this.facingRight = true;
                     return;
                 }
 
