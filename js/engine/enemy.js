@@ -385,7 +385,27 @@ class Enemy {
                 this.clingAngle = 0;
                 this.facingRight = this.clingDir > 0;
 
-                // 前方に障害物 → 右90度転換（壁を上向きに移行）
+                // 【先に外コーナーをチェック】足元が空 → 外壁を下向きに移行（時計回り優先）
+                const outerX = this.clingDir > 0
+                    ? Math.floor(this.x + this.width)
+                    : Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height + 0.1)) === 0) {
+                    if (this.clingDir > 0) {
+                        this.x = outerX;
+                        this.clingFace = 'wallL';
+                        this.clingAngle = -Math.PI / 2;
+                        this.facingRight = true;
+                    } else {
+                        this.x = outerX + 1 - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = false;
+                    }
+                    this.clingDir = 1;
+                    return;
+                }
+
+                // 前方に壁 → 壁を上向きに移行（内コーナー）
                 const wallX = this.clingDir > 0
                     ? Math.floor(this.x + this.width + 0.01)
                     : Math.floor(this.x - 0.01);
@@ -399,30 +419,8 @@ class Enemy {
                         this.clingFace = 'wallL';
                         this.clingAngle = -Math.PI / 2;
                     }
-                    this.clingDir = -1;                   // 上向き
-                    this.facingRight = true;               // wallR/wallL: clingDir < 0 → true
-                    return;
-                }
-
-                // 外コーナー：前方の足元が空 → 右90度転換（壁の外側を下向きに移行）
-                const outerX = this.clingDir > 0
-                    ? Math.floor(this.x + this.width)
-                    : Math.floor(this.x - 0.01);
-                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + this.height + 0.1)) === 0) {
-                    if (this.clingDir > 0) {
-                        // 右移動 → 最後の床タイル右端に位置合わせし、右外壁を下向きに
-                        this.x = outerX;
-                        this.clingFace = 'wallL';
-                        this.clingAngle = -Math.PI / 2;
-                        this.facingRight = true;           // wallL: clingDir=1 > 0 → true
-                    } else {
-                        // 左移動 → 最後の床タイル左端に位置合わせし、左外壁を下向きに
-                        this.x = outerX + 1 - this.width;
-                        this.clingFace = 'wallR';
-                        this.clingAngle = Math.PI / 2;
-                        this.facingRight = false;          // wallR: clingDir=1, 1<0 → false
-                    }
-                    this.clingDir = 1;                     // 下向き
+                    this.clingDir = -1;
+                    this.facingRight = true;
                     return;
                 }
 
