@@ -453,19 +453,23 @@ class Enemy {
                     return;
                 }
 
-                // 外コーナー：前方の頭上が空 → 左90度転換（壁を上向きに移行）
+                // 外コーナー：前方の頭上が空 → 外壁を上向きに移行
                 const outerX = this.clingDir > 0
                     ? Math.floor(this.x + this.width)
-                    : Math.floor(this.x) - 1;
-                if (this.checkTileCollision(engine, outerX, Math.floor(this.y) - 1) === 0) {
+                    : Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, outerX, Math.floor(this.y + 0.1) - 1) === 0) {
                     if (this.clingDir > 0) {
-                        this.clingFace = 'wallR';
-                        this.clingAngle = Math.PI / 2;
-                        this.facingRight = true;           // wallR: clingDir < 0 → true
-                    } else {
+                        // 右移動 → 最後の天井タイル右端の外面を上向きに（wallL）
+                        this.x = outerX;
                         this.clingFace = 'wallL';
                         this.clingAngle = -Math.PI / 2;
-                        this.facingRight = false;          // wallL: clingDir < 0 → false
+                        this.facingRight = false;          // wallL: clingDir<0 → false
+                    } else {
+                        // 左移動 → 最後の天井タイル左端の外面を上向きに（wallR）
+                        this.x = outerX + 1 - this.width;
+                        this.clingFace = 'wallR';
+                        this.clingAngle = Math.PI / 2;
+                        this.facingRight = true;           // wallR: clingDir<0 → true
                     }
                     this.clingDir = -1;                    // 上向き
                     return;
@@ -500,6 +504,27 @@ class Enemy {
                     return;
                 }
 
+                // 外コーナー：壁が終わる → 床(上向き時)/天井(下向き時)に移行
+                const wallCol = Math.floor(this.x - 0.01);
+                if (this.checkTileCollision(engine, wallCol, frontY) === 0) {
+                    if (this.clingDir > 0) {
+                        // 下方向で壁終了 → 天井(ブロック下面)を左向きに
+                        this.y = frontY;
+                        this.clingFace = 'ceiling';
+                        this.clingAngle = Math.PI;
+                        this.clingDir = -1;
+                        this.facingRight = true;   // ceiling: clingDir < 0 → true
+                    } else {
+                        // 上方向で壁終了 → 床(ブロック上面)を左向きに
+                        this.y = frontY + 1 - this.height;
+                        this.clingFace = 'floor';
+                        this.clingAngle = 0;
+                        this.clingDir = -1;
+                        this.facingRight = false;  // floor: clingDir < 0 → false
+                    }
+                    return;
+                }
+
                 this.vy = this.clingDir * spd;
                 break;
             }
@@ -526,6 +551,27 @@ class Enemy {
                         this.facingRight = true;           // ceiling: clingDir < 0 → true
                     }
                     this.clingDir = -1;
+                    return;
+                }
+
+                // 外コーナー：壁が終わる → 床(上向き時)/天井(下向き時)に移行
+                const wallRCol = Math.floor(this.x + this.width + 0.01);
+                if (this.checkTileCollision(engine, wallRCol, frontY) === 0) {
+                    if (this.clingDir > 0) {
+                        // 下方向で壁終了 → 天井(ブロック下面)を右向きに
+                        this.y = frontY;
+                        this.clingFace = 'ceiling';
+                        this.clingAngle = Math.PI;
+                        this.clingDir = 1;
+                        this.facingRight = false;  // ceiling: clingDir > 0 → false
+                    } else {
+                        // 上方向で壁終了 → 床(ブロック上面)を右向きに
+                        this.y = frontY + 1 - this.height;
+                        this.clingFace = 'floor';
+                        this.clingAngle = 0;
+                        this.clingDir = 1;
+                        this.facingRight = true;   // floor: clingDir > 0 → true
+                    }
                     return;
                 }
 
