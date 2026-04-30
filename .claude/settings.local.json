@@ -81,7 +81,9 @@
       "Bash(node -c js/app-project.js)",
       "Bash(node -c js/app.js)",
       "Bash(node -c js/app-share.js)",
-      "Read(//c/c/Users/ngcnj/OneDrive/ドキュメント/Antigravity/PixelGameKit/js/**)"
+      "Read(//c/c/Users/ngcnj/OneDrive/ドキュメント/Antigravity/PixelGameKit/js/**)",
+      "Bash(powershell -command \"Select-String -Path 'C:\\\\Users\\\\ngcnj\\\\OneDrive\\\\ドキュメント\\\\マイアプリ\\\\RetroGame\\\\Famitory_202604282220\\\\js\\\\editor\\\\stage-editor.js' -Pattern 'isAerial|U218|aerial|clinging' | Select-Object LineNumber, Line\")",
+      "Bash(powershell -command \"Select-String -Path 'C:\\\\Users\\\\ngcnj\\\\OneDrive\\\\ドキュメント\\\\マイアプリ\\\\RetroGame\\\\Famitory_202604282220\\\\js\\\\engine\\\\enemy.js' -Pattern 'isAerial|U218' | Select-Object LineNumber, Line\")"
     ]
   }
 }

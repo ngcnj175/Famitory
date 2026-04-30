@@ -478,6 +478,9 @@ const StageEditor = {
                         </select>
                     </div>
                 `;
+                if (config.move !== 'clinging') {
+                    html += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
+                }
                 html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 html += `
                     <div class="param-row">
@@ -921,7 +924,7 @@ const StageEditor = {
                     }
 
                     // itemType縺悟､画峩縺輔ｌ縺溷ｴ蜷医・UI繝ｪ繝輔Ξ繝・す繝･・医Γ繝・そ繝ｼ繧ｸ谺・・陦ｨ遉ｺ/髱櫁｡ｨ遉ｺ・・
-                    if (key === 'itemType' || key === 'gimmick') {
+                    if (key === 'itemType' || key === 'gimmick' || key === 'move') {
                         this.renderConfigContent();
                         this.initConfigEvents();
                     }
