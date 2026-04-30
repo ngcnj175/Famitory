@@ -248,6 +248,39 @@ const AppProject = {
     loadProject(name) {
         const data = Storage.loadProject(name);
         if (data) {
+            // ゲームループを確実に停止（isRunning=true でも showPreview が呼ばれるよう）
+            if (typeof GameEngine !== 'undefined') {
+                GameEngine.stop();
+                GameEngine.hasStarted = false;
+                GameEngine.isPaused = false;
+                GameEngine.titleState = 'title';
+            }
+
+            // スプライトエディタの揮発状態をクリア
+            if (typeof SpriteEditorPreview !== 'undefined') {
+                if (SpriteEditorPreview.previewTimer) {
+                    clearTimeout(SpriteEditorPreview.previewTimer);
+                    SpriteEditorPreview.previewTimer = null;
+                }
+                SpriteEditorPreview.previewPlaying = false;
+                SpriteEditorPreview.previewFrames = [];
+                SpriteEditorPreview.previewCurrentFrame = 0;
+            }
+            if (typeof SpriteEditor !== 'undefined') {
+                SpriteEditor.currentSprite = 0;
+                SpriteEditor.history = [];
+                SpriteEditor.historyIndex = -1;
+                SpriteEditor.selectionMode = false;
+                SpriteEditor.selectionStart = null;
+                SpriteEditor.selectionEnd = null;
+                SpriteEditor.isFloating = false;
+                SpriteEditor.floatingData = null;
+                SpriteEditor.pasteMode = false;
+                SpriteEditor.pasteData = null;
+                SpriteEditor.viewportOffsetX = 0;
+                SpriteEditor.viewportOffsetY = 0;
+            }
+
             App.projectData = data;
             App.currentProjectName = name;
 
