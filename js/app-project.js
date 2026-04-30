@@ -436,17 +436,17 @@ const AppProject = {
         const scrollContainer = document.getElementById('project-list-scroll');
         const closeBtn = document.getElementById('project-list-close');
 
-        if (scrollContainer) {
-            scrollContainer.addEventListener('touchmove', (e) => {
-                e.stopPropagation();
-            }, { passive: true });
-        }
-
         const openBtn = document.getElementById('project-open-btn');
         const copyBtn = document.getElementById('project-copy-btn');
         const deleteBtn = document.getElementById('project-delete-btn');
 
         if (!modal || !listContainer) return;
+
+        // touchmoveリスナーは1回だけ登録（呼び出しのたびに蓄積しない）
+        if (scrollContainer && !scrollContainer._stopPropBound) {
+            scrollContainer.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
+            scrollContainer._stopPropBound = true;
+        }
 
         let selectedName = null;
 
@@ -455,6 +455,23 @@ const AppProject = {
             openBtn.disabled = disabled;
             copyBtn.disabled = disabled;
             deleteBtn.disabled = disabled;
+        };
+
+        // 選択状態をDOMに直接反映（renderList再呼び出しによるDOM再生成を避ける）
+        const setSelected = (name) => {
+            listContainer.querySelectorAll('.list-item').forEach(el => {
+                const isSelected = el.dataset.name === name;
+                el.classList.toggle('selected', isSelected);
+                const arrow = el.querySelector('.list-item-arrow');
+                if (arrow) arrow.textContent = isSelected ? '▶' : '';
+                const nameEl = el.querySelector('.list-item-name');
+                const wrapper = el.querySelector('.list-item-name-wrapper');
+                if (nameEl && wrapper) {
+                    const isLong = nameEl.scrollWidth > wrapper.clientWidth;
+                    nameEl.classList.toggle('long-text', isLong);
+                    nameEl.classList.toggle('scrolling', isSelected && isLong);
+                }
+            });
         };
 
         const renderList = () => {
@@ -473,9 +490,8 @@ const AppProject = {
             list.forEach(p => {
                 const item = document.createElement('div');
                 item.className = 'list-item';
-                if (p.name === selectedName) {
-                    item.classList.add('selected');
-                }
+                item.dataset.name = p.name;
+                if (p.name === selectedName) item.classList.add('selected');
 
                 const d = new Date(p.updatedAt);
                 const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
@@ -490,42 +506,30 @@ const AppProject = {
                     </div>
                 `;
 
+                // onclickのみ使用（ondblclickはiOSのダブルタップズームと競合するため削除）
                 item.onclick = () => {
-                    if (selectedName !== p.name) {
-                        selectedName = p.name;
-                        renderList();
-                        updateButtons();
-                    }
-                };
-
-                item.ondblclick = () => {
+                    if (selectedName === p.name) return;
                     selectedName = p.name;
-                    openBtn.click();
+                    setSelected(p.name);
+                    updateButtons();
                 };
 
                 listContainer.appendChild(item);
             });
-            updateButtons();
 
             setTimeout(() => {
-                const items = listContainer.querySelectorAll('.list-item');
-                items.forEach(item => {
+                listContainer.querySelectorAll('.list-item').forEach(item => {
                     const nameEl = item.querySelector('.list-item-name');
                     const wrapper = item.querySelector('.list-item-name-wrapper');
                     if (nameEl && wrapper) {
-                        if (nameEl.scrollWidth > wrapper.clientWidth) {
-                            nameEl.classList.add('long-text');
-                        } else {
-                            nameEl.classList.remove('long-text');
-                        }
-                        if (item.classList.contains('selected') && nameEl.classList.contains('long-text')) {
-                            nameEl.classList.add('scrolling');
-                        } else {
-                            nameEl.classList.remove('scrolling');
-                        }
+                        const isLong = nameEl.scrollWidth > wrapper.clientWidth;
+                        nameEl.classList.toggle('long-text', isLong);
+                        nameEl.classList.toggle('scrolling', item.classList.contains('selected') && isLong);
                     }
                 });
             }, 50);
+
+            updateButtons();
         };
 
         selectedName = null;
@@ -544,20 +548,14 @@ const AppProject = {
         copyBtn.onclick = () => {
             if (!selectedName) return;
             let newName = selectedName + '\u200B';
-            while (Storage.projectExists(newName)) {
-                newName += '\u200B';
-            }
-            if (Storage.duplicateProject(selectedName, newName)) {
-                renderList();
-            }
+            while (Storage.projectExists(newName)) newName += '\u200B';
+            if (Storage.duplicateProject(selectedName, newName)) renderList();
         };
 
         deleteBtn.onclick = () => {
             if (!selectedName) return;
             Storage.deleteProject(selectedName);
-            if (App.currentProjectName === selectedName) {
-                App.currentProjectName = null;
-            }
+            if (App.currentProjectName === selectedName) App.currentProjectName = null;
             selectedName = null;
             renderList();
         };
