@@ -656,7 +656,7 @@ const App = {
     switchScreen(screenName) {
         // もしSoundEditorが再生中なら停止
         if (this.currentScreen === 'sound' && screenName !== 'sound') {
-            if (typeof SoundEditor !== 'undefined' && SoundEditor.isPlaying) {
+            if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.isPlaying) {
                 SoundEditor.stop();
             }
         }

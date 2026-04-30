@@ -37,6 +37,10 @@ const NesAudio = {
             if (window.GameEngine && GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
                 GameEngine.gameBgmPlayer.audioCtx.resume().catch(() => {});
             }
+            // BGMエディタのAudioContext
+            if (window.SoundEditor && SoundEditor.player?.audioCtx?.state === 'suspended') {
+                SoundEditor.player.audioCtx.resume().catch(() => {});
+            }
         };
 
         // ページが前面に戻った時
