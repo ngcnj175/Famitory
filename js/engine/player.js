@@ -614,14 +614,6 @@ class Player {
             const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
             const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
 
-            // ダメージ無敵中はファミコン風に高速点滅（描画スキップ）させる
-            if (this.invincible && !this.starPower) {
-                if (Math.floor(this.invincibleTimer / 4) % 2 === 0) {
-                    ctx.restore();
-                    return;
-                }
-            }
-
             // 左向きの場合は反転描画
             const flipX = !this.facingRight;
 
