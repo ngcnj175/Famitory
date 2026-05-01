@@ -706,6 +706,11 @@ class BgmPlayer {
         this.isPaused = false;
 
         this.playInterval = setInterval(() => {
+            // AudioContextがsuspendedの場合、再開を試みてこのステップをスキップ
+            if (this.audioCtx && this.audioCtx.state !== 'running') {
+                this.audioCtx.resume().catch(() => {});
+                return;
+            }
             // 一時停止中はスキップ
             if (this.isPaused) return;
             if (isPausedFn && isPausedFn()) return;

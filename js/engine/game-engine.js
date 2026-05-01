@@ -63,6 +63,14 @@ const GameEngine = {
         // 物理演算エンジン初期化
         this.physics = new GamePhysics(this);
 
+        // タイトル画面のキャンバスタップでゲーム開始（STARTボタンが反応しない場合のフォールバック）
+        this.canvas.addEventListener('pointerdown', () => {
+            if (this.titleState === 'title' && typeof App !== 'undefined' && App.currentScreen === 'play') {
+                if (typeof NesAudio !== 'undefined') NesAudio.ensureContext();
+                this.togglePause();
+            }
+        });
+
         // イースターエッグウィンドウ用クリックハンドラ
         this.canvas.addEventListener('click', (e) => {
             if (this.easterMessageActive && this.easterCloseButton) {
@@ -144,6 +152,15 @@ const GameEngine = {
     },
 
     startFromTitle() {
+        // iOS対応: ユーザー操作中（タップ直後）にすべてのAudioContextを起動
+        if (typeof NesAudio !== 'undefined') {
+            NesAudio.ensureContext();
+        }
+        if (!this.gameBgmPlayer) {
+            this.gameBgmPlayer = new BgmPlayer();
+        }
+        this.gameBgmPlayer.init();
+
         // ゲーム状態を完全リセット
         this.initGame();
 

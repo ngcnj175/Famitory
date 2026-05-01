@@ -100,16 +100,17 @@ const App = {
 
         // iOS/Safari向けのグローバルなAudioContext復帰処理（ユーザーインタラクション時に発火）
         const resumeAudioContexts = () => {
-            if (typeof GameEngine !== 'undefined') {
-                if (GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
-                    GameEngine.gameBgmPlayer.audioCtx.resume();
-                }
-                if (GameEngine.audioCtx && GameEngine.audioCtx.state === 'suspended') {
-                    GameEngine.audioCtx.resume();
-                }
+            // SE用 AudioContext（NesAudio）
+            if (typeof NesAudio !== 'undefined') {
+                NesAudio.ensureContext();
             }
-            if (typeof SoundEditor !== 'undefined' && SoundEditor.audioCtx && SoundEditor.audioCtx.state === 'suspended') {
-                SoundEditor.audioCtx.resume();
+            // ゲームBGM用
+            if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
+                GameEngine.gameBgmPlayer.audioCtx.resume().catch(() => {});
+            }
+            // BGMエディタ用
+            if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.audioCtx?.state === 'suspended') {
+                SoundEditor.player.audioCtx.resume().catch(() => {});
             }
         };
         document.addEventListener('touchstart', resumeAudioContexts, { passive: true });

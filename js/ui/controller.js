@@ -209,6 +209,14 @@ const GameController = {
         this.startPressTime = performance.now();
         this.startHolding = true;
 
+        // iOS対応: ユーザー操作中（touchstart直後）にAudioContextを起動
+        if (typeof NesAudio !== 'undefined') {
+            NesAudio.ensureContext();
+        }
+        if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer?.audioCtx?.state === 'suspended') {
+            GameEngine.gameBgmPlayer.audioCtx.resume().catch(() => {});
+        }
+
         // フレームごとに進捗を更新
         const updateHold = () => {
             if (!this.startHolding) return;
