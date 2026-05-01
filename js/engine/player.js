@@ -601,6 +601,7 @@ class Player {
         const sprite = App.projectData.sprites[spriteIdx];
 
         if (sprite) {
+            ctx.save();
             const palette = App.nesPalette;
             // スプライトサイズを判定
             const spriteSize = sprite.size || 1;
@@ -616,13 +617,9 @@ class Player {
             // ダメージ無敵中はファミコン風に高速点滅（描画スキップ）させる
             if (this.invincible && !this.starPower) {
                 if (Math.floor(this.invincibleTimer / 4) % 2 === 0) {
-                    return; // 描画をスキップ
+                    ctx.restore();
+                    return;
                 }
-            }
-
-            // スターパワー中は薄くする（全体を虹色にするため）
-            if (this.starPower) {
-                ctx.globalAlpha = 0.8;
             }
 
             // 左向きの場合は反転描画
@@ -647,7 +644,7 @@ class Player {
                 }
             }
 
-            ctx.globalAlpha = 1.0;
+            ctx.restore();
         }
     }
 
