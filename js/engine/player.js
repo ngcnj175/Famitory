@@ -620,35 +620,44 @@ class Player {
                 }
             }
 
-            // スターパワー中は薄くする（全体を虹色にするため）
-            if (this.starPower) {
-                ctx.globalAlpha = 0.8;
-            }
-
             // 左向きの場合は反転描画
             const flipX = !this.facingRight;
+
+            const activePalette = this.starPower
+                ? this._hueShiftPalette(palette, (Math.floor(this.starTimer) * 4) % 360)
+                : palette;
 
             for (let y = 0; y < dimension; y++) {
                 for (let x = 0; x < dimension; x++) {
                     const colorIndex = sprite.data[y]?.[x];
                     if (colorIndex >= 0) {
-                        let color = palette[colorIndex];
-                        // スターパワー中はファミコン風パレットサイクリング
-                        if (this.starPower) {
-                            // 4色パターンを1フレームごとに切り替え（高速、明るい色）
-                            const starColors = ['#FF6B6B', '#FFFF6B', '#6BFF6B', '#6BFFFF'];
-                            const colorPhase = Math.floor(this.starTimer) % 4;
-                            color = starColors[colorPhase];
-                        }
-                        ctx.fillStyle = color;
+                        ctx.fillStyle = activePalette[colorIndex];
                         const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
                         ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                     }
                 }
             }
 
-            ctx.globalAlpha = 1.0;
         }
+    }
+
+    _hueShiftPalette(palette, deg) {
+        return palette.map(hex => {
+            if (!hex || hex.length !== 7) return hex;
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            const l = (max + min) / 2, d = max - min;
+            const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+            let h = 0;
+            if (d > 0) {
+                if (max === r) h = ((((g - b) / d % 6) + 6) % 6) * 60;
+                else if (max === g) h = ((b - r) / d + 2) * 60;
+                else h = ((r - g) / d + 4) * 60;
+            }
+            return `hsl(${Math.round((h + deg) % 360)},${Math.round(s * 100)}%,${Math.round(l * 100)}%)`;
+        });
     }
 
     renderDeathParticles(ctx, tileSize, camera) {
