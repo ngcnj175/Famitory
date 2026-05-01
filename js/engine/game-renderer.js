@@ -112,21 +112,9 @@ class GameRenderer {
             }
         });
 
-        // 4. エネミー（生存中のみ、死亡中・chase動作はFGの後で描画）
+        // 4. エネミー（chase・死亡中を除く）
         this.owner.enemies.forEach(enemy => {
-            if (enemy.isDying) return;
-            // chase敵はFGブロックより前面に表示するため後で描画
-            if (enemy.behavior === 'chase') return;
-
-            // 隠れているエネミー（frozenかつ当たり判定ありブロックがある）は描画しない
-            if (enemy.frozen) {
-                const ex = Math.floor(enemy.x);
-                const ey = Math.floor(enemy.y);
-                if (this.owner.getCollision(ex, ey) === 1) {
-                    return; // 隠す
-                }
-            }
-            enemy.render(this.owner.ctx, this.owner.TILE_SIZE, this.owner.camera);
+            if (!enemy.isDying && enemy.behavior !== 'chase') this._renderEnemyIfVisible(enemy);
         });
 
         // 5. プレイヤー（クリア演出中はFGレイヤー後に描画するためスキップ、死亡落下中もスキップ）
@@ -139,18 +127,9 @@ class GameRenderer {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
         }
 
-        // 6.5. chase敵（FGブロックより前面に表示・透過仕様維持）
+        // 6.5. chase敵（FGブロックより前面）
         this.owner.enemies.forEach(enemy => {
-            if (enemy.isDying) return;
-            if (enemy.behavior !== 'chase') return;
-            if (enemy.frozen) {
-                const ex = Math.floor(enemy.x);
-                const ey = Math.floor(enemy.y);
-                if (this.owner.getCollision(ex, ey) === 1) {
-                    return; // 隠す
-                }
-            }
-            enemy.render(this.owner.ctx, this.owner.TILE_SIZE, this.owner.camera);
+            if (!enemy.isDying && enemy.behavior === 'chase') this._renderEnemyIfVisible(enemy);
         });
 
         // 6.6. クリア演出中のプレイヤー（喜びジャンプを前景に表示）
@@ -342,6 +321,17 @@ class GameRenderer {
                 }
             }
         }
+    }
+
+    // ========== 敵描画ヘルパー ==========
+    // frozen敵がFG衝突ブロック内にいる場合は非表示、それ以外は描画
+    _renderEnemyIfVisible(enemy) {
+        if (enemy.frozen) {
+            const ex = Math.floor(enemy.x);
+            const ey = Math.floor(enemy.y);
+            if (this.owner.getCollision(ex, ey) === 1) return;
+        }
+        enemy.render(this.owner.ctx, this.owner.TILE_SIZE, this.owner.camera);
     }
 
     // ========== スプライト描画 ==========
