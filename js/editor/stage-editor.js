@@ -103,8 +103,17 @@ const StageEditor = {
         this.initTemplateList();
         this.initCanvasEvents();
         this.updateStageSettingsUI();
+        this.resetScrollToBottomLeft();
         this.resize();
         this.render();
+    },
+
+    resetScrollToBottomLeft() {
+        this.canvasScrollX = 0;
+        const stageHeight = App.projectData?.stage?.height ?? 16;
+        const tileSize = this.tileSize || 20;
+        const stagePixelHeight = stageHeight * tileSize;
+        this.canvasScrollY = stagePixelHeight > 320 ? -(stagePixelHeight - 320) : 0;
     },
 
     // ========== 繝・・繝ｫ繝舌・ ==========
