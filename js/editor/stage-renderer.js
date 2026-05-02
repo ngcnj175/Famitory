@@ -123,7 +123,15 @@ class StageRenderer {
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, dimension, dimension);
 
-        SpriteUtils.drawPixels(ctx, sprite, 0, 0, 1, palette);
+        for (let py = 0; py < dimension; py++) {
+            for (let px = 0; px < dimension; px++) {
+                const colorIndex = sprite.data[py]?.[px];
+                if (colorIndex >= 0) {
+                    ctx.fillStyle = palette[colorIndex];
+                    ctx.fillRect(px, py, 1, 1);
+                }
+            }
+        }
     }
 
     // ─────────────────────────────────────────
