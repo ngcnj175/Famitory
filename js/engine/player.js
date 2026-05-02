@@ -37,6 +37,14 @@ class Player {
         this.gravity = 0.02;
         this.maxFallSpeed = 0.4;
 
+        // Bダッシュ
+        this.bDashEnabled = template?.config?.bDash || false;
+        this.dashSpeed = this.moveSpeed;
+        this._dashAccel = this.moveSpeed * 0.5 / 30;
+        this._bHoldTimer = 0;
+        this._bDashActive = false;
+        this._bKeyWasPressed = false;
+
         // ダメージシステム
         const templateLives = template?.config?.life || 3;
         this.lives = templateLives;
@@ -254,13 +262,40 @@ class Player {
 
         this.vx = 0;
 
+        // Bボタン: 立ち上がりで攻撃1発、長押しでダッシュ（bDash ON時）
+        const bNow = GameController.isPressed('b');
+        if (bNow && !this._bKeyWasPressed) {
+            this._bHoldTimer = 0;
+            if (this.shotMaxRange > 0 && this.attackCooldown <= 0) {
+                this.attack(engine);
+            }
+        }
+        if (bNow) {
+            this._bHoldTimer++;
+            if (this.bDashEnabled && this._bHoldTimer >= 10) {
+                this._bDashActive = true;
+            }
+        } else {
+            this._bDashActive = false;
+            this._bHoldTimer = 0;
+        }
+        this._bKeyWasPressed = bNow;
+
         if (GameController.isPressed('left')) {
-            this.vx = -this.moveSpeed;
+            this.vx = -this.dashSpeed;
             this.facingRight = false;
         }
         if (GameController.isPressed('right')) {
-            this.vx = this.moveSpeed;
+            this.vx = this.dashSpeed;
             this.facingRight = true;
+        }
+
+        // ダッシュ速度の更新
+        const isMovingH = GameController.isPressed('left') || GameController.isPressed('right');
+        if (this._bDashActive && this.onGround && isMovingH) {
+            this.dashSpeed = Math.min(this.dashSpeed + this._dashAccel, this.moveSpeed * 1.5);
+        } else if (this.dashSpeed > this.moveSpeed) {
+            this.dashSpeed = Math.max(this.dashSpeed * 0.92, this.moveSpeed);
         }
 
         // はしご上では上下移動（十字キー）、ジャンプ無効（最上部のみジャンプ可）
@@ -287,12 +322,6 @@ class Player {
             }
 
             this._jumpKeyWasPressed = GameController.isPressed('a');
-
-            // はしご上でのBキー攻撃（最上部に限らず全体で許可するか、今回は「一番上」の仕様に沿って判定）
-            if (atLadderTop && GameController.isPressed('b') && this.shotMaxRange > 0 && this.attackCooldown <= 0) {
-                this.attack(engine);
-            }
-
             return; // はしご上での基本処理終了
         }
 
@@ -310,16 +339,10 @@ class Player {
                 this.vy = this.jumpPower;
                 this.hasDoubleJumped = true;
                 this.canDoubleJump = false;
-                // SE再生
                 this.playSE('jump');
             }
         }
         this._jumpKeyWasPressed = GameController.isPressed('a');
-
-        // Bキー攻撃
-        if (GameController.isPressed('b') && this.shotMaxRange > 0 && this.attackCooldown <= 0) {
-            this.attack(engine);
-        }
     }
 
     attack(engine) {
@@ -467,6 +490,9 @@ class Player {
         const jumpConfig = newTemplate.config?.jumpPower ?? 10;
         this.moveSpeed = 0.05 + (speedConfig / 10) * 0.1;
         this.jumpPower = -0.2 - (jumpConfig / 20) * 0.3;
+        this.bDashEnabled = newTemplate.config?.bDash || false;
+        this.dashSpeed = this.moveSpeed;
+        this._dashAccel = this.moveSpeed * 0.5 / 30;
 
         // ライフ（現在値を維持、最大値は新テンプレートに合わせる）
         const newMaxLives = newTemplate.config?.life ?? 3;
@@ -512,7 +538,9 @@ class Player {
     }
 
     handleHorizontalCollision(engine) {
-        PhysicsHandler.handleHorizontalCollision(this, engine, false);
+        PhysicsHandler.handleHorizontalCollision(this, engine, false, {
+            onWallHit: () => { this.dashSpeed = this.moveSpeed; }
+        });
     }
 
     handleVerticalCollision(engine) {

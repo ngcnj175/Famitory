@@ -466,3 +466,4 @@
 | U398 | GAME OVER | GAME OVER | JS dom text assign / i18n | game-renderer.js / app-i18n.js | ✓ |
 | U449 | PUSH START | PUSH START | JS dom text assign | game-renderer.js | ✓ |
 | U450 | PAUSE | PAUSE | JS dom text assign | game-renderer.js | ✓ |
+| U451 | Bダッシュ | B-Dash | JS message/literal | stage-editor.js | ✓ |

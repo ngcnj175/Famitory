@@ -29,18 +29,18 @@ class PhysicsHandler {
             if (engine.getCollision(left, ty) === 1) {
                 entity.x = left + 1 - shrinkX;
                 entity.vx = 0;
-                // 敵の場合のみ向きを反転
                 if (callbacks.onFacingRightUpdate) {
                     callbacks.onFacingRightUpdate(true);
                 }
+                if (callbacks.onWallHit) callbacks.onWallHit();
             }
             if (engine.getCollision(right, ty) === 1) {
                 entity.x = right - entity.width + shrinkX;
                 entity.vx = 0;
-                // 敵の場合のみ向きを反転
                 if (callbacks.onFacingRightUpdate) {
                     callbacks.onFacingRightUpdate(false);
                 }
+                if (callbacks.onWallHit) callbacks.onWallHit();
             }
         }
     }

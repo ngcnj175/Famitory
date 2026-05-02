@@ -52,6 +52,7 @@ const AppI18N = {
         'U398': { JPN: 'GAME OVER',           ENG: 'GAME OVER' },
         'U449': { JPN: 'PUSH START',          ENG: 'PUSH START' },
         'U450': { JPN: 'PAUSE',               ENG: 'PAUSE' },
+        'U451': { JPN: 'Bダッシュ',           ENG: 'B-Dash' },
         // ---- 共有ダイアログ ----
         'U140': { JPN: 'ゲームを共有',         ENG: 'Share Game' },
         'U141': { JPN: 'リミックスOK',         ENG: 'Allow Remix' },

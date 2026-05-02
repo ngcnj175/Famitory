@@ -443,7 +443,7 @@ const StageEditor = {
         if (type === 'player' || type === 'enemy') {
             // ① 能力
             html += `<div class="param-section-label">${this.t('U206')}</div>`;
-            html += this.renderSlider(this.t('U207'), 'speed', config.speed ?? 5, 1, 10);
+            html += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
 
             // ② ジャンプ力（プレイヤーは 2段ジャンプトグル付き）
             if (type === 'player') {
