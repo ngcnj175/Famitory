@@ -662,6 +662,13 @@ const App = {
             }
         }
 
+        // PLAYから編集画面へ遷移する際はゲームを停止
+        if (this.currentScreen === 'play' && screenName !== 'play') {
+            if (typeof GameEngine !== 'undefined') {
+                GameEngine.stop();
+            }
+        }
+
         this.currentScreen = screenName;
 
         // 画面切り替え
@@ -685,11 +692,7 @@ const App = {
             case 'play':
                 this.updateGameInfo();
                 if (typeof GameEngine !== 'undefined') {
-                    if (!GameEngine.isRunning || GameEngine.isPaused) {
-                        GameEngine.showPreview();
-                    } else {
-                        GameEngine.resize();
-                    }
+                    GameEngine.showPreview();
                 }
                 break;
             case 'paint':
