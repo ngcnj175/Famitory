@@ -660,10 +660,6 @@ const GameEngine = {
                     const overlay = document.getElementById('result-overlay');
                     if (overlay) overlay.classList.add('hidden');
                     app.switchScreen('play');
-                    if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-                    const navPlayBtn = document.getElementById('nav-play-btn');
-                    if (navPlayBtn) navPlayBtn.classList.add('active-nav');
                     return;
                 }
                 this.titleState = 'result';
@@ -699,10 +695,6 @@ const GameEngine = {
                     const overlay = document.getElementById('result-overlay');
                     if (overlay) overlay.classList.add('hidden');
                     app.switchScreen('play');
-                    if (typeof GameEngine !== 'undefined') GameEngine.showPreview();
-                    document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
-                    const navPlayBtn = document.getElementById('nav-play-btn');
-                    if (navPlayBtn) navPlayBtn.classList.add('active-nav');
                     return;
                 }
                 this.titleState = 'result';
