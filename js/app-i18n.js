@@ -239,6 +239,7 @@ const AppI18N = {
         'U431': { JPN: '現在',               ENG: 'Current' },
         'U432': { JPN: '編集中',             ENG: 'Editing' },
         'U433': { JPN: 'よく使う色',         ENG: 'Recent Colors' },
+        'U452': { JPN: 'カラーパレット',     ENG: 'Color Palette' },
         'U434': { JPN: 'はい',               ENG: 'Yes' },
         'U435': { JPN: 'いいえ',             ENG: 'No' },
         'U306': { JPN: '閉じる',             ENG: 'Close' },

@@ -389,6 +389,8 @@ class StageSettings {
 
     openBgColorPicker() {
         const currentColor = App.projectData.stage.bgColor || '#3CBCFC';
+        const lang = AppI18N.currentLang;
+        const t = (id, fallback) => AppI18N.I18N?.[id]?.[lang] || fallback;
 
         // 状態
         let hue = 0, saturation = 100, brightness = 100;
@@ -449,14 +451,14 @@ class StageSettings {
         modal.style.cssText = 'background:#2d2d44;padding:20px;border-radius:16px;width:90%;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,0.4);';
 
         modal.innerHTML = `
-            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;text-align:center;">背景色</div>
+            <div style="color:#fff;font-size:16px;font-weight:600;margin-bottom:16px;text-align:center;">${t('U050', '背景色')}</div>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">現在</div>
+                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">${t('U431', '現在')}</div>
                     <div id="cp-current" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
                 <div style="flex:1;text-align:center;">
-                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">編集中</div>
+                    <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">${t('U432', '編集中')}</div>
                     <div id="cp-new" style="width:100%;height:50px;border-radius:8px;border:2px solid #444466;background:${currentColor};"></div>
                 </div>
             </div>
@@ -498,11 +500,11 @@ class StageSettings {
                 <input type="text" id="cp-hex" value="${currentColor}" maxlength="7" style="flex:1;padding:10px 12px;border:2px solid #444466;border-radius:8px;background:#1a1a2e;color:#fff;font-family:monospace;font-size:14px;text-transform:uppercase;">
             </div>
             <div style="margin-bottom:16px;">
-                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">カラーパレット</div>
+                <div style="color:#8888aa;font-size:11px;margin-bottom:6px;">${t('U452', 'カラーパレット')}</div>
                 <div id="cp-recent" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
             </div>
             <div style="display:flex;gap:10px;">
-                <button id="cp-cancel" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#444466;color:#fff;">キャンセル</button>
+                <button id="cp-cancel" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#444466;color:#fff;">${t('U179', 'キャンセル')}</button>
                 <button id="cp-ok" style="flex:1;padding:14px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:#4a7dff;color:#fff;">OK</button>
             </div>
         `;
