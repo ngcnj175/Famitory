@@ -204,6 +204,8 @@ const GameEngine = {
             this.animationId = null;
         }
 
+        this.isRunning = false;
+        this.isPaused = false;
         this.titleState = 'title';
         this.resize();
         this.initGame();
