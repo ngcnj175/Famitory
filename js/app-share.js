@@ -47,7 +47,7 @@ const AppShare = {
     // Firebase保存（ネットワーク通信）より先に actionFn を実行する
     async publishAndShare(actionFn) {
         if (this._shareLoading) {
-            App.showToast('処理中です…少しお待ちください');
+            App.showToast(AppI18N.t('U377'));
             return;
         }
 
@@ -64,7 +64,7 @@ const AppShare = {
 
             // --- 以降はバックグラウンドでFirebase保存 ---
             if (!window.firebaseDB || typeof Share === 'undefined') {
-                App.showToast('クラウド接続がありません');
+                App.showToast(AppI18N.t('U378'));
                 return;
             }
 
@@ -80,7 +80,7 @@ const AppShare = {
                 const id = await Share.saveOrUpdateGame(shareId, App.projectData, !isFirstTime);
 
                 if (!id) {
-                    App.showToast('保存に失敗しました');
+                    App.showToast(AppI18N.t('U379'));
                     this._shareLoading = false;
                     return;
                 }
@@ -92,10 +92,10 @@ const AppShare = {
 
                 App._shareUrl = url;
                 this.updateShareStatus();
-                App.showToast(isFirstTime ? '公開しました' : '更新しました');
+                App.showToast(AppI18N.t(isFirstTime ? 'U380' : 'U381'));
             } catch (e) {
                 console.error('[Share] publishAndShare error:', e);
-                App.showToast('保存でエラーが発生しました');
+                App.showToast(AppI18N.t('U382'));
             } finally {
                 this._shareLoading = false;
             }
@@ -160,7 +160,7 @@ const AppShare = {
         copyUrlBtn.onclick = () => {
             this.publishAndShare(async (url) => {
                 const success = await this.copyToClipboard(url);
-                App.showToast(success ? 'URLを コピーしました' : 'コピーに失敗しました');
+                App.showToast(AppI18N.t(success ? 'U383' : 'U384'));
             });
         };
 
@@ -176,9 +176,9 @@ const AppShare = {
                         successMsg.classList.remove('hidden');
                         setTimeout(() => successMsg.classList.add('hidden'), 2000);
                     }
-                    App.showToast('URLを コピーしました');
+                    App.showToast(AppI18N.t('U383'));
                 } else {
-                    App.showToast('コピーに失敗しました');
+                    App.showToast(AppI18N.t('U384'));
                 }
             };
         }
@@ -189,11 +189,11 @@ const AppShare = {
                 const gameName = App.projectData.meta.name || 'Game';
                 let twitterUrl;
                 if (App.isPlayOnlyMode) {
-                    const text = `「${gameName}」であそぼう！ #FAMITORY`;
+                    const text = AppI18N.t('U385', { gameName });
                     twitterUrl = Share.createTwitterUrl(url, text);
                 } else {
                     const hashTag = gameName.replace(/\s/g, '');
-                    const text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                    const text = AppI18N.t('U386', { gameName, url, hashTag });
                     twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                 }
                 window.open(twitterUrl, '_blank');
@@ -206,13 +206,13 @@ const AppShare = {
                 const gameName = App.projectData.meta.name || 'Game';
                 let text;
                 if (App.isPlayOnlyMode) {
-                    text = `FAMITORYでゲームを作ったよ!\n${url}`;
+                    text = AppI18N.t('U387', { url });
                 } else {
                     const hashTag = gameName.replace(/\s/g, '');
-                    text = `${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                    text = AppI18N.t('U386', { gameName, url, hashTag });
                 }
                 const success = await this.copyToClipboard(text);
-                App.showToast(success ? 'Discord用に コピーしました' : 'コピーに失敗しました');
+                App.showToast(AppI18N.t(success ? 'U388' : 'U384'));
             });
         };
 
@@ -230,9 +230,7 @@ const AppShare = {
                 const url = sdata.url || document.getElementById('score-share-url-input').value;
                 const gameName = sdata.title || 'Game';
                 const hashTag = gameName.replace(/\s/g, '');
-                const header = sdata.isClear
-                    ? `${gameName} クリア！\nScore: ${sdata.score}\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`
-                    : `${gameName} GAME OVER\nScore: ${sdata.score}\nくやしい…リベンジして👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                const header = AppI18N.t(sdata.isClear ? 'U453' : 'U454', { gameName, score: sdata.score, url, hashTag });
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(header)}`, '_blank');
             };
         }
@@ -245,11 +243,9 @@ const AppShare = {
                 const url = sdata.url || document.getElementById('score-share-url-input').value;
                 const gameName = sdata.title || 'Game';
                 const hashTag = gameName.replace(/\s/g, '');
-                const header = sdata.isClear
-                    ? `${gameName} クリア！\nScore: ${sdata.score}\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`
-                    : `${gameName} GAME OVER\nScore: ${sdata.score}\nくやしい…リベンジして👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart`;
+                const header = AppI18N.t(sdata.isClear ? 'U453' : 'U454', { gameName, score: sdata.score, url, hashTag });
                 const success = await this.copyToClipboard(header);
-                App.showToast(success ? 'Discord用に コピーしました' : 'コピーに失敗しました');
+                App.showToast(AppI18N.t(success ? 'U388' : 'U384'));
             };
         }
 

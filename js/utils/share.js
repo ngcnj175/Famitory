@@ -148,7 +148,10 @@ const Share = {
     },
 
     // X (Twitter) 共有URL生成
-    createTwitterUrl(shareUrl, text = 'FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！') {
+    createTwitterUrl(shareUrl, text) {
+        if (!text) {
+            text = (typeof AppI18N !== 'undefined') ? AppI18N.t('U391') : 'I made a game on FAMITORY! 🎮\nGive it a try!';
+        }
         const tweetText = encodeURIComponent(text);
         const encodedUrl = encodeURIComponent(shareUrl);
         return `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodedUrl}`;
@@ -169,7 +172,7 @@ const Share = {
         if (!dialog || !urlInput) return;
 
         // ローディング表示
-        urlInput.value = '共有URL生成中...';
+        urlInput.value = (typeof AppI18N !== 'undefined') ? AppI18N.t('U392') : 'Generating share URL...';
         copySuccess.classList.add('hidden');
         dialog.classList.remove('hidden');
 
@@ -178,7 +181,7 @@ const Share = {
         const id = await this.saveGame(data);
 
         if (!id) {
-            urlInput.value = 'エラー：保存に失敗しました';
+            urlInput.value = (typeof AppI18N !== 'undefined') ? AppI18N.t('U393') : 'Error: Save failed';
             return;
         }
 

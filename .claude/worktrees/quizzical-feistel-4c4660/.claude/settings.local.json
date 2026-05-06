@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git -C $mainRepo worktree list)",
+      "PowerShell($mainRepo = \"C:\\\\Users\\\\ngcnj\\\\OneDrive\\\\�h�L�������g\\\\GitHub\\\\Famitory\")"
+    ]
+  }
+}

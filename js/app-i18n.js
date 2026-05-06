@@ -288,6 +288,36 @@ const AppI18N = {
         // ---- 言語切り替え ----
         'U446': { JPN: '言語を日本語に変更しました', ENG: 'Language set to Japanese' },
         'U447': { JPN: 'Language set to English', ENG: 'Language set to English' },
+        // ---- 共有テキスト（トースト） ----
+        'U377': { JPN: '処理中です…少しお待ちください', ENG: 'Processing… Please wait' },
+        'U378': { JPN: 'クラウド接続がありません', ENG: 'No cloud connection' },
+        'U379': { JPN: '保存に失敗しました', ENG: 'Save failed' },
+        'U380': { JPN: '公開しました', ENG: 'Published!' },
+        'U381': { JPN: '更新しました', ENG: 'Updated!' },
+        'U382': { JPN: '保存でエラーが発生しました', ENG: 'An error occurred while saving' },
+        'U383': { JPN: 'URLを コピーしました', ENG: 'Copied URL' },
+        'U384': { JPN: 'コピーに失敗しました', ENG: 'Copy failed' },
+        'U388': { JPN: 'Discord用に コピーしました', ENG: 'Copied for Discord' },
+        // ---- 共有投稿テキスト（テンプレート） ----
+        'U385': { JPN: '「{gameName}」であそぼう！ #FAMITORY', ENG: 'Play "{gameName}"! #FAMITORY' },
+        'U386': { JPN: '{gameName} を作りました！\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'I made a game called "{gameName}"!\nPlay it in your browser👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+        'U387': { JPN: 'FAMITORYでゲームを作ったよ!\n{url}', ENG: 'I made a game on FAMITORY!\n{url}' },
+        'U391': { JPN: 'FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！', ENG: 'I made a game on FAMITORY! 🎮\nGive it a try!' },
+        'U392': { JPN: '共有URL生成中...', ENG: 'Generating share URL...' },
+        'U393': { JPN: 'エラー：保存に失敗しました', ENG: 'Error: Save failed' },
+        // ---- スコア共有テキスト（テンプレート） ----
+        'U453': { JPN: '{gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'Cleared {gameName}!\nScore: {score}\nPlay it now👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+        'U454': { JPN: '{gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: '{gameName} — GAME OVER\nScore: {score}\nCan you do better?👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+    },
+
+    t(id, vars = {}) {
+        const entry = this.I18N[id];
+        if (!entry) return '';
+        let text = entry[this.currentLang] ?? entry['JPN'] ?? '';
+        for (const [key, val] of Object.entries(vars)) {
+            text = text.split(`{${key}}`).join(val);
+        }
+        return text;
     },
 
     applyLang() {

@@ -468,3 +468,5 @@
 | U450 | PAUSE | PAUSE | JS dom text assign | game-renderer.js | ✓ |
 | U451 | Bダッシュ | B-Dash | JS message/literal | stage-editor.js | ✓ |
 | U452 | カラーパレット | Color Palette | JS HTML template | stage-settings.js | ✓ |
+| U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal | app-share.js | ✓ |
+| U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal | app-share.js | ✓ |
