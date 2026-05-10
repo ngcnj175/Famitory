@@ -95,8 +95,9 @@ const App = {
         // レイアウト確定後にリサイズ再実行（初回読み込み時のタイミングずれ対策）
         setTimeout(() => this.refreshCurrentScreen(), 100);
 
-        // PC向け：マウスドラッグでのスクロールを有効化
+        // PC向け：マウスドラッグ・ホイールでのスクロールを有効化
         this.enableDragScroll();
+        this.initWheelScrolls();
 
         // iOS/Safari向けのグローバルなAudioContext復帰処理（ユーザーインタラクション時に発火）
         const resumeAudioContexts = () => {
@@ -283,6 +284,20 @@ const App = {
                     e.stopPropagation();
                 }
             }, true);
+        });
+    },
+
+    // PC向け：ホイールスクロール（横スクロールエリア共通）
+    initWheelScrolls() {
+        const ids = ['sprite-scroll-container', 'color-scroll-container', 'tile-scroll-container', 'keyboard-area'];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('wheel', (e) => {
+                if (e.deltaY === 0) return;
+                e.preventDefault();
+                el.scrollLeft += e.deltaY;
+            }, { passive: false });
         });
     },
 
