@@ -167,12 +167,13 @@ body {
 /* 逕ｻ髱｢繧ｿ繧､繝医Ν�亥推逕ｻ髱｢縺ｮ荳企Κ�� */
 .screen-title {
     flex-shrink: 0;
+    margin-top: auto;
     text-align: center;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 2px;
     color: var(--text-muted);
-    padding: 2px 0;
+    padding: 2px 0 6px;
     opacity: 0.6;
 }
 
@@ -185,24 +186,27 @@ body {
     background: var(--bg-device);
 }
 
-/* ゲーム情報オーバーレイ（#game-viewport 内に absolute 配置） */
-#game-info {
+/* PUSH START state UI: #game-viewport 内 absolute、タイトル画面時のみ表示 */
+#push-start-ui {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 10;
+    pointer-events: none;
+}
+
+#push-start-ui.hidden {
+    display: none !important;
+}
+
+#game-info {
     padding: 10px 16px 12px;
     background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.0) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    pointer-events: none;
-}
-
-#game-info.hidden {
-    display: none !important;
 }
 
 #game-title {
@@ -581,8 +585,8 @@ body {
 }
 
 #btn-b {
-    bottom: 0;
-    left: 0;
+    bottom: 40px;
+    left: -30px;
 }
 
 .action-btn:active,
@@ -5093,7 +5097,7 @@ body {
     background: #0a0a0f;
 }
 
-#app.dark-mode #game-info {
+#app.dark-mode #push-start-ui #game-info {
     background: transparent;
 }
 

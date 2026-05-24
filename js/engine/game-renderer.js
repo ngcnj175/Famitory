@@ -376,7 +376,7 @@ class GameRenderer {
             ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
         }
 
-        document.getElementById('game-info')?.classList.remove('hidden');
+        document.getElementById('push-start-ui')?.classList.remove('hidden');
 
         if (this.owner.titleState === 'title') {
             this.owner.animationId = requestAnimationFrame(() => this.renderTitleScreen());
@@ -388,7 +388,7 @@ class GameRenderer {
         const progress = this.owner.wipeTimer / 30;
 
         if (this.owner.wipeTimer === 0) {
-            document.getElementById('game-info')?.classList.add('hidden');
+            document.getElementById('push-start-ui')?.classList.add('hidden');
         }
 
         ctx.fillStyle = '#333333';

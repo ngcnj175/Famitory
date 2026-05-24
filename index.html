@@ -28,19 +28,21 @@
             <!-- ゲームビューポート -->
             <div id="game-viewport">
                 <canvas id="game-canvas"></canvas>
-                <!-- ゲーム情報オーバーレイ（タイトル・リザルト時表示） -->
-                <div id="game-info" class="hidden">
-                    <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
-                    <div id="game-sub-row">
-                        <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
-                    </div>
-                    <div id="game-info-bottom">
-                        <div id="game-remix-info" class="hidden">
-                            Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
+                <!-- PUSH START state UI（タイトル画面時のみ表示） -->
+                <div id="push-start-ui" class="hidden">
+                    <div id="game-info">
+                        <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
+                        <div id="game-sub-row">
+                            <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
                         </div>
-                        <div id="game-likes-display" class="hidden">
-                            <img src="images/like_icon.svg" alt="like" class="like-icon-small">
-                            <span id="game-likes-count">0</span>
+                        <div id="game-info-bottom">
+                            <div id="game-remix-info" class="hidden">
+                                Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
+                            </div>
+                            <div id="game-likes-display" class="hidden">
+                                <img src="images/like_icon.svg" alt="like" class="like-icon-small">
+                                <span id="game-likes-count">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
