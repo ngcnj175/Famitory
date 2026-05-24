@@ -376,9 +376,8 @@ class GameRenderer {
             ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 120);
         }
 
-        document.getElementById('push-start-ui')?.classList.remove('hidden');
-
         if (this.owner.titleState === 'title') {
+            document.getElementById('push-start-ui')?.classList.remove('hidden');
             this.owner.animationId = requestAnimationFrame(() => this.renderTitleScreen());
         }
     }
