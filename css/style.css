@@ -315,6 +315,7 @@ body {
     align-items: center;
     gap: 3px;
     opacity: 1;
+    margin-top: 5px;
 }
 
 #game-likes-display.hidden {
