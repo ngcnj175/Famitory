@@ -191,7 +191,7 @@ body {
 /* PUSH START state UI: canvas上にabsolute配置、タイトル画面時のみ表示 */
 #push-start-ui {
     position: absolute;
-    top: 38%;
+    top: calc(38% - 40px);
     left: 0;
     right: 0;
     z-index: 10;
@@ -222,7 +222,6 @@ body {
     background: transparent;
     outline: none;
     padding: 0px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.6);
 }
 
 #game-title:focus {
@@ -277,7 +276,6 @@ body {
     padding: 0px 4px;
     text-align: center;
     font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 #game-info-bottom {
@@ -292,7 +290,6 @@ body {
     font-size: 11px;
     color: white;
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     visibility: visible;
 }
 
@@ -339,7 +336,6 @@ body {
     font-weight: 600;
     color: white;
     line-height: 1;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 /* ゲームビューポート */

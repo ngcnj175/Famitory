@@ -373,7 +373,7 @@ class GameRenderer {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 40);
+            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 120);
         }
 
         document.getElementById('push-start-ui')?.classList.remove('hidden');

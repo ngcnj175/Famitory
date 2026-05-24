@@ -176,6 +176,7 @@ const GameEngine = {
         }
 
         // ワイプ開始
+        document.getElementById('push-start-ui')?.classList.add('hidden');
         this.titleState = 'wipe';
         this.wipeTimer = 0;
         this.isRunning = true;
