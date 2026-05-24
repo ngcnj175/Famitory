@@ -667,6 +667,8 @@ const App = {
 
         const resultCount = document.getElementById('result-like-count');
         if (resultCount) resultCount.textContent = count;
+        const resultGameLikesCount = document.getElementById('result-likes-count');
+        if (resultGameLikesCount) resultGameLikesCount.textContent = count;
     },
 
     switchScreen(screenName) {

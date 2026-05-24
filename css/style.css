@@ -66,11 +66,13 @@ body {
 #header {
     height: var(--header-height);
     display: flex;
+    flex-shrink: 0;
     justify-content: space-between;
     align-items: center;
     padding: 0 6px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     background: var(--bg-device);
-    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 
 #toolbar-left {
@@ -178,22 +180,29 @@ body {
    繝励Ξ繧､逕ｻ髱｢
    ======================================== */
 
-/* ゲーム画面：上下レイアウト調整スペーサー */
-.play-spacer {
-    flex: 1;
-}
-
 #play-screen {
+    position: relative;
     background: var(--bg-device);
 }
 
-/* 繧ｲ繝ｼ繝�諠��ｱ�医ち繧､繝医Ν陦ｨ遉ｺ�� */
+/* ゲーム情報オーバーレイ（#game-viewport 内に absolute 配置） */
 #game-info {
-    padding: 6px 16px 0px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 10px 16px 12px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.0) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0px;
+    gap: 2px;
+    pointer-events: none;
+}
+
+#game-info.hidden {
+    display: none !important;
 }
 
 #game-title {
@@ -202,11 +211,12 @@ body {
     text-align: center;
     font-size: 15px;
     font-weight: 600;
-    color: var(--text-dark);
+    color: #ffffff;
     border: none;
     background: transparent;
     outline: none;
     padding: 0px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 #game-title:focus {
@@ -254,7 +264,7 @@ body {
 #game-author {
     width: 50%;
     font-size: 10px;
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.75);
     border: none;
     background: transparent;
     outline: none;
@@ -264,18 +274,16 @@ body {
 }
 
 #game-info-bottom {
-    position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 100%;
-    min-height: 18px;
+    gap: 3px;
 }
 
 #game-remix-info {
     font-size: 9px;
-    color: var(--color-medium);
-    margin-top: 0px;
+    color: rgba(255,255,255,0.6);
     text-align: center;
 }
 
@@ -295,12 +303,10 @@ body {
 }
 
 #game-likes-display {
-    position: absolute;
-    right: 20px;
     display: flex;
     align-items: center;
     gap: 3px;
-    opacity: 0.55;
+    opacity: 0.65;
 }
 
 #game-likes-display.hidden {
@@ -316,16 +322,17 @@ body {
 #game-likes-count {
     font-size: 10px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.8);
     line-height: 1;
 }
 
-/* 繧ｲ繝ｼ繝�繝薙Η繝ｼ繝昴�繝� */
+/* ゲームビューポート */
 #game-viewport {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    flex-shrink: 0;
 }
 
 #game-canvas {
@@ -345,8 +352,7 @@ body {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 16px 12px;
-    padding-bottom: calc(24px + var(--safe-area-bottom));
+    padding: 12px 12px 4px;
     background: var(--bg-device);
 }
 
@@ -357,10 +363,10 @@ body {
     width: 100%;
 }
 
-/* 蜊∝ｭ励く繝ｼ */
+/* 十字キー */
 #dpad-container {
     position: relative;
-    width: 132px;
+    width: 145px;
     aspect-ratio: 1 / 1;
     flex-shrink: 0;
     /* 蜀�ｽ｢縺ｮ豬�＞遯ｪ縺ｿ閭梧勹�域万繧√°繧峨�蜈会ｼ� */
@@ -449,38 +455,38 @@ body {
 }
 
 #btn-up {
-    top: 7px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 6px 6px 0 0;
 }
 
 #btn-down {
-    bottom: 7px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 0 0 6px 6px;
 }
 
 #btn-left {
-    left: 7px;
+    left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 6px 0 0 6px;
 }
 
 #btn-right {
-    right: 7px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 0 6px 6px 0;
 }
 
@@ -491,8 +497,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 44px;
-    height: calc(100% - 14px);
+    width: 48px;
+    height: calc(100% - 16px);
     background: var(--color-dark);
     border-radius: 6px;
     pointer-events: none;
@@ -505,8 +511,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: calc(100% - 14px);
-    height: 44px;
+    width: calc(100% - 16px);
+    height: 48px;
     background: var(--color-dark);
     border-radius: 6px;
     pointer-events: none;
@@ -515,12 +521,10 @@ body {
 
 /* Start繝懊ち繝ｳ */
 #start-btn-container {
-    position: absolute;
-    left: 50%;
-    bottom: calc(24px + var(--safe-area-bottom));
-    transform: translateX(-50%);
     display: flex;
-    align-items: flex-end;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0 4px;
 }
 
 #btn-start {
@@ -546,20 +550,20 @@ body {
 /* A/B繝懊ち繝ｳ */
 #action-btns-container {
     position: relative;
-    width: 132px;
-    height: 132px;
+    width: 150px;
+    height: 150px;
     flex-shrink: 0;
 }
 
 .action-btn {
     position: absolute;
-    width: 72px;
-    height: 72px;
+    width: 86px;
+    height: 86px;
     border: none;
     border-radius: 50%;
     background: var(--color-dark);
     color: var(--text-light);
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -567,16 +571,18 @@ body {
     justify-content: center;
     box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
     font-family: inherit;
+    touch-action: manipulation;
+}
+
+/* A=右上・B=左下（AがBより上） */
+#btn-a {
+    top: 0;
+    right: 0;
 }
 
 #btn-b {
-    top: 15px;
-    left: -10px;
-}
-
-#btn-a {
-    bottom: 5px;
-    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .action-btn:active,
@@ -3292,6 +3298,46 @@ body {
     display: none;
     pointer-events: none;
 }
+/* リザルト画面内ゲーム情報 */
+#result-game-info {
+    text-align: center;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#result-game-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 2px;
+}
+
+#result-game-author {
+    font-size: 10px;
+    color: var(--color-medium);
+    margin-bottom: 4px;
+}
+
+#result-remix-info {
+    font-size: 9px;
+    color: var(--color-medium);
+    margin-bottom: 4px;
+}
+
+#result-likes-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    opacity: 0.6;
+}
+
+#result-likes-count {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-medium);
+}
 
 .result-container {
     background: var(--bg-device);
@@ -5019,7 +5065,7 @@ body {
 /* --- ヘッダー --- */
 #app.dark-mode #header {
     background: #0c0c16;
-    border-bottom-color: #1e1e30;
+    border-top-color: #1e1e30;
 }
 
 #app.dark-mode .toolbar-icon {

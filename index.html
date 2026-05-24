@@ -22,112 +22,29 @@
         <!-- 隠しファイル入力 -->
         <input type="file" id="file-input" accept=".json,.pgk" style="display:none">
 
-        <!-- ヘッダー（アイコンバー） -->
-        <header id="header">
-            <div id="toolbar-left">
-                <div id="toolbar-file">
-                    <button id="new-icon-btn" class="toolbar-icon" title="新規" data-i18n-title="U001">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-                        </svg>
-                        <span class="icon-label" data-i18n="U002">NEW</span>
-                    </button>
-                    <button id="load-icon-btn" class="toolbar-icon" title="読み込み" data-i18n-title="U003">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-                        </svg>
-                        <span class="icon-label" data-i18n="U004">OPEN</span>
-                    </button>
-                    <button id="save-icon-btn" class="toolbar-icon" title="保存" data-i18n-title="U005">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
-                        </svg>
-                        <span class="icon-label" data-i18n="U006">SAVE</span>
-                    </button>
-                    <button id="share-icon-btn" class="toolbar-icon" title="共有" data-i18n-title="U007">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
-                        </svg>
-                        <span class="icon-label" data-i18n="U008">SHARE</span>
-                    </button>
-                    <!-- ローカライズボタン -->
-                    <button id="lang-icon-btn" class="toolbar-icon" title="言語切替">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
-                        </svg>
-                        <span class="icon-label" id="lang-label">JPN</span>
-                    </button>
-                </div>
-            </div>
-            <div id="toolbar-nav">
-                <button id="nav-play-btn" class="toolbar-icon nav-icon active-nav" title="プレイ" data-i18n-title="U009">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <!-- コントローラー本体 -->
-                        <rect x="2" y="7" width="20" height="12" rx="3" />
-                        <!-- 十字キー -->
-                        <rect x="5.5" y="12" width="5" height="1.5" rx="0.3" class="play-icon-detail" />
-                        <rect x="7.25" y="9.5" width="1.5" height="5.5" rx="0.3" class="play-icon-detail" />
-                        <!-- ボタン2個 -->
-                        <circle cx="16.5" cy="12.75" r="1.3" class="play-icon-detail" />
-                        <circle cx="19.5" cy="12.75" r="1.3" class="play-icon-detail" />
-                    </svg>
-                    <span class="icon-label" data-i18n="U010">PLAY</span>
-                </button>
-                <button id="nav-paint-btn" class="toolbar-icon nav-icon" title="ピクセル" data-i18n-title="U011">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />
-                    </svg>
-                    <span class="icon-label" data-i18n="U012">PIXEL</span>
-                </button>
-                <button id="nav-stage-btn" class="toolbar-icon nav-icon" title="ステージ" data-i18n-title="U013">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z" />
-                    </svg>
-                    <span class="icon-label" data-i18n="U014">STAGE</span>
-                </button>
-                <button id="nav-sound-btn" class="toolbar-icon nav-icon" title="サウンド" data-i18n-title="U015">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                    </svg>
-                    <span class="icon-label" data-i18n="U016">BGM</span>
-                </button>
-            </div>
-        </header>
-
         <!-- ========== ゲーム画面 ========== -->
         <div id="play-screen" class="screen active">
-
-            <!-- 上下レイアウト調整用スペーサー -->
-            <div class="play-spacer"></div>
-
-            <!-- ゲーム情報（読み取り専用、編集はゲーム設定で） -->
-            <div id="game-info">
-                <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
-                <div id="game-sub-row">
-                    <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
-                </div>
-                <div id="game-info-bottom">
-                    <div id="game-remix-info" class="hidden">
-                        Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
-                    </div>
-                    <div id="game-likes-display" class="hidden">
-                        <img src="images/like_icon.svg" alt="like" class="like-icon-small">
-                        <span id="game-likes-count">0</span>
-                    </div>
-                </div>
-            </div>
 
             <!-- ゲームビューポート -->
             <div id="game-viewport">
                 <canvas id="game-canvas"></canvas>
+                <!-- ゲーム情報オーバーレイ（タイトル・リザルト時表示） -->
+                <div id="game-info" class="hidden">
+                    <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
+                    <div id="game-sub-row">
+                        <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                    </div>
+                    <div id="game-info-bottom">
+                        <div id="game-remix-info" class="hidden">
+                            Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
+                        </div>
+                        <div id="game-likes-display" class="hidden">
+                            <img src="images/like_icon.svg" alt="like" class="like-icon-small">
+                            <span id="game-likes-count">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="screen-title">FAMITORY</div>
 
             <!-- コントローラー -->
             <div id="controller-area">
@@ -154,9 +71,21 @@
                     <button id="btn-start" class="system-btn">START</button>
                 </div>
             </div>
+            <div class="screen-title">FAMITORY</div>
+
             <!-- リザルト画面オーバーレイ -->
             <div id="result-overlay" class="hidden">
                 <div class="result-container">
+                    <!-- ゲーム情報（リザルト時表示） -->
+                    <div id="result-game-info">
+                        <div id="result-game-title"></div>
+                        <div id="result-game-author"></div>
+                        <div id="result-remix-info" class="hidden">Remix of <span id="result-original-title"></span> by <span id="result-original-author"></span></div>
+                        <div id="result-likes-display" class="hidden">
+                            <img src="images/like_icon.svg" alt="like" class="like-icon-small">
+                            <span id="result-likes-count">0</span>
+                        </div>
+                    </div>
                     <h2 id="result-title">STAGE CLEAR</h2>
                     <div id="result-score-container">
                         <div class="result-score-row">
@@ -857,6 +786,80 @@
 
             <!-- 名前変更などのサブメニュー用（必要なら） -->
         </div>
+
+        <!-- フッター（アイコンバー） -->
+        <header id="header">
+            <div id="toolbar-left">
+                <div id="toolbar-file">
+                    <button id="new-icon-btn" class="toolbar-icon" title="新規" data-i18n-title="U001">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U002">NEW</span>
+                    </button>
+                    <button id="load-icon-btn" class="toolbar-icon" title="読み込み" data-i18n-title="U003">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U004">OPEN</span>
+                    </button>
+                    <button id="save-icon-btn" class="toolbar-icon" title="保存" data-i18n-title="U005">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U006">SAVE</span>
+                    </button>
+                    <button id="share-icon-btn" class="toolbar-icon" title="共有" data-i18n-title="U007">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
+                        </svg>
+                        <span class="icon-label" data-i18n="U008">SHARE</span>
+                    </button>
+                    <!-- ローカライズボタン -->
+                    <button id="lang-icon-btn" class="toolbar-icon" title="言語切替">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                        </svg>
+                        <span class="icon-label" id="lang-label">JPN</span>
+                    </button>
+                </div>
+            </div>
+            <div id="toolbar-nav">
+                <button id="nav-play-btn" class="toolbar-icon nav-icon active-nav" title="プレイ" data-i18n-title="U009">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="7" width="20" height="12" rx="3" />
+                        <rect x="5.5" y="12" width="5" height="1.5" rx="0.3" class="play-icon-detail" />
+                        <rect x="7.25" y="9.5" width="1.5" height="5.5" rx="0.3" class="play-icon-detail" />
+                        <circle cx="16.5" cy="12.75" r="1.3" class="play-icon-detail" />
+                        <circle cx="19.5" cy="12.75" r="1.3" class="play-icon-detail" />
+                    </svg>
+                    <span class="icon-label" data-i18n="U010">PLAY</span>
+                </button>
+                <button id="nav-paint-btn" class="toolbar-icon nav-icon" title="ピクセル" data-i18n-title="U011">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />
+                    </svg>
+                    <span class="icon-label" data-i18n="U012">PIXEL</span>
+                </button>
+                <button id="nav-stage-btn" class="toolbar-icon nav-icon" title="ステージ" data-i18n-title="U013">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z" />
+                    </svg>
+                    <span class="icon-label" data-i18n="U014">STAGE</span>
+                </button>
+                <button id="nav-sound-btn" class="toolbar-icon nav-icon" title="サウンド" data-i18n-title="U015">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                    </svg>
+                    <span class="icon-label" data-i18n="U016">BGM</span>
+                </button>
+            </div>
+        </header>
     </div>
 
     <!-- ========== モーダル ========== -->

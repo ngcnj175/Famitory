@@ -376,6 +376,8 @@ class GameRenderer {
             ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
         }
 
+        document.getElementById('game-info')?.classList.remove('hidden');
+
         if (this.owner.titleState === 'title') {
             this.owner.animationId = requestAnimationFrame(() => this.renderTitleScreen());
         }
@@ -384,6 +386,10 @@ class GameRenderer {
     renderWipe() {
         const ctx = this.owner.ctx;
         const progress = this.owner.wipeTimer / 30;
+
+        if (this.owner.wipeTimer === 0) {
+            document.getElementById('game-info')?.classList.add('hidden');
+        }
 
         ctx.fillStyle = '#333333';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
@@ -840,6 +846,42 @@ class GameRenderer {
         const editBtn = document.getElementById('result-edit-btn');
         if (editBtn) editBtn.classList.toggle('hidden', App.isPlayOnlyMode);
 
+        this._updateResultGameInfo(app);
         overlay.classList.remove('hidden');
+    }
+
+    _updateResultGameInfo(app) {
+        const pd = app?.projectData;
+        const titleEl = document.getElementById('result-game-title');
+        const authorEl = document.getElementById('result-game-author');
+        const remixEl = document.getElementById('result-remix-info');
+        const origTitleEl = document.getElementById('result-original-title');
+        const origAuthorEl = document.getElementById('result-original-author');
+        const likesEl = document.getElementById('result-likes-display');
+        const likesCountEl = document.getElementById('result-likes-count');
+
+        if (titleEl) titleEl.textContent = pd?.meta?.name || '';
+        if (authorEl) authorEl.textContent = pd?.meta?.author || '';
+
+        const hasRemix = !!(pd?.meta?.originalAuthor);
+        if (remixEl) {
+            if (hasRemix) {
+                if (origTitleEl) origTitleEl.textContent = pd.meta.originalTitle || 'Unknown';
+                if (origAuthorEl) origAuthorEl.textContent = pd.meta.originalAuthor;
+                remixEl.classList.remove('hidden');
+            } else {
+                remixEl.classList.add('hidden');
+            }
+        }
+
+        const gameId = app?._sharedGameId || pd?.meta?.shareId;
+        if (likesEl) {
+            if (gameId) {
+                if (likesCountEl) likesCountEl.textContent = app?._likesCount || 0;
+                likesEl.classList.remove('hidden');
+            } else {
+                likesEl.classList.add('hidden');
+            }
+        }
     }
 }

@@ -233,8 +233,8 @@ const GameEngine = {
         if (!container) return;
 
         const stage = App.projectData.stage;
-        const maxWidth = container.clientWidth - 16;
-        const maxHeight = container.clientHeight - 16;
+        const maxWidth = container.clientWidth;
+        const maxHeight = container.clientHeight;
 
         // 2倍表示でフィット
         const scale = 2;
