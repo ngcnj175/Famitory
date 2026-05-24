@@ -25,10 +25,9 @@
         <!-- ========== ゲーム画面 ========== -->
         <div id="play-screen" class="screen active">
 
-            <!-- ゲームビューポート -->
+            <!-- ゲームビューポート（PUSH START state UI + canvas を縦並び） -->
             <div id="game-viewport">
-                <canvas id="game-canvas"></canvas>
-                <!-- PUSH START state UI（タイトル画面時のみ表示） -->
+                <!-- PUSH START state UI（タイトル画面時のみ表示・通常フロー） -->
                 <div id="push-start-ui" class="hidden">
                     <div id="game-info">
                         <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
@@ -46,6 +45,7 @@
                         </div>
                     </div>
                 </div>
+                <canvas id="game-canvas"></canvas>
             </div>
 
             <!-- コントローラー -->

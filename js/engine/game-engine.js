@@ -229,12 +229,11 @@ const GameEngine = {
     },
 
     resize() {
-        const container = document.getElementById('game-viewport');
-        if (!container) return;
+        if (!this.canvas) return;
 
         const stage = App.projectData.stage;
-        const maxWidth = container.clientWidth;
-        const maxHeight = container.clientHeight;
+        const maxWidth = this.canvas.clientWidth;
+        const maxHeight = this.canvas.clientHeight;
 
         // 2倍表示でフィット
         const scale = 2;

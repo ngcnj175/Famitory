@@ -369,11 +369,11 @@ class GameRenderer {
         this.owner.titleBlinkTimer++;
         if (Math.floor(this.owner.titleBlinkTimer / 30) % 2 === 0) {
             const pushStartText = AppI18N.I18N['U449'][AppI18N.currentLang] || 'PUSH START';
-            ctx.font = '16px Arial';
+            ctx.font = '13px Arial';
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.textBaseline = 'bottom';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 40);
         }
 
         document.getElementById('push-start-ui')?.classList.remove('hidden');
