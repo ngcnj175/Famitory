@@ -863,13 +863,21 @@ class GameRenderer {
         if (authorEl) authorEl.textContent = pd?.meta?.author || '';
 
         const hasRemix = !!(pd?.meta?.originalAuthor);
+        const origLinkWrap = document.getElementById('result-remix-link-wrap');
         if (remixEl) {
             if (hasRemix) {
                 if (origTitleEl) origTitleEl.textContent = pd.meta.originalTitle || 'Unknown';
                 if (origAuthorEl) origAuthorEl.textContent = pd.meta.originalAuthor;
                 remixEl.classList.remove('hidden');
+                const origShareId = pd.meta.originalShareId;
+                if (origLinkWrap) {
+                    origLinkWrap.onclick = origShareId
+                        ? () => window.open(Share.createShortUrl(origShareId), '_blank')
+                        : null;
+                }
             } else {
                 remixEl.classList.add('hidden');
+                if (origLinkWrap) origLinkWrap.onclick = null;
             }
         }
 

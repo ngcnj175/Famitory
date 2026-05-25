@@ -3357,6 +3357,13 @@ body {
     margin-bottom: 4px;
 }
 
+#result-remix-info .remix-link {
+    color: var(--color-medium);
+    cursor: pointer;
+    text-decoration: underline;
+    pointer-events: auto;
+}
+
 #result-likes-display {
     display: flex;
     align-items: center;
