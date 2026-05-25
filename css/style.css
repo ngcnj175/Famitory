@@ -6045,6 +6045,11 @@ body.dark-mode {
    landscape-play クラスは JS で付与/除去
    ======================================== */
 
+/* アプリ全体: safe-area top パディングを除去してキャンバスエリアを最大化 */
+#app.landscape-play {
+    padding-top: 0;
+}
+
 #app.landscape-play #play-screen {
     flex-direction: row;
     position: relative;
@@ -6060,7 +6065,7 @@ body.dark-mode {
     justify-content: center;
     padding: 0
         calc(165px + env(safe-area-inset-right, 0px))
-        20px
+        0
         calc(165px + env(safe-area-inset-left, 0px));
 }
 
@@ -6107,13 +6112,42 @@ body.dark-mode {
     pointer-events: auto;
 }
 
-/* FAMITORYロゴ: キャンバス下・中央領域に絶対配置 */
+/* FAMITORYロゴ: 左下コントローラー帯内に絶対配置 */
 #app.landscape-play .screen-title {
     position: absolute;
     bottom: 4px;
-    left: calc(165px + env(safe-area-inset-left, 0px));
-    right: calc(165px + env(safe-area-inset-right, 0px));
+    left: 0;
+    right: auto;
+    width: calc(165px + env(safe-area-inset-left, 0px));
     margin-top: 0;
     text-align: center;
     padding: 2px 0 0;
+}
+
+/* フッター: 区切り線を左右分割・中央は開放 / アイコン余白を左右端から1個分確保 */
+#app.landscape-play #header {
+    border-top: none;
+    position: relative;
+    padding-left: 34px;
+    padding-right: 34px;
+}
+
+#app.landscape-play #header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(165px + env(safe-area-inset-left, 0px));
+    height: 1px;
+    background: var(--border-color);
+}
+
+#app.landscape-play #header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(165px + env(safe-area-inset-right, 0px));
+    height: 1px;
+    background: var(--border-color);
 }
