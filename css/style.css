@@ -6112,16 +6112,18 @@ body.dark-mode {
     pointer-events: auto;
 }
 
-/* FAMITORYロゴ: キャンバス下の余白（中央帯）に絶対配置 */
+/* FAMITORYロゴ: フッターアイコンと同じ行・中央帯に固定配置 */
 #app.landscape-play .screen-title {
-    position: absolute;
-    bottom: 4px;
+    position: fixed;
+    bottom: 0;
     left: calc(165px + env(safe-area-inset-left, 0px));
     right: calc(165px + env(safe-area-inset-right, 0px));
     width: auto;
+    height: 44px;
+    line-height: 44px;
     margin-top: 0;
     text-align: center;
-    padding: 2px 0 0;
+    padding: 0;
 }
 
 /* フッター: 区切り線を左右分割・中央は開放 / アイコン余白を左右端から1個分確保 */
