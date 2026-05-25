@@ -6135,7 +6135,7 @@ body.dark-mode {
 #app.landscape-play #header::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: -5px;
     left: 0;
     width: calc(165px + env(safe-area-inset-left, 0px));
     height: 1px;
@@ -6145,7 +6145,7 @@ body.dark-mode {
 #app.landscape-play #header::after {
     content: '';
     position: absolute;
-    top: 0;
+    top: -5px;
     right: 0;
     width: calc(165px + env(safe-area-inset-right, 0px));
     height: 1px;
