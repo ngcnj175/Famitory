@@ -6039,3 +6039,81 @@ body.dark-mode .numcopy-unit {
 body.dark-mode {
     background-color: #000000 !important;
 }
+
+/* ========================================
+   PLAY画面 横向きレイアウト（スマホのみ）
+   landscape-play クラスは JS で付与/除去
+   ======================================== */
+
+#app.landscape-play #play-screen {
+    flex-direction: row;
+    position: relative;
+    overflow: hidden;
+}
+
+/* キャンバスエリア: 左右コントローラー分のパディングで中央に確保 */
+#app.landscape-play #game-viewport {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0
+        calc(165px + env(safe-area-inset-right, 0px))
+        20px
+        calc(165px + env(safe-area-inset-left, 0px));
+}
+
+/* キャンバス: 高さ基準で正方形を維持 */
+#app.landscape-play #game-canvas {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+/* コントローラーエリア: 全体オーバーレイに変換 */
+#app.landscape-play #controller-area {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+/* 十字キー（左）とA/Bボタン（右）を画面端から端に配置 */
+#app.landscape-play #controls-row {
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    left: max(env(safe-area-inset-left, 0px), 8px);
+    right: max(env(safe-area-inset-right, 0px), 8px);
+    width: auto;
+    align-items: center;
+    pointer-events: none;
+}
+
+#app.landscape-play #dpad-container,
+#app.landscape-play #action-btns-container {
+    pointer-events: auto;
+}
+
+/* STARTボタン: 右下固定 */
+#app.landscape-play #start-btn-container {
+    position: absolute;
+    right: max(env(safe-area-inset-right, 0px), 10px);
+    bottom: 12px;
+    padding: 0;
+    pointer-events: auto;
+}
+
+/* FAMITORYロゴ: キャンバス下・中央領域に絶対配置 */
+#app.landscape-play .screen-title {
+    position: absolute;
+    bottom: 4px;
+    left: calc(165px + env(safe-area-inset-left, 0px));
+    right: calc(165px + env(safe-area-inset-right, 0px));
+    margin-top: 0;
+    text-align: center;
+    padding: 2px 0 0;
+}

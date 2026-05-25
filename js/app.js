@@ -129,6 +129,34 @@ const App = {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
+        // スマホ横向き + PLAY画面のみ横向きレイアウトを適用（PC除外: 高さ600px以上）
+        const isLandscape = screenWidth > screenHeight;
+        const isMobileHeight = screenHeight < 600;
+        if (isLandscape && isMobileHeight && this.currentScreen === 'play') {
+            app.classList.add('landscape-play');
+            app.style.width = screenWidth + 'px';
+            app.style.height = screenHeight + 'px';
+            app.style.maxWidth = 'none';
+            app.style.transform = 'none';
+            app.style.transformOrigin = '';
+            app.style.marginTop = '0';
+            document.body.style.overflow = 'hidden';
+            document.body.style.display = 'flex';
+            document.body.style.justifyContent = 'center';
+            document.body.style.alignItems = 'center';
+            document.body.style.backgroundColor = document.body.classList.contains('dark-mode') ? '#000000' : '#ffffff';
+            document.body.style.height = '100dvh';
+            document.body.style.margin = '0';
+            // レイアウト確定後にキャンバスサイズを再計算
+            requestAnimationFrame(() => {
+                if (typeof GameEngine !== 'undefined') GameEngine.resize();
+            });
+            console.log(`Landscape play: ${screenWidth}x${screenHeight}`);
+            return;
+        }
+
+        app.classList.remove('landscape-play');
+
         // 基準サイズ: iPhone 8/SE2 想定の幅と高さ
         const baseWidth = 375;
         const baseHeight = 667;
@@ -692,6 +720,9 @@ const App = {
         document.querySelectorAll('.screen').forEach(s => {
             s.classList.toggle('active', s.id === screenName + '-screen');
         });
+
+        // 横向きPLAYレイアウトの付与/除去（.activeクラス適用後に実行）
+        this.adjustViewportScale();
 
         // ナビアイコンのアクティブ状態を同期（play/paint/stage/sound）
         const navBtn = document.getElementById(`nav-${screenName}-btn`);
