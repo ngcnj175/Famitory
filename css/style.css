@@ -6112,13 +6112,13 @@ body.dark-mode {
     pointer-events: auto;
 }
 
-/* FAMITORYロゴ: 左下コントローラー帯内に絶対配置 */
+/* FAMITORYロゴ: キャンバス下の余白（中央帯）に絶対配置 */
 #app.landscape-play .screen-title {
     position: absolute;
     bottom: 4px;
-    left: 0;
-    right: auto;
-    width: calc(165px + env(safe-area-inset-left, 0px));
+    left: calc(165px + env(safe-area-inset-left, 0px));
+    right: calc(165px + env(safe-area-inset-right, 0px));
+    width: auto;
     margin-top: 0;
     text-align: center;
     padding: 2px 0 0;
@@ -6137,7 +6137,7 @@ body.dark-mode {
     position: absolute;
     top: -5px;
     left: 0;
-    width: calc(165px + env(safe-area-inset-left, 0px));
+    width: calc(195px + env(safe-area-inset-left, 0px));
     height: 1px;
     background: var(--border-color);
 }
@@ -6147,7 +6147,7 @@ body.dark-mode {
     position: absolute;
     top: -5px;
     right: 0;
-    width: calc(165px + env(safe-area-inset-right, 0px));
+    width: calc(195px + env(safe-area-inset-right, 0px));
     height: 1px;
     background: var(--border-color);
 }
