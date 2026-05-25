@@ -232,19 +232,22 @@ const GameEngine = {
     resize() {
         if (!this.canvas) return;
 
-        const stage = App.projectData.stage;
-        const maxWidth = this.canvas.clientWidth;
-        const maxHeight = this.canvas.clientHeight;
-
-        // 2倍表示でフィット
+        // TILE_BASE は常に16固定（this.TILE_SIZEはresize後に32になるため、
+        // 複数回呼び出しで 16→32→64... と倍増するバグを防ぐ）
+        const TILE_BASE = 16;
         const scale = 2;
-        const viewTilesX = Math.floor(maxWidth / (this.TILE_SIZE * scale));
-        const viewTilesY = Math.floor(maxHeight / (this.TILE_SIZE * scale));
 
-        this.canvas.width = viewTilesX * this.TILE_SIZE * scale;
-        this.canvas.height = viewTilesY * this.TILE_SIZE * scale;
+        // 横向きPLAYレイアウト時はCSSキャンバスが縮小されるが、
+        // 表示タイル数（ステージ見渡し範囲）は縦画面基準を維持する
+        const app = document.getElementById('app');
+        const refSize = app?.classList.contains('landscape-play')
+            ? Math.min(window.innerWidth, window.innerHeight) // 短辺=縦画面幅相当
+            : this.canvas.clientWidth;
 
-        this.TILE_SIZE = 16 * scale; // 2倍スケール
+        const viewTiles = Math.floor(refSize / (TILE_BASE * scale));
+        this.canvas.width  = viewTiles * TILE_BASE * scale;
+        this.canvas.height = viewTiles * TILE_BASE * scale;
+        this.TILE_SIZE = TILE_BASE * scale; // 32px（2倍スケール）
     },
 
     initGame() {
