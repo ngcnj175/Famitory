@@ -2843,13 +2843,16 @@ body {
 #stage-settings-content {
     padding: 8px 12px 12px;
     background: #f5f5f5;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100dvh - var(--safe-area-top) - var(--safe-area-bottom) - 100px);
 }
 
 .setting-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .setting-row:last-child {
@@ -2943,7 +2946,7 @@ body {
 
 /* ステージサイズ横行（間隔調整） */
 .setting-row-size-sub {
-    margin-top: -6px;
+    margin-top: -5px;
 }
 
 /* 繧ｵ繧､繧ｺ蛻ｶ蠕｡ */
@@ -3067,7 +3070,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .bgm-select-row {
