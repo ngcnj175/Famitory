@@ -6115,6 +6115,24 @@ body.dark-mode {
     pointer-events: auto;
 }
 
+/* A/Bボタン: 表示位置のみ20px下方向にシフト（::beforeで判定エリアを元位置に補正） */
+#app.landscape-play #btn-a {
+    top: 20px;
+}
+
+#app.landscape-play #btn-a::before {
+    top: -20px; /* ボタンが20px下がった分を相殺して判定エリアを元位置に保つ */
+}
+
+#app.landscape-play #btn-b {
+    bottom: 20px; /* 40px→20px でボタンを20px下方向へ */
+}
+
+#app.landscape-play #btn-b::before {
+    top: -50px;  /* -30px から -20px 補正 */
+    bottom: -30px; /* -50px から +20px 補正 */
+}
+
 /* FAMITORYロゴ: 左コントローラー帯・区切り線の上に絶対配置 */
 #app.landscape-play .screen-title {
     position: absolute;
