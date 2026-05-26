@@ -853,42 +853,29 @@ class GameRenderer {
         const pd = app?.projectData;
         const titleEl = document.getElementById('result-game-title');
         const authorEl = document.getElementById('result-game-author');
-        const remixEl = document.getElementById('result-remix-info');
         const origTitleEl = document.getElementById('result-original-title');
         const origAuthorEl = document.getElementById('result-original-author');
-        const likesEl = document.getElementById('result-likes-display');
-        const likesCountEl = document.getElementById('result-likes-count');
 
         if (titleEl) titleEl.textContent = pd?.meta?.name || '';
         if (authorEl) authorEl.textContent = pd?.meta?.author || '';
 
+        // Remix of 行は常時表示。リンク部分はリミックス元があるときだけ表示
         const hasRemix = !!(pd?.meta?.originalAuthor);
         const origLinkWrap = document.getElementById('result-remix-link-wrap');
-        if (remixEl) {
+        if (origLinkWrap) {
             if (hasRemix) {
                 if (origTitleEl) origTitleEl.textContent = pd.meta.originalTitle || 'Unknown';
                 if (origAuthorEl) origAuthorEl.textContent = pd.meta.originalAuthor;
-                remixEl.classList.remove('hidden');
+                origLinkWrap.classList.remove('hidden');
                 const origShareId = pd.meta.originalShareId;
-                if (origLinkWrap) {
-                    origLinkWrap.onclick = origShareId
-                        ? () => window.open(Share.createShortUrl(origShareId), '_blank')
-                        : null;
-                }
+                origLinkWrap.onclick = origShareId
+                    ? () => window.open(Share.createShortUrl(origShareId), '_blank')
+                    : null;
             } else {
-                remixEl.classList.add('hidden');
-                if (origLinkWrap) origLinkWrap.onclick = null;
+                origLinkWrap.classList.add('hidden');
+                origLinkWrap.onclick = null;
             }
         }
 
-        const gameId = app?._sharedGameId || pd?.meta?.shareId;
-        if (likesEl) {
-            if (gameId) {
-                if (likesCountEl) likesCountEl.textContent = app?._likesCount || 0;
-                likesEl.classList.remove('hidden');
-            } else {
-                likesEl.classList.add('hidden');
-            }
-        }
     }
 }

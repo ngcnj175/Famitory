@@ -3387,6 +3387,8 @@ body {
     border-radius: 16px;
     width: 85%;
     max-width: 300px;
+    max-height: 90dvh;
+    overflow-y: auto;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -6171,4 +6173,56 @@ body.dark-mode {
     width: calc(195px + env(safe-area-inset-right, 0px));
     height: 1px;
     background: var(--border-color);
+}
+
+/* ----------------------------------------
+   リザルト画面: 横向き時のサイズ縮小
+   ---------------------------------------- */
+#app.landscape-play .result-container {
+    padding: 12px 20px;
+    gap: 8px;
+    max-height: calc(100dvh - 56px); /* フッター(44px)+余白 */
+}
+
+#app.landscape-play #result-game-info {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+}
+
+#app.landscape-play #result-game-title {
+    font-size: 12px;
+}
+
+#app.landscape-play #result-title {
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+#app.landscape-play #result-score-container {
+    gap: 6px;
+}
+
+#app.landscape-play .result-score-row {
+    gap: 1px;
+}
+
+#app.landscape-play #result-score-value {
+    font-size: 26px;
+}
+
+#app.landscape-play #result-highscore-value {
+    font-size: 16px;
+}
+
+#app.landscape-play #result-like-area {
+    margin-bottom: 0;
+}
+
+#app.landscape-play .result-actions {
+    gap: 6px;
+}
+
+#app.landscape-play .result-btn {
+    padding: 8px;
+    font-size: 13px;
 }
