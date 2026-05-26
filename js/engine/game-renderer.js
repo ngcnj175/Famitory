@@ -853,29 +853,31 @@ class GameRenderer {
         const pd = app?.projectData;
         const titleEl = document.getElementById('result-game-title');
         const authorEl = document.getElementById('result-game-author');
+        const remixEl = document.getElementById('result-remix-info');
         const origTitleEl = document.getElementById('result-original-title');
         const origAuthorEl = document.getElementById('result-original-author');
+        const origLinkWrap = document.getElementById('result-remix-link-wrap');
 
         if (titleEl) titleEl.textContent = pd?.meta?.name || '';
         if (authorEl) authorEl.textContent = pd?.meta?.author || '';
 
-        // Remix of 行は常時表示。リンク部分はリミックス元があるときだけ表示
+        // Remixデータがある場合のみ行全体を表示
         const hasRemix = !!(pd?.meta?.originalAuthor);
-        const origLinkWrap = document.getElementById('result-remix-link-wrap');
-        if (origLinkWrap) {
+        if (remixEl) {
             if (hasRemix) {
                 if (origTitleEl) origTitleEl.textContent = pd.meta.originalTitle || 'Unknown';
                 if (origAuthorEl) origAuthorEl.textContent = pd.meta.originalAuthor;
-                origLinkWrap.classList.remove('hidden');
+                remixEl.classList.remove('hidden');
                 const origShareId = pd.meta.originalShareId;
-                origLinkWrap.onclick = origShareId
-                    ? () => window.open(Share.createShortUrl(origShareId), '_blank')
-                    : null;
+                if (origLinkWrap) {
+                    origLinkWrap.onclick = origShareId
+                        ? () => window.open(Share.createShortUrl(origShareId), '_blank')
+                        : null;
+                }
             } else {
-                origLinkWrap.classList.add('hidden');
-                origLinkWrap.onclick = null;
+                remixEl.classList.add('hidden');
+                if (origLinkWrap) origLinkWrap.onclick = null;
             }
         }
-
     }
 }

@@ -6177,29 +6177,48 @@ body.dark-mode {
 
 /* ----------------------------------------
    リザルト画面: 横向き時のサイズ縮小
+   オーバーレイをスクロール可能にして収まらない場合に対応
    ---------------------------------------- */
+#app.landscape-play #result-overlay {
+    align-items: flex-start;   /* スクロール時にコンテンツが上から表示 */
+    overflow-y: auto;
+    padding: 6px 0;
+    box-sizing: border-box;
+}
+
 #app.landscape-play .result-container {
-    padding: 12px 20px;
-    gap: 8px;
-    max-height: calc(100dvh - 56px); /* フッター(44px)+余白 */
+    margin: auto;              /* align-items:flex-start でも中央配置を維持 */
+    flex-shrink: 0;
+    padding: 10px 16px;
+    gap: 6px;
+    max-height: none;          /* オーバーレイ側がスクロールするため不要 */
 }
 
 #app.landscape-play #result-game-info {
-    margin-bottom: 4px;
-    padding-bottom: 4px;
+    margin-bottom: 0;
+    padding-bottom: 3px;
 }
 
 #app.landscape-play #result-game-title {
     font-size: 12px;
 }
 
+#app.landscape-play #result-game-author {
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
 #app.landscape-play #result-title {
-    font-size: 18px;
+    font-size: 16px;
     letter-spacing: 1px;
 }
 
+#app.landscape-play .result-label {
+    font-size: 10px;
+}
+
 #app.landscape-play #result-score-container {
-    gap: 6px;
+    gap: 4px;
 }
 
 #app.landscape-play .result-score-row {
@@ -6207,22 +6226,32 @@ body.dark-mode {
 }
 
 #app.landscape-play #result-score-value {
-    font-size: 26px;
+    font-size: 24px;
 }
 
 #app.landscape-play #result-highscore-value {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 #app.landscape-play #result-like-area {
     margin-bottom: 0;
 }
 
+#app.landscape-play .result-like-btn {
+    padding: 6px 16px;
+    font-size: 13px;
+}
+
+#app.landscape-play .like-icon-result {
+    width: 15px;
+    height: 15px;
+}
+
 #app.landscape-play .result-actions {
-    gap: 6px;
+    gap: 5px;
 }
 
 #app.landscape-play .result-btn {
-    padding: 8px;
+    padding: 7px;
     font-size: 13px;
 }
