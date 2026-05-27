@@ -132,6 +132,7 @@ const AppProject = {
             if (data) {
                 App.projectData = data;
                 this.migrateProjectData();
+                App.projectData.meta.shareId = gameId;
                 App.isPlayOnlyMode = true;
                 App._sharedGameId = gameId;
                 App._hasLikedThisSession = false;
