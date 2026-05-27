@@ -6176,22 +6176,23 @@ body.dark-mode {
 }
 
 /* ----------------------------------------
-   リザルト画面: 横向き時のサイズ縮小
-   オーバーレイをスクロール可能にして収まらない場合に対応
+   リザルト画面: 横向き時のサイズ縮小 + コンテナ内スクロール
+   ・オーバーレイは中央固定（スクロールしない）
+   ・コンテンツが溢れる場合のみコンテナが内部スクロール
    ---------------------------------------- */
 #app.landscape-play #result-overlay {
-    align-items: flex-start;   /* スクロール時にコンテンツが上から表示 */
-    overflow-y: auto;
-    padding: 6px 0;
-    box-sizing: border-box;
+    align-items: center;
+    overflow: hidden;
 }
 
 #app.landscape-play .result-container {
-    margin: auto;              /* align-items:flex-start でも中央配置を維持 */
-    flex-shrink: 0;
     padding: 10px 16px;
     gap: 6px;
-    max-height: none;          /* オーバーレイ側がスクロールするため不要 */
+    /* play-screen高さ(dvh-44px) から上下余白8px×2を引いた最大高さ */
+    max-height: calc(100dvh - 60px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS慣性スクロール */
+    overscroll-behavior: contain;      /* 親へのスクロール伝播を抑止 */
 }
 
 #app.landscape-play #result-game-info {
