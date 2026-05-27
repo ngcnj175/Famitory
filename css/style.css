@@ -6193,6 +6193,7 @@ body.dark-mode {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* iOS慣性スクロール */
     overscroll-behavior: contain;      /* 親へのスクロール伝播を抑止 */
+    touch-action: pan-y;               /* 縦スクロールジェスチャーを明示的に許可 */
 }
 
 #app.landscape-play #result-game-info {

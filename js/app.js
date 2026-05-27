@@ -216,6 +216,13 @@ const App = {
                     return;
                 }
 
+                // overflow-y: auto/scroll かつコンテンツが実際に溢れている要素は許可
+                const cs = window.getComputedStyle(target);
+                if ((cs.overflowY === 'auto' || cs.overflowY === 'scroll') &&
+                    target.scrollHeight > target.clientHeight) {
+                    return;
+                }
+
                 // 許可するID（特定の要素）
                 const allowedIds = [
                     'sprite-canvas',
