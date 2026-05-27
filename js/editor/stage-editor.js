@@ -1221,8 +1221,7 @@ const StageEditor = {
 
     playBgmPreview(idx) {
         // 既に同じ曲をプレビュー中の場合は停止して終了
-        if (this.bgmPreviewPlaying && typeof SoundEditor !== 'undefined' &&
-            SoundEditor.currentSongIdx === parseInt(idx) && SoundEditor.isPlaying) {
+        if (this.bgmPreviewPlaying && this.bgmPreviewIdx === idx) {
             this.stopBgmPreview();
             return;
         }
@@ -1232,6 +1231,7 @@ const StageEditor = {
             SoundEditor.selectSong(idx);
             SoundEditor.play();
             this.bgmPreviewPlaying = true;
+            this.bgmPreviewIdx = idx;
 
             // UI更新
             const btn = document.querySelector(`#bgm-select-popup .se-preview-btn[data-bgm-index="${idx}"]`);
@@ -1246,6 +1246,7 @@ const StageEditor = {
         if (this.bgmPreviewPlaying && typeof SoundEditor !== 'undefined') {
             SoundEditor.stop();
             this.bgmPreviewPlaying = false;
+            this.bgmPreviewIdx = null;
         }
         // UIリセット
         const popup = document.getElementById('bgm-select-popup');
