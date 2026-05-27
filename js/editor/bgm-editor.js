@@ -1127,6 +1127,23 @@ const SoundEditor = {
             pasteBtn.addEventListener('click', () => this.startPasteMode());
         }
 
+        // HAND（ハンドツール: キャンバスパン）
+        const handBtn = document.getElementById('sound-hand-btn');
+        if (handBtn) {
+            handBtn.addEventListener('click', () => {
+                this.currentTool = 'hand';
+                this.selectionMode = false;
+                this.pasteMode = false;
+                this.selectionStart = null;
+                this.selectionEnd = null;
+                this.pasteData = null;
+                const allBtns = document.querySelectorAll('#sound-controls .sound-ctrl-btn');
+                allBtns.forEach(b => b.classList.remove('active'));
+                handBtn.classList.add('active');
+                this.render();
+            });
+        }
+
         // REST（ステップを進める、休符入力）
         const restBtn = document.getElementById('sound-rest-btn');
         if (restBtn) {

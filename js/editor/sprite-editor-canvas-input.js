@@ -20,6 +20,9 @@ const SpriteCanvasInput = {
     isPanning: false,
     panStartX: 0,
     panStartY: 0,
+    isHandPanning: false,
+    handPanClientX: 0,
+    handPanClientY: 0,
     pendingTouch: null,
     touchStartTimer: null,
     isMovingSelection: false,
@@ -323,6 +326,16 @@ const SpriteCanvasInput = {
         if (e.button !== undefined && e.button !== 0) return;
         this.hasMoved = false;
 
+        // ハンドツール: 左クリック/タッチドラッグでビューポートをパン（32x32のみ）
+        if (this.editor.currentTool === 'hand') {
+            if (this.editor.getCurrentSpriteSize() !== 2) return;
+            this.isHandPanning = true;
+            this.handPanClientX = e.clientX ?? 0;
+            this.handPanClientY = e.clientY ?? 0;
+            this.isDrawing = true;
+            return;
+        }
+
         const pixel = this.getPixelFromEvent(e);
         const dimension = this.editor.getCurrentSpriteDimension();
 
@@ -405,6 +418,24 @@ const SpriteCanvasInput = {
 
     onPointerMove(e) {
         if (!this.isDrawing || App.currentScreen !== 'paint') return;
+
+        // ハンドツール: ドラッグでビューポートをパン
+        if (this.isHandPanning) {
+            const maxScroll = 16 * this.editor.pixelSize;
+            const clientX = e.clientX ?? 0;
+            const clientY = e.clientY ?? 0;
+            const dx = this.handPanClientX - clientX;
+            const dy = this.handPanClientY - clientY;
+            this.handPanClientX = clientX;
+            this.handPanClientY = clientY;
+            if (!Number.isFinite(this.editor.viewportOffsetX)) this.editor.viewportOffsetX = 0;
+            if (!Number.isFinite(this.editor.viewportOffsetY)) this.editor.viewportOffsetY = 0;
+            this.editor.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.editor.viewportOffsetX + dx));
+            this.editor.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.editor.viewportOffsetY + dy));
+            this.editor.render();
+            return;
+        }
+
         this.hasMoved = true;
 
         this.lastPointerEvent = e;
@@ -496,6 +527,13 @@ const SpriteCanvasInput = {
         this.stopAutoScroll();
         this.lastPointerEvent = null;
         if (!this.isDrawing) return;
+
+        // ハンドツール終了
+        if (this.isHandPanning) {
+            this.isHandPanning = false;
+            this.isDrawing = false;
+            return;
+        }
 
         this.isDrawing = false;
         this.lastPixel = { x: -1, y: -1 };

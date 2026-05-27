@@ -39,6 +39,11 @@ class NoteEditor {
         this._midPanX  = 0;
         this._midPanY  = 0;
 
+        // ─── ハンドツールパン ───
+        this._isHandPan = false;
+        this._handPanX  = 0;
+        this._handPanY  = 0;
+
         // ─── タッチ: 遅延入力バッファ（2本指誤入力防止）───
         this._pendingTimer = null;
         this._pendingData  = null;
@@ -120,6 +125,16 @@ class NoteEditor {
             return;
         }
         if (e.button !== 0) return;
+        // ハンドツール: 左クリックドラッグでパン
+        if (this._o.currentTool === 'hand') {
+            e.preventDefault();
+            this._stopAutoScroll();
+            this._lastPointerEvent = null;
+            this._isHandPan = true;
+            this._handPanX = e.clientX;
+            this._handPanY = e.clientY;
+            return;
+        }
         this._handlePointerDown(e, false);
     }
 
@@ -151,6 +166,13 @@ class NoteEditor {
 
         if (e.touches.length === 1) {
             e.preventDefault();
+            // ハンドツール: 1本指タッチでパン
+            if (this._o.currentTool === 'hand') {
+                this._isHandPan = true;
+                this._handPanX = e.touches[0].clientX;
+                this._handPanY = e.touches[0].clientY;
+                return;
+            }
             this._handlePointerDown(e, true);
         }
     }
@@ -170,6 +192,19 @@ class NoteEditor {
             return;
         }
 
+        // ハンドツール: 1本指タッチドラッグでパン
+        if (this._isHandPan && e.touches.length === 1) {
+            e.preventDefault();
+            const o = this._o;
+            const maxScrollY = 72 * o.cellSize - this._canvas.height;
+            o.scrollX = Math.max(0, o.scrollX + (this._handPanX - e.touches[0].clientX));
+            o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._handPanY - e.touches[0].clientY)));
+            this._handPanX = e.touches[0].clientX;
+            this._handPanY = e.touches[0].clientY;
+            o.render();
+            return;
+        }
+
         if (this._isDragging && e.touches.length === 1) {
             e.preventDefault();
             this._lastPointerEvent = e;
@@ -184,6 +219,10 @@ class NoteEditor {
         if (e.touches.length === 1 && this._isTwoFingerPan) return;
 
         if (e.touches.length === 0) {
+            if (this._isHandPan) {
+                this._isHandPan = false;
+                return;
+            }
             if (this._isTwoFingerPan) {
                 this._isTwoFingerPan = false;
                 this._isDragging     = false;
@@ -204,6 +243,16 @@ class NoteEditor {
             this._midPanY = e.clientY;
             o.render();
         }
+        // ハンドツールパン
+        if (this._isHandPan) {
+            const o = this._o;
+            const maxScrollY = 72 * o.cellSize - this._canvas.height;
+            o.scrollX = Math.max(0, o.scrollX + (this._handPanX - e.clientX));
+            o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._handPanY - e.clientY)));
+            this._handPanX = e.clientX;
+            this._handPanY = e.clientY;
+            o.render();
+        }
         // ドラッグ
         if (this._isDragging) {
             e.preventDefault();
@@ -216,6 +265,10 @@ class NoteEditor {
     _onWindowMouseUp(e) {
         if (e.button === 1) {
             this._isMidPan = false;
+            return;
+        }
+        if (e.button === 0 && this._isHandPan) {
+            this._isHandPan = false;
             return;
         }
         if (!this._isDragging) return;

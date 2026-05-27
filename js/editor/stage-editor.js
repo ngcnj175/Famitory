@@ -186,7 +186,7 @@ const StageEditor = {
                 }
 
                 // 謠冗判繝・・繝ｫ縺ｮ蝣ｴ蜷医√き繝ｬ繝ｳ繝医ヤ繝ｼ繝ｫ繧呈峩譁ｰ
-                if (['pen', 'eraser', 'fill', 'eyedropper', 'select'].includes(tool)) {
+                if (['pen', 'eraser', 'fill', 'eyedropper', 'select', 'hand'].includes(tool)) {
                     this.currentTool = tool;
                     document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
                         b.classList.toggle('active', b.dataset.tool === tool);

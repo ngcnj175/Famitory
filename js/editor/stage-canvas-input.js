@@ -27,6 +27,9 @@ class StageCanvasInput {
         let panStartY = 0;
         let lastScrollX = 0;
         let lastScrollY = 0;
+        let isHandPanning = false;
+        let handPanClientX = 0;
+        let handPanClientY = 0;
 
         // --- PC: マウスホイールスクロール ---
         o.canvas.addEventListener('wheel', (e) => {
@@ -90,6 +93,14 @@ class StageCanvasInput {
                 lastScrollX = o.canvasScrollX;
                 lastScrollY = o.canvasScrollY;
                 isDrawing = false;
+                return;
+            }
+
+            // ハンドツール: 左クリック/1本指タッチでパン開始
+            if (o.currentTool === 'hand') {
+                isHandPanning = true;
+                handPanClientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+                handPanClientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
                 return;
             }
 
@@ -193,6 +204,25 @@ class StageCanvasInput {
                 return;
             }
 
+            // ハンドツール: ドラッグでキャンバスをスクロール
+            if (isHandPanning) {
+                const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+                const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+                const stage = App.projectData?.stage;
+                if (stage) {
+                    const maxScrollX = Math.max(0, (stage.width - 16) * o.tileSize);
+                    const maxScrollY = Math.max(0, (stage.height - 16) * o.tileSize);
+                    const dx = cx - handPanClientX;
+                    const dy = cy - handPanClientY;
+                    o.canvasScrollX = Math.max(-maxScrollX, Math.min(0, o.canvasScrollX + dx));
+                    o.canvasScrollY = Math.max(-maxScrollY, Math.min(0, o.canvasScrollY + dy));
+                    handPanClientX = cx;
+                    handPanClientY = cy;
+                    o.render();
+                }
+                return;
+            }
+
             if (!isDrawing) return;
             hasMoved = true;
             o.lastPointerEvent = e;
@@ -243,6 +273,10 @@ class StageCanvasInput {
             o.stopAutoScroll();
             o.lastPointerEvent = null;
 
+            if (isHandPanning) {
+                isHandPanning = false;
+                return;
+            }
             if (isPanning) {
                 isPanning = false;
                 return;
@@ -284,6 +318,10 @@ class StageCanvasInput {
             o.stopAutoScroll();
             o.lastPointerEvent = null;
 
+            if (isHandPanning) {
+                isHandPanning = false;
+                return;
+            }
             if (isPanning) {
                 isPanning = false;
                 return;
