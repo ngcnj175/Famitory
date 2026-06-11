@@ -853,6 +853,100 @@ const SpriteCanvasInput = {
         this.editor.initSpriteGallery();
     },
 
+    rotateSprite(angleDeg) {
+        const sprite = App.projectData.sprites[this.editor.currentSprite];
+        if (!sprite) return;
+
+        const rad = angleDeg * Math.PI / 180;
+        const palette = App.nesPalette;
+
+        // パレット色をRGBに事前変換（ループ内での繰り返しパースを避ける）
+        const paletteRGB = palette.map(hex => [
+            parseInt(hex.slice(1, 3), 16),
+            parseInt(hex.slice(3, 5), 16),
+            parseInt(hex.slice(5, 7), 16)
+        ]);
+
+        let srcData, srcW, srcH, writeBack;
+
+        if (this.editor.isFloating && this.editor.floatingData) {
+            srcData = this.editor.floatingData;
+            srcH = srcData.length;
+            srcW = srcData[0].length;
+            writeBack = (nd) => { this.editor.floatingData = nd; };
+        } else if (this.editor.selectionStart && this.editor.selectionEnd) {
+            const x1 = Math.min(this.editor.selectionStart.x, this.editor.selectionEnd.x);
+            const y1 = Math.min(this.editor.selectionStart.y, this.editor.selectionEnd.y);
+            const x2 = Math.max(this.editor.selectionStart.x, this.editor.selectionEnd.x);
+            const y2 = Math.max(this.editor.selectionStart.y, this.editor.selectionEnd.y);
+            srcW = x2 - x1 + 1;
+            srcH = y2 - y1 + 1;
+            srcData = [];
+            for (let y = 0; y < srcH; y++) srcData.push(sprite.data[y1 + y].slice(x1, x1 + srcW));
+            writeBack = (nd) => {
+                for (let y = 0; y < srcH; y++)
+                    for (let x = 0; x < srcW; x++)
+                        sprite.data[y1 + y][x1 + x] = nd[y][x];
+            };
+        } else {
+            const dim = this.editor.getCurrentSpriteDimension();
+            srcW = dim; srcH = dim;
+            srcData = sprite.data.map(row => [...row]);
+            writeBack = (nd) => {
+                for (let y = 0; y < dim; y++)
+                    for (let x = 0; x < dim; x++)
+                        sprite.data[y][x] = nd[y][x];
+            };
+        }
+
+        // ソースキャンバスにパレット色で描画
+        const srcCanvas = document.createElement('canvas');
+        srcCanvas.width = srcW; srcCanvas.height = srcH;
+        const srcCtx = srcCanvas.getContext('2d');
+        for (let y = 0; y < srcH; y++) {
+            for (let x = 0; x < srcW; x++) {
+                const ci = srcData[y][x];
+                if (ci >= 0) { srcCtx.fillStyle = palette[ci]; srcCtx.fillRect(x, y, 1, 1); }
+            }
+        }
+
+        // 回転を適用して描画
+        const dstCanvas = document.createElement('canvas');
+        dstCanvas.width = srcW; dstCanvas.height = srcH;
+        const dstCtx = dstCanvas.getContext('2d');
+        dstCtx.translate(srcW / 2, srcH / 2);
+        dstCtx.rotate(rad);
+        dstCtx.translate(-srcW / 2, -srcH / 2);
+        dstCtx.drawImage(srcCanvas, 0, 0);
+
+        // ピクセルデータをパレットインデックスに逆変換
+        const imgData = dstCtx.getImageData(0, 0, srcW, srcH);
+        const newData = [];
+        for (let y = 0; y < srcH; y++) {
+            const row = [];
+            for (let x = 0; x < srcW; x++) {
+                const i = (y * srcW + x) * 4;
+                row.push(imgData.data[i + 3] < 128 ? -1 :
+                    this._findClosestPaletteColor(imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], paletteRGB));
+            }
+            newData.push(row);
+        }
+
+        writeBack(newData);
+        this.editor.render();
+        this.editor.initSpriteGallery();
+    },
+
+    _findClosestPaletteColor(r, g, b, paletteRGB) {
+        let bestIdx = 0, bestDist = Infinity;
+        for (let i = 0; i < paletteRGB.length; i++) {
+            const [pr, pg, pb] = paletteRGB[i];
+            const d = (r - pr) ** 2 + (g - pg) ** 2 + (b - pb) ** 2;
+            if (d < bestDist) { bestDist = d; bestIdx = i; }
+        }
+        return bestIdx;
+    },
+
     flipHorizontal() {
         // ペーストモード時はペーストデータを反転
         if (this.editor.pasteMode && this.editor.pasteData) {

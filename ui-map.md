@@ -51,6 +51,7 @@
 | U036 | 上下反転 | Flip V | HTML attribute (title) | index.html | |
 | U037 | 左右反転 | Flip H | HTML attribute (title) | index.html | |
 | U455 | ハンドツール | Hand Tool | HTML attribute (title) | index.html | |
+| U456 | 時計回り回転 | Rotate CW | HTML attribute (title) | index.html | |
 | U038 | おてほん | Guide | HTML attribute (title) | index.html | |
 | U039 | ▼ | ▼ | HTML text node | index.html | |
 | U040 | ゲーム設定 | Game Settings | HTML text node | index.html | ✓ |

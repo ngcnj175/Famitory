@@ -173,6 +173,10 @@ const SpriteEditor = {
                         this.saveHistory();
                         SpriteCanvasInput.flipHorizontal();
                         break;
+                    case 'rotate-cw':
+                        this.saveHistory();
+                        SpriteCanvasInput.rotateSprite(45);
+                        break;
                     case 'guide':
                         SpriteCanvasInput.handleGuideButtonClick();
                         break;
