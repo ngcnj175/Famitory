@@ -726,8 +726,6 @@ const GameEngine = {
         // 一時停止中はupdateをスキップ（描画は続行）
         if (!this.isPaused && !this.doorAnimating) {
             this.update();
-            // タイルアニメーションフレームカウンターを更新
-            this.tileAnimationFrame++;
 
             // タイマー更新（playingの時のみ）
             if (this.titleState === 'playing' && this.hasTimeLimit && !this.isCleared) {
