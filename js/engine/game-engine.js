@@ -1442,12 +1442,18 @@ const GameEngine = {
         }
     },
 
+    // リザルト画面から「もう一度」を実行する共通処理
+    _retryFromResult() {
+        const overlay = document.getElementById('result-overlay');
+        if (overlay) overlay.classList.add('hidden');
+        this.restart();
+    },
+
     // リザルト画面のイベント初期化（一度だけ呼ぶ）
     initResultEvents() {
         const shareBtn = document.getElementById('result-share-btn');
         const retryBtn = document.getElementById('result-retry-btn');
         const editBtn = document.getElementById('result-edit-btn');
-        const overlay = document.getElementById('result-overlay');
 
         if (shareBtn) {
             shareBtn.addEventListener('click', () => {
@@ -1463,11 +1469,16 @@ const GameEngine = {
         }
 
         if (retryBtn) {
-            retryBtn.addEventListener('click', () => {
-                if (overlay) overlay.classList.add('hidden');
-                this.restart();
-            });
+            retryBtn.addEventListener('click', () => this._retryFromResult());
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (this.titleState !== 'result') return;
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this._retryFromResult();
+            }
+        });
 
         if (editBtn) {
             editBtn.addEventListener('click', () => {
