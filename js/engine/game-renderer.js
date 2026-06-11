@@ -3,9 +3,37 @@
  * GameEngine の renderGameScreen, renderLayer, renderLayerFiltered, renderSprite を担当
  */
 
+const _ANIM_SLOT_NAMES = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
+
 class GameRenderer {
     constructor(owner) {
         this.owner = owner; // GameEngine reference
+    }
+
+    // ========== アニメーションヘルパー ==========
+
+    // spriteSlots から最初の有効スロットの { frames, speed } を返す
+    // preferredSlot が指定されていれば優先して使用する
+    _resolveAnimSlot(spriteSlots, preferredSlot = null) {
+        if (preferredSlot) {
+            const slot = spriteSlots[preferredSlot];
+            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 5 };
+        }
+        for (const name of _ANIM_SLOT_NAMES) {
+            const slot = spriteSlots[name];
+            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 5 };
+        }
+        return { frames: [], speed: 5 };
+    }
+
+    // frames・speed・tick からスプライトインデックスを返す
+    // clamp=true の場合はループしない（melee用）
+    _getAnimSpriteIdx(frames, speed, tick, clamp = false) {
+        if (frames.length === 0) return -1;
+        if (frames.length === 1) return frames[0];
+        const interval = Math.max(1, Math.floor(60 / speed));
+        if (clamp) return frames[Math.min(Math.floor(tick / interval), frames.length - 1)];
+        return frames[Math.floor(tick / interval) % frames.length];
     }
 
     // ========== メイン描画処理 ==========
@@ -60,10 +88,16 @@ class GameRenderer {
             this.renderLayer(stage.layers.bg, startX, startY, endX, endY);
         }
 
+        // ギミックブロック位置セット（renderLayerFiltered で2回使うため1度だけ構築）
+        const gimmickPositions = new Set();
+        if (this.owner.gimmickBlocks) {
+            this.owner.gimmickBlocks.forEach(b => gimmickPositions.add(`${b.tileX},${b.tileY}`));
+        }
+
         // 2. FGレイヤー (装飾用・当たり判定なしのブロック)
         // 当たり判定ありのブロックは後で描画
         if (stage.layers.fg) {
-            this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, false); // collision=false のみ
+            this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, false, gimmickPositions); // collision=false のみ
         }
 
         // 2.5 ギミックブロック（動くブロック）をプレイヤーやアイテムの奥（背景寄り）で描画
@@ -124,7 +158,7 @@ class GameRenderer {
 
         // 6. FGレイヤー (当たり判定ありのブロック - プレイヤー/敵より手前)
         if (stage.layers.fg) {
-            this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
+            this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true, gimmickPositions); // collision=true のみ
         }
 
         // 6.5. chase敵・空中zigzag敵（FGブロックより前面）
@@ -195,31 +229,8 @@ class GameRenderer {
                         if (template && (template.type === 'item' || template.type === 'enemy' || template.type === 'player')) continue;
 
                         // マテリアル（ブロック）などはここで描画
-                        const spriteSlots = template?.sprites || {};
-                        const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
-                        let frames = [];
-                        let speed = 5;
-                        for (const slotName of slotNames) {
-                            if (spriteSlots[slotName]?.frames?.length > 0) {
-                                frames = spriteSlots[slotName].frames;
-                                if (spriteSlots[slotName]?.speed !== undefined) {
-                                    speed = spriteSlots[slotName].speed;
-                                }
-                                break;
-                            }
-                        }
-                        if (frames.length > 1) {
-                            // 複数フレームがある場合はアニメーション
-                            const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-                            if (interval !== Infinity) {
-                                const frameIndex = Math.floor(this.owner.tileAnimationFrame / interval) % frames.length;
-                                spriteIdx = frames[frameIndex];
-                            } else {
-                                spriteIdx = frames[0];
-                            }
-                        } else if (frames.length === 1) {
-                            spriteIdx = frames[0];
-                        }
+                        const { frames, speed } = this._resolveAnimSlot(template?.sprites || {});
+                        spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
                     } else {
                         // 旧形式または単純タイル
                         spriteIdx = tileId;
@@ -236,19 +247,11 @@ class GameRenderer {
     }
 
     // ========== フィルタリング付きレイヤー描画 ==========
-    renderLayerFiltered(layer, startX, startY, endX, endY, collisionOnly) {
+    renderLayerFiltered(layer, startX, startY, endX, endY, collisionOnly, gimmickPositions) {
         if (!layer) return;
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
-
-        // ギミックブロック位置をセットに登録
-        const gimmickPositions = new Set();
-        if (this.owner.gimmickBlocks) {
-            this.owner.gimmickBlocks.forEach(block => {
-                gimmickPositions.add(`${block.tileX},${block.tileY}`);
-            });
-        }
 
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
@@ -280,30 +283,8 @@ class GameRenderer {
                         }
 
                         // アニメーション対応
-                        const spriteSlots = template?.sprites || {};
-                        const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
-                        let frames = [];
-                        let speed = 5;
-                        for (const slotName of slotNames) {
-                            if (spriteSlots[slotName]?.frames?.length > 0) {
-                                frames = spriteSlots[slotName].frames;
-                                if (spriteSlots[slotName]?.speed !== undefined) {
-                                    speed = spriteSlots[slotName].speed;
-                                }
-                                break;
-                            }
-                        }
-                        if (frames.length > 1) {
-                            const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-                            if (interval !== Infinity) {
-                                const frameIndex = Math.floor(this.owner.tileAnimationFrame / interval) % frames.length;
-                                spriteIdx = frames[frameIndex];
-                            } else {
-                                spriteIdx = frames[0];
-                            }
-                        } else if (frames.length === 1) {
-                            spriteIdx = frames[0];
-                        }
+                        const { frames, speed } = this._resolveAnimSlot(template?.sprites || {});
+                        spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
                     } else {
                         // 旧形式または単純タイル（当たり判定なしとみなす）
                         spriteIdx = tileId;
@@ -526,49 +507,12 @@ class GameRenderer {
         if (obj.templateIdx !== undefined) {
             const template = App.projectData.templates[obj.templateIdx];
             if (template) {
-                const spriteSlots = template.sprites || {};
-                let frames = [];
-
-                if (obj.animationSlot && spriteSlots[obj.animationSlot]?.frames?.length > 0) {
-                    frames = spriteSlots[obj.animationSlot].frames;
-                } else if (obj.itemType === 'transform' && spriteSlots['transformItem']?.frames?.length > 0) {
-                    frames = spriteSlots['transformItem'].frames;
-                } else {
-                    const slotNames = ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life'];
-                    for (const slotName of slotNames) {
-                        if (spriteSlots[slotName]?.frames?.length > 0) {
-                            frames = spriteSlots[slotName].frames;
-                            break;
-                        }
-                    }
-                }
-                if (frames.length > 1) {
-                    let speed = 5;
-                    if (obj.animationSlot && spriteSlots[obj.animationSlot]?.speed !== undefined) {
-                        speed = spriteSlots[obj.animationSlot].speed;
-                    } else {
-                        for (const slotName of ['idle', 'main', 'walk', 'jump', 'attack', 'shot', 'life']) {
-                            if (spriteSlots[slotName]?.frames?.length > 0 && spriteSlots[slotName]?.speed !== undefined) {
-                                speed = spriteSlots[slotName].speed;
-                                break;
-                            }
-                        }
-                    }
-                    const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-                    if (interval !== Infinity) {
-                        let frameIndex;
-                        if (obj.shotType === 'melee') {
-                            frameIndex = Math.min(Math.floor((obj.age || 0) / interval), frames.length - 1);
-                        } else {
-                            frameIndex = Math.floor(this.owner.tileAnimationFrame / interval) % frames.length;
-                        }
-                        spriteIdx = frames[frameIndex];
-                    } else {
-                        spriteIdx = frames[0];
-                    }
-                } else if (frames.length === 1) {
-                    spriteIdx = frames[0];
-                }
+                const preferredSlot = obj.animationSlot ||
+                    (obj.itemType === 'transform' ? 'transformItem' : null);
+                const { frames, speed } = this._resolveAnimSlot(template.sprites || {}, preferredSlot);
+                const tick = obj.shotType === 'melee' ? (obj.age || 0) : this.owner.tileAnimationFrame;
+                const animIdx = this._getAnimSpriteIdx(frames, speed, tick, obj.shotType === 'melee');
+                if (animIdx >= 0) spriteIdx = animIdx;
             }
         }
 
@@ -685,20 +629,9 @@ class GameRenderer {
         if (this.owner.player && !this.owner.player.isDead) {
             const lifeSprites = this.owner.player.template?.sprites?.life;
             const frames = lifeSprites?.frames || [];
-            let spriteIdx;
-            if (frames.length > 1) {
-                const speed = lifeSprites.speed || 5;
-                const interval = speed > 0 ? Math.floor(60 / speed) : Infinity;
-                if (interval !== Infinity) {
-                    spriteIdx = frames[Math.floor(this.owner.tileAnimationFrame / interval) % frames.length];
-                } else {
-                    spriteIdx = frames[0];
-                }
-            } else if (frames.length === 1) {
-                spriteIdx = frames[0];
-            }
-
-            const sprite = spriteIdx !== undefined ? App.projectData.sprites[spriteIdx] : null;
+            const speed = lifeSprites?.speed || 5;
+            const spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
+            const sprite = spriteIdx >= 0 ? App.projectData.sprites[spriteIdx] : null;
             if (sprite) {
                 const heartSize = 20;
                 const pixelSize = heartSize / 16;
