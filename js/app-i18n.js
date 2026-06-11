@@ -151,6 +151,7 @@ const AppI18N = {
         'U210': { JPN: 'ライフ数',            ENG: 'Life Count' },
         'U211': { JPN: '特性',               ENG: 'Traits' },
         'U212': { JPN: 'うろうろ',            ENG: 'Wander' },
+        'U455': { JPN: 'ジグザグ',            ENG: 'Zigzag' },
         'U213': { JPN: '動かない',            ENG: 'Static' },
         'U214': { JPN: 'ぴょんぴょん',        ENG: 'Hop' },
         'U215': { JPN: 'うろぴょん',          ENG: 'Wander+Hop' },

@@ -222,6 +222,7 @@
 | U210 | ライフ数 | Life Count | JS message/literal | stage-editor.js | ✓ |
 | U211 | 特性 | Traits | JS message/literal | stage-editor.js | ✓ |
 | U212 | うろうろ | Wander | JS HTML template | stage-editor.js | ✓ |
+| U455 | ジグザグ | Zigzag | JS HTML template (option) | stage-editor.js | ✓ |
 | U213 | 動かない | Static | JS HTML template | stage-editor.js | ✓ |
 | U214 | ぴょんぴょん | Hop | JS HTML template | stage-editor.js | ✓ |
 | U215 | うろぴょん | Wander+Hop | JS HTML template | stage-editor.js | ✓ |

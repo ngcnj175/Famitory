@@ -72,6 +72,12 @@ class Enemy {
         this.rushPhase = 'idle'; // 'idle', 'back', 'rush', 'return'
         this.rushStartX = tileX;
 
+        // ジグザグ用状態
+        this.zigzagDir = -1; // 初期は左向き（facingRightと一致）
+        this.zigzagPhase = 'forward'; // 'forward' | 'backward'
+        this.zigzagPhaseStartX = tileX;
+        this.zigzagTime = 0; // 空中ジグザグのサイン波タイマー
+
         // SHOT設定
         this.shotMaxRange = (template?.config?.shotMaxRange || 0) * 2;
         this.shotCooldown = 0;
@@ -205,6 +211,9 @@ class Enemy {
                 // とっしん（地上）
                 this.rushGround(engine);
                 break;
+            case 'zigzag':
+                this.zigzagGround(engine);
+                break;
             default:
                 this.vx = 0;
         }
@@ -331,6 +340,9 @@ class Enemy {
             case 'rush':
                 // とっしん（空中）
                 this.rushAerial(engine);
+                break;
+            case 'zigzag':
+                this.zigzagAerial(engine);
                 break;
             default:
                 this.vx = 0;
@@ -830,6 +842,64 @@ class Enemy {
                 }
                 break;
         }
+    }
+
+    // ジグザグ（地上）: 3歩前進 → 2歩後退を繰り返す
+    zigzagGround(engine) {
+        const forwardDist = 3;
+        const backwardDist = 2;
+        const targetDist = this.zigzagPhase === 'forward' ? forwardDist : backwardDist;
+        const moved = Math.abs(this.x - this.zigzagPhaseStartX);
+
+        if (moved >= targetDist) {
+            this.zigzagPhase = this.zigzagPhase === 'forward' ? 'backward' : 'forward';
+            this.zigzagPhaseStartX = this.x;
+        }
+
+        const moveDir = this.zigzagPhase === 'forward' ? this.zigzagDir : -this.zigzagDir;
+
+        // 壁・崖判定（障害物接触で全体方向を反転）
+        const checkX = moveDir > 0 ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
+        const wallY = Math.floor(this.y + this.height / 2);
+        const footY = Math.floor(this.y + this.height + 0.1);
+        const hitWall = this.checkTileCollision(engine, checkX, wallY) === 1;
+        const hitCliff = this.onGround && this.checkTileCollision(engine, checkX, footY) === 0;
+
+        if (hitWall || hitCliff) {
+            this.zigzagDir *= -1;
+            this.zigzagPhase = 'forward';
+            this.zigzagPhaseStartX = this.x;
+        }
+
+        const actualDir = this.zigzagPhase === 'forward' ? this.zigzagDir : -this.zigzagDir;
+        this.facingRight = actualDir > 0;
+        this.vx = actualDir * this.moveSpeed;
+    }
+
+    // ジグザグ（空中）: 水平移動 + サイン波による滑らかな上下飛行
+    zigzagAerial(engine) {
+        const maxRange = 6;
+        const waveFreq = 0.05;                        // ラジアン/フレーム（約2秒で1周期）
+        const waveAmplitude = this.moveSpeed * 1.5;   // 上下幅
+
+        this.zigzagTime++;
+
+        // 水平移動（距離制限で反転）
+        const distX = this.x - this.originX;
+        if (this.facingRight && distX >= maxRange) {
+            this.facingRight = false;
+        } else if (!this.facingRight && distX <= -maxRange) {
+            this.facingRight = true;
+        }
+
+        // 壁衝突で反転
+        const checkX = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
+        if (this.checkTileCollision(engine, checkX, Math.floor(this.y + this.height / 2)) === 1) {
+            this.facingRight = !this.facingRight;
+        }
+
+        this.vx = this.facingRight ? this.moveSpeed : -this.moveSpeed;
+        this.vy = Math.sin(this.zigzagTime * waveFreq) * waveAmplitude;
     }
 
     updateState() {

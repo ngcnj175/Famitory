@@ -479,6 +479,7 @@ const StageEditor = {
                         <select class="param-select" data-key="move">
                             <option value="idle" ${config.move === 'idle' ? 'selected' : ''}>${this.t('U213')}</option>
                             <option value="patrol" ${config.move === 'patrol' ? 'selected' : ''}>${this.t('U212')}</option>
+                            <option value="zigzag" ${config.move === 'zigzag' ? 'selected' : ''}>${this.t('U455')}</option>
                             <option value="jump" ${config.move === 'jump' ? 'selected' : ''}>${this.t('U214')}</option>
                             <option value="jumpPatrol" ${config.move === 'jumpPatrol' ? 'selected' : ''}>${this.t('U215')}</option>
                             <option value="chase" ${config.move === 'chase' ? 'selected' : ''}>${this.t('U216')}</option>
