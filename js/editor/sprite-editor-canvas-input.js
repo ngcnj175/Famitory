@@ -879,7 +879,8 @@ const SpriteCanvasInput = {
         this.editor.saveHistory();
         this._isRotating = false;
 
-        const { data: srcData, srcW, srcH, writeBack } = this._rotBase;
+        const { data: srcData, srcW, srcH, writeBack, isSelection } = this._rotBase;
+        const expandToFit = !!isSelection;
         let newData;
 
         if (this._rotAngle === 0) {
@@ -888,10 +889,10 @@ const SpriteCanvasInput = {
             this._rotBase = null;
         } else if (this._rotAngle % 90 === 0) {
             // 90°単位：正確なピクセル変換（補間なし）
-            newData = this._rotateExact(srcData, srcW, srcH, this._rotAngle);
+            newData = this._rotateExact(srcData, srcW, srcH, this._rotAngle, expandToFit);
         } else {
             // 45°系：Canvas回転（多少のピクセル崩れ許容）
-            newData = this._rotateCanvas(srcData, srcW, srcH, this._rotAngle * Math.PI / 180, App.nesPalette);
+            newData = this._rotateCanvas(srcData, srcW, srcH, this._rotAngle * Math.PI / 180, App.nesPalette, expandToFit);
         }
 
         writeBack(newData);
@@ -915,11 +916,27 @@ const SpriteCanvasInput = {
             srcW = x2 - x1 + 1; srcH = y2 - y1 + 1;
             srcData = [];
             for (let y = 0; y < srcH; y++) srcData.push(sprite.data[y1 + y].slice(x1, x1 + srcW));
+            const cx = x1 + (srcW - 1) / 2;
+            const cy = y1 + (srcH - 1) / 2;
+            const dim = this.editor.getCurrentSpriteDimension();
             writeBack = (nd) => {
-                for (let y = 0; y < srcH; y++)
-                    for (let x = 0; x < srcW; x++)
-                        sprite.data[y1 + y][x1 + x] = nd[y][x];
+                // 元の選択範囲をクリア
+                for (let y = y1; y <= y2; y++)
+                    for (let x = x1; x <= x2; x++)
+                        sprite.data[y][x] = -1;
+                // nd を選択中心に合わせて書き戻す（スプライト境界内のみ）
+                const ndH = nd.length, ndW = nd[0].length;
+                const startX = Math.round(cx - (ndW - 1) / 2);
+                const startY = Math.round(cy - (ndH - 1) / 2);
+                for (let y = 0; y < ndH; y++)
+                    for (let x = 0; x < ndW; x++) {
+                        if (nd[y][x] < 0) continue;
+                        const sx = startX + x, sy = startY + y;
+                        if (sx >= 0 && sx < dim && sy >= 0 && sy < dim)
+                            sprite.data[sy][sx] = nd[y][x];
+                    }
             };
+            return { data: srcData, srcW, srcH, writeBack, isSelection: true };
         } else {
             const dim = this.editor.getCurrentSpriteDimension();
             srcW = dim; srcH = dim;
@@ -935,10 +952,10 @@ const SpriteCanvasInput = {
     },
 
     // 90°単位の正確なピクセル変換（補間なし）
-    _rotateExact(srcData, srcW, srcH, angleDeg) {
+    _rotateExact(srcData, srcW, srcH, angleDeg, expandToFit = false) {
         if (srcW !== srcH) {
             // 非正方形はCanvasにフォールバック
-            return this._rotateCanvas(srcData, srcW, srcH, angleDeg * Math.PI / 180, App.nesPalette);
+            return this._rotateCanvas(srcData, srcW, srcH, angleDeg * Math.PI / 180, App.nesPalette, expandToFit);
         }
         const N = srcW;
         const result = Array.from({length: N}, () => new Array(N).fill(-1));
@@ -955,7 +972,7 @@ const SpriteCanvasInput = {
     },
 
     // Canvas APIによる回転（45°系・imageSmoothingEnabled=false）
-    _rotateCanvas(srcData, srcW, srcH, rad, palette) {
+    _rotateCanvas(srcData, srcW, srcH, rad, palette, expandToFit = false) {
         const paletteRGB = palette.map(hex => [
             parseInt(hex.slice(1, 3), 16),
             parseInt(hex.slice(3, 5), 16),
@@ -972,21 +989,29 @@ const SpriteCanvasInput = {
                 if (ci >= 0) { srcCtx.fillStyle = palette[ci]; srcCtx.fillRect(x, y, 1, 1); }
             }
 
+        // 選択範囲回転時はバウンディングボックスサイズに拡張してはみ出しを保持
+        let outW = srcW, outH = srcH;
+        if (expandToFit) {
+            const cos = Math.abs(Math.cos(rad)), sin = Math.abs(Math.sin(rad));
+            outW = Math.ceil(srcW * cos + srcH * sin);
+            outH = Math.ceil(srcW * sin + srcH * cos);
+        }
+
         const dstCanvas = document.createElement('canvas');
-        dstCanvas.width = srcW; dstCanvas.height = srcH;
+        dstCanvas.width = outW; dstCanvas.height = outH;
         const dstCtx = dstCanvas.getContext('2d');
         dstCtx.imageSmoothingEnabled = false;
-        dstCtx.translate(srcW / 2, srcH / 2);
+        dstCtx.translate(outW / 2, outH / 2);
         dstCtx.rotate(rad);
         dstCtx.translate(-srcW / 2, -srcH / 2);
         dstCtx.drawImage(srcCanvas, 0, 0);
 
-        const imgData = dstCtx.getImageData(0, 0, srcW, srcH);
+        const imgData = dstCtx.getImageData(0, 0, outW, outH);
         const newData = [];
-        for (let y = 0; y < srcH; y++) {
+        for (let y = 0; y < outH; y++) {
             const row = [];
-            for (let x = 0; x < srcW; x++) {
-                const i = (y * srcW + x) * 4;
+            for (let x = 0; x < outW; x++) {
+                const i = (y * outW + x) * 4;
                 row.push(imgData.data[i + 3] < 128 ? -1 :
                     this._findClosestPaletteColor(imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], paletteRGB));
             }
