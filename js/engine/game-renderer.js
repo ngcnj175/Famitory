@@ -112,9 +112,9 @@ class GameRenderer {
             }
         });
 
-        // 4. エネミー（chase・死亡中を除く）
+        // 4. エネミー（chase・空中zigzag・死亡中を除く）
         this.owner.enemies.forEach(enemy => {
-            if (!enemy.isDying && enemy.behavior !== 'chase') this._renderEnemyIfVisible(enemy);
+            if (!enemy.isDying && enemy.behavior !== 'chase' && !(enemy.behavior === 'zigzag' && enemy.isAerial)) this._renderEnemyIfVisible(enemy);
         });
 
         // 5. プレイヤー（クリア演出中はFGレイヤー後に描画するためスキップ、死亡落下中もスキップ）
@@ -127,9 +127,9 @@ class GameRenderer {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true); // collision=true のみ
         }
 
-        // 6.5. chase敵（FGブロックより前面）
+        // 6.5. chase敵・空中zigzag敵（FGブロックより前面）
         this.owner.enemies.forEach(enemy => {
-            if (!enemy.isDying && enemy.behavior === 'chase') this._renderEnemyIfVisible(enemy);
+            if (!enemy.isDying && (enemy.behavior === 'chase' || (enemy.behavior === 'zigzag' && enemy.isAerial))) this._renderEnemyIfVisible(enemy);
         });
 
         // 6.6. クリア演出中のプレイヤー（喜びジャンプを前景に表示）

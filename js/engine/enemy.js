@@ -876,26 +876,20 @@ class Enemy {
         this.vx = actualDir * this.moveSpeed;
     }
 
-    // ジグザグ（空中）: 水平移動 + サイン波による滑らかな上下飛行
-    zigzagAerial(engine) {
+    // ジグザグ（空中）: 水平移動 + サイン波による滑らかな上下飛行（ブロック当たり判定なし）
+    zigzagAerial() {
         const maxRange = 6;
         const waveFreq = 0.05;                        // ラジアン/フレーム（約2秒で1周期）
         const waveAmplitude = this.moveSpeed * 1.5;   // 上下幅
 
         this.zigzagTime++;
 
-        // 水平移動（距離制限で反転）
+        // 水平移動（距離制限のみで反転、壁・ブロック判定なし）
         const distX = this.x - this.originX;
         if (this.facingRight && distX >= maxRange) {
             this.facingRight = false;
         } else if (!this.facingRight && distX <= -maxRange) {
             this.facingRight = true;
-        }
-
-        // 壁衝突で反転
-        const checkX = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
-        if (this.checkTileCollision(engine, checkX, Math.floor(this.y + this.height / 2)) === 1) {
-            this.facingRight = !this.facingRight;
         }
 
         this.vx = this.facingRight ? this.moveSpeed : -this.moveSpeed;
