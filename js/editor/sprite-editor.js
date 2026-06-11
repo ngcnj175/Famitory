@@ -91,6 +91,12 @@ const SpriteEditor = {
 
     // ========== Undo機能 ==========
     saveHistory() {
+        // 回転以外の操作はセッションをリセット（誤差累積防止）
+        if (!SpriteCanvasInput._isRotating) {
+            SpriteCanvasInput._rotBase = null;
+            SpriteCanvasInput._rotAngle = 0;
+        }
+
         const sprite = App.projectData.sprites[this.currentSprite];
         if (!sprite) return;
 
@@ -111,6 +117,10 @@ const SpriteEditor = {
         if (this.history.length === 0) {
             return;
         }
+
+        // Undoで回転セッションをリセット
+        SpriteCanvasInput._rotBase = null;
+        SpriteCanvasInput._rotAngle = 0;
 
         const lastState = this.history.pop();
         const sprite = App.projectData.sprites[lastState.spriteIndex];
@@ -174,7 +184,6 @@ const SpriteEditor = {
                         SpriteCanvasInput.flipHorizontal();
                         break;
                     case 'rotate-cw':
-                        this.saveHistory();
                         SpriteCanvasInput.rotateSprite(45);
                         break;
                     case 'guide':

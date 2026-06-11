@@ -28,6 +28,12 @@ const SpriteCanvasInput = {
     isMovingSelection: false,
     selectionMoveStart: null,
 
+    // 回転セッション管理
+    _rotBase: null,
+    _rotBaseSprite: -1,
+    _rotAngle: 0,
+    _isRotating: false,
+
     init(parentEditor) {
         this.editor = parentEditor;
         this.initCanvasEvents();
@@ -857,30 +863,56 @@ const SpriteCanvasInput = {
         const sprite = App.projectData.sprites[this.editor.currentSprite];
         if (!sprite) return;
 
-        const rad = angleDeg * Math.PI / 180;
-        const palette = App.nesPalette;
+        const currentSprite = this.editor.currentSprite;
 
-        // パレット色をRGBに事前変換（ループ内での繰り返しパースを避ける）
-        const paletteRGB = palette.map(hex => [
-            parseInt(hex.slice(1, 3), 16),
-            parseInt(hex.slice(3, 5), 16),
-            parseInt(hex.slice(5, 7), 16)
-        ]);
+        // 連続回転セッション：同スプライトへのタップは元画像から再計算して誤差累積を防ぐ
+        if (!this._rotBase || this._rotBaseSprite !== currentSprite) {
+            this._rotBase = this._captureRotationBase(sprite);
+            this._rotBaseSprite = currentSprite;
+            this._rotAngle = 0;
+        }
 
+        this._rotAngle = (this._rotAngle + angleDeg) % 360;
+
+        // 履歴保存（_isRotatingフラグでセッションをリセットさせない）
+        this._isRotating = true;
+        this.editor.saveHistory();
+        this._isRotating = false;
+
+        const { data: srcData, srcW, srcH, writeBack } = this._rotBase;
+        let newData;
+
+        if (this._rotAngle === 0) {
+            // 360° → 元画像を完全復元
+            newData = srcData.map(row => [...row]);
+            this._rotBase = null;
+        } else if (this._rotAngle % 90 === 0) {
+            // 90°単位：正確なピクセル変換（補間なし）
+            newData = this._rotateExact(srcData, srcW, srcH, this._rotAngle);
+        } else {
+            // 45°系：Canvas回転（多少のピクセル崩れ許容）
+            newData = this._rotateCanvas(srcData, srcW, srcH, this._rotAngle * Math.PI / 180, App.nesPalette);
+        }
+
+        writeBack(newData);
+        this.editor.render();
+        this.editor.initSpriteGallery();
+    },
+
+    _captureRotationBase(sprite) {
         let srcData, srcW, srcH, writeBack;
 
         if (this.editor.isFloating && this.editor.floatingData) {
-            srcData = this.editor.floatingData;
-            srcH = srcData.length;
-            srcW = srcData[0].length;
+            const fd = this.editor.floatingData;
+            srcH = fd.length; srcW = fd[0].length;
+            srcData = fd.map(row => [...row]);
             writeBack = (nd) => { this.editor.floatingData = nd; };
         } else if (this.editor.selectionStart && this.editor.selectionEnd) {
             const x1 = Math.min(this.editor.selectionStart.x, this.editor.selectionEnd.x);
             const y1 = Math.min(this.editor.selectionStart.y, this.editor.selectionEnd.y);
             const x2 = Math.max(this.editor.selectionStart.x, this.editor.selectionEnd.x);
             const y2 = Math.max(this.editor.selectionStart.y, this.editor.selectionEnd.y);
-            srcW = x2 - x1 + 1;
-            srcH = y2 - y1 + 1;
+            srcW = x2 - x1 + 1; srcH = y2 - y1 + 1;
             srcData = [];
             for (let y = 0; y < srcH; y++) srcData.push(sprite.data[y1 + y].slice(x1, x1 + srcW));
             writeBack = (nd) => {
@@ -899,27 +931,56 @@ const SpriteCanvasInput = {
             };
         }
 
-        // ソースキャンバスにパレット色で描画
+        return { data: srcData, srcW, srcH, writeBack };
+    },
+
+    // 90°単位の正確なピクセル変換（補間なし）
+    _rotateExact(srcData, srcW, srcH, angleDeg) {
+        if (srcW !== srcH) {
+            // 非正方形はCanvasにフォールバック
+            return this._rotateCanvas(srcData, srcW, srcH, angleDeg * Math.PI / 180, App.nesPalette);
+        }
+        const N = srcW;
+        const result = Array.from({length: N}, () => new Array(N).fill(-1));
+        for (let y = 0; y < N; y++) {
+            for (let x = 0; x < N; x++) {
+                let nx, ny;
+                if (angleDeg === 90)       { ny = x;       nx = N - 1 - y; }
+                else if (angleDeg === 180) { ny = N-1-y;   nx = N - 1 - x; }
+                else                       { ny = N-1-x;   nx = y; }         // 270
+                result[ny][nx] = srcData[y][x];
+            }
+        }
+        return result;
+    },
+
+    // Canvas APIによる回転（45°系・imageSmoothingEnabled=false）
+    _rotateCanvas(srcData, srcW, srcH, rad, palette) {
+        const paletteRGB = palette.map(hex => [
+            parseInt(hex.slice(1, 3), 16),
+            parseInt(hex.slice(3, 5), 16),
+            parseInt(hex.slice(5, 7), 16)
+        ]);
+
         const srcCanvas = document.createElement('canvas');
         srcCanvas.width = srcW; srcCanvas.height = srcH;
         const srcCtx = srcCanvas.getContext('2d');
-        for (let y = 0; y < srcH; y++) {
+        srcCtx.imageSmoothingEnabled = false;
+        for (let y = 0; y < srcH; y++)
             for (let x = 0; x < srcW; x++) {
                 const ci = srcData[y][x];
                 if (ci >= 0) { srcCtx.fillStyle = palette[ci]; srcCtx.fillRect(x, y, 1, 1); }
             }
-        }
 
-        // 回転を適用して描画
         const dstCanvas = document.createElement('canvas');
         dstCanvas.width = srcW; dstCanvas.height = srcH;
         const dstCtx = dstCanvas.getContext('2d');
+        dstCtx.imageSmoothingEnabled = false;
         dstCtx.translate(srcW / 2, srcH / 2);
         dstCtx.rotate(rad);
         dstCtx.translate(-srcW / 2, -srcH / 2);
         dstCtx.drawImage(srcCanvas, 0, 0);
 
-        // ピクセルデータをパレットインデックスに逆変換
         const imgData = dstCtx.getImageData(0, 0, srcW, srcH);
         const newData = [];
         for (let y = 0; y < srcH; y++) {
@@ -931,10 +992,7 @@ const SpriteCanvasInput = {
             }
             newData.push(row);
         }
-
-        writeBack(newData);
-        this.editor.render();
-        this.editor.initSpriteGallery();
+        return newData;
     },
 
     _findClosestPaletteColor(r, g, b, paletteRGB) {
