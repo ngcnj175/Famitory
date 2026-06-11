@@ -344,7 +344,8 @@ const SpriteCanvasInput = {
         }
 
         // 範囲選択モード
-        if (this.editor.selectionMode) {
+        if (this.editor.currentTool === 'select') {
+            this.editor.selectionMode = true;
             this.isDrawing = true;
 
             // 既存の選択範囲内をクリックした場合は移動モード
@@ -714,10 +715,6 @@ const SpriteCanvasInput = {
         this.editor.selectionMode = false;
         this.editor.selectionStart = null;
         this.editor.selectionEnd = null;
-
-        document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tool === 'select' && this.editor.selectionMode);
-        });
 
         this.editor.render();
     },
