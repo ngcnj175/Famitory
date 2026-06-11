@@ -919,7 +919,12 @@ const SpriteCanvasInput = {
             const cx = x1 + (srcW - 1) / 2;
             const cy = y1 + (srcH - 1) / 2;
             const dim = this.editor.getCurrentSpriteDimension();
+            // セッション開始時のスプライト全体をスナップショット（前回はみ出し分の復元に使用）
+            const spriteSnapshot = sprite.data.map(row => [...row]);
             writeBack = (nd) => {
+                // スプライト全体をセッション開始時の状態に復元（前回の回転はみ出し分を消去）
+                for (let y = 0; y < dim; y++)
+                    sprite.data[y] = [...spriteSnapshot[y]];
                 // 元の選択範囲をクリア
                 for (let y = y1; y <= y2; y++)
                     for (let x = x1; x <= x2; x++)
