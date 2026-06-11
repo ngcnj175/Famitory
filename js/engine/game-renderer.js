@@ -36,6 +36,13 @@ class GameRenderer {
         return frames[Math.floor(tick / interval) % frames.length];
     }
 
+    _fillTextWithShadow(ctx, text, x, y, color = '#ffffff') {
+        ctx.fillStyle = '#000000';
+        ctx.fillText(text, x + 1, y + 1);
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+    }
+
     // ========== メイン描画処理 ==========
     renderGameScreen() {
         if (!this.owner.player) return;
@@ -411,11 +418,10 @@ class GameRenderer {
         const gameOverText = AppI18N.I18N['U398'][AppI18N.currentLang] || 'GAME OVER';
         ctx.fillStyle = '#333333';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
-        ctx.font = '16px Arial';
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(gameOverText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+        this._fillTextWithShadow(ctx, gameOverText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
     }
 
     renderGameOver() {
@@ -438,11 +444,10 @@ class GameRenderer {
         }
 
         if (Math.floor(this.owner.clearTimer / 10) % 2 === 0) {
-            ctx.font = '16px Arial';
+            ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(stageClearText, w / 2, h / 2);
+            this._fillTextWithShadow(ctx, stageClearText, w / 2, h / 2);
         }
 
         if (this.owner.clearTimer > 210) {
@@ -645,11 +650,10 @@ class GameRenderer {
         // PAUSE / RE:START
         if (this.owner.isPaused && !this.owner.restartBlink) {
             const pauseText = AppI18N.I18N['U450'][AppI18N.currentLang] || 'PAUSE';
-            ctx.font = '16px Arial';
+            ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(pauseText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
+            this._fillTextWithShadow(ctx, pauseText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
         }
 
         if (this.owner.restartBlink) {
@@ -683,10 +687,7 @@ class GameRenderer {
             ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
-            ctx.fillStyle = '#000000';
-            ctx.fillText(timeText, this.owner.canvas.width - 9, 11);
-            ctx.fillStyle = color;
-            ctx.fillText(timeText, this.owner.canvas.width - 10, 10);
+            this._fillTextWithShadow(ctx, timeText, this.owner.canvas.width - 10, 10, color);
         }
 
         // スコア表示（中央上）
