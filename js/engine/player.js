@@ -121,12 +121,12 @@ class Player {
 
     update(engine) {
         if (this.isDead) {
-            // 敵と同じ落下演出
             if (this.isDying) {
                 this.deathTimer++;
-                this.vy += 0.02; // 敵と同じ重力
+                this.vy += 0.02;
                 this.y += this.vy;
-                this.x += this.vx; // 横方向の動きも
+                this.x += this.vx;
+                this.deathRotation += this.deathRotationSpeed;
             }
             return;
         }
@@ -525,10 +525,12 @@ class Player {
         this.isDead = true;
         this.isDying = true;
         this.deathTimer = 0;
-        // 敵と同じ落下死亡演出
-        this.vy = -0.3; // 敵と同じ
+        this.vy = -0.3;
         this.vx = this.facingRight ? -0.1 : 0.1; // 向きの逆方向
-        this.deathParticles = []; // パーティクルは使わない
+        this.deathRotation = 0;
+        // 進行方向と逆方向に回転（右向き→反時計回り、左向き→時計回り）
+        this.deathRotationSpeed = this.facingRight ? -0.12 : 0.12;
+        this.deathParticles = [];
 
         // ゲームオーバー待機開始（gameLoopで処理される）
         if (typeof GameEngine !== 'undefined' && !GameEngine.gameOverPending) {
@@ -572,10 +574,8 @@ class Player {
     }
 
     render(ctx, tileSize, camera) {
-        // 死亡中も落下するスプライトを表示
+        // 死亡中：回転しながら落下するスプライトを表示
         if (this.isDead && this.isDying) {
-            // 落下演出中はスプライトを表示
-            // 当たり判定の中心座標（下端基準）
             const hitboxCenterX = this.x + this.width / 2;
             const hitboxBottom = this.y + this.height;
             const frames = this.template?.sprites?.idle?.frames || [];
@@ -583,28 +583,34 @@ class Player {
             const sprite = App.projectData.sprites[spriteIdx];
             if (sprite) {
                 const palette = App.nesPalette;
-                // スプライトサイズを判定
                 const spriteSize = sprite.size || 1;
                 const dimension = spriteSize === 2 ? 32 : 16;
                 const tileCount = spriteSize === 2 ? 2 : 1;
                 const renderSize = tileSize * tileCount;
                 const pixelSize = renderSize / dimension;
-                const flipX = !this.facingRight;
 
-                // スプライトを当たり判定に対して下端寄せ＆横軸中央寄せで描画
                 const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
                 const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
+                const centerX = spriteDrawX + renderSize / 2;
+                const centerY = spriteDrawY + renderSize / 2;
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(this.deathRotation);
+                if (!this.facingRight) ctx.scale(-1, 1);
+                ctx.translate(-renderSize / 2, -renderSize / 2);
 
                 for (let y = 0; y < dimension; y++) {
                     for (let x = 0; x < dimension; x++) {
                         const colorIndex = sprite.data[y]?.[x];
                         if (colorIndex >= 0) {
                             ctx.fillStyle = palette[colorIndex];
-                            const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
-                            ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                         }
                     }
                 }
+
+                ctx.restore();
             }
             return;
         } else if (this.isDead) {
