@@ -37,6 +37,7 @@ const StageEditor = {
 
     // 迥ｶ諷・
     currentTool: 'pen',
+    previousTool: 'pen',
     currentLayer: 'fg', // FG縺ｮ縺ｿ菴ｿ逕ｨ・・G縺ｯ蜊倩牡閭梧勹・・
     selectedTemplate: null,
     templates: [],
@@ -187,6 +188,20 @@ const StageEditor = {
 
                 // 謠冗判繝・・繝ｫ縺ｮ蝣ｴ蜷医√き繝ｬ繝ｳ繝医ヤ繝ｼ繝ｫ繧呈峩譁ｰ
                 if (['pen', 'eraser', 'fill', 'eyedropper', 'select', 'hand'].includes(tool)) {
+                    // ハンドツール再押下: 直前のツールへ戻る
+                    if (tool === 'hand' && this.currentTool === 'hand') {
+                        const restore = this.previousTool;
+                        if (restore === 'select') {
+                            this.startSelectionMode();
+                        } else {
+                            this.currentTool = restore;
+                            document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
+                                b.classList.toggle('active', b.dataset.tool === restore);
+                            });
+                        }
+                        return;
+                    }
+                    if (tool === 'hand') this.previousTool = this.currentTool;
                     this.currentTool = tool;
                     document.querySelectorAll('#stage-tools .paint-tool-btn').forEach(b => {
                         b.classList.toggle('active', b.dataset.tool === tool);

@@ -8,6 +8,7 @@ const SpriteEditor = {
     currentSprite: 0,
     selectedColor: 0,
     currentTool: 'pen',
+    previousTool: 'pen',
     clipboard: null,
 
     // 履歴管理
@@ -194,6 +195,22 @@ const SpriteEditor = {
                         if (tool === 'eraser' && this.selectionStart && this.selectionEnd) {
                             SpriteCanvasInput.clearSelectionArea();
                         }
+
+                        // ハンドツール再押下: 直前のツールへ戻る
+                        if (tool === 'hand' && this.currentTool === 'hand') {
+                            const restore = this.previousTool;
+                            if (restore === 'select') {
+                                SpriteCanvasInput.startSelectionMode();
+                            } else {
+                                SpriteCanvasInput.cancelSelectionMode();
+                                this.currentTool = restore;
+                                document.querySelectorAll('#paint-tools .paint-tool-btn').forEach(b => {
+                                    b.classList.toggle('active', b.dataset.tool === restore);
+                                });
+                            }
+                            break;
+                        }
+                        if (tool === 'hand') this.previousTool = this.currentTool;
 
                         // 選択モードをキャンセル（消しゴム以外のツール、または選択範囲がない場合）
                         SpriteCanvasInput.cancelSelectionMode();

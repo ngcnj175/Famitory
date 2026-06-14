@@ -34,6 +34,7 @@ const SoundEditor = {
 
     // 編集ツール
     currentTool: 'pencil', // pencil, eraser, select, copy, paste
+    previousTool: 'pencil',
 
     // 範囲選択
     selectionMode: false,
@@ -1131,6 +1132,25 @@ const SoundEditor = {
         const handBtn = document.getElementById('sound-hand-btn');
         if (handBtn) {
             handBtn.addEventListener('click', () => {
+                // ハンドツール再押下: 直前のツールへ戻る
+                if (this.currentTool === 'hand') {
+                    const restore = this.previousTool;
+                    if (restore === 'select') {
+                        this.startSelectionMode();
+                    } else {
+                        const tool = restore === 'eraser' ? 'eraser' : 'pencil';
+                        this.currentTool = tool;
+                        this.selectionMode = false;
+                        this.pasteMode = false;
+                        const allBtns = document.querySelectorAll('#sound-controls .sound-ctrl-btn');
+                        allBtns.forEach(b => b.classList.remove('active'));
+                        const restoreBtn = document.getElementById(tool === 'eraser' ? 'sound-eraser-btn' : 'sound-pen-btn');
+                        if (restoreBtn) restoreBtn.classList.add('active');
+                        this.render();
+                    }
+                    return;
+                }
+                this.previousTool = this.currentTool;
                 this.currentTool = 'hand';
                 this.selectionMode = false;
                 this.pasteMode = false;
