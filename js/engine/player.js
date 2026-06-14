@@ -529,7 +529,7 @@ class Player {
         this.vx = this.facingRight ? -0.1 : 0.1; // 向きの逆方向
         this.deathRotation = 0;
         // 進行方向と逆方向に回転（右向き→反時計回り、左向き→時計回り）
-        this.deathRotationSpeed = this.facingRight ? -0.12 : 0.12;
+        this.deathRotationSpeed = this.facingRight ? -0.24 : 0.24;
         this.deathParticles = [];
 
         // ゲームオーバー待機開始（gameLoopで処理される）
