@@ -922,25 +922,7 @@ const GameEngine = {
             }
         }
 
-        if (this.player) {
-            this.player.update(this);
-
-            // 死亡時はカメラ固定（プレイヤーのみ落下させる）
-            if (!this.player.isDead) {
-                // カメラをプレイヤー中心に
-                // ビューのタイル数を計算（スケール適用済みTILE_SIZEを使用）
-                const viewWidth = this.canvas.width / this.TILE_SIZE;
-                const viewHeight = this.canvas.height / this.TILE_SIZE;
-
-                this.camera.x = this.player.x - viewWidth / 2 + 0.5;
-                this.camera.y = this.player.y - viewHeight / 2 + 0.5;
-
-                // カメラ範囲制限
-                const stage = this.stageData || App.projectData.stage;
-                this.camera.x = Math.max(0, Math.min(this.camera.x, stage.width - viewWidth));
-                this.camera.y = Math.max(0, Math.min(this.camera.y, stage.height - viewHeight));
-            }
-        }
+        if (this.player) this.player.update(this);
 
         this.enemies.forEach(enemy => enemy.update(this));
 
@@ -956,7 +938,20 @@ const GameEngine = {
         // ギミックブロック更新
         this.updateGimmickBlocks();
 
+        // 衝突判定（ここでプレイヤーが死亡する場合がある）
         this.physics.checkCollisions();
+
+        // カメラ更新：衝突判定後に行い、死亡時は固定
+        if (this.player && !this.player.isDead) {
+            const viewWidth = this.canvas.width / this.TILE_SIZE;
+            const viewHeight = this.canvas.height / this.TILE_SIZE;
+            this.camera.x = this.player.x - viewWidth / 2 + 0.5;
+            this.camera.y = this.player.y - viewHeight / 2 + 0.5;
+            const stage = this.stageData || App.projectData.stage;
+            this.camera.x = Math.max(0, Math.min(this.camera.x, stage.width - viewWidth));
+            this.camera.y = Math.max(0, Math.min(this.camera.y, stage.height - viewHeight));
+        }
+
         this.checkClearCondition();
     },
 
