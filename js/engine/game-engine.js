@@ -251,6 +251,9 @@ const GameEngine = {
     },
 
     initGame() {
+        // スプライトキャッシュをクリア（ステージ/スプライト変更の反映）
+        if (this.renderer) this.renderer.clearSpriteCache();
+
         // ステージデータのディープコピーを作成（実行中の変更が元データに影響しないように）
         this.stageData = JSON.parse(JSON.stringify(App.projectData.stage));
         const stage = this.stageData;
