@@ -589,8 +589,8 @@ class Player {
                 const renderSize = tileSize * tileCount;
                 const pixelSize = renderSize / dimension;
 
-                const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
-                const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
+                const spriteDrawX = Math.floor((hitboxCenterX - tileCount / 2 - camera.x) * tileSize);
+                const spriteDrawY = Math.floor((hitboxBottom - tileCount - camera.y) * tileSize);
                 const centerX = spriteDrawX + renderSize / 2;
                 const centerY = spriteDrawY + renderSize / 2;
 
@@ -605,7 +605,7 @@ class Player {
                         const colorIndex = sprite.data[y]?.[x];
                         if (colorIndex >= 0) {
                             ctx.fillStyle = palette[colorIndex];
-                            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
                         }
                     }
                 }
@@ -645,8 +645,8 @@ class Player {
             const pixelSize = renderSize / dimension;
 
             // スプライトを当たり判定に対して下端寄せ＆横軸中央寄せで描画
-            const spriteDrawX = (hitboxCenterX - tileCount / 2 - camera.x) * tileSize;
-            const spriteDrawY = (hitboxBottom - tileCount - camera.y) * tileSize;
+            const spriteDrawX = Math.floor((hitboxCenterX - tileCount / 2 - camera.x) * tileSize);
+            const spriteDrawY = Math.floor((hitboxBottom - tileCount - camera.y) * tileSize);
 
             // 左向きの場合は反転描画
             const flipX = !this.facingRight;
@@ -665,7 +665,7 @@ class Player {
                             : palette[colorIndex];
                         ctx.fillStyle = color;
                         const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
-                        ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                        ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize, pixelSize);
                     }
                 }
             }

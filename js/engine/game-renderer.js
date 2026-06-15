@@ -55,31 +55,6 @@ class GameRenderer {
         // ステージ情報を取得（共通で使用）
         const stage = this.owner.stageData || App.projectData.stage;
 
-        // カメラ更新（線形補間なしでシンプルに追従）
-        // ただし、クリア演出中('clear')・プレイヤー死亡時は更新しない
-        if (this.owner.titleState !== 'clear' && !this.owner.player.isDead) {
-            const centerX = this.owner.canvas.width / 2 / this.owner.TILE_SIZE;
-            const centerY = this.owner.canvas.height / 2 / this.owner.TILE_SIZE;
-            // プレイヤー中心
-            let targetX = this.owner.player.x + this.owner.player.width / 2 - centerX;
-            let targetY = this.owner.player.y + this.owner.player.height / 2 - centerY;
-
-            // ステージ端制限
-            const viewWidth = this.owner.canvas.width / this.owner.TILE_SIZE;
-            const viewHeight = this.owner.canvas.height / this.owner.TILE_SIZE;
-
-            targetX = Math.max(0, Math.min(targetX, stage.width - viewWidth));
-            targetY = Math.max(0, Math.min(targetY, stage.height - viewHeight));
-
-            this.owner.camera.x = targetX;
-            this.owner.camera.y = targetY;
-        }
-
-        // ワイプ中は更新しない（見た目を固定）
-        if (this.owner.titleState === 'wipe' || this.owner.titleState === 'gameover' || this.owner.titleState === 'clear') {
-            // そのまま描画
-        }
-
         const camX = this.owner.camera.x;
         const camY = this.owner.camera.y;
         const viewTilesX = Math.ceil(this.owner.canvas.width / this.owner.TILE_SIZE) + 1;
@@ -244,8 +219,8 @@ class GameRenderer {
                     }
 
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
-                        const screenX = (x - this.owner.camera.x) * this.owner.TILE_SIZE;
-                        const screenY = (y - this.owner.camera.y) * this.owner.TILE_SIZE;
+                        const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
+                        const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
@@ -302,8 +277,8 @@ class GameRenderer {
                     if (collisionOnly !== hasCollision) continue;
 
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
-                        const screenX = (x - this.owner.camera.x) * this.owner.TILE_SIZE;
-                        const screenY = (y - this.owner.camera.y) * this.owner.TILE_SIZE;
+                        const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
+                        const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
@@ -524,8 +499,8 @@ class GameRenderer {
         const sprite = App.projectData.sprites[spriteIdx];
         if (!sprite) return;
 
-        const screenX = (obj.x - this.owner.camera.x) * this.owner.TILE_SIZE;
-        const screenY = (obj.y - this.owner.camera.y) * this.owner.TILE_SIZE;
+        const screenX = Math.floor((obj.x - this.owner.camera.x) * this.owner.TILE_SIZE);
+        const screenY = Math.floor((obj.y - this.owner.camera.y) * this.owner.TILE_SIZE);
         const flipX = obj.facingRight === false;
         this.renderSprite(sprite, screenX, screenY, App.nesPalette, flipX);
     }
@@ -545,8 +520,8 @@ class GameRenderer {
                 if (flash.waitTimer <= 0) flash.phase = 'flash';
 
                 if (flash.spriteData) {
-                    const screenX = (flash.x - camX) * tileSize;
-                    const screenY = (flash.y - camY) * tileSize;
+                    const screenX = Math.floor((flash.x - camX) * tileSize);
+                    const screenY = Math.floor((flash.y - camY) * tileSize);
                     this.renderSprite(flash.spriteData, screenX, screenY, App.nesPalette);
                 }
                 return true;
@@ -563,8 +538,8 @@ class GameRenderer {
                 return false;
             }
 
-            const screenX = (flash.x - camX) * tileSize;
-            const screenY = (flash.y - camY) * tileSize;
+            const screenX = Math.floor((flash.x - camX) * tileSize);
+            const screenY = Math.floor((flash.y - camY) * tileSize);
 
             if (flash.spriteData) {
                 const sprite = flash.spriteData;
@@ -577,7 +552,7 @@ class GameRenderer {
                 for (let y = 0; y < dimension; y++) {
                     for (let x = 0; x < dimension; x++) {
                         if ((sprite.data[y]?.[x] ?? -1) >= 0) {
-                            ctx.fillRect(screenX + x * pixelSize, screenY + y * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                            ctx.fillRect(screenX + x * pixelSize, screenY + y * pixelSize, pixelSize, pixelSize);
                         }
                     }
                 }
@@ -618,8 +593,8 @@ class GameRenderer {
         this.owner.particles.forEach(p => {
             ctx.fillStyle = p.color;
             ctx.fillRect(
-                (p.x - camX) * tileSize,
-                (p.y - camY) * tileSize,
+                Math.floor((p.x - camX) * tileSize),
+                Math.floor((p.y - camY) * tileSize),
                 p.size * pixelScale,
                 p.size * pixelScale
             );
