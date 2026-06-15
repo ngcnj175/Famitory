@@ -5,6 +5,29 @@
 class StageRenderer {
     constructor() {
         this._offscreenCanvas = null;
+        this._spriteCache = new Map();
+    }
+
+    clearSpriteCache() {
+        this._spriteCache.clear();
+    }
+
+    _getCachedSpriteCanvas(sprite, palette) {
+        if (this._spriteCache.has(sprite)) return this._spriteCache.get(sprite);
+        const dim = (sprite.size === 2) ? 32 : 16;
+        const oc = new OffscreenCanvas(dim, dim);
+        const ctx = oc.getContext('2d');
+        for (let py = 0; py < dim; py++) {
+            for (let px = 0; px < dim; px++) {
+                const ci = sprite.data[py]?.[px] ?? -1;
+                if (ci >= 0) {
+                    ctx.fillStyle = palette[ci];
+                    ctx.fillRect(px, py, 1, 1);
+                }
+            }
+        }
+        this._spriteCache.set(sprite, oc);
+        return oc;
     }
 
     /**
@@ -102,10 +125,20 @@ class StageRenderer {
     _renderSprite(ctx, sprite, tileX, tileY, tileSize, scrollX, scrollY, palette, flipX = false) {
         const spriteSize = sprite.size || 1;
         const tileCount  = spriteSize === 2 ? 2 : 1;
-        const pixelSize  = (tileSize * tileCount) / (spriteSize === 2 ? 32 : 16);
+        const displaySize = tileSize * tileCount;
         const screenX    = tileX * tileSize + scrollX;
         const screenY    = tileY * tileSize + scrollY;
-        SpriteUtils.drawPixels(ctx, sprite, screenX, screenY, pixelSize, palette, flipX);
+        const oc = this._getCachedSpriteCanvas(sprite, palette);
+        ctx.imageSmoothingEnabled = false;
+        if (flipX) {
+            ctx.save();
+            ctx.translate(screenX + displaySize, screenY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(oc, 0, 0, displaySize, displaySize);
+            ctx.restore();
+        } else {
+            ctx.drawImage(oc, screenX, screenY, displaySize, displaySize);
+        }
     }
 
     /**

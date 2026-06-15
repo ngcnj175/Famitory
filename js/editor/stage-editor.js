@@ -101,6 +101,7 @@ const StageEditor = {
             this.ctx = this.canvas.getContext('2d');
         }
 
+        if (this.renderer) this.renderer.clearSpriteCache();
         this.initTemplateList();
         this.initCanvasEvents();
         this.updateStageSettingsUI();
