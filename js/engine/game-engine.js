@@ -925,18 +925,21 @@ const GameEngine = {
         if (this.player) {
             this.player.update(this);
 
-            // カメラをプレイヤー中心に
-            // ビューのタイル数を計算（スケール適用済みTILE_SIZEを使用）
-            const viewWidth = this.canvas.width / this.TILE_SIZE;
-            const viewHeight = this.canvas.height / this.TILE_SIZE;
+            // 死亡時はカメラ固定（プレイヤーのみ落下させる）
+            if (!this.player.isDead) {
+                // カメラをプレイヤー中心に
+                // ビューのタイル数を計算（スケール適用済みTILE_SIZEを使用）
+                const viewWidth = this.canvas.width / this.TILE_SIZE;
+                const viewHeight = this.canvas.height / this.TILE_SIZE;
 
-            this.camera.x = this.player.x - viewWidth / 2 + 0.5;
-            this.camera.y = this.player.y - viewHeight / 2 + 0.5;
+                this.camera.x = this.player.x - viewWidth / 2 + 0.5;
+                this.camera.y = this.player.y - viewHeight / 2 + 0.5;
 
-            // カメラ範囲制限
-            const stage = this.stageData || App.projectData.stage;
-            this.camera.x = Math.max(0, Math.min(this.camera.x, stage.width - viewWidth));
-            this.camera.y = Math.max(0, Math.min(this.camera.y, stage.height - viewHeight));
+                // カメラ範囲制限
+                const stage = this.stageData || App.projectData.stage;
+                this.camera.x = Math.max(0, Math.min(this.camera.x, stage.width - viewWidth));
+                this.camera.y = Math.max(0, Math.min(this.camera.y, stage.height - viewHeight));
+            }
         }
 
         this.enemies.forEach(enemy => enemy.update(this));
