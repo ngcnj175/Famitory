@@ -56,8 +56,8 @@ class GameRenderer {
         const stage = this.owner.stageData || App.projectData.stage;
 
         // カメラ更新（線形補間なしでシンプルに追従）
-        // ただし、クリア演出中('clear')は更新しない（プレイヤーがジャンプしても画面を揺らさないため）
-        if (this.owner.titleState !== 'clear') {
+        // ただし、クリア演出中('clear')・プレイヤー死亡時は更新しない
+        if (this.owner.titleState !== 'clear' && !this.owner.player.isDead) {
             const centerX = this.owner.canvas.width / 2 / this.owner.TILE_SIZE;
             const centerY = this.owner.canvas.height / 2 / this.owner.TILE_SIZE;
             // プレイヤー中心
