@@ -26,7 +26,7 @@ const SpriteUtils = {
                     const drawX = flipX
                         ? screenX + (dimension - 1 - px) * pixelSize
                         : screenX + px * pixelSize;
-                    ctx.fillRect(drawX, screenY + py * pixelSize, Math.ceil(pixelSize), Math.ceil(pixelSize));
+                    ctx.fillRect(drawX, screenY + py * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
                 }
             }
         }
