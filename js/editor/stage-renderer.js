@@ -41,6 +41,9 @@ class StageRenderer {
         ctx.fillStyle = vc.bgColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // BGレイヤー描画
+        this._renderLayer(vc, 'bg', 1);
+
         // FGレイヤー描画
         this._renderLayer(vc, 'fg', 1);
 

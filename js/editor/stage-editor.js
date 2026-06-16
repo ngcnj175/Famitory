@@ -1529,6 +1529,13 @@ const StageEditor = {
         if (this.renderer) this.renderer.renderSpriteToMiniCanvas(sprite, canvas, bgColor);
     },
 
+    // collision:false の material は bg レイヤーへ、それ以外は fg レイヤーへ振り分ける
+    _getTargetLayer(templateIdx) {
+        const tmpl = App.projectData.templates?.[templateIdx];
+        if (tmpl?.type === 'material' && tmpl.config?.collision === false) return 'bg';
+        return 'fg';
+    },
+
     // ========== UNDO讖溯・ ==========
     saveToHistory() {
         // 繝・ヰ繧ｦ繝ｳ繧ｹ・・00ms莉･蜀・・騾｣邯壼他縺ｳ蜃ｺ縺励ｒ辟｡隕厄ｼ・
@@ -1539,8 +1546,8 @@ const StageEditor = {
         this.lastSaveTime = now;
 
         const stage = App.projectData.stage;
-        // FG レイヤーと entities の状態を保存
         const snapshot = {
+            bg: stage.layers.bg.map(row => [...row]),
             fg: stage.layers.fg.map(row => [...row]),
             entities: stage.entities ? JSON.parse(JSON.stringify(stage.entities)) : []
         };
@@ -1562,7 +1569,8 @@ const StageEditor = {
         const snapshot = this.undoHistory.pop();
         const stage = App.projectData.stage;
 
-        // 繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ繧貞ｾｩ蜈・
+        // スナップショットを復元
+        if (snapshot.bg) stage.layers.bg = snapshot.bg;
         stage.layers.fg = snapshot.fg;
         stage.entities = snapshot.entities || [];
 
@@ -1581,6 +1589,7 @@ const StageEditor = {
         for (let y = 0; y < stage.height; y++) {
             for (let x = 0; x < stage.width; x++) {
                 stage.layers.fg[y][x] = -1;
+                stage.layers.bg[y][x] = -1;
             }
         }
 

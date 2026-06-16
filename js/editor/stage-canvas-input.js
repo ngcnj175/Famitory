@@ -545,20 +545,24 @@ class StageCanvasInput {
         const y2 = Math.max(o.selectionStart.y, o.selectionEnd.y);
 
         const stage = App.projectData.stage;
-        const layer = stage.layers.fg;
         const tiles = [];
+        const bgTiles = [];
 
-        // Tiles Copy
+        // Tiles Copy (fg + bg)
         for (let y = y1; y <= y2; y++) {
-            const row = [];
+            const fgRow = [];
+            const bgRow = [];
             for (let x = x1; x <= x2; x++) {
                 if (x >= 0 && x < stage.width && y >= 0 && y < stage.height) {
-                    row.push(layer[y][x]);
+                    fgRow.push(stage.layers.fg[y][x]);
+                    bgRow.push(stage.layers.bg?.[y]?.[x] ?? -1);
                 } else {
-                    row.push(-1);
+                    fgRow.push(-1);
+                    bgRow.push(-1);
                 }
             }
-            tiles.push(row);
+            tiles.push(fgRow);
+            bgTiles.push(bgRow);
         }
 
         // Entities Copy
@@ -575,7 +579,7 @@ class StageCanvasInput {
             });
         }
 
-        o.rangeClipboard = { tiles, entities };
+        o.rangeClipboard = { tiles, bgTiles, entities };
         // alert removed
 
         // コピー後、選択を解除する
@@ -636,22 +640,33 @@ class StageCanvasInput {
 
         o.saveToHistory();
         const stage = App.projectData.stage;
-        const layer = stage.layers.fg;
 
         const tiles = o.pasteData.tiles;
         const h = tiles.length;
         const w = tiles[0].length;
 
-        // Paste Tiles
+        // Paste fg Tiles
         for (let dy = 0; dy < h; dy++) {
             for (let dx = 0; dx < w; dx++) {
                 const tx = o.pasteOffset.x + dx;
                 const ty = o.pasteOffset.y + dy;
                 const tile = tiles[dy][dx];
+                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height && tile !== -1) {
+                    stage.layers.fg[ty][tx] = tile;
+                }
+            }
+        }
 
-                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                    if (tile !== -1) {
-                        layer[ty][tx] = tile;
+        // Paste bg Tiles
+        if (o.pasteData.bgTiles) {
+            const bgTiles = o.pasteData.bgTiles;
+            for (let dy = 0; dy < bgTiles.length; dy++) {
+                for (let dx = 0; dx < (bgTiles[0]?.length ?? 0); dx++) {
+                    const tx = o.pasteOffset.x + dx;
+                    const ty = o.pasteOffset.y + dy;
+                    const tile = bgTiles[dy][dx];
+                    if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height && tile !== -1) {
+                        stage.layers.bg[ty][tx] = tile;
                     }
                 }
             }
@@ -854,7 +869,8 @@ class StageCanvasInput {
 
                         // 繝槭ャ繝励ち繧､繝ｫ縺ｮ譖ｸ縺崎ｾｼ縺ｿ縺ｯ繧ｹ繧ｭ繝・・・郁レ譎ｯ邯ｭ謖・ｼ・
                     } else {
-                        // 騾壼ｸｸ繧ｿ繧､繝ｫ・・ap驟榊・縺ｸ譖ｸ縺崎ｾｼ縺ｿ・・
+                        // collision:false → bg、それ以外 → fg に自動振り分け
+                        const targetLayer = stage.layers[o._getTargetLayer(o.selectedTemplate)];
                         const tileValue = o.selectedTemplate + 100;
 
                         if (spriteSize === 2) {
@@ -868,16 +884,16 @@ class StageCanvasInput {
                                     const ty = snapY + dy;
                                     if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
                                         if (dx === 0 && dy === 0) {
-                                            layer[ty][tx] = tileValue;
+                                            targetLayer[ty][tx] = tileValue;
                                         } else {
-                                            layer[ty][tx] = -1000 - (dy * 2 + dx);
+                                            targetLayer[ty][tx] = -1000 - (dy * 2 + dx);
                                         }
                                     }
                                 }
                             }
                         } else {
                             // 16x16繧ｹ繝励Λ繧､繝・
-                            layer[y][x] = tileValue;
+                            targetLayer[y][x] = tileValue;
                         }
                     }
                 }
@@ -906,42 +922,39 @@ class StageCanvasInput {
                 // 縺溘□縺励√Θ繝ｼ繧ｶ繝ｼ縺梧・遉ｺ逧・↓閭梧勹繧よｶ医＠縺溘＞蝣ｴ蜷医・蜀阪け繝ｪ繝・け縺悟ｿ・ｦ・
                 if (entityDeleted) break;
 
-                // 繝槭ャ繝励ち繧､繝ｫ縺ｮ蜑企勁蜃ｦ逅・ｼ域里蟄倥Ο繧ｸ繝・け・・
-                const currentTile = layer[y][x];
-                if (currentTile <= -1000) {
-                    const offset = -(currentTile + 1000);
-                    const dx = offset % 2;
-                    const dy = Math.floor(offset / 2);
-                    const originX = x - dx;
-                    const originY = y - dy;
-                    for (let iy = 0; iy < 2; iy++) {
-                        for (let ix = 0; ix < 2; ix++) {
-                            const tx = originX + ix;
-                            const ty = originY + iy;
-                            if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                                layer[ty][tx] = -1;
-                            }
-                        }
-                    }
-                } else if (currentTile >= 100) {
-                    const templateIdx = currentTile - 100;
-                    const spriteSize = getTemplateSize(templateIdx);
-                    if (spriteSize === 2) {
-                        for (let iy = 0; iy < 2; iy++) {
+                // マップタイル削除: fg 優先、なければ bg
+                const eraseTile = (lyr, tx, ty) => {
+                    const tile = lyr[ty]?.[tx];
+                    if (tile === undefined || tile === -1) return false;
+                    if (tile <= -1000) {
+                        const offset = -(tile + 1000);
+                        const odx = offset % 2;
+                        const ody = Math.floor(offset / 2);
+                        const ox = tx - odx, oy = ty - ody;
+                        for (let iy = 0; iy < 2; iy++)
                             for (let ix = 0; ix < 2; ix++) {
-                                const tx = x + ix;
-                                const ty = y + iy;
-                                if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                                    layer[ty][tx] = -1;
-                                }
+                                const ttx = ox + ix, tty = oy + iy;
+                                if (ttx >= 0 && ttx < stage.width && tty >= 0 && tty < stage.height) lyr[tty][ttx] = -1;
                             }
+                        return true;
+                    } else if (tile >= 100) {
+                        const spriteSize = getTemplateSize(tile - 100);
+                        if (spriteSize === 2) {
+                            for (let iy = 0; iy < 2; iy++)
+                                for (let ix = 0; ix < 2; ix++) {
+                                    const ttx = tx + ix, tty = ty + iy;
+                                    if (ttx >= 0 && ttx < stage.width && tty >= 0 && tty < stage.height) lyr[tty][ttx] = -1;
+                                }
+                        } else {
+                            lyr[ty][tx] = -1;
                         }
+                        return true;
                     } else {
-                        layer[y][x] = -1;
+                        lyr[ty][tx] = -1;
+                        return true;
                     }
-                } else {
-                    layer[y][x] = -1;
-                }
+                };
+                if (!eraseTile(stage.layers.fg, x, y)) eraseTile(stage.layers.bg, x, y);
                 break;
 
             case 'fill':
@@ -953,8 +966,9 @@ class StageCanvasInput {
                         return;
                     }
 
+                    const targetLayerName = o._getTargetLayer(o.selectedTemplate);
                     const newValue = o.selectedTemplate + 100;
-                    this.floodFill(x, y, layer[y][x], newValue);
+                    this.floodFill(x, y, stage.layers[targetLayerName][y][x], newValue, targetLayerName);
                 }
                 break;
 
@@ -979,8 +993,9 @@ class StageCanvasInput {
                     o.currentTool = 'pen';
                     // 繝・・繝ｫ繝舌・縺ｮ隕九◆逶ｮ譖ｴ譁ｰ縺ｯ逵∫払・亥・謠冗判縺ｧ蜿肴丐縺輔ｌ繧九°隕∫｢ｺ隱搾ｼ・
                 } else {
-                    // 繝槭ャ繝励ち繧､繝ｫ縺九ｉ蜿門ｾ・
-                    const tileId = layer[y][x];
+                    // マップタイルから取得: fg 優先、なければ bg
+                    let tileId = stage.layers.fg[y]?.[x] ?? -1;
+                    if (tileId < 0) tileId = stage.layers.bg?.[y]?.[x] ?? -1;
                     if (tileId >= 100) {
                         const templateIdx = tileId - 100;
                         if (templateIdx >= 0 && templateIdx < o.templates.length) {
@@ -1005,12 +1020,12 @@ class StageCanvasInput {
         o.render();
     }
 
-    floodFill(startX, startY, targetValue, newValue) {
+    floodFill(startX, startY, targetValue, newValue, layerName) {
         const o = this.owner;
         if (targetValue === newValue) return;
 
         const stage = App.projectData.stage;
-        const layer = stage.layers[this.owner.currentLayer];
+        const layer = stage.layers[layerName || o.currentLayer];
         const stack = [[startX, startY]];
 
         while (stack.length > 0) {
@@ -1031,8 +1046,9 @@ class StageCanvasInput {
         const stage = App.projectData.stage;
         if (!stage) return false;
 
-        const layer = stage.layers[o.currentLayer];
-        if (!layer) return false;
+        const fgLayer = stage.layers.fg;
+        const bgLayer = stage.layers.bg;
+        if (!fgLayer) return false;
 
         const x1 = Math.min(o.selectionStart.x, o.selectionEnd.x);
         const y1 = Math.min(o.selectionStart.y, o.selectionEnd.y);
@@ -1044,7 +1060,8 @@ class StageCanvasInput {
         for (let y = y1; y <= y2; y++) {
             for (let x = x1; x <= x2; x++) {
                 if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) continue;
-                layer[y][x] = -1;
+                fgLayer[y][x] = -1;
+                if (bgLayer) bgLayer[y][x] = -1;
             }
         }
 
