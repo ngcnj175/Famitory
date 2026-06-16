@@ -89,9 +89,9 @@ class GameRenderer {
         const endY = startY + viewTilesY;
         const palette = App.nesPalette;
 
-        // 1. 背景レイヤー (BG)
+        // 1. 背景レイヤー (BG) ※破壊済みチェックなし（bgは破壊対象外）
         if (stage.layers.bg) {
-            this.renderLayer(stage.layers.bg, startX, startY, endX, endY);
+            this.renderLayer(stage.layers.bg, startX, startY, endX, endY, false);
         }
 
         // ギミックブロック位置セット（renderLayerFiltered で2回使うため1度だけ構築）
@@ -212,7 +212,7 @@ class GameRenderer {
     }
 
     // ========== レイヤー描画 ==========
-    renderLayer(layer, startX, startY, endX, endY) {
+    renderLayer(layer, startX, startY, endX, endY, skipDestroyed = true) {
         if (!layer) return;
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
@@ -223,8 +223,8 @@ class GameRenderer {
             for (let x = startX; x < endX; x++) {
                 if (x < 0 || x >= stage.width) continue;
 
-                // 破壊済みタイルはスキップ
-                if (this.owner.destroyedTiles.has(`${x},${y}`)) continue;
+                // 破壊済みタイルはスキップ（bgレイヤーは対象外）
+                if (skipDestroyed && this.owner.destroyedTiles.has(`${x},${y}`)) continue;
 
                 const tileId = layer[y][x];
                 if (tileId >= 0) {
