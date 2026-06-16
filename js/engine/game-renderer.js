@@ -15,7 +15,6 @@ class GameRenderer {
         this._spriteCache.clear();
     }
 
-    // スプライトをOffscreenCanvasにキャッシュ（エッジ1px拡張でタイル境界ギャップを防止）
     _getCachedSpriteCanvas(sprite, palette) {
         if (this._spriteCache.has(sprite)) return this._spriteCache.get(sprite);
         const dim = sprite.size === 2 ? 32 : 16;
@@ -24,14 +23,7 @@ class GameRenderer {
         const ctx = oc.getContext('2d');
         for (let py = 0; py < dim; py++) {
             for (let px = 0; px < dim; px++) {
-                let ci = data[py]?.[px] ?? -1;
-                // スプライト外周の透明ピクセルを隣接色で埋める（クロスタイル透明ギャップ対策）
-                if (ci < 0 && (px === 0 || px === dim - 1 || py === 0 || py === dim - 1)) {
-                    if (px === 0 && (data[py]?.[1] ?? -1) >= 0) ci = data[py][1];
-                    else if (px === dim - 1 && (data[py]?.[dim - 2] ?? -1) >= 0) ci = data[py][dim - 2];
-                    if (ci < 0 && py === 0 && (data[1]?.[px] ?? -1) >= 0) ci = data[1][px];
-                    else if (ci < 0 && py === dim - 1 && (data[dim - 2]?.[px] ?? -1) >= 0) ci = data[dim - 2][px];
-                }
+                const ci = data[py]?.[px] ?? -1;
                 if (ci >= 0) {
                     ctx.fillStyle = palette[ci];
                     ctx.fillRect(px, py, 1, 1);
@@ -330,8 +322,6 @@ class GameRenderer {
     }
 
     // ========== スプライト描画 ==========
-    // OffscreenCanvas + drawImage（整数倍スケール）で描画
-    // エッジ1px拡張済みキャッシュによりタイル境界の透明ギャップを排除
     renderSprite(sprite, x, y, palette, flipX = false) {
         if (!sprite) return;
         const tileCount = sprite.size === 2 ? 2 : 1;
