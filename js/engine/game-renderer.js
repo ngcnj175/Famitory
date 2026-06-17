@@ -276,6 +276,8 @@ class GameRenderer {
                 if (skipDestroyed && this.owner.destroyedTiles.has(`${x},${y}`)) continue;
 
                 const tileId = layer[y][x];
+                // 【デバッグ用・後で削除】world x=8 row 0 をログ
+                if (x === 8 && y === 0) console.log(`[DEBUG-BG x=8,y=0] tileId=${tileId}`);
                 if (tileId >= 0) {
                     let spriteIdx = -1;
                     if (tileId >= 100) {
@@ -322,6 +324,8 @@ class GameRenderer {
                 }
 
                 const tileId = layer[y][x];
+                // 【デバッグ用・後で削除】world x=8 row 0 をログ
+                if (x === 8 && y === 0) console.log(`[DEBUG-FG x=8,y=0] tileId=${tileId} destroyed=${this.owner.destroyedTiles.has('8,0')} gimmick=${gimmickPositions.has('8,0')}`);
                 if (tileId >= 0) {
                     let template = null;
                     let spriteIdx = -1;
@@ -372,6 +376,11 @@ class GameRenderer {
 
     // ========== スプライト描画 ==========
     renderSprite(sprite, x, y, palette, flipX = false) {
+        // 【デバッグ用・後で削除】spriteがundefinedの場合もログ
+        if (x <= 263 && x + (sprite ? (sprite.size === 2 ? 64 : 32) : 32) > 263) {
+            if (!this._debugSpriteLog) this._debugSpriteLog = [];
+            this._debugSpriteLog.push(`screenX=${x} sprite=${sprite ? 'OK(size=' + (sprite.size||1) + ')' : 'UNDEFINED'}`);
+        }
         if (!sprite) return;
         const tileCount = sprite.size === 2 ? 2 : 1;
         const displaySize = this.owner.TILE_SIZE * tileCount;
