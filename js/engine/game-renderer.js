@@ -83,10 +83,11 @@ class GameRenderer {
         const camY = this.owner.camera.y;
         const viewTilesX = Math.ceil(this.owner.canvas.width / this.owner.TILE_SIZE) + 1;
         const viewTilesY = Math.ceil(this.owner.canvas.height / this.owner.TILE_SIZE) + 1;
-        const startX = Math.floor(camX);
-        const startY = Math.floor(camY);
-        const endX = startX + viewTilesX;
-        const endY = startY + viewTilesY;
+        // size-2スプライトのアンカーが左端/上端スクロールアウトした際の右半分/下半分未描画を防ぐため1タイル余分に描画
+        const startX = Math.floor(camX) - 1;
+        const startY = Math.floor(camY) - 1;
+        const endX = Math.floor(camX) + viewTilesX;
+        const endY = Math.floor(camY) + viewTilesY;
         const palette = App.nesPalette;
 
         // 1. 背景レイヤー (BG) ※破壊済みチェックなし（bgは破壊対象外）
