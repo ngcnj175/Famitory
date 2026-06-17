@@ -372,6 +372,14 @@ class GameRenderer {
         const oc = this._getCachedSpriteCanvas(sprite, palette);
         const ctx = this.owner.ctx;
         ctx.imageSmoothingEnabled = false;
+        // 【デバッグ用・後で削除】canvas x=263 を描画するスプライトのデータを確認
+        if (x <= 263 && x + displaySize > 263) {
+            const _srcDim = sprite.size === 2 ? 32 : 16;
+            const _srcX = Math.floor((263 - x) * _srcDim / displaySize);
+            const _row0 = sprite.data?.[0];
+            const _row1 = sprite.data?.[1];
+            console.log(`[DEBUG-SPRITE] screenX=${x} size=${sprite.size||1} displaySize=${displaySize} srcX=${_srcX} data[0].length=${_row0?.length} data[0][${_srcX}]=${_row0?.[_srcX]} data[1][${_srcX}]=${_row1?.[_srcX]}`);
+        }
         if (flipX) {
             ctx.save();
             ctx.translate(x + displaySize, 0);
