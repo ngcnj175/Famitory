@@ -18,18 +18,15 @@ class GameRenderer {
     _getCachedSpriteCanvas(sprite, palette) {
         if (this._spriteCache.has(sprite)) return this._spriteCache.get(sprite);
         const dim = sprite.size === 2 ? 32 : 16;
-        const tileCount = sprite.size === 2 ? 2 : 1;
-        const displaySize = this.owner.TILE_SIZE * tileCount; // 表示サイズ（32 or 64）でOC作成
-        const scale = displaySize / dim; // = 2（常に整数）
         const data = sprite.data;
-        const oc = new OffscreenCanvas(displaySize, displaySize);
+        const oc = new OffscreenCanvas(dim, dim);
         const ctx = oc.getContext('2d');
         for (let py = 0; py < dim; py++) {
             for (let px = 0; px < dim; px++) {
                 const ci = data[py]?.[px] ?? -1;
                 if (ci >= 0) {
                     ctx.fillStyle = palette[ci];
-                    ctx.fillRect(px * scale, py * scale, scale, scale);
+                    ctx.fillRect(px, py, 1, 1);
                 }
             }
         }
