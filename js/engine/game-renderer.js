@@ -167,6 +167,26 @@ class GameRenderer {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true, gimmickPositions); // collision=true のみ
         }
 
+        // 【デバッグ用A・後で削除】FGレイヤー描画直後のbgColor列チェック
+        {
+            const _bgR2 = parseInt(bgColor.slice(1,3),16);
+            const _bgG2 = parseInt(bgColor.slice(3,5),16);
+            const _bgB2 = parseInt(bgColor.slice(5,7),16);
+            const _w2 = this.owner.canvas.width;
+            const _h2 = this.owner.canvas.height;
+            const _d2 = this.owner.ctx.getImageData(0, 0, _w2, _h2).data;
+            const _found2 = [];
+            for (let _cx2 = 0; _cx2 < _w2; _cx2++) {
+                let _all2 = true;
+                for (let _cy2 = 0; _cy2 < _h2; _cy2++) {
+                    const _i2 = (_cy2 * _w2 + _cx2) * 4;
+                    if (_d2[_i2] !== _bgR2 || _d2[_i2+1] !== _bgG2 || _d2[_i2+2] !== _bgB2) { _all2 = false; break; }
+                }
+                if (_all2) _found2.push(_cx2);
+            }
+            if (_found2.length) console.log(`[DEBUG-A タイル後] bgColor列: canvas x=${_found2.join(',')}`);
+        }
+
         // 6.5. chase敵・空中zigzag敵（FGブロックより前面）
         this.owner.enemies.forEach(enemy => {
             if (!enemy.isDying && (enemy.behavior === 'chase' || (enemy.behavior === 'zigzag' && enemy.isAerial))) this._renderEnemyIfVisible(enemy);
