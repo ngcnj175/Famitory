@@ -71,6 +71,9 @@ class GameRenderer {
     renderGameScreen() {
         if (!this.owner.player) return;
 
+        // 【デバッグ用・後で削除】フレームごとにspriteログをリセット
+        this._debugSpriteLog = [];
+
         // 背景色
         const bgColor = App.projectData.stage.bgColor || App.projectData.stage.backgroundColor || '#3CBCFC';
         this.owner.ctx.fillStyle = bgColor;
@@ -184,7 +187,10 @@ class GameRenderer {
                 }
                 if (_all2) _found2.push(_cx2);
             }
-            if (_found2.length) console.log(`[DEBUG-A タイル後] bgColor列: canvas x=${_found2.join(',')}`);
+            if (_found2.length) {
+                console.log(`[DEBUG-A タイル後] bgColor列: canvas x=${_found2.join(',')}`);
+                console.log(`[DEBUG-A スプライト] ${(this._debugSpriteLog||[]).join(' | ')}`);
+            }
         }
 
         // 6.5. chase敵・空中zigzag敵（FGブロックより前面）
@@ -372,13 +378,12 @@ class GameRenderer {
         const oc = this._getCachedSpriteCanvas(sprite, palette);
         const ctx = this.owner.ctx;
         ctx.imageSmoothingEnabled = false;
-        // 【デバッグ用・後で削除】canvas x=263 を描画するスプライトのデータを確認
+        // 【デバッグ用・後で削除】canvas x=263 を描画するスプライトのデータをバッファに記録
         if (x <= 263 && x + displaySize > 263) {
             const _srcDim = sprite.size === 2 ? 32 : 16;
             const _srcX = Math.floor((263 - x) * _srcDim / displaySize);
-            const _row0 = sprite.data?.[0];
-            const _row1 = sprite.data?.[1];
-            console.log(`[DEBUG-SPRITE] screenX=${x} size=${sprite.size||1} displaySize=${displaySize} srcX=${_srcX} data[0].length=${_row0?.length} data[0][${_srcX}]=${_row0?.[_srcX]} data[1][${_srcX}]=${_row1?.[_srcX]}`);
+            if (!this._debugSpriteLog) this._debugSpriteLog = [];
+            this._debugSpriteLog.push(`screenX=${x} size=${sprite.size||1} srcX=${_srcX} data_len=${sprite.data?.[0]?.length} px14=${sprite.data?.[0]?.[_srcX]}`);
         }
         if (flipX) {
             ctx.save();
