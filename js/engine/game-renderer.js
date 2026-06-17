@@ -209,6 +209,29 @@ class GameRenderer {
         if (this.owner.easterMessageActive) {
             this.renderEasterWindow();
         }
+
+        // 【デバッグ用・後で削除】bgColor列検出
+        const _bgR = parseInt(bgColor.slice(1,3),16);
+        const _bgG = parseInt(bgColor.slice(3,5),16);
+        const _bgB = parseInt(bgColor.slice(5,7),16);
+        const _imgData = this.owner.ctx.getImageData(0, 0, this.owner.canvas.width, this.owner.canvas.height);
+        const _pixels = _imgData.data;
+        const _w = this.owner.canvas.width;
+        const _h = this.owner.canvas.height;
+        for (let _cx = 0; _cx < _w; _cx++) {
+            let _allBg = true;
+            for (let _cy = 0; _cy < _h; _cy++) {
+                const _i = (_cy * _w + _cx) * 4;
+                if (_pixels[_i] !== _bgR || _pixels[_i+1] !== _bgG || _pixels[_i+2] !== _bgB) {
+                    _allBg = false; break;
+                }
+            }
+            if (_allBg) {
+                this.owner.ctx.fillStyle = '#FF0000';
+                this.owner.ctx.fillRect(_cx, 0, 1, _h);
+                console.log(`[DEBUG] bgColor列: canvas x=${_cx}, world x≈${(_cx / this.owner.TILE_SIZE + this.owner.camera.x).toFixed(2)}`);
+            }
+        }
     }
 
     // ========== レイヤー描画 ==========
