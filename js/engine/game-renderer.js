@@ -255,26 +255,42 @@ class GameRenderer {
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
 
-        // [DIAG] canvas x=263 をカバーするタイルを追跡（60fごと最大5回）
-        const _now = Date.now();
-        if ((this._diagTotal || 0) < 5 && (_now - (this._diagLast || 0)) > 1000) {
-            const _wx = Math.floor(this.owner.camera.x + 263 / this.owner.TILE_SIZE);
-            if (_wx >= startX && _wx < endX && _wx >= 0 && _wx < stage.width) {
-                this._diagTotal = (this._diagTotal || 0) + 1;
-                this._diagLast = _now;
-                this._diagWx = _wx; // render ループ内の追跡用
-                const _sx = Math.floor((_wx - this.owner.camera.x) * this.owner.TILE_SIZE);
+        // [DIAG] 手動トリガー: コンソールで famDiag() を実行すると次フレームで発火
+        if (window._famDiagPending && !collisionOnly) {
+            window._famDiagPending = false;
+            const _ctx = this.owner.ctx;
+            const _canvas = this.owner.canvas;
+            const _camX = this.owner.camera.x;
+            const _ts = this.owner.TILE_SIZE;
+            // canvas 全幅をスキャンして bgColor 列を探す
+            const _bgHex = (App.projectData.stage.bgColor || '#000000').replace('#', '');
+            const _bgR = parseInt(_bgHex.slice(0,2),16), _bgG = parseInt(_bgHex.slice(2,4),16), _bgB = parseInt(_bgHex.slice(4,6),16);
+            const _cy = Math.floor(_canvas.height / 2);
+            const _row = _ctx.getImageData(0, _cy, _canvas.width, 1).data;
+            const _bgCols = [];
+            for (let _cx = 4; _cx < _canvas.width - 4; _cx++) {
+                const _i = _cx * 4;
+                if (_row[_i]===_bgR && _row[_i+1]===_bgG && _row[_i+2]===_bgB) _bgCols.push(_cx);
+            }
+            console.log(`[famDiag] camX=${_camX.toFixed(4)} TILE_SIZE=${_ts} bgColor=#${_bgHex}`);
+            console.log(`[famDiag] bgColor columns at y=${_cy}: [${_bgCols.join(',')}]`);
+            // bgColor 列ごとにタイルデータを出力
+            const _seen = new Set();
+            for (const _cx of _bgCols) {
+                const _wx = Math.floor(_camX + _cx / _ts);
+                if (_seen.has(_wx)) continue;
+                _seen.add(_wx);
+                const _sx = Math.floor((_wx - _camX) * _ts);
                 const _rows = [];
                 for (let _y = 0; _y < stage.height; _y++) {
                     const _tid = layer[_y]?.[_wx];
                     if (_tid === undefined) continue;
-                    const _tmpl = _tid >= 100 ? (templates[_tid - 100] || null) : null;
-                    const { frames } = _tmpl ? this._resolveAnimSlot(_tmpl.sprites || {}) : { frames: [] };
-                    const _hc = _tmpl?.type === 'material' ? (_tmpl.config?.collision !== false && _tmpl.config?.gimmick !== 'ladder') : false;
-                    _rows.push(`y=${_y}:tid=${_tid},type=${_tmpl?.type ?? '-'},fr=${frames.length},hc=${_hc},dst=${this.owner.destroyedTiles.has(`${_wx},${_y}`)},gim=${gimmickPositions.has(`${_wx},${_y}`)}`);
+                    const _t = _tid >= 100 ? (templates[_tid - 100] || null) : null;
+                    const { frames } = _t ? this._resolveAnimSlot(_t.sprites || {}) : { frames: [] };
+                    const _hc = _t?.type === 'material' ? (_t.config?.collision !== false && _t.config?.gimmick !== 'ladder') : false;
+                    _rows.push(`y=${_y}:tid=${_tid},type=${_t?.type??'-'},fr=${frames.length},hc=${_hc},dst=${this.owner.destroyedTiles.has(`${_wx},${_y}`)},gim=${gimmickPositions.has(`${_wx},${_y}`)}`);
                 }
-                console.log(`[DIAG#${this._diagTotal}] worldX=${_wx} sx=${_sx} camX=${this.owner.camera.x.toFixed(3)} stageW=${stage.width} collisionOnly=${collisionOnly}`);
-                console.log(`[DIAG#${this._diagTotal}] ` + (_rows.length ? _rows.join(' | ') : 'NO TILES'));
+                console.log(`[famDiag] worldX=${_wx} sx=${_sx}: ` + (_rows.length ? _rows.join(' | ') : 'NO FG TILES'));
             }
         }
 
