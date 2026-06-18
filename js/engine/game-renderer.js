@@ -255,6 +255,27 @@ class GameRenderer {
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
 
+        // [DIAG] canvas x=263 をカバーする world x の全タイル情報を1回ログ
+        if (!this._diag263) {
+            const _wx = Math.floor(this.owner.camera.x + 263 / this.owner.TILE_SIZE);
+            if (_wx >= startX && _wx < endX && _wx >= 0 && _wx < stage.width) {
+                this._diag263 = true;
+                const _sx = Math.floor((_wx - this.owner.camera.x) * this.owner.TILE_SIZE);
+                const _rows = [];
+                for (let _y = startY; _y < endY; _y++) {
+                    if (_y < 0 || _y >= stage.height) continue;
+                    const _tid = layer[_y]?.[_wx];
+                    if (_tid === undefined) { _rows.push(`y=${_y}:undef`); continue; }
+                    const _tmpl = _tid >= 100 ? (templates[_tid - 100] || null) : null;
+                    const { frames } = _tmpl ? this._resolveAnimSlot(_tmpl.sprites || {}) : { frames: [] };
+                    const _hc = _tmpl?.type === 'material' ? (_tmpl.config?.collision !== false && _tmpl.config?.gimmick !== 'ladder') : false;
+                    _rows.push(`y=${_y}:tid=${_tid},type=${_tmpl?.type ?? '-'},fr=${frames.length},col=${_hc},dst=${this.owner.destroyedTiles.has(`${_wx},${_y}`)},gim=${gimmickPositions.has(`${_wx},${_y}`)}`);
+                }
+                console.log(`[TRACE263] worldX=${_wx} sx=${_sx} camX=${this.owner.camera.x.toFixed(3)} stageW=${stage.width} collisionOnly=${collisionOnly}`);
+                console.log(`[TRACE263] ` + _rows.join(' | '));
+            }
+        }
+
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
             for (let x = startX; x < endX; x++) {
