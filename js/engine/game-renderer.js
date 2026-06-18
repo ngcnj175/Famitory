@@ -9,6 +9,7 @@ class GameRenderer {
     constructor(owner) {
         this.owner = owner; // GameEngine reference
         this._spriteCache = new Map();
+        window.famDiag = () => { window._famDiagPending = true; console.log('[famDiag] triggered'); };
     }
 
     clearSpriteCache() {
