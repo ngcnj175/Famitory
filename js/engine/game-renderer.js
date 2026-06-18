@@ -71,9 +71,6 @@ class GameRenderer {
     renderGameScreen() {
         if (!this.owner.player) return;
 
-        // 【デバッグ用・後で削除】フレームごとにspriteログをリセット
-        this._debugSpriteLog = [];
-
         // 背景色
         const bgColor = App.projectData.stage.bgColor || App.projectData.stage.backgroundColor || '#3CBCFC';
         this.owner.ctx.fillStyle = bgColor;
@@ -112,17 +109,12 @@ class GameRenderer {
         // 2.5 ギミックブロック（動くブロック）をプレイヤーやアイテムの奥（背景寄り）で描画
         if (this.owner.gimmickBlocks) {
             this.owner.gimmickBlocks.forEach(block => {
-                if (block.template) {
-                    const spriteIdx = block.template.sprites?.main?.frames?.[0];
-                    if (spriteIdx !== undefined) {
-                        const obj = {
-                            x: block.x, y: block.y,
-                            spriteIdx: spriteIdx,
-                            facingRight: true,
-                            templateIdx: block.templateIdx
-                        };
-                        this.renderProjectileOrItem(obj);
-                    }
+                if (block.template && block.templateIdx !== undefined) {
+                    this.renderProjectileOrItem({
+                        x: block.x, y: block.y,
+                        facingRight: true,
+                        templateIdx: block.templateIdx
+                    });
                 }
             });
         }
@@ -170,29 +162,6 @@ class GameRenderer {
             this.renderLayerFiltered(stage.layers.fg, startX, startY, endX, endY, true, gimmickPositions); // collision=true のみ
         }
 
-        // 【デバッグ用A・後で削除】FGレイヤー描画直後のbgColor列チェック
-        {
-            const _bgR2 = parseInt(bgColor.slice(1,3),16);
-            const _bgG2 = parseInt(bgColor.slice(3,5),16);
-            const _bgB2 = parseInt(bgColor.slice(5,7),16);
-            const _w2 = this.owner.canvas.width;
-            const _h2 = this.owner.canvas.height;
-            const _d2 = this.owner.ctx.getImageData(0, 0, _w2, _h2).data;
-            const _found2 = [];
-            for (let _cx2 = 0; _cx2 < _w2; _cx2++) {
-                let _all2 = true;
-                for (let _cy2 = 0; _cy2 < _h2; _cy2++) {
-                    const _i2 = (_cy2 * _w2 + _cx2) * 4;
-                    if (_d2[_i2] !== _bgR2 || _d2[_i2+1] !== _bgG2 || _d2[_i2+2] !== _bgB2) { _all2 = false; break; }
-                }
-                if (_all2) _found2.push(_cx2);
-            }
-            if (_found2.length) {
-                console.log(`[DEBUG-A タイル後] bgColor列: canvas x=${_found2.join(',')}`);
-                console.log(`[DEBUG-A スプライト] ${(this._debugSpriteLog||[]).join(' | ')}`);
-            }
-        }
-
         // 6.5. chase敵・空中zigzag敵（FGブロックより前面）
         this.owner.enemies.forEach(enemy => {
             if (!enemy.isDying && (enemy.behavior === 'chase' || (enemy.behavior === 'zigzag' && enemy.isAerial))) this._renderEnemyIfVisible(enemy);
@@ -236,28 +205,6 @@ class GameRenderer {
             this.renderEasterWindow();
         }
 
-        // 【デバッグ用・後で削除】bgColor列検出
-        const _bgR = parseInt(bgColor.slice(1,3),16);
-        const _bgG = parseInt(bgColor.slice(3,5),16);
-        const _bgB = parseInt(bgColor.slice(5,7),16);
-        const _imgData = this.owner.ctx.getImageData(0, 0, this.owner.canvas.width, this.owner.canvas.height);
-        const _pixels = _imgData.data;
-        const _w = this.owner.canvas.width;
-        const _h = this.owner.canvas.height;
-        for (let _cx = 0; _cx < _w; _cx++) {
-            let _allBg = true;
-            for (let _cy = 0; _cy < _h; _cy++) {
-                const _i = (_cy * _w + _cx) * 4;
-                if (_pixels[_i] !== _bgR || _pixels[_i+1] !== _bgG || _pixels[_i+2] !== _bgB) {
-                    _allBg = false; break;
-                }
-            }
-            if (_allBg) {
-                this.owner.ctx.fillStyle = '#FF0000';
-                this.owner.ctx.fillRect(_cx, 0, 1, _h);
-                console.log(`[DEBUG] bgColor列: canvas x=${_cx}, world x≈${(_cx / this.owner.TILE_SIZE + this.owner.camera.x).toFixed(2)}`);
-            }
-        }
     }
 
     // ========== レイヤー描画 ==========
@@ -276,8 +223,6 @@ class GameRenderer {
                 if (skipDestroyed && this.owner.destroyedTiles.has(`${x},${y}`)) continue;
 
                 const tileId = layer[y][x];
-                // 【デバッグ用・後で削除】world x=8 row 0 をログ
-                if (x === 8 && y === 0) console.log(`[DEBUG-BG x=8,y=0] tileId=${tileId}`);
                 if (tileId >= 0) {
                     let spriteIdx = -1;
                     if (tileId >= 100) {
@@ -324,8 +269,6 @@ class GameRenderer {
                 }
 
                 const tileId = layer[y][x];
-                // 【デバッグ用・後で削除】world x=8 row 0 をログ
-                if (x === 8 && y === 0) console.log(`[DEBUG-FG x=8,y=0] tileId=${tileId} destroyed=${this.owner.destroyedTiles.has('8,0')} gimmick=${gimmickPositions.has('8,0')}`);
                 if (tileId >= 0) {
                     let template = null;
                     let spriteIdx = -1;
@@ -376,24 +319,12 @@ class GameRenderer {
 
     // ========== スプライト描画 ==========
     renderSprite(sprite, x, y, palette, flipX = false) {
-        // 【デバッグ用・後で削除】spriteがundefinedの場合もログ
-        if (x <= 263 && x + (sprite ? (sprite.size === 2 ? 64 : 32) : 32) > 263) {
-            if (!this._debugSpriteLog) this._debugSpriteLog = [];
-            this._debugSpriteLog.push(`screenX=${x} sprite=${sprite ? 'OK(size=' + (sprite.size||1) + ')' : 'UNDEFINED'}`);
-        }
         if (!sprite) return;
         const tileCount = sprite.size === 2 ? 2 : 1;
         const displaySize = this.owner.TILE_SIZE * tileCount;
         const oc = this._getCachedSpriteCanvas(sprite, palette);
         const ctx = this.owner.ctx;
         ctx.imageSmoothingEnabled = false;
-        // 【デバッグ用・後で削除】canvas x=263 を描画するスプライトのデータをバッファに記録
-        if (x <= 263 && x + displaySize > 263) {
-            const _srcDim = sprite.size === 2 ? 32 : 16;
-            const _srcX = Math.floor((263 - x) * _srcDim / displaySize);
-            if (!this._debugSpriteLog) this._debugSpriteLog = [];
-            this._debugSpriteLog.push(`screenX=${x} size=${sprite.size||1} srcX=${_srcX} data_len=${sprite.data?.[0]?.length} px14=${sprite.data?.[0]?.[_srcX]}`);
-        }
         if (flipX) {
             ctx.save();
             ctx.translate(x + displaySize, 0);
