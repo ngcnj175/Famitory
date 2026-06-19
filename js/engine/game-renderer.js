@@ -228,21 +228,15 @@ class GameRenderer {
             const _stageRef = App.projectData.stage;
             const _templates = App.projectData.templates || [];
             const _sprites = App.projectData.sprites;
-            const _startX = Math.floor(_camX);
-            console.log(`[famDiag] camX=${_camX.toFixed(6)} TILE_SIZE=${_ts} bgColor=#${_bgHex} canvasW=${_canvas.width}`);
+            console.log(`[famDiag] camX=${_camX.toFixed(15)} TILE_SIZE=${_ts} bgColor=#${_bgHex} canvasW=${_canvas.width}`);
             console.log(`[famDiag] 全高bgColor列: [${_bgCols.join(',')}]`);
-            const _seen = new Set();
-            for (const _cx of _bgCols) {
-                // レンダラーと同じ sx 計算で逆引き（float精度対応）
-                const _approx = Math.floor(_camX + _cx / _ts);
-                let _wx = null, _sx = null;
-                for (let _w = _approx - 1; _w <= _approx + 2; _w++) {
-                    const _s = Math.floor((_w - _camX) * _ts);
-                    if (_s <= _cx && _cx < _s + _ts) { _wx = _w; _sx = _s; break; }
-                }
-                if (_wx === null) { _wx = _approx; _sx = Math.floor((_approx - _camX) * _ts); }
-                if (_seen.has(_wx)) continue;
-                _seen.add(_wx);
+            // sx(8)〜sx(11)を明示ログ（境界調査）
+            for (let _w = 7; _w <= 11; _w++) {
+                const _s = Math.floor((_w - _camX) * _ts);
+                console.log(`[famDiag] sx(${_w})=${_s}  covers ${_s}~${_s+_ts-1}`);
+            }
+
+            const _logTiles = (_wx, _sx, _cx) => {
                 const _localX = _cx - _sx;
                 const _fgRows = [], _bgRows = [];
                 for (let _y = 0; _y < _stageRef.height; _y++) {
@@ -253,8 +247,8 @@ class GameRenderer {
                         const { frames } = _t ? this._resolveAnimSlot(_t.sprites || {}) : { frames: [_fgTid] };
                         const _si = frames[0] ?? -1;
                         const _sp = _si >= 0 ? _sprites[_si] : null;
-                        const _px0 = _sp?.data?.[0]?.[0] ?? 'n/a';
-                        _fgRows.push(`y=${_y}:tid=${_fgTid},si=${_si},px0=${_px0}`);
+                        const _px = _sp?.data?.[0]?.[Math.min(_localX >> 1, 15)] ?? 'n/a';
+                        _fgRows.push(`y=${_y}:tid=${_fgTid},si=${_si},px[${_localX}]=${_px}`);
                     }
                     if (_bgTid !== undefined && _bgTid >= 0) {
                         const _t = _bgTid >= 100 ? (_templates[_bgTid - 100] || null) : null;
@@ -265,6 +259,20 @@ class GameRenderer {
                 }
                 console.log(`[famDiag] worldX=${_wx} sx=${_sx} localX=${_localX} | FG: ` + (_fgRows.length ? _fgRows.join(' | ') : 'NONE'));
                 console.log(`[famDiag] worldX=${_wx} sx=${_sx} localX=${_localX} | BG: ` + (_bgRows.length ? _bgRows.join(' | ') : 'NONE'));
+            };
+
+            const _seen = new Set();
+            for (const _cx of _bgCols) {
+                // N と N+1 の両方を無条件で出力（逆引きループのバグを回避）
+                const _N = Math.floor(_camX + _cx / _ts);
+                for (const _wx of [_N, _N + 1]) {
+                    if (_seen.has(_wx)) continue;
+                    _seen.add(_wx);
+                    const _sx = Math.floor((_wx - _camX) * _ts);
+                    const _owns = (_sx <= _cx && _cx < _sx + _ts);
+                    console.log(`[famDiag] --- cx=${_cx} → worldX=${_wx} sx=${_sx} owns=${_owns} ---`);
+                    _logTiles(_wx, _sx, _cx);
+                }
             }
         }
 
