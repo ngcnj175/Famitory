@@ -312,6 +312,8 @@ class GameRenderer {
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
                         const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
                         const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
+                        if (window._famDiagPending && x >= 7 && x <= 10 && y === startY)
+                            console.log(`[renderLayer] x=${x} screenX=${screenX} right=${screenX+31}`);
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
@@ -370,6 +372,8 @@ class GameRenderer {
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
                         const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
                         const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
+                        if (window._famDiagPending && x >= 7 && x <= 10 && y === startY)
+                            console.log(`[renderLayerFiltered] x=${x} screenX=${screenX} right=${screenX+31}`);
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
