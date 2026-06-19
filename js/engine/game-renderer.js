@@ -9,7 +9,6 @@ class GameRenderer {
     constructor(owner) {
         this.owner = owner; // GameEngine reference
         this._spriteCache = new Map();
-        window.famDiag = () => { window._famDiagPending = true; console.log('[famDiag] triggered'); };
     }
 
     clearSpriteCache() {
@@ -206,76 +205,6 @@ class GameRenderer {
             this.renderEasterWindow();
         }
 
-        // [DIAG] 手動トリガー: famDiag() → 全描画完了後にスキャン
-        if (window._famDiagPending) {
-            window._famDiagPending = false;
-            const _ctx = this.owner.ctx;
-            const _canvas = this.owner.canvas;
-            const _camX = this.owner.camera.x;
-            const _ts = this.owner.TILE_SIZE;
-            const _bgHex = (App.projectData.stage.bgColor || '#000000').replace('#', '');
-            const _bgR = parseInt(_bgHex.slice(0,2),16), _bgG = parseInt(_bgHex.slice(2,4),16), _bgB = parseInt(_bgHex.slice(4,6),16);
-            const _fullData = _ctx.getImageData(0, 0, _canvas.width, _canvas.height).data;
-            const _bgCols = [];
-            for (let _cx = 4; _cx < _canvas.width - 4; _cx++) {
-                let _allBg = true;
-                for (let _cy = 0; _cy < _canvas.height && _allBg; _cy++) {
-                    const _i = (_cy * _canvas.width + _cx) * 4;
-                    if (_fullData[_i] !== _bgR || _fullData[_i+1] !== _bgG || _fullData[_i+2] !== _bgB) _allBg = false;
-                }
-                if (_allBg) _bgCols.push(_cx);
-            }
-            const _stageRef = App.projectData.stage;
-            const _templates = App.projectData.templates || [];
-            const _sprites = App.projectData.sprites;
-            console.log(`[famDiag] camX=${_camX.toFixed(15)} TILE_SIZE=${_ts} bgColor=#${_bgHex} canvasW=${_canvas.width}`);
-            console.log(`[famDiag] 全高bgColor列: [${_bgCols.join(',')}]`);
-            // sx(8)〜sx(11)を明示ログ（境界調査）
-            for (let _w = 7; _w <= 11; _w++) {
-                const _s = Math.floor((_w - _camX) * _ts);
-                console.log(`[famDiag] sx(${_w})=${_s}  covers ${_s}~${_s+_ts-1}`);
-            }
-
-            const _logTiles = (_wx, _sx, _cx) => {
-                const _localX = _cx - _sx;
-                const _fgRows = [], _bgRows = [];
-                for (let _y = 0; _y < _stageRef.height; _y++) {
-                    const _fgTid = stage.layers.fg?.[_y]?.[_wx];
-                    const _bgTid = stage.layers.bg?.[_y]?.[_wx];
-                    if (_fgTid !== undefined && _fgTid >= 0) {
-                        const _t = _fgTid >= 100 ? (_templates[_fgTid - 100] || null) : null;
-                        const { frames } = _t ? this._resolveAnimSlot(_t.sprites || {}) : { frames: [_fgTid] };
-                        const _si = frames[0] ?? -1;
-                        const _sp = _si >= 0 ? _sprites[_si] : null;
-                        const _px = _sp?.data?.[0]?.[Math.min(_localX >> 1, 15)] ?? 'n/a';
-                        _fgRows.push(`y=${_y}:tid=${_fgTid},si=${_si},px[${_localX}]=${_px}`);
-                    }
-                    if (_bgTid !== undefined && _bgTid >= 0) {
-                        const _t = _bgTid >= 100 ? (_templates[_bgTid - 100] || null) : null;
-                        const { frames } = _t ? this._resolveAnimSlot(_t.sprites || {}) : { frames: [_bgTid] };
-                        const _si = frames[0] ?? -1;
-                        _bgRows.push(`y=${_y}:tid=${_bgTid},si=${_si}`);
-                    }
-                }
-                console.log(`[famDiag] worldX=${_wx} sx=${_sx} localX=${_localX} | FG: ` + (_fgRows.length ? _fgRows.join(' | ') : 'NONE'));
-                console.log(`[famDiag] worldX=${_wx} sx=${_sx} localX=${_localX} | BG: ` + (_bgRows.length ? _bgRows.join(' | ') : 'NONE'));
-            };
-
-            const _seen = new Set();
-            for (const _cx of _bgCols) {
-                // N と N+1 の両方を無条件で出力（逆引きループのバグを回避）
-                const _N = Math.floor(_camX + _cx / _ts);
-                for (const _wx of [_N, _N + 1]) {
-                    if (_seen.has(_wx)) continue;
-                    _seen.add(_wx);
-                    const _sx = Math.floor((_wx - _camX) * _ts);
-                    const _owns = (_sx <= _cx && _cx < _sx + _ts);
-                    console.log(`[famDiag] --- cx=${_cx} → worldX=${_wx} sx=${_sx} owns=${_owns} ---`);
-                    _logTiles(_wx, _sx, _cx);
-                }
-            }
-        }
-
     }
 
     // ========== レイヤー描画 ==========
@@ -284,6 +213,9 @@ class GameRenderer {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
+        // 浮動小数点の非結合性によるタイル間ギャップを防ぐため、startX基準の整数加算で screenX を計算
+        const screenXBase = Math.floor((startX - this.owner.camera.x) * this.owner.TILE_SIZE);
+        const screenYBase = Math.floor((startY - this.owner.camera.y) * this.owner.TILE_SIZE);
 
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
@@ -310,10 +242,8 @@ class GameRenderer {
                     }
 
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
-                        const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
-                        const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
-                        if (window._famDiagPending && x >= 7 && x <= 10 && y === startY)
-                            console.log(`[renderLayer] x=${x} screenX=${screenX} right=${screenX+31}`);
+                        const screenX = screenXBase + (x - startX) * this.owner.TILE_SIZE;
+                        const screenY = screenYBase + (y - startY) * this.owner.TILE_SIZE;
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
@@ -327,6 +257,9 @@ class GameRenderer {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
+        // 浮動小数点の非結合性によるタイル間ギャップを防ぐため、startX基準の整数加算で screenX を計算
+        const screenXBase = Math.floor((startX - this.owner.camera.x) * this.owner.TILE_SIZE);
+        const screenYBase = Math.floor((startY - this.owner.camera.y) * this.owner.TILE_SIZE);
 
         for (let y = startY; y < endY; y++) {
             if (y < 0 || y >= stage.height) continue;
@@ -370,10 +303,8 @@ class GameRenderer {
                     if (collisionOnly !== hasCollision) continue;
 
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
-                        const screenX = Math.floor((x - this.owner.camera.x) * this.owner.TILE_SIZE);
-                        const screenY = Math.floor((y - this.owner.camera.y) * this.owner.TILE_SIZE);
-                        if (window._famDiagPending && x >= 7 && x <= 10 && y === startY)
-                            console.log(`[renderLayerFiltered] x=${x} screenX=${screenX} right=${screenX+31}`);
+                        const screenX = screenXBase + (x - startX) * this.owner.TILE_SIZE;
+                        const screenY = screenYBase + (y - startY) * this.owner.TILE_SIZE;
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
                     }
                 }
