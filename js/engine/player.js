@@ -325,16 +325,15 @@ class Player {
             return; // はしご上での基本処理終了
         }
 
-        // ジャンプ処理
-        if (GameController.isPressed('a')) {
+        // ジャンプ処理（エッジ入力：押した瞬間のみ受け付ける）
+        if (GameController.isPressed('a') && !this._jumpKeyWasPressed) {
             if (this.onGround) {
-                // 通常ジャンプ（キーを新たに押した時のみSE再生＝頭上ブロックで連打防止）
                 this.vy = this.jumpPower;
                 this.onGround = false;
                 this.hasDoubleJumped = false;
                 this.canDoubleJump = this.wJumpEnabled;
-                if (!this._jumpKeyWasPressed) this.playSE('jump');
-            } else if (this.wJumpEnabled && this.canDoubleJump && !this.hasDoubleJumped && !this._jumpKeyWasPressed) {
+                this.playSE('jump');
+            } else if (this.wJumpEnabled && this.canDoubleJump && !this.hasDoubleJumped) {
                 // 2段ジャンプ
                 this.vy = this.jumpPower;
                 this.hasDoubleJumped = true;
