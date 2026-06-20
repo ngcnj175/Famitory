@@ -213,7 +213,7 @@ class GameRenderer {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
-        // 浮動小数点の非結合性によるタイル間ギャップを防ぐため、startX基準の整数加算で screenX を計算
+        // 各タイルを独立計算するとfloat誤差でタイル間に隙間が生じるため基点からの整数加算で統一
         const screenXBase = Math.floor((startX - this.owner.camera.x) * this.owner.TILE_SIZE);
         const screenYBase = Math.floor((startY - this.owner.camera.y) * this.owner.TILE_SIZE);
 
@@ -222,7 +222,6 @@ class GameRenderer {
             for (let x = startX; x < endX; x++) {
                 if (x < 0 || x >= stage.width) continue;
 
-                // 破壊済みタイルはスキップ（bgレイヤーは対象外）
                 if (skipDestroyed && this.owner.destroyedTiles.has(`${x},${y}`)) continue;
 
                 const tileId = layer[y][x];
@@ -230,14 +229,10 @@ class GameRenderer {
                     let spriteIdx = -1;
                     if (tileId >= 100) {
                         const template = templates[tileId - 100];
-                        // アイテム、敵、プレイヤーは個別のループで描画するためここではスキップ
                         if (template && (template.type === 'item' || template.type === 'enemy' || template.type === 'player')) continue;
-
-                        // マテリアル（ブロック）などはここで描画
                         const { frames, speed } = this._resolveAnimSlot(template?.sprites || {});
                         spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
                     } else {
-                        // 旧形式または単純タイル
                         spriteIdx = tileId;
                     }
 
@@ -257,7 +252,7 @@ class GameRenderer {
         const templates = App.projectData.templates || [];
         const stage = App.projectData.stage;
         const sprites = App.projectData.sprites;
-        // 浮動小数点の非結合性によるタイル間ギャップを防ぐため、startX基準の整数加算で screenX を計算
+        // 各タイルを独立計算するとfloat誤差でタイル間に隙間が生じるため基点からの整数加算で統一
         const screenXBase = Math.floor((startX - this.owner.camera.x) * this.owner.TILE_SIZE);
         const screenYBase = Math.floor((startY - this.owner.camera.y) * this.owner.TILE_SIZE);
 
@@ -266,13 +261,8 @@ class GameRenderer {
             for (let x = startX; x < endX; x++) {
                 if (x < 0 || x >= stage.width) continue;
 
-                // 破壊済みタイルはスキップ
                 if (this.owner.destroyedTiles.has(`${x},${y}`)) continue;
-
-                // ギミックブロックは別途描画するのでスキップ
-                if (gimmickPositions.has(`${x},${y}`)) {
-                    continue;
-                }
+                if (gimmickPositions.has(`${x},${y}`)) continue;
 
                 const tileId = layer[y][x];
                 if (tileId >= 0) {
@@ -282,24 +272,18 @@ class GameRenderer {
 
                     if (tileId >= 100) {
                         template = templates[tileId - 100];
-                        // アイテム、敵、プレイヤーは個別のループで描画するためここではスキップ
                         if (template && (template.type === 'item' || template.type === 'enemy' || template.type === 'player')) continue;
 
-                        // 当たり判定の確認（materialタイプでcollisionがfalseでない場合は当たり判定あり）
                         if (template && template.type === 'material') {
                             hasCollision = template.config?.collision !== false && template.config?.gimmick !== 'ladder';
                         }
 
-                        // アニメーション対応
                         const { frames, speed } = this._resolveAnimSlot(template?.sprites || {});
                         spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
                     } else {
-                        // 旧形式または単純タイル（当たり判定なしとみなす）
                         spriteIdx = tileId;
-                        hasCollision = false;
                     }
 
-                    // フィルタリング: collisionOnlyがtrueなら当たり判定ありのみ、falseなら当たり判定なしのみ
                     if (collisionOnly !== hasCollision) continue;
 
                     if (spriteIdx !== undefined && spriteIdx >= 0) {
