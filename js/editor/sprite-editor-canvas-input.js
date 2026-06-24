@@ -28,6 +28,9 @@ const SpriteCanvasInput = {
     isMovingSelection: false,
     selectionMoveStart: null,
 
+    // 長押しスポイト
+    longPressTimer: null,
+
     // 回転セッション管理
     _rotBase: null,
     _rotBaseSprite: -1,
@@ -421,10 +424,30 @@ const SpriteCanvasInput = {
         }
 
         this.processPixel(pixel.x, pixel.y);
+
+        // ペンツール長押しスポイト（500ms無移動でスポイト発動）
+        if (this.editor.currentTool === 'pen') {
+            const px = pixel.x, py = pixel.y;
+            this.longPressTimer = setTimeout(() => {
+                this.longPressTimer = null;
+                if (!this.hasMoved && this.isDrawing) {
+                    this.editor.undo();
+                    this.isDrawing = false;
+                    this.lastPixel = { x: -1, y: -1 };
+                    this._pickColorAt({ x: px, y: py });
+                }
+            }, 500);
+        }
     },
 
     onPointerMove(e) {
         if (!this.isDrawing || App.currentScreen !== 'paint') return;
+
+        // 長押しスポイトタイマーをキャンセル（移動検出時）
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = null;
+        }
 
         // ハンドツール: ドラッグでビューポートをパン
         if (this.isHandPanning) {
@@ -531,6 +554,10 @@ const SpriteCanvasInput = {
     },
 
     onPointerUp() {
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = null;
+        }
         this.stopAutoScroll();
         this.lastPointerEvent = null;
         if (!this.isDrawing) return;
@@ -613,6 +640,18 @@ const SpriteCanvasInput = {
         }
 
         this.editor.render();
+    },
+
+    // ペンツール長押しスポイト：指定ピクセルの色を取得して現在色に反映
+    _pickColorAt(pixel) {
+        const sprite = App.projectData.sprites[this.editor.currentSprite];
+        if (!sprite) return;
+        const row = sprite.data[pixel.y];
+        if (!row) return;
+        const pickedColor = row[pixel.x];
+        if (pickedColor >= 0) {
+            SpriteEditorPalette.selectColor(pickedColor);
+        }
     },
 
     floodFill(x, y, targetColor, newColor) {
