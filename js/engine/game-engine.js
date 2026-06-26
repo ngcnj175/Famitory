@@ -1092,6 +1092,9 @@ const GameEngine = {
                     proj.vy += 0.01; // 重力
                     proj.y += proj.vy;
                     break;
+                case 'rise':
+                    proj.y += proj.vy;
+                    break;
                 case 'drop':
                     // 鳥のフン: 真下に落下
                     proj.y += proj.vy;

@@ -242,7 +242,8 @@
 | U229 | 近接 | Melee | JS HTML template | stage-editor.js | ✓ |
 | U230 | ストレート | Straight | JS HTML template | stage-editor.js | ✓ |
 | U231 | 山なり | Arc | JS HTML template | stage-editor.js | ✓ |
-| U232 | 真下に落下 | Drop Down | JS HTML template | stage-editor.js | ✓ |
+| U459 | 上昇 | Rise | JS HTML template | stage-editor.js | ✓ |
+| U232 | 落下 | Drop Down | JS HTML template | stage-editor.js | ✓ |
 | U233 | 拡散 | Spread | JS HTML template | stage-editor.js | ✓ |
 | U234 | ブーメラン | Boomerang | JS HTML template | stage-editor.js | ✓ |
 | U235 | ピンボール | Pinball | JS HTML template | stage-editor.js | ✓ |

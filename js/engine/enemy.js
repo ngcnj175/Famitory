@@ -953,6 +953,8 @@ class Enemy {
         // 武器タイプによって発射位置をずらす
         if (['straight', 'arc', 'boomerang', 'pinball'].includes(shotType)) {
             startX += (this.facingRight ? 1 : -1);
+        } else if (shotType === 'rise') {
+            startY -= 1;
         } else if (shotType === 'drop') {
             startY += 1;
         }

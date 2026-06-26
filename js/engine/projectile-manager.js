@@ -8,7 +8,7 @@ class ProjectileManager {
      * プロジェクタイル生成の統一インターフェース
      * @param {GameEngine} engine ゲームエンジン
      * @param {Object} config {
-     *   shotType: string ('spread' | 'drop' | 'melee' | 'pinball' | 'orbit' | 'straight' | 'arc')
+     *   shotType: string ('spread' | 'rise' | 'drop' | 'melee' | 'pinball' | 'orbit' | 'straight' | 'arc')
      *   owner: string ('player' | 'enemy')
      *   ownerEntity: Player | Enemy インスタンス
      *   startX, startY: number (発射開始座標)
@@ -59,6 +59,23 @@ class ProjectileManager {
                     shotType: shotType,
                     bounceCount: 0
                 });
+            });
+        } else if (shotType === 'rise') {
+            // 真上に上昇
+            engine.projectiles.push({
+                x: startX, y: startY,
+                vx: 0, vy: -baseSpeed,
+                width: 0.5, height: 0.5,
+                spriteIdx: shotSprite,
+                templateIdx: templateIdx,
+                animationSlot: 'shot',
+                owner: owner,
+                maxRange: shotMaxRange,
+                startX: owner === 'player' ? startX : ownerEntity.x,
+                startY: owner === 'player' ? startY : ownerEntity.y,
+                facingRight: facingRight,
+                shotType: shotType,
+                bounceCount: 0
             });
         } else if (shotType === 'drop') {
             // 真下に落下

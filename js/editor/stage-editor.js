@@ -538,6 +538,7 @@ const StageEditor = {
                         <option value="melee" ${config.shotType === 'melee' ? 'selected' : ''}>${this.t('U229')}</option>
                         <option value="straight" ${config.shotType === 'straight' || !config.shotType ? 'selected' : ''}>${this.t('U230')}</option>
                         <option value="arc" ${config.shotType === 'arc' ? 'selected' : ''}>${this.t('U231')}</option>
+                        <option value="rise" ${config.shotType === 'rise' ? 'selected' : ''}>${this.t('U459')}</option>
                         <option value="drop" ${config.shotType === 'drop' ? 'selected' : ''}>${this.t('U232')}</option>
                         <option value="spread" ${config.shotType === 'spread' ? 'selected' : ''}>${this.t('U233')}</option>
                         <option value="boomerang" ${config.shotType === 'boomerang' ? 'selected' : ''}>${this.t('U234')}</option>
