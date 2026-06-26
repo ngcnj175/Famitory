@@ -578,6 +578,41 @@ const GameEngine = {
         }
         console.log('springTiles:', this.springTiles.size);
 
+        // 巣穴タイル初期化
+        this.spawnerTiles = new Map();
+        if (stage && stage.layers && stage.layers.fg) {
+            for (let y = 0; y < stage.height; y++) {
+                for (let x = 0; x < stage.width; x++) {
+                    const tileId = stage.layers.fg[y][x];
+                    if (tileId >= 0) {
+                        const { template: tmpl } = getTemplateFromTileId(tileId);
+                        if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'spawner') {
+                            const enemyIdx = tmpl.config.spawnerEnemy;
+                            const enemyTemplate = enemyIdx !== undefined ? templates[enemyIdx] : null;
+                            if (enemyTemplate && enemyTemplate.type === 'enemy') {
+                                const rate = tmpl.config.spawnerRate ?? 3;
+                                const interval = Math.round(300 - (rate - 1) * 50);
+                                this.spawnerTiles.set(`${x},${y}`, {
+                                    x, y,
+                                    enemyTemplateIdx: enemyIdx,
+                                    enemyTemplate,
+                                    behavior: enemyTemplate.config?.move || 'idle',
+                                    interval,
+                                    maxCount: 3,
+                                    timer: 0,
+                                    spawnedEnemies: []
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (this.spawnerTiles.size > 0) {
+            this.allEnemiesSpawned = false;
+        }
+        console.log('spawnerTiles:', this.spawnerTiles.size);
+
         // ギミックブロック初期化（はしご、とびら、スプリングは除外）
         this.gimmickBlocks = [];
         if (stage && stage.layers && stage.layers.fg) {
@@ -586,7 +621,7 @@ const GameEngine = {
                     const tileId = stage.layers.fg[y][x];
                     if (tileId >= 0) {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
-                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door' && template.config.gimmick !== 'spring') {
+                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door' && template.config.gimmick !== 'spring' && template.config.gimmick !== 'spawner') {
                             this.gimmickBlocks.push({
                                 tileX: x,
                                 tileY: y,
@@ -887,7 +922,7 @@ const GameEngine = {
         if (this.bossEnemy && this.bossEnemy.isDying && !this.bossDefeatPhase) {
             // 他にボスが残っているか？
             const remainingBosses = this.enemies.filter(e =>
-                e.template?.config?.isBoss && !e.isDying && e !== this.bossEnemy
+                e.template?.config?.isBoss && !e.isDying && e !== this.bossEnemy && !e.spawned
             );
 
             if (remainingBosses.length > 0) {
@@ -925,6 +960,8 @@ const GameEngine = {
             }
         }
 
+        this.updateSpawners();
+
         if (this.player) this.player.update(this);
 
         this.enemies.forEach(enemy => enemy.update(this));
@@ -956,6 +993,40 @@ const GameEngine = {
         }
 
         this.checkClearCondition();
+    },
+
+    updateSpawners() {
+        if (this.spawnerTiles.size === 0) return;
+
+        let allDone = true;
+        for (const [key, spawner] of this.spawnerTiles) {
+            // 破壊された巣穴はスキップ
+            if (this.destroyedTiles.has(key)) continue;
+
+            allDone = false;
+
+            // 死んだ敵を参照リストから除外
+            spawner.spawnedEnemies = spawner.spawnedEnemies.filter(e => !e.isDying);
+
+            if (spawner.spawnedEnemies.length >= spawner.maxCount) continue;
+
+            if (++spawner.timer < spawner.interval) continue;
+            spawner.timer = 0;
+
+            const enemy = new Enemy(
+                spawner.x, spawner.y,
+                spawner.enemyTemplate,
+                spawner.behavior,
+                spawner.enemyTemplateIdx
+            );
+            enemy.spawned = true;
+            this.enemies.push(enemy);
+            spawner.spawnedEnemies.push(enemy);
+        }
+
+        if (allDone && !this.allEnemiesSpawned) {
+            this.allEnemiesSpawned = true;
+        }
     },
 
     updateItems() {
@@ -1331,10 +1402,10 @@ const GameEngine = {
                 // 全てのボスを倒したらクリア（複数ボス対応）
                 // 生存中のボス（isDyingでない）をカウント
                 const aliveBosses = this.enemies.filter(e =>
-                    e.template?.config?.isBoss && !e.isDying
+                    e.template?.config?.isBoss && !e.isDying && !e.spawned
                 );
                 const dyingBosses = this.enemies.filter(e =>
-                    e.template?.config?.isBoss && e.isDying
+                    e.template?.config?.isBoss && e.isDying && !e.spawned
                 );
 
                 // ボスが全て倒された（生存ボスがいない、かつ死亡演出中のボスがいる）

@@ -261,6 +261,9 @@
 | U248 | はしご | Ladder | JS HTML template | stage-editor.js | ✓ |
 | U249 | スプリング | Spring | JS HTML template | stage-editor.js | ✓ |
 | U250 | とびら | Door | JS HTML template | stage-editor.js | ✓ |
+| U456 | 巣穴 | Spawner | JS HTML template (option) | stage-editor.js | ✓ |
+| U457 | てき | Enemy | JS HTML template (label/option) | stage-editor.js | ✓ |
+| U458 | 頻度 | Frequency | JS message/literal | stage-editor.js | ✓ |
 | U251 | はねる力 | Spring Power | JS message/literal | stage-editor.js | ✓ |
 | U252 | 当たり判定 | Collision | JS message/literal | stage-editor.js | ✓ |
 | U253 | 耐久性 | Durability | JS message/literal | stage-editor.js | ✓ |

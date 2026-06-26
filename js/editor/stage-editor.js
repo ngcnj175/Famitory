@@ -590,11 +590,35 @@ const StageEditor = {
                         <option value="ladder" ${config.gimmick === 'ladder' ? 'selected' : ''}>${this.t('U248')}</option>
                         <option value="spring" ${config.gimmick === 'spring' ? 'selected' : ''}>${this.t('U249')}</option>
                         <option value="door" ${config.gimmick === 'door' ? 'selected' : ''}>${this.t('U250')}</option>
+                        <option value="spawner" ${config.gimmick === 'spawner' ? 'selected' : ''}>${this.t('U456')}</option>
                     </select>
                 </div>
             `;
             if (config.gimmick === 'spring') {
                 html += this.renderBlockGauge(this.t('U251'), 'springPower', config.springPower ?? 3, 1, 5);
+            }
+            if (config.gimmick === 'spawner') {
+                html += this.renderToggle(this.t('U252'), 'collision', config.collision !== false);
+                html += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
+                const templates = App.projectData.templates || [];
+                const enemyTemplates = templates
+                    .map((t, i) => ({ t, i }))
+                    .filter(({ t }) => t.type === 'enemy');
+                if (enemyTemplates.length > 0) {
+                    let options = enemyTemplates.map(({ i }, seq) =>
+                        `<option value="${i}" ${config.spawnerEnemy === i ? 'selected' : ''}>${this.t('U457')}${seq + 1}</option>`
+                    ).join('');
+                    html += `
+                        <div class="param-row">
+                            <span class="param-label">${this.t('U457')}</span>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <select class="param-select" data-key="spawnerEnemy" style="min-width:72px;">${options}</select>
+                                <canvas class="spawner-enemy-preview" width="16" height="16" style="border:1px solid #555;image-rendering:pixelated;width:32px;height:32px;"></canvas>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += this.renderBlockGauge(this.t('U458'), 'spawnerRate', config.spawnerRate ?? 3, 1, 5);
             }
             // ギミック「なし」の時のみ当たり判定・耐久性を表示
             if (!config.gimmick || config.gimmick === 'none') {
@@ -942,8 +966,7 @@ const StageEditor = {
             select.addEventListener('change', () => {
                 const key = select.dataset.key;
                 if (key && this.editingTemplate?.config) {
-                    // SE髢｢騾｣縺ｯ謨ｰ蛟､縺ｧ菫晏ｭ・
-                    if (key.startsWith('se')) {
+                    if (key.startsWith('se') || key === 'spawnerEnemy') {
                         this.editingTemplate.config[key] = parseInt(select.value);
                     } else {
                         this.editingTemplate.config[key] = select.value;
@@ -1009,8 +1032,32 @@ const StageEditor = {
             });
         });
 
+        // 巣穴スポナー敵プレビュー
+        this.updateSpawnerEnemyPreview();
+        const spawnerSelect = document.querySelector('.param-select[data-key="spawnerEnemy"]');
+        if (spawnerSelect) {
+            spawnerSelect.addEventListener('change', () => this.updateSpawnerEnemyPreview());
+        }
+
         // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧貞・譛溷喧
         this.updateConfigAnimations();
+    },
+
+    updateSpawnerEnemyPreview() {
+        const canvas = document.querySelector('.spawner-enemy-preview');
+        if (!canvas) return;
+        const select = document.querySelector('.param-select[data-key="spawnerEnemy"]');
+        if (!select) return;
+        const templateIdx = parseInt(select.value);
+        const template = (App.projectData.templates || [])[templateIdx];
+        const spriteIdx = template?.sprites?.idle?.frames?.[0];
+        const sprite = spriteIdx !== undefined ? App.projectData.sprites[spriteIdx] : null;
+        if (sprite) {
+            this.renderSpriteToMiniCanvas(sprite, canvas, this.getBackgroundColor());
+        } else {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 16, 16);
+        }
     },
 
     // 險ｭ螳壹ヱ繝阪Ν蜀・・繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧呈峩譁ｰ
