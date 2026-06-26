@@ -1226,7 +1226,10 @@ const GameEngine = {
                         return false;
                     }
                 } else {
-                    // 通常: 壁に当たったら消滅
+                    // 通常: 壁に当たったら消滅（プレイヤー武器ならタイルにダメージ）
+                    if (proj.owner === 'player') {
+                        this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
+                    }
                     return false;
                 }
             }
