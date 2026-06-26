@@ -194,7 +194,6 @@ const GameEngine = {
         this.initGame();
         this.resize();
         this.renderer.renderTitleScreen();
-        console.log('Game restarted');
     },
 
     // プレビュー表示（ゲーム開始前）
@@ -259,8 +258,7 @@ const GameEngine = {
         const stage = this.stageData;
         const templates = App.projectData.templates || [];
 
-        console.log('=== initGame Debug ===');
-        console.log('Templates count:', templates.length);
+
 
         // プレイヤーとエネミーの位置をテンプレートとステージから検索
         let playerPos = null;
@@ -340,11 +338,8 @@ const GameEngine = {
         // プレイヤー初期化（ステージ上に配置されている場合のみ）
         if (playerPos) {
             this.player = new Player(playerPos.x, playerPos.y, playerPos.template, playerPos.templateIdx);
-            console.log('Player created at', playerPos.x, playerPos.y, 'templateIdx:', playerPos.templateIdx);
         } else {
-            // プレイヤーがステージ上にいない場合は生成しない
             this.player = null;
-            console.log('No player found on stage');
         }
 
         // エネミー初期化（templateIdxを渡す）
@@ -537,7 +532,6 @@ const GameEngine = {
                 }
             }
         }
-        console.log('ladderTiles:', this.ladderTiles.size);
 
         // とびらタイル初期化（スプライトデータも保存）
         this.doorTiles = new Map();
@@ -558,7 +552,6 @@ const GameEngine = {
                 }
             }
         }
-        console.log('doorTiles:', this.doorTiles.size);
 
         // スプリングタイル初期化
         this.springTiles = new Map();
@@ -576,7 +569,6 @@ const GameEngine = {
                 }
             }
         }
-        console.log('springTiles:', this.springTiles.size);
 
         // 巣穴タイル初期化
         this.spawnerTiles = new Map();
@@ -611,7 +603,6 @@ const GameEngine = {
         if (this.spawnerTiles.size > 0) {
             this.allEnemiesSpawned = false;
         }
-        console.log('spawnerTiles:', this.spawnerTiles.size);
 
         // ギミックブロック初期化（はしご、とびら、スプリングは除外）
         this.gimmickBlocks = [];
@@ -638,23 +629,12 @@ const GameEngine = {
                             });
                             // 実行用ステージデータから元タイルを削除（二重当たり判定防止）
                             stage.layers.fg[y][x] = -1;
-                            console.log(`Gimmick block initialized at ${x},${y}. Original tile cleared.`);
                         }
                     }
                 }
             }
         }
 
-        // デバッグログ
-        console.log('=== Game Initialized ===');
-        console.log('totalClearItems:', this.totalClearItems);
-        console.log('items array length:', this.items.length);
-        console.log('gimmickBlocks:', this.gimmickBlocks.length);
-        console.log('All items detail:');
-        this.items.forEach((item, idx) => {
-            console.log(`  [${idx}] x=${item.x}, y=${item.y}, type=${item.itemType}, template=${item.template?.name}, easterMessage=${item.template?.config?.easterMessage}`);
-        });
-        console.log('processedItemPositions:', [...processedItemPositions]);
     },
 
     gameLoop() {
@@ -804,7 +784,6 @@ const GameEngine = {
             const fellBelowView = playerBottom > viewBottom + 2;
             if (fellBelowStage || fellBelowView) {
                 if (!this.gameOverPending) {
-                    console.log('GAME OVER pending (Fell)! playerBottom:', playerBottom, 'stageBottom:', stageBottom, 'viewBottom:', viewBottom);
                     this.gameOverPending = true;
                     this.gameOverWaitTimer = 30; // 0.5秒間、画面外に完全に消えた状態を保ってからワイプ開始
                 }
@@ -813,7 +792,6 @@ const GameEngine = {
             // 敵にやられて死亡し、その飛び上がり・落下演出が完了した場合のGAME OVER処理
             if (this.player && this.player.isDying && this.player.deathTimer > 120) {
                 if (!this.gameOverPending) {
-                    console.log('GAME OVER pending (Died)! timer:', this.player.deathTimer);
                     this.gameOverPending = true;
                     this.gameOverWaitTimer = 0; // ただちにワイプ開始
                 }
@@ -824,7 +802,6 @@ const GameEngine = {
         if (this.gameOverPending && this.titleState === 'playing') {
             this.gameOverWaitTimer--;
             if (this.gameOverWaitTimer <= 0) {
-                console.log('GAME OVER triggered!');
                 this.titleState = 'gameover';
                 this.gameOverTimer = 0;
                 this.gameOverPending = false;
@@ -926,8 +903,6 @@ const GameEngine = {
             );
 
             if (remainingBosses.length > 0) {
-                // 中ボス撃破：BGMをステージ曲に戻す
-                console.log('Intermediate boss defeated.');
                 this.bossEnemy = null; // ボス戦状態解除
                 this.bossSpawned = false; // 次のボス用に出現フラグリセット
                 this.playBgm('stage');
@@ -951,8 +926,6 @@ const GameEngine = {
             );
 
             if (nextBoss) {
-                // ボス出現！BGMシーケンス開始
-                console.log('Boss encountered!');
                 this.bossEnemy = nextBoss;
                 this.bossSpawned = true;
                 this.bossSequencePhase = 'fadeout';
@@ -1055,14 +1028,10 @@ const GameEngine = {
                 if (this.easterMessageActive) return;
 
                 if (this.physics.projectileHits(item, this.player)) {
-                    console.log(`>>> Collecting item: type=${item.itemType}, easterMessage=${item.template?.config?.easterMessage}`);
                     item.collected = true;
 
-                    // イースターエッグの場合はメッセージウィンドウを表示
                     if (item.itemType === 'easter') {
-                        console.log('>>> Easter egg detected! Showing message window');
                         const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
-                        console.log('>>> Easter message:', message);
                         this.showEasterMessage(message);
                         // アイテムゲット音を鳴らす
                         this.player.playSE('itemGet');
@@ -1425,7 +1394,6 @@ const GameEngine = {
 
                 // ボスが全て倒された（生存ボスがいない、かつ死亡演出中のボスがいる）
                 if (aliveBosses.length === 0 && dyingBosses.length > 0 && !this.bossDefeatPhase) {
-                    console.log('Last boss defeated! Starting defeat sequence.');
                     // 最後のボスを撃破演出用に記録
                     this.bossEnemy = dyingBosses[0];
                     // ボス撃破演出開始：BGM停止→1秒無音→ボス落下→クリアBGM

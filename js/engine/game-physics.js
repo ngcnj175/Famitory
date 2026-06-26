@@ -143,18 +143,15 @@ class GamePhysics {
                         !other.isDying && other.y <= App.projectData.stage.height + 5
                     );
                     if (remainingBosses.length > 0) {
-                        console.log('Intermediate boss fell off stage.');
                         this.owner.bossEnemy  = null;
                         this.owner.bossSpawned = false;
                         this.owner.playBgm('stage');
                     } else {
                         const clearCondition = App.projectData.stage.clearCondition || 'none';
                         if (clearCondition === 'boss' && !this.owner.bossDefeatPhase && !this.owner.isCleared) {
-                            console.log('Final boss fell off stage. Triggering clear.');
                             this.owner.bossEnemy = null;
                             this.owner.triggerClear();
                         } else {
-                            console.log('Final boss fell off stage. (clear condition not boss)');
                             this.owner.bossEnemy = null;
                         }
                     }
@@ -179,14 +176,9 @@ class GamePhysics {
     // 敵がドロップするアイテムを出現させる
     spawnDropItem(enemy) {
         const dropItem = enemy.template?.config?.dropItem;
-        console.log('spawnDropItem called for enemy:', enemy.template?.name, 'dropItem:', dropItem);
-        if (!dropItem || dropItem === 'none') {
-            console.log('No drop item configured');
-            return;
-        }
+        if (!dropItem || dropItem === 'none') return;
 
         const templates = App.projectData.templates || [];
-        console.log('Searching for item template with itemType:', dropItem);
 
         const searchTypes = [dropItem];
         if (dropItem === 'muteki') searchTypes.push('star');
@@ -211,8 +203,6 @@ class GamePhysics {
             templateIdx = templates.indexOf(itemTemplate);
             spriteIdx   = itemTemplate.sprites?.idle?.frames?.[0] ??
                           itemTemplate.sprites?.main?.frames?.[0] ?? 0;
-        } else {
-            console.log('No item template found, using fallback sprite for:', dropItem);
         }
 
         const spawnX = enemy.deathX !== undefined ? enemy.deathX : enemy.x;
@@ -229,7 +219,6 @@ class GamePhysics {
             isDropped: true,
             vy: -0.15
         });
-        console.log('Spawned drop item:', dropItem, 'at', spawnX, spawnY, 'spriteIdx:', spriteIdx);
 
         if (dropItem === 'clear') this.owner.totalClearItems++;
     }
@@ -331,7 +320,6 @@ class GamePhysics {
         this.owner.enemies.forEach(e => {
             if (e.frozen && Math.floor(e.x) === tileX && Math.floor(e.y) === tileY) {
                 e.frozen = false;
-                console.log('Enemy woke up at', tileX, tileY);
             }
         });
     }
