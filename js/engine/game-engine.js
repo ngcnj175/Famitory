@@ -1217,8 +1217,10 @@ const GameEngine = {
                     proj.bounceCount++;
                     proj.x += proj.vx;
                     proj.y += proj.vy;
+                    if (proj.owner === 'player') this.damageTile(tileX, tileY);
                 } else if (shotType === 'boomerang') {
                     // ブーメラン: 壁で反転
+                    if (proj.owner === 'player') this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
                     if (!proj.returning) {
                         proj.returning = true;
                         proj.vx = -proj.vx;
@@ -1231,6 +1233,16 @@ const GameEngine = {
                         this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
                     }
                     return false;
+                }
+            }
+
+            // 近接・回転: タイル貫通だがプレイヤー武器ならタイルにダメージ（クールダウン付き）
+            if (proj.owner === 'player' && (shotType === 'melee' || shotType === 'orbit')) {
+                if (proj.tileDamageCooldown > 0) {
+                    proj.tileDamageCooldown--;
+                } else if (this.physics.getCollision(Math.floor(proj.x + cx), Math.floor(proj.y + cy))) {
+                    this.damageTile(Math.floor(proj.x + cx), Math.floor(proj.y + cy));
+                    proj.tileDamageCooldown = 20;
                 }
             }
 
