@@ -587,8 +587,8 @@ const GameEngine = {
                     if (tileId >= 0) {
                         const { template: tmpl } = getTemplateFromTileId(tileId);
                         if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'spawner') {
-                            const enemyIdx = tmpl.config.spawnerEnemy;
-                            const enemyTemplate = enemyIdx !== undefined ? templates[enemyIdx] : null;
+                            const enemyIdx = tmpl.config.spawnerEnemy ?? templates.findIndex(t => t.type === 'enemy');
+                            const enemyTemplate = enemyIdx >= 0 ? templates[enemyIdx] : null;
                             if (enemyTemplate && enemyTemplate.type === 'enemy') {
                                 const rate = tmpl.config.spawnerRate ?? 3;
                                 const interval = Math.round(300 - (rate - 1) * 50);

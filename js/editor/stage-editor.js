@@ -598,13 +598,16 @@ const StageEditor = {
                 html += this.renderBlockGauge(this.t('U251'), 'springPower', config.springPower ?? 3, 1, 5);
             }
             if (config.gimmick === 'spawner') {
-                html += this.renderToggle(this.t('U252'), 'collision', config.collision !== false);
                 html += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
                 const templates = App.projectData.templates || [];
                 const enemyTemplates = templates
                     .map((t, i) => ({ t, i }))
                     .filter(({ t }) => t.type === 'enemy');
                 if (enemyTemplates.length > 0) {
+                    // デフォルト選択値を確定保存（未設定の場合は先頭の敵）
+                    if (config.spawnerEnemy === undefined) {
+                        config.spawnerEnemy = enemyTemplates[0].i;
+                    }
                     let options = enemyTemplates.map(({ i }, seq) =>
                         `<option value="${i}" ${config.spawnerEnemy === i ? 'selected' : ''}>${this.t('U457')}${seq + 1}</option>`
                     ).join('');
