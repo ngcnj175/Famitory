@@ -371,7 +371,8 @@ const GameEngine = {
                     const { template } = getTemplateFromTileId(tileId);
                     // materialタイプで当たり判定ありの場合のみブロックとみなす
                     if (template && template.type === 'material') {
-                        // collision が false でない場合は当たり判定あり
+                        // はしご・とびらは通り抜け可能なのでブロック扱いしない
+                        if (template.config?.gimmick === 'ladder' || template.config?.gimmick === 'door') return false;
                         return template.config?.collision !== false;
                     }
                     // テンプレートがない場合（ただのタイル）は当たり判定なしとみなす
