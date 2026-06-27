@@ -173,8 +173,8 @@ class Player {
 
         this.handleInput(engine);
 
-        // 重力（はしご上では無効）
-        if (!this.onLadder) {
+        // 重力（はしご上では無効、ただしノックバック中は適用）
+        if (!this.onLadder || this.isKnockback) {
             this.vy += this.gravity;
             if (this.vy > this.maxFallSpeed) {
                 this.vy = this.maxFallSpeed;
