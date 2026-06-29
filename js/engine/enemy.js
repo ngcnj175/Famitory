@@ -84,6 +84,13 @@ class Enemy {
         // 連射設定: shotRate 1（200フレーム）～5（60フレーム）
         const shotRateConfig = template?.config?.shotRate ?? 3;
         this.shotInterval = Math.round(200 - (shotRateConfig - 1) * 35); // 1=200, 3=130, 5=60
+
+        // はしご上配置モード
+        this.isLadderEnemy  = false;
+        this.ladderBounds   = null;
+        this._ladderInitDone = false;
+        this.ladderDir       = 1;    // 縦往復方向: 1=下, -1=上
+        this.ladderClingPhase = 'up'; // はりつきフェーズ
     }
 
     update(engine) {
@@ -127,8 +134,16 @@ class Enemy {
             this.damageFlashTimer--;
         }
 
-        // 空中か地上かで分岐
-        if (this.isAerial) {
+        // はしご上配置を初回フレームで検出
+        if (!this._ladderInitDone) {
+            this._ladderInitDone = true;
+            this._initLadderBounds(engine);
+        }
+
+        // 空中か地上かで分岐（はしご上配置は専用モード）
+        if (this.isLadderEnemy) {
+            this.updateLadder(engine);
+        } else if (this.isAerial) {
             this.updateAerial(engine);
         } else if (this.behavior === 'clinging') {
             this.updateClinging(engine);
@@ -578,6 +593,103 @@ class Enemy {
         this.y += this.vy;
     }
 
+    // ========== はしご上配置専用モード ==========
+
+    _initLadderBounds(engine) {
+        if (!engine.ladderTiles || engine.ladderTiles.size === 0) return;
+        const centerX = Math.floor(this.x + this.width / 2);
+        const topY    = Math.floor(this.y);
+        const botY    = Math.floor(this.y + this.height - 0.01);
+        const startY  = engine.ladderTiles.has(`${centerX},${topY}`) ? topY
+                      : engine.ladderTiles.has(`${centerX},${botY}`) ? botY : null;
+        if (startY === null) return;
+
+        // BFS で連続はしごタイルの矩形を求める
+        const visited = new Set([`${centerX},${startY}`]);
+        const queue   = [[centerX, startY]];
+        let minX = centerX, maxX = centerX, minY = startY, maxY = startY;
+        while (queue.length) {
+            const [cx, cy] = queue.shift();
+            for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+                const nx = cx + dx, ny = cy + dy, key = `${nx},${ny}`;
+                if (!visited.has(key) && engine.ladderTiles.has(key)) {
+                    visited.add(key); queue.push([nx, ny]);
+                    if (nx < minX) minX = nx; if (nx > maxX) maxX = nx;
+                    if (ny < minY) minY = ny; if (ny > maxY) maxY = ny;
+                }
+            }
+        }
+        this.isLadderEnemy = true;
+        this.ladderBounds  = { minX, maxX, minY, maxY };
+    }
+
+    updateLadder(engine) {
+        const { minX, maxX, minY, maxY } = this.ladderBounds;
+        const wMinY = minY;
+        const wMaxY = maxY + 1 - this.height;
+        const wMinX = minX;
+        const wMaxX = maxX + 1 - this.width;
+
+        this.vx = 0; this.vy = 0;
+        this.onLadder = true; this.onGround = false;
+
+        switch (this.behavior) {
+            case 'idle':
+                break;
+            case 'clinging':
+                this._ladderClingUpdate(wMinX, wMaxX, wMinY, wMaxY);
+                break;
+            case 'chase':
+                this._ladderChase(engine, wMinY, wMaxY);
+                break;
+            default:
+                this._ladderPatrolV(wMinY, wMaxY);
+        }
+
+        this.x += this.vx; this.y += this.vy;
+        if (wMaxX > wMinX) this.x = Math.max(wMinX, Math.min(wMaxX, this.x));
+        this.y = Math.max(wMinY, Math.min(wMaxY, this.y));
+    }
+
+    _ladderPatrolV(minY, maxY) {
+        if (this.y <= minY)      this.ladderDir = 1;
+        else if (this.y >= maxY) this.ladderDir = -1;
+        this.vy = this.ladderDir * this.moveSpeed;
+    }
+
+    _ladderChase(engine, minY, maxY) {
+        if (!engine.player) { this._ladderPatrolV(minY, maxY); return; }
+        const dy   = engine.player.y - this.y;
+        const dist = Math.abs(dy) + Math.abs(engine.player.x - this.x);
+        if (dist < this.detectionRange) {
+            this.vy = Math.abs(dy) > 0.2 ? (dy > 0 ? this.moveSpeed : -this.moveSpeed) : 0;
+        } else {
+            this._ladderPatrolV(minY, maxY);
+        }
+    }
+
+    _ladderClingUpdate(minX, maxX, minY, maxY) {
+        const spd = this.moveSpeed;
+        switch (this.ladderClingPhase) {
+            case 'up':
+                this.x = minX; this.vy = -spd; this.facingRight = false;
+                if (this.y <= minY) { this.y = minY; this.ladderClingPhase = maxX > minX ? 'right' : 'down'; }
+                break;
+            case 'right':
+                this.y = minY; this.vx = spd; this.facingRight = true;
+                if (this.x >= maxX) { this.x = maxX; this.ladderClingPhase = 'down'; }
+                break;
+            case 'down':
+                this.x = maxX; this.vy = spd; this.facingRight = true;
+                if (this.y >= maxY) { this.y = maxY; this.ladderClingPhase = maxX > minX ? 'left' : 'up'; }
+                break;
+            case 'left':
+                this.y = maxY; this.vx = -spd; this.facingRight = false;
+                if (this.x <= minX) { this.x = minX; this.ladderClingPhase = 'up'; }
+                break;
+        }
+    }
+
     patrol(engine) {
         const maxRange = 8; // 移動範囲制限（タイル）
 
@@ -997,7 +1109,7 @@ class Enemy {
     }
 
     handleHorizontalCollision(engine) {
-        PhysicsHandler.handleHorizontalCollision(this, engine, this.isDying, {
+        PhysicsHandler.handleHorizontalCollision(this, this._getLadderAwareEngine(engine), this.isDying, {
             onFacingRightUpdate: (shouldFaceRight) => {
                 this.facingRight = shouldFaceRight;
             }
@@ -1006,14 +1118,29 @@ class Enemy {
 
     handleVerticalCollision(engine) {
         if (this.isDying) return;
+        PhysicsHandler.handleVerticalCollision(this, this._getLadderAwareEngine(engine), {});
+    }
 
-        PhysicsHandler.handleVerticalCollision(this, engine, {
-            // 敵は player 固有の callback（onDamageTile, onJumpReset）は不要
+    // 非はしご敵向け: はしごタイルを壁として扱うエンジンラッパーを返す
+    _getLadderAwareEngine(engine) {
+        if (this.isLadderEnemy || !engine.ladderTiles || engine.ladderTiles.size === 0) return engine;
+        const ladderTiles = engine.ladderTiles;
+        const origGet = engine.getCollision.bind(engine);
+        return new Proxy(engine, {
+            get(target, prop) {
+                if (prop === 'getCollision') {
+                    return (x, y) => ladderTiles.has(`${Math.floor(x)},${Math.floor(y)}`) ? 1 : origGet(x, y);
+                }
+                const val = target[prop];
+                return typeof val === 'function' ? val.bind(target) : val;
+            }
         });
     }
 
     // 静的マップおよびギミックブロックを考慮して壁・床判定を行うヘルパー
     checkTileCollision(engine, tx, ty) {
+        // 非はしご敵にとって、はしごタイルは壁
+        if (!this.isLadderEnemy && engine.ladderTiles && engine.ladderTiles.has(`${tx},${ty}`)) return 1;
         // 通常の地形判定
         const normalCol = engine.getCollision(tx, ty);
         if (normalCol === 1) return 1;
