@@ -698,36 +698,51 @@ class Enemy {
         this.vy = this.ladderDir * this.moveSpeed;
     }
 
-    // はりつき: 進行先タイルがはしごなら進む、なければ時計回りに方向転換
+    // はりつき: タイル中心到着ごとに左手法則で次の方向を決定（左→前→右→後ろ）
     _ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine) {
         const spd = this.moveSpeed;
         this.vx = 0; this.vy = 0;
 
-        const cx = Math.floor(this.x + this.width  / 2);
-        const cy = Math.floor(this.y + this.height / 2);
-
-        let checkX, checkY;
-        switch (this.ladderClingPhase) {
-            case 'up':    checkX = cx;                                   checkY = Math.floor(this.y - spd);              break;
-            case 'right': checkX = Math.floor(this.x + this.width + spd); checkY = cy;                                   break;
-            case 'down':  checkX = cx;                                   checkY = Math.floor(this.y + this.height + spd); break;
-            case 'left':  checkX = Math.floor(this.x - spd);             checkY = cy;                                   break;
+        if (this._clingTX === undefined) {
+            this._clingTX = Math.floor(this.x + this.width / 2);
+            this._clingTY = Math.floor(this.y + this.height / 2);
         }
 
-        const canMove = engine.ladderTiles
-            ? engine.ladderTiles.has(`${checkX},${checkY}`) && engine.getCollision(checkX, checkY) !== 1
-            : false;
+        const goalX = this._clingTX + 0.5 - this.width / 2;
+        const goalY = this._clingTY + 0.5 - this.height / 2;
 
-        if (canMove) {
-            switch (this.ladderClingPhase) {
-                case 'up':    this.vy = -spd; this.facingRight = false; break;
-                case 'right': this.vx =  spd; this.facingRight = true;  break;
-                case 'down':  this.vy =  spd; this.facingRight = true;  break;
-                case 'left':  this.vx = -spd; this.facingRight = false; break;
-            }
-        } else {
+        if (Math.abs(this.x - goalX) < spd * 1.5 && Math.abs(this.y - goalY) < spd * 1.5) {
+            this.x = goalX;
+            this.y = goalY;
+
             const order = ['up', 'right', 'down', 'left'];
-            this.ladderClingPhase = order[(order.indexOf(this.ladderClingPhase) + 1) % 4];
+            const dirs  = { up: [0,-1], right: [1,0], down: [0,1], left: [-1,0] };
+            const ci    = order.indexOf(this.ladderClingPhase);
+
+            const canGo = (dir) => {
+                const [ox, oy] = dirs[dir];
+                const nx = this._clingTX + ox;
+                const ny = this._clingTY + oy;
+                return engine.ladderTiles && engine.ladderTiles.has(`${nx},${ny}`)
+                    && engine.getCollision(nx, ny) !== 1;
+            };
+
+            if      (canGo(order[(ci + 3) % 4])) this.ladderClingPhase = order[(ci + 3) % 4];
+            else if (canGo(this.ladderClingPhase)) {}
+            else if (canGo(order[(ci + 1) % 4])) this.ladderClingPhase = order[(ci + 1) % 4];
+            else if (canGo(order[(ci + 2) % 4])) this.ladderClingPhase = order[(ci + 2) % 4];
+            else return;
+
+            const [ox, oy] = dirs[this.ladderClingPhase];
+            this._clingTX += ox;
+            this._clingTY += oy;
+        }
+
+        switch (this.ladderClingPhase) {
+            case 'up':    this.vy = -spd; this.facingRight = false; break;
+            case 'right': this.vx =  spd; this.facingRight = true;  break;
+            case 'down':  this.vy =  spd; this.facingRight = true;  break;
+            case 'left':  this.vx = -spd; this.facingRight = false; break;
         }
     }
 
