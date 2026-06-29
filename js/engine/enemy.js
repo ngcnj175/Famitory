@@ -658,8 +658,8 @@ class Enemy {
                 this.rushAerial(engine);
                 break;
             case 'clinging':
-                // はりつき: 上端・下端で折り返す縦往復
-                this._ladderPatrolV(wMinY, wMaxY);
+                // はりつき: はしご縁内側を周回
+                this._ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine);
                 break;
             default:
                 this._ladderPatrolV(wMinY, wMaxY);
@@ -691,11 +691,69 @@ class Enemy {
         this.vy = 0;
     }
 
-    // はりつき・デフォルト: 縦往復（上端・下端で折り返し）
+    // デフォルト: 縦往復（上端・下端で折り返し）
     _ladderPatrolV(minY, maxY) {
         if (this.y <= minY)      this.ladderDir = 1;
         else if (this.y >= maxY) this.ladderDir = -1;
         this.vy = this.ladderDir * this.moveSpeed;
+    }
+
+    // はりつき: はしご矩形の縁内側を周回（左端上昇→上端右移動→右端下降→下端左移動）
+    // 1タイル幅のはしごでは right/left フェーズをスキップして縦往復になる
+    _ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine) {
+        const spd = this.moveSpeed;
+        this.vx = 0; this.vy = 0;
+
+        switch (this.ladderClingPhase) {
+            case 'up': {    // 左端を上昇
+                this.x = wMinX;
+                this.vy = -spd;
+                this.facingRight = false;
+                const hitTop = this.y + this.vy <= wMinY ||
+                    engine.getCollision(Math.floor(this.x + this.width / 2), Math.floor(this.y - spd)) === 1;
+                if (hitTop) {
+                    this.y = Math.max(wMinY, this.y); this.vy = 0;
+                    this.ladderClingPhase = wMaxX > wMinX ? 'right' : 'down';
+                }
+                break;
+            }
+            case 'right': { // 上端を右移動
+                this.y = wMinY;
+                this.vx = spd;
+                this.facingRight = true;
+                const hitRight = this.x + this.vx >= wMaxX ||
+                    engine.getCollision(Math.floor(this.x + this.width + spd), Math.floor(this.y + this.height / 2)) === 1;
+                if (hitRight) {
+                    this.x = Math.min(wMaxX, this.x); this.vx = 0;
+                    this.ladderClingPhase = 'down';
+                }
+                break;
+            }
+            case 'down': {  // 右端を下降
+                this.x = wMaxX;
+                this.vy = spd;
+                this.facingRight = true;
+                const hitBot = this.y + this.vy >= wMaxY ||
+                    engine.getCollision(Math.floor(this.x + this.width / 2), Math.floor(this.y + this.height + spd)) === 1;
+                if (hitBot) {
+                    this.y = Math.min(wMaxY, this.y); this.vy = 0;
+                    this.ladderClingPhase = wMaxX > wMinX ? 'left' : 'up';
+                }
+                break;
+            }
+            case 'left': {  // 下端を左移動
+                this.y = wMaxY;
+                this.vx = -spd;
+                this.facingRight = false;
+                const hitLeft = this.x + this.vx <= wMinX ||
+                    engine.getCollision(Math.floor(this.x - spd), Math.floor(this.y + this.height / 2)) === 1;
+                if (hitLeft) {
+                    this.x = Math.max(wMinX, this.x); this.vx = 0;
+                    this.ladderClingPhase = 'up';
+                }
+                break;
+            }
+        }
     }
 
     // ジグザグ: ピンボール型（はしご境界・固体ブロックで反射する直線移動）
