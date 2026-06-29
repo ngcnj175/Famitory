@@ -642,8 +642,8 @@ class Enemy {
                 this._ladderPatrolH(engine);
                 break;
             case 'zigzag':
-                // ジグザグ: 縦方向サイン波
-                this._ladderZigzag();
+                // ジグザグ: ピンボール型反射移動
+                this._ladderZigzag(wMinX, wMaxX, wMinY, wMaxY, engine);
                 break;
             case 'jumpPatrol':
                 // うろぴょん: 左右移動 + 定期的に縦ダイブ
@@ -698,11 +698,45 @@ class Enemy {
         this.vy = this.ladderDir * this.moveSpeed;
     }
 
-    // ジグザグ: 縦方向サイン波（水平移動なし）
-    _ladderZigzag() {
-        this.zigzagTime++;
-        this.vx = 0;
-        this.vy = Math.sin(this.zigzagTime * 0.05) * this.moveSpeed * 1.5;
+    // ジグザグ: ピンボール型（はしご境界・固体ブロックで反射する直線移動）
+    _ladderZigzag(wMinX, wMaxX, wMinY, wMaxY, engine) {
+        const spd = this.moveSpeed * 1.5;
+
+        // 初回のみ速度を初期化（斜め45度で発射）
+        if (this._ladderBvx === undefined) {
+            this._ladderBvx =  spd * Math.SQRT1_2;
+            this._ladderBvy = -spd * Math.SQRT1_2;
+        }
+
+        // X方向: はしご境界を超えるなら反射、次タイルが固体ブロックでも反射
+        const nextX = this.x + this._ladderBvx;
+        if (nextX < wMinX || nextX > wMaxX) {
+            this._ladderBvx = -this._ladderBvx;
+        } else {
+            const cx = this._ladderBvx > 0
+                ? Math.floor(nextX + this.width - 0.01)
+                : Math.floor(nextX);
+            if (engine.getCollision(cx, Math.floor(this.y + this.height / 2)) === 1) {
+                this._ladderBvx = -this._ladderBvx;
+            }
+        }
+
+        // Y方向: はしご境界を超えるなら反射、次タイルが固体ブロックでも反射
+        const nextY = this.y + this._ladderBvy;
+        if (nextY < wMinY || nextY > wMaxY) {
+            this._ladderBvy = -this._ladderBvy;
+        } else {
+            const cy = this._ladderBvy > 0
+                ? Math.floor(nextY + this.height)
+                : Math.floor(nextY);
+            if (engine.getCollision(Math.floor(this.x + this.width / 2), cy) === 1) {
+                this._ladderBvy = -this._ladderBvy;
+            }
+        }
+
+        this.vx = this._ladderBvx;
+        this.vy = this._ladderBvy;
+        this.facingRight = this.vx >= 0;
     }
 
     // うろぴょん: 左右移動 + 定期的に縦ダイブして元の高さへ戻る
