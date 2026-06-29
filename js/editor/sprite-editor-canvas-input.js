@@ -250,17 +250,13 @@ const SpriteCanvasInput = {
         }, { passive: false });
 
         document.addEventListener('touchend', () => {
-            // タイマーをクリア
             if (this.touchStartTimer) {
                 clearTimeout(this.touchStartTimer);
                 this.touchStartTimer = null;
             }
             this.pendingTouch = null;
             this.isPanning = false;
-            this.editor.guideAdjustData = null; // おてほん調整データをリセット
-            this.onPointerUp();
-            this.editor.guideAdjustData = null; // おてほん調整データをリセット
-            this.stopAutoScroll();
+            this.editor.guideAdjustData = null;
             this.onPointerUp();
         });
     },
@@ -632,10 +628,7 @@ const SpriteCanvasInput = {
                 this.floodFill(x, y, sprite.data[y][x], this.editor.selectedColor);
                 break;
             case 'eyedropper':
-                const pickedColor = sprite.data[y][x];
-                if (pickedColor >= 0) {
-                    SpriteEditorPalette.selectColor(pickedColor);
-                }
+                this._pickColorAt({ x, y });
                 break;
         }
 

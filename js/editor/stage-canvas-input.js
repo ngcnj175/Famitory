@@ -1002,46 +1002,8 @@ class StageCanvasInput {
                 break;
 
             case 'eyedropper':
-                // 譛蜑埼擇・医お繝ｳ繝・ぅ繝・ぅ・峨ｒ蜆ｪ蜈亥叙蠕・
-                let foundEntity = null;
-                for (const e of stage.entities) {
-                    const tmpl = getTemplate(e.templateId);
-                    const size = getTemplateSize(e.templateId);
-                    const w = (size === 2) ? 2 : 1;
-                    const h = (size === 2) ? 2 : 1;
-                    if (x >= e.x && x < e.x + w && y >= e.y && y < e.y + h) {
-                        foundEntity = e;
-                        break; // 譛蛻昴↓隕九▽縺九▲縺溘ｂ縺ｮ繧呈治逕ｨ
-                    }
-                }
-
-                if (foundEntity) {
-                    o.selectedTemplate = foundEntity.templateId;
-                    o.initTemplateList();
-                    // 繝・・繝ｫ繧偵・繝ｳ縺ｫ謌ｻ縺・
+                if (this._pickTileAt(x, y)) {
                     o.currentTool = 'pen';
-                    // 繝・・繝ｫ繝舌・縺ｮ隕九◆逶ｮ譖ｴ譁ｰ縺ｯ逵∫払・亥・謠冗判縺ｧ蜿肴丐縺輔ｌ繧九°隕∫｢ｺ隱搾ｼ・
-                } else {
-                    // マップタイルから取得: fg 優先、なければ bg
-                    let tileId = stage.layers.fg[y]?.[x] ?? -1;
-                    if (tileId < 0) tileId = stage.layers.bg?.[y]?.[x] ?? -1;
-                    if (tileId >= 100) {
-                        const templateIdx = tileId - 100;
-                        if (templateIdx >= 0 && templateIdx < o.templates.length) {
-                            o.selectedTemplate = templateIdx;
-                            o.initTemplateList();
-                            o.currentTool = 'pen';
-                        }
-                    } else if (tileId >= 0) {
-                        const idx = o.templates.findIndex(t =>
-                            (t.sprites?.idle?.frames?.[0] === tileId) || (t.sprites?.main?.frames?.[0] === tileId)
-                        );
-                        if (idx >= 0) {
-                            o.selectedTemplate = idx;
-                            o.initTemplateList();
-                            o.currentTool = 'pen';
-                        }
-                    }
                 }
                 break;
         }
@@ -1049,12 +1011,12 @@ class StageCanvasInput {
         o.render();
     }
 
-    // ペンツール長押しスポイト：指定タイルのテンプレートを取得して現在選択に反映
+    // スポイト共通処理：指定タイルのテンプレートを取得して現在選択に反映。取得成功時 true を返す
     _pickTileAt(x, y) {
         const o = this.owner;
         const stage = App.projectData.stage;
-        if (!stage) return;
-        if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) return;
+        if (!stage) return false;
+        if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) return false;
 
         // エンティティを優先取得
         for (const ent of (stage.entities || [])) {
@@ -1064,7 +1026,7 @@ class StageCanvasInput {
             if (x >= ent.x && x < ent.x + w && y >= ent.y && y < ent.y + h) {
                 o.selectedTemplate = ent.templateId;
                 o.initTemplateList();
-                return;
+                return true;
             }
         }
 
@@ -1076,6 +1038,7 @@ class StageCanvasInput {
             if (templateIdx >= 0 && templateIdx < o.templates.length) {
                 o.selectedTemplate = templateIdx;
                 o.initTemplateList();
+                return true;
             }
         } else if (tileId >= 0) {
             const idx = o.templates.findIndex(t =>
@@ -1084,8 +1047,10 @@ class StageCanvasInput {
             if (idx >= 0) {
                 o.selectedTemplate = idx;
                 o.initTemplateList();
+                return true;
             }
         }
+        return false;
     }
 
     floodFill(startX, startY, targetValue, newValue, layerName) {
