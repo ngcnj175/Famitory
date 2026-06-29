@@ -91,6 +91,8 @@ class Enemy {
         this._ladderInitDone = false;
         this.ladderDir       = 1;    // 縦往復方向: 1=下, -1=上
         this.ladderClingPhase = 'up'; // はりつきフェーズ
+        this._clingXLock = null;     // 縦移動時のx固定値（左端/右端を障害物反転で維持）
+        this._clingYLock = null;     // 横移動時のy固定値
     }
 
     update(engine) {
@@ -699,57 +701,97 @@ class Enemy {
     }
 
     // はりつき: はしご矩形の縁内側を周回（左端上昇→上端右移動→右端下降→下端左移動）
-    // 1タイル幅のはしごでは right/left フェーズをスキップして縦往復になる
+    // 1タイル幅のはしごでは right/left フェーズをスキップして縦往復
+    // _clingXLock: 縦移動フェーズで固定するx（障害物反転時も保持して瞬間移動を防ぐ）
+    // _clingYLock: 横移動フェーズで固定するy（同上）
     _ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine) {
         const spd = this.moveSpeed;
         this.vx = 0; this.vy = 0;
+        if (this._clingXLock === null) this._clingXLock = wMinX;
+        if (this._clingYLock === null) this._clingYLock = wMinY;
 
         switch (this.ladderClingPhase) {
-            case 'up': {    // 左端を上昇
-                this.x = wMinX;
-                this.vy = -spd;
+            case 'up': {   // _clingXLock 列を上昇
+                this.x = this._clingXLock;
                 this.facingRight = false;
-                const hitTop = this.y + this.vy <= wMinY ||
-                    engine.getCollision(Math.floor(this.x + this.width / 2), Math.floor(this.y - spd)) === 1;
-                if (hitTop) {
-                    this.y = Math.max(wMinY, this.y); this.vy = 0;
-                    this.ladderClingPhase = wMaxX > wMinX ? 'right' : 'down';
-                }
-                break;
-            }
-            case 'right': { // 上端を右移動
-                this.y = wMinY;
-                this.vx = spd;
-                this.facingRight = true;
-                const hitRight = this.x + this.vx >= wMaxX ||
-                    engine.getCollision(Math.floor(this.x + this.width + spd), Math.floor(this.y + this.height / 2)) === 1;
-                if (hitRight) {
-                    this.x = Math.min(wMaxX, this.x); this.vx = 0;
+                const col = Math.floor(this.x + this.width / 2);
+                if (this.y - spd <= wMinY) {
+                    // 上端到達 → 右移動コーナーへ（or 1列幅なら折り返し）
+                    this.y = wMinY;
+                    if (wMaxX > wMinX) {
+                        this._clingYLock = wMinY;
+                        this.ladderClingPhase = 'right';
+                    } else {
+                        this.ladderClingPhase = 'down';
+                    }
+                } else if (engine.getCollision(col, Math.floor(this.y - spd)) === 1) {
+                    // 障害物 → 同じ列のまま折り返し（_clingXLock を変えない）
                     this.ladderClingPhase = 'down';
+                } else {
+                    this.vy = -spd;
                 }
                 break;
             }
-            case 'down': {  // 右端を下降
-                this.x = wMaxX;
-                this.vy = spd;
+            case 'right': { // _clingYLock 行を右移動
+                this.y = this._clingYLock;
                 this.facingRight = true;
-                const hitBot = this.y + this.vy >= wMaxY ||
-                    engine.getCollision(Math.floor(this.x + this.width / 2), Math.floor(this.y + this.height + spd)) === 1;
-                if (hitBot) {
-                    this.y = Math.min(wMaxY, this.y); this.vy = 0;
-                    this.ladderClingPhase = wMaxX > wMinX ? 'left' : 'up';
+                const nextRX = Math.floor(this.x + this.width + spd);
+                const midRY  = Math.floor(this.y + this.height / 2);
+                const aheadIsLadderR = engine.ladderTiles
+                    ? engine.ladderTiles.has(`${Math.floor(this.x + spd + this.width / 2)},${Math.round(this._clingYLock)}`)
+                    : true;
+                if (this.x + spd >= wMaxX || !aheadIsLadderR) {
+                    // 右端到達 or はしごなし → 右端から下降コーナーへ
+                    this.x = Math.min(wMaxX, this.x);
+                    this._clingXLock = wMaxX;
+                    this.ladderClingPhase = 'down';
+                } else if (engine.getCollision(nextRX, midRY) === 1) {
+                    // 障害物 → 同じ行のまま折り返し（_clingYLock を変えない）
+                    this.ladderClingPhase = 'left';
+                } else {
+                    this.vx = spd;
                 }
                 break;
             }
-            case 'left': {  // 下端を左移動
-                this.y = wMaxY;
-                this.vx = -spd;
-                this.facingRight = false;
-                const hitLeft = this.x + this.vx <= wMinX ||
-                    engine.getCollision(Math.floor(this.x - spd), Math.floor(this.y + this.height / 2)) === 1;
-                if (hitLeft) {
-                    this.x = Math.max(wMinX, this.x); this.vx = 0;
+            case 'down': {  // _clingXLock 列を下降
+                this.x = this._clingXLock;
+                this.facingRight = this._clingXLock > wMinX;
+                const col2 = Math.floor(this.x + this.width / 2);
+                if (this.y + spd >= wMaxY) {
+                    // 下端到達 → 左移動コーナーへ（右端から来た場合）or 折り返し（左端から来た場合）
+                    this.y = wMaxY;
+                    if (wMaxX > wMinX && this._clingXLock > wMinX) {
+                        this._clingYLock = wMaxY;
+                        this.ladderClingPhase = 'left';
+                    } else {
+                        this.ladderClingPhase = 'up';
+                    }
+                } else if (engine.getCollision(col2, Math.floor(this.y + this.height + spd)) === 1) {
+                    // 障害物 → 同じ列のまま折り返し
                     this.ladderClingPhase = 'up';
+                } else {
+                    this.vy = spd;
+                }
+                break;
+            }
+            case 'left': {  // _clingYLock 行を左移動
+                this.y = this._clingYLock;
+                this.facingRight = false;
+                const nextLX = Math.floor(this.x - spd);
+                const midLY  = Math.floor(this.y + this.height / 2);
+                const aheadIsLadderL = engine.ladderTiles
+                    ? engine.ladderTiles.has(`${Math.floor(this.x - spd + this.width / 2)},${Math.round(this._clingYLock)}`)
+                    : true;
+                if (this.x - spd <= wMinX || !aheadIsLadderL) {
+                    // 左端到達 or はしごなし → 左端から上昇コーナーへ
+                    this.x = Math.max(wMinX, this.x);
+                    this._clingXLock = wMinX;
+                    this.ladderClingPhase = 'up';
+                } else if (engine.getCollision(nextLX, midLY) === 1) {
+                    // 障害物 → 同じ行のまま折り返し
+                    this.ladderClingPhase = 'right';
+                } else {
+                    this.vx = -spd;
                 }
                 break;
             }
