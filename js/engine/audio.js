@@ -54,11 +54,8 @@ const NesAudio = {
         });
 
         // ユーザータッチで確実に復旧（iOSはユーザー操作が必要な場合がある）
-        const touchResume = () => {
-            resume();
-        };
-        document.addEventListener('touchstart', touchResume, { passive: true, capture: true });
-        document.addEventListener('pointerdown', touchResume, { passive: true, capture: true });
+        document.addEventListener('touchstart', resume, { passive: true, capture: true });
+        document.addEventListener('pointerdown', resume, { passive: true, capture: true });
     },
 
     ensureContext() {
@@ -161,12 +158,7 @@ const NesAudio = {
 
         osc.frequency.value = freq;
 
-        // Base volume unified to 0.2
-        if (tone !== 2) {
-            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        } else {
-            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        }
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
 
         osc.connect(gain);
@@ -360,15 +352,9 @@ const NesAudio = {
 
             osc.frequency.value = note.freq;
 
-            let startTime, duration;
-            if (note.startTime !== undefined) {
-                startTime = this.ctx.currentTime + note.startTime;
-                duration = note.duration;
-            } else {
-                startTime = currentTime;
-                duration = note.duration;
-                currentTime += duration + (note.spacing || 0);
-            }
+            const startTime = currentTime;
+            const duration = note.duration;
+            currentTime += duration + (note.spacing || 0);
 
             const step = duration / 4;
             gainNode.gain.setValueAtTime(gain, startTime);
@@ -385,20 +371,11 @@ const NesAudio = {
     },
 
     /**
-     * ノイズ型SE（パンチ、電撃、爆発）
+     * ノイズ型SE（打撃・爆発等）
      */
     playNoiseSE(config) {
         this.ensureContext();
-        const {
-            duration = 0.1,
-            filterType = null,
-            filterFreq = 300,
-            filterQ = 0.5,
-            sweepFilter = false,
-            filterStartFreq = null,
-            filterEndFreq = null,
-            startGain = 0.2
-        } = config;
+        const { duration = 0.1, startGain = 0.2 } = config;
 
         const bufferSize = this.ctx.sampleRate * duration;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -419,25 +396,7 @@ const NesAudio = {
         gainNode.gain.setValueAtTime(startGain * 0.25, t + step * 2);
         gainNode.gain.setValueAtTime(0.001, t + step * 3);
 
-        let lastNode = source;
-
-        if (filterType) {
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = filterType;
-
-            if (sweepFilter && filterStartFreq && filterEndFreq) {
-                filter.frequency.setValueAtTime(filterStartFreq, t);
-                filter.frequency.exponentialRampToValueAtTime(filterEndFreq, t + duration);
-            } else {
-                filter.frequency.value = filterFreq;
-            }
-
-            filter.Q.value = filterQ;
-            lastNode.connect(filter);
-            lastNode = filter;
-        }
-
-        lastNode.connect(gainNode);
+        source.connect(gainNode);
         gainNode.connect(this.masterGain);
 
         source.start();
