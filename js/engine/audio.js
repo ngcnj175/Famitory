@@ -266,6 +266,7 @@ const NesAudio = {
             endFreq,
             duration = 0.1,
             waveType = 'square',
+            duty = null,
             startGain = 0.2,
             envelopeType = 'exponential',
             numSegments = null
@@ -274,11 +275,25 @@ const NesAudio = {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        osc.type = waveType;
+        if (duty && waveType === 'square') {
+            const cacheKey = `pulse_${duty}`;
+            if (!this.waveCache[cacheKey]) {
+                const n = 4096;
+                const real = new Float32Array(n);
+                const imag = new Float32Array(n);
+                for (let i = 1; i < n; i++) {
+                    imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
+                }
+                this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
+            }
+            osc.setPeriodicWave(this.waveCache[cacheKey]);
+        } else {
+            osc.type = waveType;
+        }
+
         osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
 
         if (numSegments) {
-            // 複数段階スイープ (jump_04 型：150→800→400)
             let currentTime = this.ctx.currentTime;
             numSegments.forEach(segment => {
                 if (envelopeType === 'exponential') {
@@ -289,7 +304,6 @@ const NesAudio = {
                 currentTime += segment.time;
             });
         } else {
-            // 単純スイープ
             if (envelopeType === 'exponential') {
                 osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
             } else {
@@ -297,8 +311,12 @@ const NesAudio = {
             }
         }
 
-        gain.gain.setValueAtTime(startGain, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        const t = this.ctx.currentTime;
+        const step = duration / 4;
+        gain.gain.setValueAtTime(startGain, t);
+        gain.gain.setValueAtTime(startGain * 0.6, t + step);
+        gain.gain.setValueAtTime(startGain * 0.25, t + step * 2);
+        gain.gain.setValueAtTime(0.001, t + step * 3);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
@@ -314,6 +332,7 @@ const NesAudio = {
         const {
             notes,
             waveType = 'square',
+            duty = null,
             gain = 0.2
         } = config;
 
@@ -323,23 +342,39 @@ const NesAudio = {
             const osc = this.ctx.createOscillator();
             const gainNode = this.ctx.createGain();
 
-            osc.type = waveType;
+            if (duty && waveType === 'square') {
+                const cacheKey = `pulse_${duty}`;
+                if (!this.waveCache[cacheKey]) {
+                    const n = 4096;
+                    const real = new Float32Array(n);
+                    const imag = new Float32Array(n);
+                    for (let i = 1; i < n; i++) {
+                        imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
+                    }
+                    this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
+                }
+                osc.setPeriodicWave(this.waveCache[cacheKey]);
+            } else {
+                osc.type = waveType;
+            }
+
             osc.frequency.value = note.freq;
 
             let startTime, duration;
             if (note.startTime !== undefined) {
-                // 絶対時間指定
                 startTime = this.ctx.currentTime + note.startTime;
                 duration = note.duration;
             } else {
-                // 相対時間指定
                 startTime = currentTime;
                 duration = note.duration;
                 currentTime += duration + (note.spacing || 0);
             }
 
+            const step = duration / 4;
             gainNode.gain.setValueAtTime(gain, startTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            gainNode.gain.setValueAtTime(gain * 0.6, startTime + step);
+            gainNode.gain.setValueAtTime(gain * 0.25, startTime + step * 2);
+            gainNode.gain.setValueAtTime(0.001, startTime + step * 3);
 
             osc.connect(gainNode);
             gainNode.connect(this.masterGain);
@@ -356,7 +391,7 @@ const NesAudio = {
         this.ensureContext();
         const {
             duration = 0.1,
-            filterType = 'lowpass',
+            filterType = null,
             filterFreq = 300,
             filterQ = 0.5,
             sweepFilter = false,
@@ -369,7 +404,6 @@ const NesAudio = {
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
 
-        // ノイズ生成
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
@@ -378,8 +412,12 @@ const NesAudio = {
         source.buffer = buffer;
 
         const gainNode = this.ctx.createGain();
-        gainNode.gain.setValueAtTime(startGain, this.ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        const t = this.ctx.currentTime;
+        const step = duration / 4;
+        gainNode.gain.setValueAtTime(startGain, t);
+        gainNode.gain.setValueAtTime(startGain * 0.6, t + step);
+        gainNode.gain.setValueAtTime(startGain * 0.25, t + step * 2);
+        gainNode.gain.setValueAtTime(0.001, t + step * 3);
 
         let lastNode = source;
 
@@ -388,8 +426,8 @@ const NesAudio = {
             filter.type = filterType;
 
             if (sweepFilter && filterStartFreq && filterEndFreq) {
-                filter.frequency.setValueAtTime(filterStartFreq, this.ctx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(filterEndFreq, this.ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(filterStartFreq, t);
+                filter.frequency.exponentialRampToValueAtTime(filterEndFreq, t + duration);
             } else {
                 filter.frequency.value = filterFreq;
             }
@@ -406,40 +444,40 @@ const NesAudio = {
         source.stop(this.ctx.currentTime + duration);
     },
 
-    // ========== ジャンプ系（簡略化版） ==========
-    playSE_jump_01() { this.playFreqSweep({ startFreq: 200, endFreq: 600, duration: 0.15, waveType: 'square' }); },
-    playSE_jump_02() { this.playFreqSweep({ startFreq: 300, endFreq: 900, duration: 0.12, waveType: 'square' }); },
-    playSE_jump_03() { this.playFreqSweep({ startFreq: 250, endFreq: 500, duration: 0.2, waveType: 'triangle', startGain: 0.25 }); },
-    playSE_jump_04() { this.playFreqSweep({ startFreq: 150, duration: 0.12, waveType: 'square', numSegments: [{ freq: 800, time: 0.05 }, { freq: 400, time: 0.07 }] }); },
+    // ========== ジャンプ系 ==========
+    playSE_jump_01() { this.playFreqSweep({ startFreq: 200, endFreq: 600, duration: 0.1, waveType: 'square' }); },
+    playSE_jump_02() { this.playFreqSweep({ startFreq: 300, endFreq: 900, duration: 0.08, waveType: 'square' }); },
+    playSE_jump_03() { this.playFreqSweep({ startFreq: 250, endFreq: 500, duration: 0.1, waveType: 'square', duty: 0.25 }); },
+    playSE_jump_04() { this.playFreqSweep({ startFreq: 150, duration: 0.1, waveType: 'square', numSegments: [{ freq: 800, time: 0.04 }, { freq: 400, time: 0.06 }] }); },
     playSE_jump_05() { this.playFreqSweep({ startFreq: 400, endFreq: 1000, duration: 0.1, waveType: 'square', startGain: 0.15 }); },
 
-    // ========== 攻撃系（簡略化版） ==========
-    playSE_attack_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.1, waveType: 'sawtooth' }); },
-    playSE_attack_02() { this.playFreqSweep({ startFreq: 800, endFreq: 200, duration: 0.1, waveType: 'sawtooth', startGain: 0.15 }); },
-    playSE_attack_03() { this.playNoiseSE({ duration: 0.08, filterType: 'lowpass', filterFreq: 300, startGain: 0.3 }); },
-    playSE_attack_04() { this.playFreqSweep({ startFreq: 600, endFreq: 150, duration: 0.08, waveType: 'square' }); },
-    playSE_attack_05() { this.playFreqSweep({ startFreq: 1200, endFreq: 400, duration: 0.18, waveType: 'sawtooth', startGain: 0.15 }); },
+    // ========== 攻撃系 ==========
+    playSE_attack_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.06, waveType: 'square', duty: 0.25 }); },
+    playSE_attack_02() { this.playFreqSweep({ startFreq: 800, endFreq: 200, duration: 0.06, waveType: 'square', duty: 0.125 }); },
+    playSE_attack_03() { this.playNoiseSE({ duration: 0.05, startGain: 0.3 }); },
+    playSE_attack_04() { this.playFreqSweep({ startFreq: 600, endFreq: 150, duration: 0.06, waveType: 'square' }); },
+    playSE_attack_05() { this.playFreqSweep({ startFreq: 1200, endFreq: 400, duration: 0.08, waveType: 'square', duty: 0.25 }); },
 
-    // ========== ダメージ系（簡略化版） ==========
-    playSE_damage_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.3, waveType: 'square' }); },
-    playSE_damage_02() { this.playFreqSweep({ startFreq: 300, endFreq: 80, duration: 0.15, waveType: 'square' }); },
-    playSE_damage_03() { this.playFreqSweep({ startFreq: 200, endFreq: 50, duration: 0.4, waveType: 'sawtooth', startGain: 0.25 }); },
-    playSE_damage_04() { this.playNoiseSE({ duration: 0.2, filterType: 'none', startGain: 0.2 }); },
-    playSE_damage_05() { this.playFreqSweep({ startFreq: 500, endFreq: 60, duration: 0.5, waveType: 'triangle' }); },
+    // ========== ダメージ系 ==========
+    playSE_damage_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.15, waveType: 'square' }); },
+    playSE_damage_02() { this.playFreqSweep({ startFreq: 300, endFreq: 80, duration: 0.1, waveType: 'square' }); },
+    playSE_damage_03() { this.playFreqSweep({ startFreq: 200, endFreq: 50, duration: 0.15, waveType: 'square' }); },
+    playSE_damage_04() { this.playNoiseSE({ duration: 0.1, startGain: 0.2 }); },
+    playSE_damage_05() { this.playFreqSweep({ startFreq: 500, endFreq: 60, duration: 0.12, waveType: 'square', duty: 0.25 }); },
 
-    // ========== アイテムゲット系（簡略化版） ==========
-    playSE_itemGet_01() { this.playMultiNote({ waveType: 'triangle', notes: [{ freq: 523, startTime: 0, duration: 0.1 }, { freq: 659, startTime: 0.08, duration: 0.1 }, { freq: 784, startTime: 0.16, duration: 0.15 }] }); },
-    playSE_itemGet_02() { this.playFreqSweep({ startFreq: 988, endFreq: 1319, duration: 0.15, waveType: 'square', startGain: 0.15 }); },
-    playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 262, duration: 0.1 }, { freq: 330, duration: 0.1 }, { freq: 392, duration: 0.1 }, { freq: 523, duration: 0.2 }] }); },
-    playSE_itemGet_04() { this.playMultiNote({ waveType: 'triangle', notes: [{ freq: 330, duration: 0.15 }, { freq: 392, duration: 0.15 }, { freq: 523, duration: 0.15 }, { freq: 659, duration: 0.2 }] }); },
-    playSE_itemGet_05() { this.playFreqSweep({ startFreq: 440, endFreq: 660, duration: 0.2, waveType: 'sine' }); },
+    // ========== アイテムゲット系 ==========
+    playSE_itemGet_01() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 523, duration: 0.05 }, { freq: 784, duration: 0.07 }] }); },
+    playSE_itemGet_02() { this.playFreqSweep({ startFreq: 988, endFreq: 1319, duration: 0.08, waveType: 'square', startGain: 0.15 }); },
+    playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 392, duration: 0.05 }, { freq: 523, duration: 0.07 }] }); },
+    playSE_itemGet_04() { this.playMultiNote({ waveType: 'square', duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
+    playSE_itemGet_05() { this.playFreqSweep({ startFreq: 440, endFreq: 660, duration: 0.08, waveType: 'square' }); },
 
-    // ========== その他系（簡略化版） ==========
-    playSE_other_01() { this.playFreqSweep({ startFreq: 440, endFreq: 880, duration: 0.1, waveType: 'square', startGain: 0.15 }); },
-    playSE_other_02() { this.playFreqSweep({ startFreq: 440, endFreq: 220, duration: 0.1, waveType: 'square', startGain: 0.15 }); },
+    // ========== その他系 ==========
+    playSE_other_01() { this.playFreqSweep({ startFreq: 440, endFreq: 880, duration: 0.05, waveType: 'square', startGain: 0.15 }); },
+    playSE_other_02() { this.playFreqSweep({ startFreq: 440, endFreq: 220, duration: 0.05, waveType: 'square', startGain: 0.15 }); },
     playSE_other_03() { this.playFreqSweep({ startFreq: 660, endFreq: 660, duration: 0.03, waveType: 'square', startGain: 0.1 }); },
-    playSE_other_04() { this.playFreqSweep({ startFreq: 330, endFreq: 330, duration: 0.15, waveType: 'triangle' }); },
-    playSE_other_05() { this.playNoiseSE({ duration: 0.3, filterType: 'lowpass', sweepFilter: true, filterStartFreq: 400, filterEndFreq: 50, startGain: 0.4 }); },
+    playSE_other_04() { this.playFreqSweep({ startFreq: 330, endFreq: 330, duration: 0.05, waveType: 'square' }); },
+    playSE_other_05() { this.playNoiseSE({ duration: 0.15, startGain: 0.4 }); },
 
     // 旧SE互換用エイリアス
     playSE_jump() { this.playSE_jump_01(); },
@@ -447,25 +485,28 @@ const NesAudio = {
     playSE_damage() { this.playSE_damage_01(); },
     playSE_itemGet() { this.playSE_itemGet_01(); },
 
-    // SE: 爆発音「ドドゥーン！」- 派手なファミコン風
+    // SE: 爆発音 - FC風
     playSE_explosion() {
         this.ensureContext();
         const t = this.ctx.currentTime;
-        const dur = 0.45;
-        // メイン: ダメージ音風の重い周波数スイープ（ドドゥーン）
+        const dur = 0.3;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
+        osc.type = 'square';
         osc.frequency.setValueAtTime(350, t);
         osc.frequency.exponentialRampToValueAtTime(45, t + dur);
+        const step = dur / 4;
         gain.gain.setValueAtTime(0.28, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
+        gain.gain.setValueAtTime(0.17, t + step);
+        gain.gain.setValueAtTime(0.07, t + step * 2);
+        gain.gain.setValueAtTime(0.001, t + step * 3);
         osc.connect(gain);
         gain.connect(this.masterGain);
         osc.start(t);
         osc.stop(t + dur);
-        // アタック: 短いノイズで「ド！」のパンチを追加
-        const noiseSize = Math.floor(this.ctx.sampleRate * 0.06);
+        // アタック: 短いノイズ（フィルタなし）
+        const noiseDur = 0.04;
+        const noiseSize = Math.floor(this.ctx.sampleRate * noiseDur);
         const noiseBuf = this.ctx.createBuffer(1, noiseSize, this.ctx.sampleRate);
         const noiseData = noiseBuf.getChannelData(0);
         for (let i = 0; i < noiseSize; i++) {
@@ -473,17 +514,14 @@ const NesAudio = {
         }
         const noiseSrc = this.ctx.createBufferSource();
         noiseSrc.buffer = noiseBuf;
-        const noiseFilter = this.ctx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.value = 600;
         const noiseGain = this.ctx.createGain();
         noiseGain.gain.setValueAtTime(0.2, t);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.06);
-        noiseSrc.connect(noiseFilter);
-        noiseFilter.connect(noiseGain);
+        noiseGain.gain.setValueAtTime(0.05, t + 0.02);
+        noiseGain.gain.setValueAtTime(0.001, t + noiseDur);
+        noiseSrc.connect(noiseGain);
         noiseGain.connect(this.masterGain);
         noiseSrc.start(t);
-        noiseSrc.stop(t + 0.06);
+        noiseSrc.stop(t + noiseDur);
     },
 
     // SE: 敵を倒す（短い「ポン」音）- v2.0.1オリジナル
