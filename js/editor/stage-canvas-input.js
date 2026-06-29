@@ -18,6 +18,7 @@ class StageCanvasInput {
         o.canvasEventsInitialized = true;
 
         let isDrawing = false;
+        let longPressTimer = null;
 
         // 2本指パン用の状態
         o.canvasScrollX = 0;
@@ -155,12 +156,27 @@ class StageCanvasInput {
             }
 
             // 縺昴・莉悶・繝峨Ο繝ｼ繧､繝ｳ繧ｰ繝・・繝ｫ
+            const undoLenBeforeSave = o.undoHistory.length;
             if (o.currentTool === 'pen' || o.currentTool === 'eraser' || o.currentTool === 'fill') {
                 o.saveToHistory();
             }
 
             isDrawing = true;
             o.processPixel(e);
+
+            // ペンツール長押しスポイト（500ms無移動でスポイト発動）
+            if (o.currentTool === 'pen') {
+                const historySaved = o.undoHistory.length > undoLenBeforeSave;
+                const px = x, py = y;
+                longPressTimer = setTimeout(() => {
+                    longPressTimer = null;
+                    if (!hasMoved && isDrawing) {
+                        if (historySaved) o.undo();
+                        isDrawing = false;
+                        self._pickTileAt(px, py);
+                    }
+                }, 500);
+            }
         };
 
         const checkAutoScroll = (e) => {
@@ -224,6 +240,11 @@ class StageCanvasInput {
             }
 
             if (!isDrawing) return;
+            // 長押しスポイトタイマーをキャンセル（移動検出時）
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
             hasMoved = true;
             o.lastPointerEvent = e;
             checkAutoScroll(e);
@@ -270,6 +291,10 @@ class StageCanvasInput {
         };
 
         const handleEnd = () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
             o.stopAutoScroll();
             o.lastPointerEvent = null;
 
@@ -315,6 +340,10 @@ class StageCanvasInput {
         // mouseleave 専用ハンドラ：選択ツールの場合は選択をキャンセルしない
         // （ユーザーが消しゴムボタン等に移動した際に選択が消えるバグを防ぐ）
         const handleLeave = () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
             o.stopAutoScroll();
             o.lastPointerEvent = null;
 
@@ -1018,6 +1047,45 @@ class StageCanvasInput {
         }
 
         o.render();
+    }
+
+    // ペンツール長押しスポイト：指定タイルのテンプレートを取得して現在選択に反映
+    _pickTileAt(x, y) {
+        const o = this.owner;
+        const stage = App.projectData.stage;
+        if (!stage) return;
+        if (x < 0 || x >= stage.width || y < 0 || y >= stage.height) return;
+
+        // エンティティを優先取得
+        for (const ent of (stage.entities || [])) {
+            const size = o.getTemplateSize(ent.templateId);
+            const w = (size === 2) ? 2 : 1;
+            const h = (size === 2) ? 2 : 1;
+            if (x >= ent.x && x < ent.x + w && y >= ent.y && y < ent.y + h) {
+                o.selectedTemplate = ent.templateId;
+                o.initTemplateList();
+                return;
+            }
+        }
+
+        // マップタイルから取得: fg 優先、なければ bg
+        let tileId = stage.layers.fg[y]?.[x] ?? -1;
+        if (tileId < 0) tileId = stage.layers.bg?.[y]?.[x] ?? -1;
+        if (tileId >= 100) {
+            const templateIdx = tileId - 100;
+            if (templateIdx >= 0 && templateIdx < o.templates.length) {
+                o.selectedTemplate = templateIdx;
+                o.initTemplateList();
+            }
+        } else if (tileId >= 0) {
+            const idx = o.templates.findIndex(t =>
+                (t.sprites?.idle?.frames?.[0] === tileId) || (t.sprites?.main?.frames?.[0] === tileId)
+            );
+            if (idx >= 0) {
+                o.selectedTemplate = idx;
+                o.initTemplateList();
+            }
+        }
     }
 
     floodFill(startX, startY, targetValue, newValue, layerName) {
