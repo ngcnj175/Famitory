@@ -134,10 +134,10 @@ class Enemy {
             this.damageFlashTimer--;
         }
 
-        // はしご上配置を初回フレームで検出
+        // はしご上配置を初回フレームで検出（空中チェックON時はスキップ）
         if (!this._ladderInitDone) {
             this._ladderInitDone = true;
-            this._initLadderBounds(engine);
+            if (!this.isAerial) this._initLadderBounds(engine);
         }
 
         // 空中か地上かで分岐（はしご上配置は専用モード）
@@ -623,12 +623,13 @@ class Enemy {
         this.ladderBounds  = { minX, maxX, minY, maxY };
     }
 
+    // はしご上移動の共通処理: 行動に応じた vx/vy 計算 → 移動 → 範囲クランプ
     updateLadder(engine) {
         const { minX, maxX, minY, maxY } = this.ladderBounds;
         const wMinY = minY;
         const wMaxY = maxY + 1 - this.height;
         const wMinX = minX;
-        const wMaxX = maxX + 1 - this.width;
+        const wMaxX = Math.max(wMinX, maxX + 1 - this.width);
 
         this.vx = 0; this.vy = 0;
         this.onLadder = true; this.onGround = false;
@@ -636,57 +637,90 @@ class Enemy {
         switch (this.behavior) {
             case 'idle':
                 break;
-            case 'clinging':
-                this._ladderClingUpdate(wMinX, wMaxX, wMinY, wMaxY);
+            case 'patrol':
+                // うろうろ: 空中と同じ左右往復（壁判定あり）
+                this.patrol(engine);
+                this.vy = 0;
+                break;
+            case 'zigzag':
+                // ジグザグ: 縦方向サイン波
+                this._ladderZigzag();
+                break;
+            case 'jumpPatrol':
+                // うろぴょん: 左右移動 + 定期的に縦ダイブ
+                this._ladderJumpPatrol(engine, wMinY, wMaxY);
                 break;
             case 'chase':
-                this._ladderChase(engine, wMinY, wMaxY);
+                // 追いかける: 空中と同じ2D追跡（はしご範囲内にクランプ）
+                this.aerialChaseWithReturn(engine);
+                break;
+            case 'rush':
+                // とっしん: 空中と同じ突進
+                this.rushAerial(engine);
+                break;
+            case 'clinging':
+                // はりつき: 上端・下端で折り返す縦往復
+                this._ladderPatrolV(wMinY, wMaxY);
                 break;
             default:
                 this._ladderPatrolV(wMinY, wMaxY);
         }
 
         this.x += this.vx; this.y += this.vy;
-        if (wMaxX > wMinX) this.x = Math.max(wMinX, Math.min(wMaxX, this.x));
+        // はしご範囲内にクランプ（壁や当たり判定より優先）
+        this.x = Math.max(wMinX, Math.min(wMaxX, this.x));
         this.y = Math.max(wMinY, Math.min(wMaxY, this.y));
     }
 
+    // はりつき・デフォルト: 縦往復（上端・下端で折り返し）
     _ladderPatrolV(minY, maxY) {
         if (this.y <= minY)      this.ladderDir = 1;
         else if (this.y >= maxY) this.ladderDir = -1;
         this.vy = this.ladderDir * this.moveSpeed;
     }
 
-    _ladderChase(engine, minY, maxY) {
-        if (!engine.player) { this._ladderPatrolV(minY, maxY); return; }
-        const dy   = engine.player.y - this.y;
-        const dist = Math.abs(dy) + Math.abs(engine.player.x - this.x);
-        if (dist < this.detectionRange) {
-            this.vy = Math.abs(dy) > 0.2 ? (dy > 0 ? this.moveSpeed : -this.moveSpeed) : 0;
-        } else {
-            this._ladderPatrolV(minY, maxY);
-        }
+    // ジグザグ: 縦方向サイン波（水平移動なし）
+    _ladderZigzag() {
+        this.zigzagTime++;
+        this.vx = 0;
+        this.vy = Math.sin(this.zigzagTime * 0.05) * this.moveSpeed * 1.5;
     }
 
-    _ladderClingUpdate(minX, maxX, minY, maxY) {
-        const spd = this.moveSpeed;
-        switch (this.ladderClingPhase) {
-            case 'up':
-                this.x = minX; this.vy = -spd; this.facingRight = false;
-                if (this.y <= minY) { this.y = minY; this.ladderClingPhase = maxX > minX ? 'right' : 'down'; }
-                break;
-            case 'right':
-                this.y = minY; this.vx = spd; this.facingRight = true;
-                if (this.x >= maxX) { this.x = maxX; this.ladderClingPhase = 'down'; }
-                break;
-            case 'down':
-                this.x = maxX; this.vy = spd; this.facingRight = true;
-                if (this.y >= maxY) { this.y = maxY; this.ladderClingPhase = maxX > minX ? 'left' : 'up'; }
-                break;
-            case 'left':
-                this.y = maxY; this.vx = -spd; this.facingRight = false;
-                if (this.x <= minX) { this.x = minX; this.ladderClingPhase = 'up'; }
-                break;
+    // うろぴょん: 左右移動 + 定期的に縦ダイブして元の高さへ戻る
+    _ladderJumpPatrol(engine, minY, maxY) {
+        const normalSpeed = this.moveSpeed;
+        const diveSpeed   = this.moveSpeed * 4;
+
+        if (!this.isDiving && !this.isReturning) {
+            // 左右移動（4タイル範囲・壁判定あり）
+            const distX = this.x - this.originX;
+            if (this.facingRight && distX >= 4)       this.facingRight = false;
+            else if (!this.facingRight && distX <= -4) this.facingRight = true;
+            const checkX = this.facingRight ? Math.floor(this.x + this.width + 0.1) : Math.floor(this.x - 0.1);
+            if (this.checkTileCollision(engine, checkX, Math.floor(this.y + this.height / 2)) === 1) {
+                this.facingRight = !this.facingRight;
+            }
+            this.vx = this.facingRight ? normalSpeed : -normalSpeed;
+            this.vy = 0;
+            this.diveTimer++;
+            if (this.diveTimer >= 120) { this.isDiving = true; this.diveTimer = 0; }
+        } else if (this.isDiving) {
+            // 下方向へ高速移動（4タイルまたははしご下端で折り返し）
+            this.vx = 0;
+            if (this.y - this.originY < 4 && this.y < maxY) {
+                this.vy = diveSpeed;
+            } else {
+                this.isDiving = false; this.isReturning = true;
+            }
+        } else {
+            // 元の高さへ戻る
+            this.vx = 0;
+            const dy = this.originY - this.y;
+            if (Math.abs(dy) > 0.2) {
+                this.vy = dy > 0 ? normalSpeed : -normalSpeed;
+            } else {
+                this.y = this.originY; this.vy = 0; this.isReturning = false;
+            }
         }
     }
 
