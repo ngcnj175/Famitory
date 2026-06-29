@@ -89,8 +89,12 @@ class Enemy {
         this.isLadderEnemy  = false;
         this.ladderBounds   = null;
         this._ladderInitDone = false;
-        this.ladderDir       = 1;    // 縦往復方向: 1=下, -1=上
+        this.ladderDir        = 1;    // 縦往復方向: 1=下, -1=上
         this.ladderClingPhase = 'up'; // はりつきフェーズ
+        this._clingTX = null;         // はりつき: 目標タイルX
+        this._clingTY = null;         // はりつき: 目標タイルY
+        this._ladderBvx = null;       // ジグザグ: X速度
+        this._ladderBvy = null;       // ジグザグ: Y速度
     }
 
     update(engine) {
@@ -659,7 +663,7 @@ class Enemy {
                 break;
             case 'clinging':
                 // はりつき: はしご縁内側を周回
-                this._ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine);
+                this._ladderCling(engine);
                 break;
             default:
                 this._ladderPatrolV(wMinY, wMaxY);
@@ -699,11 +703,11 @@ class Enemy {
     }
 
     // はりつき: タイル中心到着ごとに左手法則で次の方向を決定（左→前→右→後ろ）
-    _ladderCling(wMinX, wMaxX, wMinY, wMaxY, engine) {
+    _ladderCling(engine) {
         const spd = this.moveSpeed;
         this.vx = 0; this.vy = 0;
 
-        if (this._clingTX === undefined) {
+        if (this._clingTX === null) {
             this._clingTX = Math.floor(this.x + this.width / 2);
             this._clingTY = Math.floor(this.y + this.height / 2);
         }
@@ -751,7 +755,7 @@ class Enemy {
         const spd = this.moveSpeed * 1.5;
 
         // 初回のみ速度を初期化（斜め45度で発射）
-        if (this._ladderBvx === undefined) {
+        if (this._ladderBvx === null) {
             this._ladderBvx =  spd * Math.SQRT1_2;
             this._ladderBvy = -spd * Math.SQRT1_2;
         }
