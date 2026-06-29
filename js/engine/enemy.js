@@ -638,9 +638,8 @@ class Enemy {
             case 'idle':
                 break;
             case 'patrol':
-                // うろうろ: 空中と同じ左右往復（壁判定あり）
-                this.patrol(engine);
-                this.vy = 0;
+                // うろうろ: はしごタイルを境界として左右往復
+                this._ladderPatrolH(engine);
                 break;
             case 'zigzag':
                 // ジグザグ: 縦方向サイン波
@@ -670,6 +669,26 @@ class Enemy {
         // はしご範囲内にクランプ（壁や当たり判定より優先）
         this.x = Math.max(wMinX, Math.min(wMaxX, this.x));
         this.y = Math.max(wMinY, Math.min(wMaxY, this.y));
+    }
+
+    // うろうろ: 進行先タイルがはしごでない場合に反転する左右往復
+    _ladderPatrolH(engine) {
+        const maxRange = 8;
+        const distFromOrigin = this.x - this.originX;
+        if (this.facingRight && distFromOrigin >= maxRange)       this.facingRight = false;
+        else if (!this.facingRight && distFromOrigin <= -maxRange) this.facingRight = true;
+
+        // 進行先タイルを確認: はしごでない or 通常の壁なら反転
+        const checkX = this.facingRight
+            ? Math.floor(this.x + this.width + 0.1)
+            : Math.floor(this.x - 0.1);
+        const midY = Math.floor(this.y + this.height / 2);
+        const aheadIsLadder = engine.ladderTiles ? engine.ladderTiles.has(`${checkX},${midY}`) : false;
+        const aheadIsWall   = engine.getCollision(checkX, midY) === 1;
+        if (!aheadIsLadder || aheadIsWall) this.facingRight = !this.facingRight;
+
+        this.vx = this.facingRight ? this.moveSpeed : -this.moveSpeed;
+        this.vy = 0;
     }
 
     // はりつき・デフォルト: 縦往復（上端・下端で折り返し）
