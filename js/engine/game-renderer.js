@@ -9,10 +9,12 @@ class GameRenderer {
     constructor(owner) {
         this.owner = owner; // GameEngine reference
         this._spriteCache = new Map();
+        this._whiteSpriteCache = new Map();
     }
 
     clearSpriteCache() {
         this._spriteCache.clear();
+        this._whiteSpriteCache.clear();
     }
 
     _getCachedSpriteCanvas(sprite, palette) {
@@ -31,6 +33,22 @@ class GameRenderer {
             }
         }
         this._spriteCache.set(sprite, oc);
+        return oc;
+    }
+
+    _getCachedWhiteSpriteCanvas(sprite) {
+        if (this._whiteSpriteCache.has(sprite)) return this._whiteSpriteCache.get(sprite);
+        const dim = sprite.size === 2 ? 32 : 16;
+        const data = sprite.data;
+        const oc = new OffscreenCanvas(dim, dim);
+        const ctx = oc.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        for (let py = 0; py < dim; py++) {
+            for (let px = 0; px < dim; px++) {
+                if ((data[py]?.[px] ?? -1) >= 0) ctx.fillRect(px, py, 1, 1);
+            }
+        }
+        this._whiteSpriteCache.set(sprite, oc);
         return oc;
     }
 
@@ -240,6 +258,12 @@ class GameRenderer {
                         const screenX = screenXBase + (x - startX) * this.owner.TILE_SIZE;
                         const screenY = screenYBase + (y - startY) * this.owner.TILE_SIZE;
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
+                        const flashT = this.owner.damagingTiles.get(`${x},${y}`);
+                        if (flashT > 0 && flashT % 2 === 0) {
+                            const woc = this._getCachedWhiteSpriteCanvas(sprites[spriteIdx]);
+                            const displaySize = sprites[spriteIdx].size === 2 ? this.owner.TILE_SIZE * 2 : this.owner.TILE_SIZE;
+                            this.owner.ctx.drawImage(woc, screenX, screenY, displaySize, displaySize);
+                        }
                     }
                 }
             }
@@ -290,6 +314,12 @@ class GameRenderer {
                         const screenX = screenXBase + (x - startX) * this.owner.TILE_SIZE;
                         const screenY = screenYBase + (y - startY) * this.owner.TILE_SIZE;
                         this.renderSprite(sprites[spriteIdx], screenX, screenY, App.nesPalette);
+                        const flashT = this.owner.damagingTiles.get(`${x},${y}`);
+                        if (flashT > 0 && flashT % 2 === 0) {
+                            const woc = this._getCachedWhiteSpriteCanvas(sprites[spriteIdx]);
+                            const displaySize = sprites[spriteIdx].size === 2 ? this.owner.TILE_SIZE * 2 : this.owner.TILE_SIZE;
+                            this.owner.ctx.drawImage(woc, screenX, screenY, displaySize, displaySize);
+                        }
                     }
                 }
             }

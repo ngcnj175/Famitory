@@ -401,6 +401,7 @@ const GameEngine = {
         this.particles = []; // パーティクルシステム
         this.breakableTiles = new Map(); // 耐久度管理 (key: "x,y", value: life)
         this.destroyedTiles = new Set(); // 破壊されたタイルの一時管理 (key: "x,y")
+        this.damagingTiles  = new Map(); // ダメージ点滅タイマー (key: "x,y", value: timer)
 
         // スコア初期化
         this.score = 0;
@@ -945,6 +946,12 @@ const GameEngine = {
 
         // パーティクル更新
         this.renderer.updateParticles();
+
+        // ダメージ点滅タイマー更新
+        for (const [key, t] of this.damagingTiles) {
+            if (t <= 1) this.damagingTiles.delete(key);
+            else this.damagingTiles.set(key, t - 1);
+        }
 
         // アイテム更新（衝突判定含む）
         this.updateItems();

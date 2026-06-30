@@ -255,6 +255,7 @@ class GamePhysics {
 
         currentLife--;
         this.owner.breakableTiles.set(key, currentLife);
+        this.owner.damagingTiles.set(key, 10); // ダメージ点滅（10フレーム）
 
         if (currentLife <= 0) this.destroyTile(tileX, tileY, tileId);
     }
