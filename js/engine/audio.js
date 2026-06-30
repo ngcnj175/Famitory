@@ -429,7 +429,34 @@ const NesAudio = {
     playSE_itemGet_02() { this.playFreqSweep({ startFreq: 988, endFreq: 1319, duration: 0.08, waveType: 'square', startGain: 0.15 }); },
     playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 392, duration: 0.05 }, { freq: 523, duration: 0.07 }] }); },
     playSE_itemGet_04() { this.playMultiNote({ waveType: 'square', duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
-    playSE_itemGet_05() { this.playFreqSweep({ startFreq: 440, endFreq: 660, duration: 0.08, waveType: 'square' }); },
+    playSE_itemGet_05() {
+        this.ensureContext();
+        const t = this.ctx.currentTime;
+        const duty = 0.25;
+        const cacheKey = `pulse_${duty}`;
+        if (!this.waveCache[cacheKey]) {
+            const n = 4096;
+            const real = new Float32Array(n);
+            const imag = new Float32Array(n);
+            for (let i = 1; i < n; i++) {
+                imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
+            }
+            this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
+        }
+        // 880 Hz (A5) → 1320 Hz (E6, 完全5度上), 計67ms
+        [[880, t, 0.030], [1320, t + 0.032, 0.035]].forEach(([freq, start, dur]) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.setPeriodicWave(this.waveCache[cacheKey]);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.2, start);
+            gain.gain.setValueAtTime(0, start + dur);
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            osc.start(start);
+            osc.stop(start + dur + 0.001);
+        });
+    },
 
     // ========== その他系 ==========
     playSE_other_01() { this.playFreqSweep({ startFreq: 440, endFreq: 880, duration: 0.05, waveType: 'square', startGain: 0.15 }); },
