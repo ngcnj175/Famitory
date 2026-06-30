@@ -428,7 +428,7 @@ const NesAudio = {
     playSE_itemGet_01() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 523, duration: 0.05 }, { freq: 784, duration: 0.07 }] }); },
     playSE_itemGet_02() { this.playFreqSweep({ startFreq: 988, endFreq: 1319, duration: 0.08, waveType: 'square', startGain: 0.15 }); },
     playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 392, duration: 0.05 }, { freq: 523, duration: 0.07 }] }); },
-    playSE_itemGet_04() { this.playMultiNote({ waveType: 'square', duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
+    playSE_itemGet_04() { this.playMultiNote({ waveType: 'square', duty: 0.25, gain: 0.5, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
     playSE_itemGet_05() {
         this.ensureContext();
         const t = this.ctx.currentTime;
@@ -449,7 +449,7 @@ const NesAudio = {
             const gain = this.ctx.createGain();
             osc.setPeriodicWave(this.waveCache[cacheKey]);
             osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.2, start);
+            gain.gain.setValueAtTime(0.5, start);
             gain.gain.setValueAtTime(0, start + dur);
             osc.connect(gain);
             gain.connect(this.masterGain);
