@@ -79,33 +79,6 @@ class PhysicsHandler {
 
             // 床衝突（下向き移動）
             if (entity.vy >= 0 && engine.getCollision(tx, bottom) === 1) {
-                // スプリング判定
-                const posKey = `${tx},${bottom}`;
-                if (engine.springTiles && engine.springTiles.has(posKey)) {
-                    const springData = engine.springTiles.get(posKey);
-                    // power: 1~5 -> vy: -0.5 ~ -0.9
-                    entity.vy = -0.4 - (springData.power * 0.1);
-                    entity.y = bottom - entity.height;
-                    entity.onGround = false;
-
-                    // プレイヤー用: ジャンプ能力リセット
-                    if (callbacks.onJumpReset) {
-                        callbacks.onJumpReset();
-                    }
-
-                    // SE再生・スプリングアニメーション
-                    if (typeof engine.activateSpring === 'function') {
-                        engine.activateSpring(tx, bottom);
-                    }
-
-                    // ノックバック終了（プレイヤーのみ）
-                    if (callbacks.onKnockbackEnd) {
-                        callbacks.onKnockbackEnd();
-                    }
-
-                    break; // スプリング処理したので終了
-                }
-
                 // 通常の床
                 entity.y = bottom - entity.height;
                 entity.vy = 0;
@@ -137,6 +110,29 @@ class PhysicsHandler {
                 if (entityRight > blockLeft && entityLeft < blockRight &&
                     entityBottom >= blockTop && entityBottom < blockTop + 1.0 &&
                     entity.vy >= 0) {
+
+                    // スプリング：耐久値を持たず、上面に乗った時のみ反応してジャンプさせる片面判定ブロック
+                    if (block.gimmick === 'spring') {
+                        const power = block.template?.config?.springPower ?? 3;
+                        entity.vy = -0.4 - (power * 0.1);
+                        entity.y = blockTop - entity.height;
+                        entity.onGround = false;
+
+                        if (callbacks.onJumpReset) {
+                            callbacks.onJumpReset();
+                        }
+
+                        if (typeof engine.activateSpring === 'function') {
+                            engine.activateSpring(Math.floor(block.x), Math.floor(block.y));
+                        }
+
+                        if (callbacks.onKnockbackEnd) {
+                            callbacks.onKnockbackEnd();
+                        }
+
+                        break;
+                    }
+
                     entity.y = blockTop - entity.height;
                     entity.vy = 0;
                     entity.onGround = true;

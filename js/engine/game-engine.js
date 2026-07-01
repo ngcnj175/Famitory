@@ -561,23 +561,6 @@ const GameEngine = {
             }
         }
 
-        // スプリングタイル初期化
-        this.springTiles = new Map();
-        if (stage && stage.layers && stage.layers.fg) {
-            for (let y = 0; y < stage.height; y++) {
-                for (let x = 0; x < stage.width; x++) {
-                    const tileId = stage.layers.fg[y][x];
-                    if (tileId >= 0) {
-                        const { template: tmpl } = getTemplateFromTileId(tileId);
-                        if (tmpl && tmpl.type === 'material' && tmpl.config?.gimmick === 'spring') {
-                            const power = tmpl.config.springPower ?? 3;
-                            this.springTiles.set(`${x},${y}`, { power: power });
-                        }
-                    }
-                }
-            }
-        }
-
         // 巣穴タイル初期化
         this.spawnerTiles = new Map();
         if (stage && stage.layers && stage.layers.fg) {
@@ -612,7 +595,7 @@ const GameEngine = {
             this.allEnemiesSpawned = false;
         }
 
-        // ギミックブロック初期化（はしご、とびら、スプリングは除外）
+        // ギミックブロック初期化（はしご、とびら、巣穴は除外。スプリングは片面判定ブロックとして含む）
         this.gimmickBlocks = [];
         if (stage && stage.layers && stage.layers.fg) {
             for (let y = 0; y < stage.height; y++) {
@@ -620,7 +603,7 @@ const GameEngine = {
                     const tileId = stage.layers.fg[y][x];
                     if (tileId >= 0) {
                         const { template, templateIdx } = getTemplateFromTileId(tileId);
-                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door' && template.config.gimmick !== 'spring' && template.config.gimmick !== 'spawner') {
+                        if (template && template.type === 'material' && template.config?.gimmick && template.config.gimmick !== 'none' && template.config.gimmick !== 'ladder' && template.config.gimmick !== 'door' && template.config.gimmick !== 'spawner') {
                             this.gimmickBlocks.push({
                                 tileX: x,
                                 tileY: y,
