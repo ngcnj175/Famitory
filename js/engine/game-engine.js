@@ -1024,6 +1024,9 @@ const GameEngine = {
                 // イースターエッグウィンドウが表示中は収集しない
                 if (this.easterMessageActive) return;
 
+                // ブロックに遮られている間は取得不可（露出するまで待つ）
+                if (this.physics.isItemOccluded(item)) return;
+
                 if (this.physics.projectileHits(item, this.player)) {
                     item.collected = true;
 
@@ -1359,6 +1362,7 @@ const GameEngine = {
     isOnLadder(x, y, width, height)           { return this.physics.isOnLadder(x, y, width, height); },
     isAtLadderTop(x, y, width, height)        { return this.physics.isAtLadderTop(x, y, width, height); },
     damageTile(tileX, tileY)                  { return this.physics.damageTile(tileX, tileY); },
+    isItemOccluded(item)                      { return this.physics.isItemOccluded(item); },
 
     checkClearCondition() {
         if (this.isCleared) return;

@@ -141,17 +141,8 @@ class GameRenderer {
         this.owner.items.forEach(item => {
             if (item.collected) return;
 
-            // ブロックで隠れているかチェック
-            const itemTileX = Math.floor(item.x);
-            const itemTileY = Math.floor(item.y);
-            let isHidden = false;
-
-            if (stage.layers.bg) {
-                // 壁（衝突判定あり）がある場合のみ隠す
-                if (this.owner.getCollision(itemTileX, itemTileY) === 1) {
-                    isHidden = true;
-                }
-            }
+            // ブロックで隠れているかチェック（取得可否と同じ遮蔽物判定を共有）
+            const isHidden = !!stage.layers.bg && this.owner.isItemOccluded(item);
 
             if (!isHidden) {
                 this.renderProjectileOrItem(item);

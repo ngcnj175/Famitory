@@ -59,6 +59,14 @@ class GamePhysics {
         return 0;
     }
 
+    // アイテムがブロック（衝突判定あり）に遮られているか判定
+    // 表示（隠す）・取得可否の両方で共有する遮蔽物判定
+    isItemOccluded(item) {
+        const tileX = Math.floor(item.x);
+        const tileY = Math.floor(item.y);
+        return this.getCollision(tileX, tileY) === 1;
+    }
+
     // はしごタイル上にいるか判定
     isOnLadder(x, y, width, height) {
         if (!this.owner.ladderTiles || this.owner.ladderTiles.size === 0) return false;
