@@ -16,18 +16,26 @@ class GamePhysics {
         return TileFootprint.resolveOrigin(stage.layers.fg, tileX, tileY);
     }
 
+    // 実タイルIDからテンプレートを取得（新形式:テンプレートID / 旧形式:スプライトID）
+    getTemplateFromTileId(tileId) {
+        const templates = App.projectData.templates || [];
+        if (tileId >= 100) return templates[tileId - 100];
+        return templates.find(t => {
+            const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
+            return idx === tileId;
+        });
+    }
+
     // 実タイルIDから占有サイズ（1辺のマス数）を取得
     getTileFootprintSize(tileId) {
-        const templates = App.projectData.templates || [];
         if (tileId < 100) return 1; // 旧形式（スプライトIDベース）は常に1マス
-        const template = templates[tileId - 100];
+        const template = this.getTemplateFromTileId(tileId);
         const idleSpriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
         return App.projectData?.sprites?.[idleSpriteIdx]?.size === 2 ? 2 : 1;
     }
 
     getCollision(x, y) {
         const stage = this.owner.stageData || App.projectData.stage;
-        const templates = App.projectData.templates || [];
         const tileX = Math.floor(x);
         const tileY = Math.floor(y);
 
@@ -43,16 +51,7 @@ class GamePhysics {
 
         if (tileId === undefined || tileId < 0) return 0;
 
-        let template;
-        if (tileId >= 100) {
-            template = templates[tileId - 100];
-        } else {
-            template = templates.find(t => {
-                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
-                return idx === tileId;
-            });
-        }
-
+        const template = this.getTemplateFromTileId(tileId);
         if (!template) return 0;
         if (template.type === 'material' && template.config?.gimmick === 'ladder') return 0;
         if (template.type === 'material' && template.config?.gimmick === 'door') return 1;
@@ -244,8 +243,7 @@ class GamePhysics {
 
     // タイルにダメージを与える（プレイヤー頭突き等から呼ばれる）
     damageTile(tileX, tileY) {
-        const stage     = App.projectData.stage;
-        const templates = App.projectData.templates || [];
+        const stage = App.projectData.stage;
 
         if (tileX < 0 || tileX >= stage.width || tileY < 0 || tileY >= stage.height) return;
 
@@ -254,15 +252,7 @@ class GamePhysics {
         tileX = originX;
         tileY = originY;
 
-        let template;
-        if (tileId >= 100) {
-            template = templates[tileId - 100];
-        } else {
-            template = templates.find(t => {
-                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
-                return idx === tileId;
-            });
-        }
+        const template = this.getTemplateFromTileId(tileId);
         if (!template) return;
 
         const maxLife = template.config?.life;

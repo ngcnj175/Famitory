@@ -868,6 +868,8 @@ class StageCanvasInput {
 
         // スプライトサイズ取得
         const getTemplateSize = (templateIdx) => o.getTemplateSize(templateIdx);
+        // タイルIDから占有サイズ（1辺のマス数）を取得
+        const getFootprintSize = (tileId) => (tileId >= 100 ? getTemplateSize(tileId - 100) : 1);
 
         switch (o.currentTool) {
             case 'pen':
@@ -901,7 +903,6 @@ class StageCanvasInput {
                         // collision:false → bg、それ以外 → fg に自動振り分け
                         const targetLayer = stage.layers[o._getTargetLayer(o.selectedTemplate)];
                         const tileValue = o.selectedTemplate + 100;
-                        const getFootprintSize = (tid) => (tid >= 100 ? getTemplateSize(tid - 100) : 1);
 
                         if (spriteSize > 1) {
                             // 1タイル単位でクリックしたマスを左上原点として配置（マップ端では収まる位置へ寄せる）
@@ -946,7 +947,6 @@ class StageCanvasInput {
                 if (entityDeleted) break;
 
                 // マップタイル削除: fg 優先、なければ bg
-                const getFootprintSize = (tid) => (tid >= 100 ? getTemplateSize(tid - 100) : 1);
                 const eraseTile = (lyr, tx, ty) => {
                     const tile = lyr[ty]?.[tx];
                     if (tile === undefined || tile === -1) return false;
