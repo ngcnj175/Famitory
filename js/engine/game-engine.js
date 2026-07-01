@@ -428,6 +428,9 @@ const GameEngine = {
         // 重複防止用のSet（座標をキーとして使用）
         const processedItemPositions = new Set();
 
+        // アイテムのスプライトサイズから当たり判定サイズを算出（32x32→2.0, 16x16→1.0）
+        const getItemSize = (spriteIdx) => (App.projectData?.sprites?.[spriteIdx]?.size === 2 ? 2 : 1);
+
         // 0. 変身アイテム（変身プレイヤーentity）を追加
         const processedTransformPositions = new Set();
         transformItemPositions.forEach(pos => {
@@ -438,11 +441,12 @@ const GameEngine = {
             const spriteIdx = pos.template.sprites?.transformItem?.frames?.[0]
                 ?? pos.template.sprites?.idle?.frames?.[0]
                 ?? pos.template.sprites?.main?.frames?.[0];
+            const itemSize = getItemSize(spriteIdx);
             this.items.push({
                 x: pos.x,
                 y: pos.y,
-                width: 1,
-                height: 1,
+                width: itemSize,
+                height: itemSize,
                 template: pos.template,
                 templateIdx: pos.templateIdx,
                 spriteIdx: spriteIdx,
@@ -464,11 +468,12 @@ const GameEngine = {
                     const posKey = `${Math.floor(ent.x)},${Math.floor(ent.y)}`;
                     processedItemPositions.add(posKey);
 
+                    const itemSize = getItemSize(spriteIdx);
                     this.items.push({
                         x: ent.x,
                         y: ent.y,
-                        width: 1,
-                        height: 1,
+                        width: itemSize,
+                        height: itemSize,
                         template: template,
                         templateIdx: ent.templateId,
                         spriteIdx: spriteIdx,
@@ -499,11 +504,12 @@ const GameEngine = {
                         if (template && template.type === 'item') {
                             const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
                             const itemType = template.config?.itemType || 'coin';
+                            const itemSize = getItemSize(spriteIdx);
                             this.items.push({
                                 x: x,
                                 y: y,
-                                width: 1,
-                                height: 1,
+                                width: itemSize,
+                                height: itemSize,
                                 template: template,
                                 templateIdx: templateIdx,
                                 spriteIdx: spriteIdx,

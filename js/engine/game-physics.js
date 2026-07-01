@@ -10,21 +10,35 @@ class GamePhysics {
 
     // ========== タイル衝突クエリ ==========
 
+    // 32x32スプライトの2x2占有マーカー（-1000-offset）を左上の実タイルセルに解決
+    resolveTileOrigin(tileX, tileY) {
+        const stage = this.owner.stageData || App.projectData.stage;
+        const rawId = stage.layers.fg?.[tileY]?.[tileX];
+        if (rawId === undefined || rawId > -1000) {
+            return { tileId: rawId, originX: tileX, originY: tileY };
+        }
+        const offset = -(rawId + 1000);
+        const originX = tileX - (offset % 2);
+        const originY = tileY - Math.floor(offset / 2);
+        return { tileId: stage.layers.fg?.[originY]?.[originX], originX, originY };
+    }
+
     getCollision(x, y) {
         const stage = this.owner.stageData || App.projectData.stage;
         const templates = App.projectData.templates || [];
         const tileX = Math.floor(x);
         const tileY = Math.floor(y);
 
-        if (this.owner.destroyedTiles && this.owner.destroyedTiles.has(`${tileX},${tileY}`)) {
-            return 0;
-        }
-
         if (tileX < 0 || tileX >= stage.width) return 1; // 左右は壁
         if (tileY < 0) return 1;                          // 上は壁
         if (tileY >= stage.height) return 0;              // 下は落下可能
 
-        const tileId = stage.layers.fg?.[tileY]?.[tileX];
+        const { tileId, originX, originY } = this.resolveTileOrigin(tileX, tileY);
+
+        if (this.owner.destroyedTiles && this.owner.destroyedTiles.has(`${originX},${originY}`)) {
+            return 0;
+        }
+
         if (tileId === undefined || tileId < 0) return 0;
 
         let template;
@@ -207,10 +221,11 @@ class GamePhysics {
 
         const spawnX = enemy.deathX !== undefined ? enemy.deathX : enemy.x;
         const spawnY = enemy.deathY !== undefined ? enemy.deathY : enemy.y;
+        const itemSize = App.projectData?.sprites?.[spriteIdx]?.size === 2 ? 2 : 1;
 
         this.owner.items.push({
             x: spawnX, y: spawnY,
-            width: 1, height: 1,
+            width: itemSize, height: itemSize,
             template: itemTemplate,
             templateIdx,
             spriteIdx,
@@ -232,8 +247,10 @@ class GamePhysics {
 
         if (tileX < 0 || tileX >= stage.width || tileY < 0 || tileY >= stage.height) return;
 
-        const tileId = stage.layers.fg?.[tileY]?.[tileX];
+        const { tileId, originX, originY } = this.resolveTileOrigin(tileX, tileY);
         if (tileId === undefined || tileId < 0) return;
+        tileX = originX;
+        tileY = originY;
 
         let template;
         if (tileId >= 100) {
@@ -261,9 +278,32 @@ class GamePhysics {
     }
 
     destroyTile(tileX, tileY, tileId) {
-        const key = `${tileX},${tileY}`;
-        this.owner.destroyedTiles.add(key);
-        this.owner.breakableTiles.delete(key);
+        const stage     = App.projectData.stage;
+        const templates = App.projectData.templates || [];
+
+        let template;
+        if (tileId >= 100) {
+            template = templates[tileId - 100];
+        } else {
+            template = templates.find(t => {
+                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
+                return idx === tileId;
+            });
+        }
+        const idleSpriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+        const spriteSize = App.projectData?.sprites?.[idleSpriteIdx]?.size || 1;
+
+        // 32x32ブロックは2x2セル全てを破壊済みにする
+        const w = spriteSize === 2 ? 2 : 1;
+        const h = spriteSize === 2 ? 2 : 1;
+        for (let dy = 0; dy < h; dy++) {
+            for (let dx = 0; dx < w; dx++) {
+                const tx = tileX + dx, ty = tileY + dy;
+                if (tx < 0 || tx >= stage.width || ty < 0 || ty >= stage.height) continue;
+                this.owner.destroyedTiles.add(`${tx},${ty}`);
+                this.owner.breakableTiles.delete(`${tx},${ty}`);
+            }
+        }
 
         this.createTileParticles(tileX, tileY, tileId);
 
