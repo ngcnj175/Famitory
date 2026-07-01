@@ -1803,17 +1803,7 @@ const StageEditor = {
             else ny = (h - item.size) - item.y;
 
             if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                newTiles[ny][nx] = item.id;
-                if (item.size === 2) {
-                    for (let dy = 0; dy < 2; dy++) {
-                        for (let dx = 0; dx < 2; dx++) {
-                            if (dx === 0 && dy === 0) continue;
-                            if (ny + dy < h && nx + dx < w) {
-                                newTiles[ny + dy][nx + dx] = -1000 - (dy * 2 + dx);
-                            }
-                        }
-                    }
-                }
+                TileFootprint.place(newTiles, nx, ny, item.size, item.id, w, h);
             }
         });
         data.tiles = newTiles;

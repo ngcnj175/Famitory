@@ -901,25 +901,19 @@ class StageCanvasInput {
                         // collision:false → bg、それ以外 → fg に自動振り分け
                         const targetLayer = stage.layers[o._getTargetLayer(o.selectedTemplate)];
                         const tileValue = o.selectedTemplate + 100;
+                        const getFootprintSize = (tid) => (tid >= 100 ? getTemplateSize(tid - 100) : 1);
 
-                        if (spriteSize === 2) {
-                            // 32x32繧ｹ繝励Λ繧､繝・
-                            const snapX = Math.floor(x / 2) * 2;
-                            const snapY = Math.floor(y / 2) * 2;
+                        if (spriteSize > 1) {
+                            // 1タイル単位でクリックしたマスを左上原点として配置（マップ端では収まる位置へ寄せる）
+                            const originX = Math.max(0, Math.min(x, stage.width - spriteSize));
+                            const originY = Math.max(0, Math.min(y, stage.height - spriteSize));
 
-                            for (let dy = 0; dy < 2; dy++) {
-                                for (let dx = 0; dx < 2; dx++) {
-                                    const tx = snapX + dx;
-                                    const ty = snapY + dy;
-                                    if (tx >= 0 && tx < stage.width && ty >= 0 && ty < stage.height) {
-                                        if (dx === 0 && dy === 0) {
-                                            targetLayer[ty][tx] = tileValue;
-                                        } else {
-                                            targetLayer[ty][tx] = -1000 - (dy * 2 + dx);
-                                        }
-                                    }
-                                }
-                            }
+                            // 配置先と重複する既存タイルは、同一レイヤー内であれば占有マス全体を削除してから配置
+                            TileFootprint.forEachCell(originX, originY, spriteSize, stage.width, stage.height, (tx, ty) => {
+                                TileFootprint.clearFootprint(targetLayer, tx, ty, stage.width, stage.height, getFootprintSize);
+                            });
+
+                            TileFootprint.place(targetLayer, originX, originY, spriteSize, tileValue, stage.width, stage.height);
                         } else {
                             // 16x16繧ｹ繝励Λ繧､繝・
                             targetLayer[y][x] = tileValue;
@@ -952,36 +946,11 @@ class StageCanvasInput {
                 if (entityDeleted) break;
 
                 // マップタイル削除: fg 優先、なければ bg
+                const getFootprintSize = (tid) => (tid >= 100 ? getTemplateSize(tid - 100) : 1);
                 const eraseTile = (lyr, tx, ty) => {
                     const tile = lyr[ty]?.[tx];
                     if (tile === undefined || tile === -1) return false;
-                    if (tile <= -1000) {
-                        const offset = -(tile + 1000);
-                        const odx = offset % 2;
-                        const ody = Math.floor(offset / 2);
-                        const ox = tx - odx, oy = ty - ody;
-                        for (let iy = 0; iy < 2; iy++)
-                            for (let ix = 0; ix < 2; ix++) {
-                                const ttx = ox + ix, tty = oy + iy;
-                                if (ttx >= 0 && ttx < stage.width && tty >= 0 && tty < stage.height) lyr[tty][ttx] = -1;
-                            }
-                        return true;
-                    } else if (tile >= 100) {
-                        const spriteSize = getTemplateSize(tile - 100);
-                        if (spriteSize === 2) {
-                            for (let iy = 0; iy < 2; iy++)
-                                for (let ix = 0; ix < 2; ix++) {
-                                    const ttx = tx + ix, tty = ty + iy;
-                                    if (ttx >= 0 && ttx < stage.width && tty >= 0 && tty < stage.height) lyr[tty][ttx] = -1;
-                                }
-                        } else {
-                            lyr[ty][tx] = -1;
-                        }
-                        return true;
-                    } else {
-                        lyr[ty][tx] = -1;
-                        return true;
-                    }
+                    return TileFootprint.clearFootprint(lyr, tx, ty, stage.width, stage.height, getFootprintSize);
                 };
                 if (!eraseTile(stage.layers.fg, x, y)) eraseTile(stage.layers.bg, x, y);
                 break;

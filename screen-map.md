@@ -66,6 +66,7 @@
 | └─ 衝突判定ハンドラ (New) | `js/engine/physics-handler.js` | Player/Enemy 水平・垂直衝突判定の共有化（コールバック機構） |
 | └─ オーディオエンジン | `js/engine/audio.js` | SE生成（3ジェネレータ：周波数スイープ・マルチノート・ノイズ） |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
+| 共通ユーティリティ (New) | `js/engine/tile-footprint.js` | 複数マス占有タイル（32x32等）の配置・消去・当たり判定原点解決（StageCanvasInput / StageEditor / GamePhysics 共有） |
 | スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | 初期化・Undo/Redo・ギャラリー・描画コア (954行) |
 | └─ カラーパレット (New) | `js/editor/sprite-editor-palette.js` | パレット表示・色編集・プリセット管理 (496行) |
 | └─ キャンバス入力 (New) | `js/editor/sprite-editor-canvas-input.js` | イベント・描画・選択・ガイド画像 (1,026行) |

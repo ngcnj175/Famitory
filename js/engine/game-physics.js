@@ -10,17 +10,19 @@ class GamePhysics {
 
     // ========== タイル衝突クエリ ==========
 
-    // 32x32スプライトの2x2占有マーカー（-1000-offset）を左上の実タイルセルに解決
+    // 複数マス占有タイルの占有マーカーを左上の実タイルセルに解決
     resolveTileOrigin(tileX, tileY) {
         const stage = this.owner.stageData || App.projectData.stage;
-        const rawId = stage.layers.fg?.[tileY]?.[tileX];
-        if (rawId === undefined || rawId > -1000) {
-            return { tileId: rawId, originX: tileX, originY: tileY };
-        }
-        const offset = -(rawId + 1000);
-        const originX = tileX - (offset % 2);
-        const originY = tileY - Math.floor(offset / 2);
-        return { tileId: stage.layers.fg?.[originY]?.[originX], originX, originY };
+        return TileFootprint.resolveOrigin(stage.layers.fg, tileX, tileY);
+    }
+
+    // 実タイルIDから占有サイズ（1辺のマス数）を取得
+    getTileFootprintSize(tileId) {
+        const templates = App.projectData.templates || [];
+        if (tileId < 100) return 1; // 旧形式（スプライトIDベース）は常に1マス
+        const template = templates[tileId - 100];
+        const idleSpriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+        return App.projectData?.sprites?.[idleSpriteIdx]?.size === 2 ? 2 : 1;
     }
 
     getCollision(x, y) {
@@ -278,32 +280,14 @@ class GamePhysics {
     }
 
     destroyTile(tileX, tileY, tileId) {
-        const stage     = App.projectData.stage;
-        const templates = App.projectData.templates || [];
+        const stage = App.projectData.stage;
+        const size  = this.getTileFootprintSize(tileId);
 
-        let template;
-        if (tileId >= 100) {
-            template = templates[tileId - 100];
-        } else {
-            template = templates.find(t => {
-                const idx = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
-                return idx === tileId;
-            });
-        }
-        const idleSpriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
-        const spriteSize = App.projectData?.sprites?.[idleSpriteIdx]?.size || 1;
-
-        // 32x32ブロックは2x2セル全てを破壊済みにする
-        const w = spriteSize === 2 ? 2 : 1;
-        const h = spriteSize === 2 ? 2 : 1;
-        for (let dy = 0; dy < h; dy++) {
-            for (let dx = 0; dx < w; dx++) {
-                const tx = tileX + dx, ty = tileY + dy;
-                if (tx < 0 || tx >= stage.width || ty < 0 || ty >= stage.height) continue;
-                this.owner.destroyedTiles.add(`${tx},${ty}`);
-                this.owner.breakableTiles.delete(`${tx},${ty}`);
-            }
-        }
+        // 複数マス占有ブロックは占有セル全てを破壊済みにする
+        TileFootprint.forEachCell(tileX, tileY, size, stage.width, stage.height, (tx, ty) => {
+            this.owner.destroyedTiles.add(`${tx},${ty}`);
+            this.owner.breakableTiles.delete(`${tx},${ty}`);
+        });
 
         this.createTileParticles(tileX, tileY, tileId);
 
