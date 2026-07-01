@@ -51,7 +51,6 @@ class PhysicsHandler {
      * @param {GameEngine} engine ゲームエンジン
      * @param {Object} callbacks {
      *   onDamageTile?: (tx, ty) => void,      // プレイヤーが頭突きでブロック破壊
-     *   onSpringHit?: (springData) => void,   // スプリング踏み
      *   onJumpReset?: () => void,             // プレイヤー用: ダブルジャンプリセット
      *   onKnockbackEnd?: () => void,          // プレイヤー用: ノックバック終了
      * }
@@ -120,10 +119,6 @@ class PhysicsHandler {
 
                         if (callbacks.onJumpReset) {
                             callbacks.onJumpReset();
-                        }
-
-                        if (typeof engine.activateSpring === 'function') {
-                            engine.activateSpring(Math.floor(block.x), Math.floor(block.y));
                         }
 
                         if (callbacks.onKnockbackEnd) {
