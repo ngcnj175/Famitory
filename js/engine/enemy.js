@@ -1001,6 +1001,7 @@ class Enemy {
                     this.vx = 0;
                     this.rushStartX = this.x;
                     this.rushPhase = 'rush';
+                    this.animFrame = 0;
                 }
                 break;
             case 'rush':
@@ -1057,6 +1058,7 @@ class Enemy {
                     this.vx = 0;
                     this.rushStartX = this.x;
                     this.rushPhase = 'rush';
+                    this.animFrame = 0;
                 }
                 break;
             case 'rush':
@@ -1162,6 +1164,12 @@ class Enemy {
     }
 
     getSpriteSlot() {
+        // とっしん突進中は attackスプライトを直接返す（this.state 経由に依存しない確実な経路）
+        if (this.behavior === 'rush' && this.rushPhase === 'rush') {
+            if (this.template?.sprites?.attack?.frames?.length > 0) return 'attack';
+            return this.template?.sprites?.walk?.frames?.length > 0 ? 'walk' : 'idle';
+        }
+
         let slot = this.state;
 
         // attack スプライトがない場合は、他の状態にフォールバック
