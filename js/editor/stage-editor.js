@@ -508,21 +508,39 @@ const StageEditor = {
                     html += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
                 }
                 html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
-                html += `
-                    <div class="param-row">
-                        <span class="param-label">${this.t('U425')}</span>
-                        <select class="param-select" data-key="dropItem">
-                            <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
-                            <option value="coin" ${config.dropItem === 'coin' ? 'selected' : ''}>${this.t('U221')}</option>
-                            <option value="muteki" ${config.dropItem === 'muteki' ? 'selected' : ''}>${this.t('U222')}</option>
-                            <option value="lifeup" ${config.dropItem === 'lifeup' ? 'selected' : ''}>${this.t('U223')}</option>
-                            <option value="clear" ${config.dropItem === 'clear' ? 'selected' : ''}>${this.t('U224')}</option>
-                            <option value="weapon" ${config.dropItem === 'weapon' ? 'selected' : ''}>${this.t('U225')}</option>
-                            <option value="bomb" ${config.dropItem === 'bomb' ? 'selected' : ''}>${this.t('U226')}</option>
-                            <option value="easter" ${config.dropItem === 'easter' ? 'selected' : ''}>${this.t('U227')}</option>
-                        </select>
-                    </div>
-                `;
+                {
+                    const allTemplates = App.projectData.templates || [];
+                    const itemTemplates = allTemplates
+                        .map((t, i) => ({ t, i }))
+                        .filter(({ t }) => t.type === 'item');
+                    if (itemTemplates.length > 0) {
+                        const typeNameMap = {
+                            coin: this.t('U221'), muteki: this.t('U222'), lifeup: this.t('U223'),
+                            clear: this.t('U224'), weapon: this.t('U225'), bomb: this.t('U226'),
+                            key: this.t('U254'), easter: this.t('U227'),
+                        };
+                        const typeSeq = {};
+                        const dropOptions = itemTemplates.map(({ t, i }) => {
+                            const typeName = typeNameMap[t.config?.itemType] || t.config?.itemType || this.t('U076');
+                            typeSeq[typeName] = (typeSeq[typeName] || 0) + 1;
+                            const label = typeName + typeSeq[typeName];
+                            const sel = config.dropItem === i ? 'selected' : '';
+                            return `<option value="${i}" ${sel}>${label}</option>`;
+                        }).join('');
+                        html += `
+                            <div class="param-row">
+                                <span class="param-label">${this.t('U425')}</span>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <select class="param-select" data-key="dropItem" style="min-width:72px;">
+                                        <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
+                                        ${dropOptions}
+                                    </select>
+                                    <canvas class="drop-item-preview" width="16" height="16" style="border:1px solid #555;image-rendering:pixelated;width:32px;height:32px;"></canvas>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
             }
 
             // ④ 武器
@@ -972,6 +990,9 @@ const StageEditor = {
                 if (key && this.editingTemplate?.config) {
                     if (key.startsWith('se') || key === 'spawnerEnemy') {
                         this.editingTemplate.config[key] = parseInt(select.value);
+                    } else if (key === 'dropItem') {
+                        const v = select.value;
+                        this.editingTemplate.config[key] = v === 'none' ? 'none' : parseInt(v);
                     } else {
                         this.editingTemplate.config[key] = select.value;
                     }
@@ -1043,8 +1064,32 @@ const StageEditor = {
             spawnerSelect.addEventListener('change', () => this.updateSpawnerEnemyPreview());
         }
 
+        // ドロップアイテムプレビュー
+        this.updateDropItemPreview();
+        const dropItemSelect = document.querySelector('.param-select[data-key="dropItem"]');
+        if (dropItemSelect) {
+            dropItemSelect.addEventListener('change', () => this.updateDropItemPreview());
+        }
+
         // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧貞・譛溷喧
         this.updateConfigAnimations();
+    },
+
+    updateDropItemPreview() {
+        const canvas = document.querySelector('.drop-item-preview');
+        if (!canvas) return;
+        const select = document.querySelector('.param-select[data-key="dropItem"]');
+        if (!select) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 16, 16);
+        if (select.value === 'none') return;
+        const templateIdx = parseInt(select.value);
+        const template = (App.projectData.templates || [])[templateIdx];
+        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+        const sprite = spriteIdx !== undefined ? App.projectData.sprites[spriteIdx] : null;
+        if (sprite) {
+            this.renderSpriteToMiniCanvas(sprite, canvas, this.getBackgroundColor());
+        }
     },
 
     updateSpawnerEnemyPreview() {

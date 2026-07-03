@@ -199,35 +199,16 @@ class GamePhysics {
     // 敵がドロップするアイテムを出現させる
     spawnDropItem(enemy) {
         const dropItem = enemy.template?.config?.dropItem;
-        if (!dropItem || dropItem === 'none') return;
+        if (dropItem === undefined || dropItem === null || dropItem === 'none') return;
 
         const templates = App.projectData.templates || [];
+        const templateIdx = typeof dropItem === 'number' ? dropItem : -1;
+        const itemTemplate = templateIdx >= 0 ? templates[templateIdx] : null;
+        if (!itemTemplate || itemTemplate.type !== 'item') return;
 
-        const searchTypes = [dropItem];
-        if (dropItem === 'muteki') searchTypes.push('star');
-        if (dropItem === 'star')   searchTypes.push('muteki');
-
-        let itemTemplate = templates.find(t =>
-            t.type === 'item' && searchTypes.includes(t.config?.itemType)
-        );
-        if (!itemTemplate) {
-            itemTemplate = templates.find(t =>
-                t.type === 'item' && t.name?.toLowerCase().includes(dropItem.toLowerCase())
-            );
-        }
-        if (!itemTemplate) {
-            itemTemplate = templates.find(t => t.type === 'item');
-        }
-
-        let templateIdx = -1;
-        let spriteIdx   = 0;
-
-        if (itemTemplate) {
-            templateIdx = templates.indexOf(itemTemplate);
-            spriteIdx   = itemTemplate.sprites?.idle?.frames?.[0] ??
+        const spriteIdx = itemTemplate.sprites?.idle?.frames?.[0] ??
                           itemTemplate.sprites?.main?.frames?.[0] ?? 0;
-        }
-
+        const itemType = itemTemplate.config?.itemType || 'coin';
         const spawnX = enemy.deathX !== undefined ? enemy.deathX : enemy.x;
         const spawnY = enemy.deathY !== undefined ? enemy.deathY : enemy.y;
         const itemSize = App.projectData?.sprites?.[spriteIdx]?.size === 2 ? 2 : 1;
@@ -238,13 +219,13 @@ class GamePhysics {
             template: itemTemplate,
             templateIdx,
             spriteIdx,
-            itemType: dropItem,
+            itemType,
             collected: false,
             isDropped: true,
             vy: -0.15
         });
 
-        if (dropItem === 'clear') this.owner.totalClearItems++;
+        if (itemType === 'clear') this.owner.totalClearItems++;
     }
 
     // ========== ブロック破壊 ==========

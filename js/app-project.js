@@ -205,6 +205,18 @@ const AppProject = {
             }
         }
 
+        // dropItem が旧フォーマット（文字列型）の場合は 'none' にリセット
+        if (App.projectData.templates) {
+            App.projectData.templates.forEach(tmpl => {
+                if (tmpl.type === 'enemy' && tmpl.config) {
+                    const d = tmpl.config.dropItem;
+                    if (typeof d === 'string' && d !== 'none') {
+                        tmpl.config.dropItem = 'none';
+                    }
+                }
+            });
+        }
+
         if (App.projectData.sounds && App.projectData.sounds.length <= 5) {
             App.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
 
