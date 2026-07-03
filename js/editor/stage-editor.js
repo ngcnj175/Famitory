@@ -531,7 +531,7 @@ const StageEditor = {
                             <div class="param-row">
                                 <span class="param-label">${this.t('U425')}</span>
                                 <div style="display:flex;align-items:center;gap:6px;">
-                                    <select class="param-select" data-key="dropItem" style="min-width:72px;">
+                                    <select class="param-select" data-key="dropItem" style="min-width:108px;">
                                         <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
                                         ${dropOptions}
                                     </select>
