@@ -531,11 +531,11 @@ const StageEditor = {
                             <div class="param-row">
                                 <span class="param-label">${this.t('U425')}</span>
                                 <div style="display:flex;align-items:center;gap:6px;">
-                                    <select class="param-select" data-key="dropItem" style="min-width:108px;">
+                                    <select class="param-select" data-key="dropItem" style="min-width:140px;">
                                         <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
                                         ${dropOptions}
                                     </select>
-                                    <canvas class="drop-item-preview" width="16" height="16" style="border:1px solid #555;image-rendering:pixelated;width:32px;height:32px;"></canvas>
+                                    <canvas class="drop-item-preview" width="16" height="16" style="border:1px solid #e0e0e0;image-rendering:pixelated;width:32px;height:32px;background:#fff;"></canvas>
                                 </div>
                             </div>
                         `;
@@ -1082,6 +1082,8 @@ const StageEditor = {
         if (!select) return;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, 16, 16);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, 16, 16);
         if (select.value === 'none') return;
         const templateIdx = parseInt(select.value);
         const template = (App.projectData.templates || [])[templateIdx];
