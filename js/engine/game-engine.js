@@ -1239,6 +1239,7 @@ const GameEngine = {
                             }
                             const fromRight = proj.vx > 0;
                             enemy.takeDamage(fromRight);
+                            if (this.player) this.player.playSE('enemyDefeat');
                             if (enemy.lives <= 0) {
                                 this.addScore(100);
                             }
