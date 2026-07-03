@@ -1148,7 +1148,7 @@ class Enemy {
     }
 
     updateState() {
-        if (this.isAttacking) {
+        if (this.isAttacking || (this.behavior === 'rush' && this.rushPhase === 'rush')) {
             this.state = 'attack';
         } else if (this.onLadder) {
             this.state = 'climb';
