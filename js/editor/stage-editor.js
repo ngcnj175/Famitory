@@ -509,8 +509,7 @@ const StageEditor = {
                 }
                 html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 {
-                    const allTemplates = App.projectData.templates || [];
-                    const itemTemplates = allTemplates
+                    const itemTemplates = (App.projectData.templates || [])
                         .map((t, i) => ({ t, i }))
                         .filter(({ t }) => t.type === 'item');
                     if (itemTemplates.length > 0) {
@@ -1081,7 +1080,6 @@ const StageEditor = {
         const select = document.querySelector('.param-select[data-key="dropItem"]');
         if (!select) return;
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, 16, 16);
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, 16, 16);
         if (select.value === 'none') return;

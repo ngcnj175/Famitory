@@ -203,7 +203,7 @@ class GamePhysics {
 
         const templates = App.projectData.templates || [];
         const templateIdx = typeof dropItem === 'number' ? dropItem : -1;
-        const itemTemplate = templateIdx >= 0 ? templates[templateIdx] : null;
+        const itemTemplate = templates[templateIdx];
         if (!itemTemplate || itemTemplate.type !== 'item') return;
 
         const spriteIdx = itemTemplate.sprites?.idle?.frames?.[0] ??

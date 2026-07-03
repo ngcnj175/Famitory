@@ -185,6 +185,18 @@ const AppProject = {
         const width = stage.width;
         const height = stage.height;
 
+        // dropItem が旧フォーマット（文字列型）の場合は 'none' にリセット
+        if (App.projectData.templates) {
+            App.projectData.templates.forEach(tmpl => {
+                if (tmpl.type === 'enemy' && tmpl.config) {
+                    const d = tmpl.config.dropItem;
+                    if (typeof d === 'string' && d !== 'none') {
+                        tmpl.config.dropItem = 'none';
+                    }
+                }
+            });
+        }
+
         if (!map || !Array.isArray(map)) return;
 
         for (let y = 0; y < height; y++) {
@@ -203,18 +215,6 @@ const AppProject = {
                     }
                 }
             }
-        }
-
-        // dropItem が旧フォーマット（文字列型）の場合は 'none' にリセット
-        if (App.projectData.templates) {
-            App.projectData.templates.forEach(tmpl => {
-                if (tmpl.type === 'enemy' && tmpl.config) {
-                    const d = tmpl.config.dropItem;
-                    if (typeof d === 'string' && d !== 'none') {
-                        tmpl.config.dropItem = 'none';
-                    }
-                }
-            });
         }
 
         if (App.projectData.sounds && App.projectData.sounds.length <= 5) {
