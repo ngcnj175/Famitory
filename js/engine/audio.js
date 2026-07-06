@@ -431,10 +431,22 @@ const NesAudio = {
 
     /**
      * ノイズ型SE（打撃・爆発等）
+     * filterFreq > 0 のとき LPF を適用（Boom系に有効）
+     *   sustainPunch : 発音直後のゲイン跳ね上がり倍率（0=なし）
+     *   filterFreq   : LPF初期カットオフ Hz（0=フィルタなし）
+     *   filterSweep  : duration 全体でのカットオフ変化量 Hz（負=下降）
+     *   pitchJump    : 発音直後だけカットオフを +Hz 跳ね上げ（0=なし）
      */
     playNoiseSE(config) {
         this.ensureContext();
-        const { duration = 0.1, startGain = 0.2 } = config;
+        const {
+            duration = 0.1,
+            startGain = 0.2,
+            sustainPunch = 0,
+            filterFreq = 0,
+            filterSweep = 0,
+            pitchJump = 0
+        } = config;
 
         const bufferSize = this.ctx.sampleRate * duration;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -450,12 +462,28 @@ const NesAudio = {
         const gainNode = this.ctx.createGain();
         const t = this.ctx.currentTime;
         const step = duration / 4;
-        gainNode.gain.setValueAtTime(startGain, t);
+        const peakGain = sustainPunch > 0 ? startGain * (1 + sustainPunch) : startGain;
+        gainNode.gain.setValueAtTime(peakGain, t);
         gainNode.gain.setValueAtTime(startGain * 0.6, t + step);
         gainNode.gain.setValueAtTime(startGain * 0.25, t + step * 2);
         gainNode.gain.setValueAtTime(0.001, t + step * 3);
 
-        source.connect(gainNode);
+        if (filterFreq > 0) {
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(filterFreq + pitchJump, t);
+            if (pitchJump > 0) {
+                filter.frequency.linearRampToValueAtTime(filterFreq, t + 0.02);
+            }
+            filter.frequency.linearRampToValueAtTime(
+                Math.max(20, filterFreq + filterSweep), t + duration
+            );
+            source.connect(filter);
+            filter.connect(gainNode);
+        } else {
+            source.connect(gainNode);
+        }
+
         gainNode.connect(this.masterGain);
 
         source.start();
@@ -480,7 +508,7 @@ const NesAudio = {
     playSE_damage_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.15, waveType: 'square' }); },
     playSE_damage_02() { this.playFreqSweep({ startFreq: 300, endFreq: 80, duration: 0.1, waveType: 'square' }); },
     playSE_damage_03() { this.playFreqSweep({ startFreq: 200, endFreq: 50, duration: 0.15, waveType: 'square' }); },
-    playSE_damage_04() { this.playNoiseSE({ duration: 0.1, startGain: 0.2 }); },
+    playSE_damage_04() { this.playNoiseSE({ duration: 0.36, startGain: 0.52, sustainPunch: 0.6, filterFreq: 1600, filterSweep: -2490, pitchJump: 960 }); },
     playSE_damage_05() { this.playFreqSweep({ startFreq: 500, endFreq: 60, duration: 0.12, waveType: 'square', duty: 0.25 }); },
 
     // ========== アイテムゲット系 ==========
