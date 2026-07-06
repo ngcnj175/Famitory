@@ -423,10 +423,12 @@ const NesAudio = {
         }
 
         const totalDur = segmentDuration * repeatCount;
+        const tail = 0.02;
+        gain.gain.linearRampToValueAtTime(0, t0 + totalDur + tail);
         osc.connect(gain);
         gain.connect(this.masterGain);
         osc.start(t0);
-        osc.stop(t0 + totalDur);
+        osc.stop(t0 + totalDur + tail);
     },
 
     /**
@@ -498,7 +500,7 @@ const NesAudio = {
     playSE_jump_05() { this.playFreqSweep({ startFreq: 400, endFreq: 1000, duration: 0.1, waveType: 'square', startGain: 0.15 }); },
 
     // ========== 攻撃系 ==========
-    playSE_attack_01() { this.playFreqSweep({ startFreq: 400, endFreq: 100, duration: 0.06, waveType: 'square', duty: 0.25 }); },
+    playSE_attack_01() { this.playFreqSweep({ startFreq: 393, endFreq: 1394, waveType: 'sawtooth', startGain: 0.31, duration: 0.055, duty: 0.25 }); },
     playSE_attack_02() { this.playFreqSweep({ startFreq: 800, endFreq: 200, duration: 0.06, waveType: 'square', duty: 0.125 }); },
     playSE_attack_03() { this.playNoiseSE({ duration: 0.05, startGain: 0.3 }); },
     playSE_attack_04() { this.playFreqSweep({ startFreq: 600, endFreq: 150, duration: 0.06, waveType: 'square' }); },
@@ -514,7 +516,7 @@ const NesAudio = {
     // ========== アイテムゲット系 ==========
     playSE_itemGet_01() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 523, duration: 0.05 }, { freq: 784, duration: 0.07 }] }); },
     playSE_itemGet_02() { this.playRepeatingSweep({ startFreq: 295, endFreq: 2827, segmentDuration: 0.24, repeatCount: 1, waveType: 'square', startGain: 0.15 }); },
-    playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', notes: [{ freq: 392, duration: 0.05 }, { freq: 523, duration: 0.07 }] }); },
+    playSE_itemGet_03() { this.playMultiNote({ waveType: 'square', gain: 0.57, notes: [{ freq: 467, duration: 0.061, spacing: 0.035 }, { freq: 945, duration: 0.099 }, { freq: 1429, duration: 0.097, spacing: 0.034 }, { freq: 1416, duration: 0.039 }, { freq: 1219, duration: 0.05 }], duty: 0.5 }); },
     playSE_itemGet_04() { this.playMultiNote({ waveType: 'square', duty: 0.25, gain: 0.5, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
     playSE_itemGet_05() {
         this.ensureContext();
