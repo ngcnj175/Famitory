@@ -465,7 +465,7 @@ const NesAudio = {
     // ========== ジャンプ系 ==========
     playSE_jump_01() { this.playFreqSweep({ startFreq: 200, endFreq: 600, duration: 0.1, waveType: 'square' }); },
     playSE_jump_02() { this.playFreqSweep({ startFreq: 300, endFreq: 900, duration: 0.08, waveType: 'square' }); },
-    playSE_jump_03() { this.playFreqSweep({ startFreq: 250, endFreq: 500, duration: 0.1, waveType: 'square', duty: 0.25 }); },
+    playSE_jump_03() { this.playFreqSweep({ startFreq: 304, endFreq: 988, waveType: 'square', startGain: 0.5, duration: 0.205, duty: 0.25 }); },
     playSE_jump_04() { this.playFreqSweep({ startFreq: 150, duration: 0.1, waveType: 'square', numSegments: [{ freq: 800, time: 0.04 }, { freq: 400, time: 0.06 }] }); },
     playSE_jump_05() { this.playFreqSweep({ startFreq: 400, endFreq: 1000, duration: 0.1, waveType: 'square', startGain: 0.15 }); },
 
