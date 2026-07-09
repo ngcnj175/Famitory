@@ -251,69 +251,28 @@ const NesAudio = {
     /**
      * 周波数スイープ型SE（ジャンプ、攻撃、ダメージ等）
      */
+    // ==================================================
+    // 4基底メソッドは全て playUnifiedSE の薄いラッパー
+    // 音の同一性は envelopeMode: 'legacy4step' で担保
+    // 呼び出し側 (playSE_<name>) は無変更で動作
+    // ==================================================
     playFreqSweep(config) {
-        this.ensureContext();
         const {
-            startFreq,
-            endFreq,
-            duration = 0.1,
-            waveType = 'square',
-            duty = null,
-            startGain = 0.2,
-            envelopeType = 'exponential',
+            startFreq, endFreq, duration = 0.1,
+            waveType = 'square', duty = null,
+            startGain = 0.2, envelopeType = 'exponential',
             numSegments = null
         } = config;
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        if (duty && waveType === 'square') {
-            const cacheKey = `pulse_${duty}`;
-            if (!this.waveCache[cacheKey]) {
-                const n = 4096;
-                const real = new Float32Array(n);
-                const imag = new Float32Array(n);
-                for (let i = 1; i < n; i++) {
-                    imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
-                }
-                this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
-            }
-            osc.setPeriodicWave(this.waveCache[cacheKey]);
-        } else {
-            osc.type = waveType;
-        }
-
-        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
-
-        if (numSegments) {
-            let currentTime = this.ctx.currentTime;
-            numSegments.forEach(segment => {
-                if (envelopeType === 'exponential') {
-                    osc.frequency.exponentialRampToValueAtTime(segment.freq, currentTime + segment.time);
-                } else {
-                    osc.frequency.linearRampToValueAtTime(segment.freq, currentTime + segment.time);
-                }
-                currentTime += segment.time;
-            });
-        } else {
-            if (envelopeType === 'exponential') {
-                osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
-            } else {
-                osc.frequency.linearRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
-            }
-        }
-
-        const t = this.ctx.currentTime;
-        const step = duration / 4;
-        gain.gain.setValueAtTime(startGain, t);
-        gain.gain.setValueAtTime(startGain * 0.6, t + step);
-        gain.gain.setValueAtTime(startGain * 0.25, t + step * 2);
-        gain.gain.setValueAtTime(0.001, t + step * 3);
-
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
+        this.playUnifiedSE({
+            waveType, duty,
+            envelopeMode: 'legacy4step',
+            sustainTime: duration,
+            masterVolume: startGain,
+            frequencyStart: startFreq,
+            frequencySlide: numSegments ? 0 : ((endFreq ?? startFreq) - startFreq),
+            slideType: envelopeType,
+            frequencyRamps: numSegments
+        });
     },
 
     /**
@@ -321,175 +280,65 @@ const NesAudio = {
      */
     playMultiNote(config) {
         this.ensureContext();
-        const {
-            notes,
-            waveType = 'square',
-            duty = null,
-            gain = 0.2
-        } = config;
-
+        const { notes, waveType = 'square', duty = null, gain = 0.2 } = config;
         let currentTime = this.ctx.currentTime;
-
         notes.forEach((note) => {
-            const osc = this.ctx.createOscillator();
-            const gainNode = this.ctx.createGain();
-
-            if (duty && waveType === 'square') {
-                const cacheKey = `pulse_${duty}`;
-                if (!this.waveCache[cacheKey]) {
-                    const n = 4096;
-                    const real = new Float32Array(n);
-                    const imag = new Float32Array(n);
-                    for (let i = 1; i < n; i++) {
-                        imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
-                    }
-                    this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
-                }
-                osc.setPeriodicWave(this.waveCache[cacheKey]);
-            } else {
-                osc.type = waveType;
-            }
-
-            osc.frequency.value = note.freq;
-
-            const startTime = currentTime;
-            const duration = note.duration;
-            currentTime += duration + (note.spacing || 0);
-
-            const step = duration / 4;
-            gainNode.gain.setValueAtTime(gain, startTime);
-            gainNode.gain.setValueAtTime(gain * 0.6, startTime + step);
-            gainNode.gain.setValueAtTime(gain * 0.25, startTime + step * 2);
-            gainNode.gain.setValueAtTime(0.001, startTime + step * 3);
-
-            osc.connect(gainNode);
-            gainNode.connect(this.masterGain);
-
-            osc.start(startTime);
-            osc.stop(startTime + duration);
+            this.playUnifiedSE({
+                waveType, duty,
+                envelopeMode: 'legacy4step',
+                sustainTime: note.duration,
+                masterVolume: gain,
+                frequencyStart: note.freq,
+                startTime: currentTime
+            });
+            currentTime += note.duration + (note.spacing || 0);
         });
     },
 
     /**
      * リピートスイープ型SE（PowerUp/コイン取得等、階段状に上昇する音）
-     * segmentDuration の周波数スイープを repeatCount 回リトリガー
      */
     playRepeatingSweep(config) {
         this.ensureContext();
         const {
-            startFreq,
-            endFreq,
-            segmentDuration = 0.08,
-            repeatCount = 6,
-            waveType = 'square',
-            duty = null,
-            startGain = 0.2,
-            envelopeType = 'exponential'
+            startFreq, endFreq,
+            segmentDuration = 0.08, repeatCount = 6,
+            waveType = 'square', duty = null,
+            startGain = 0.2, envelopeType = 'exponential'
         } = config;
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        if (duty && waveType === 'square') {
-            const cacheKey = `pulse_${duty}`;
-            if (!this.waveCache[cacheKey]) {
-                const n = 4096;
-                const real = new Float32Array(n);
-                const imag = new Float32Array(n);
-                for (let i = 1; i < n; i++) {
-                    imag[i] = (2 / (i * Math.PI)) * Math.sin(i * Math.PI * duty);
-                }
-                this.waveCache[cacheKey] = this.ctx.createPeriodicWave(real, imag);
-            }
-            osc.setPeriodicWave(this.waveCache[cacheKey]);
-        } else {
-            osc.type = waveType;
-        }
-
         const t0 = this.ctx.currentTime;
-        const step = segmentDuration / 4;
         for (let i = 0; i < repeatCount; i++) {
-            const segStart = t0 + segmentDuration * i;
-            osc.frequency.setValueAtTime(startFreq, segStart);
-            if (envelopeType === 'exponential') {
-                osc.frequency.exponentialRampToValueAtTime(endFreq, segStart + segmentDuration);
-            } else {
-                osc.frequency.linearRampToValueAtTime(endFreq, segStart + segmentDuration);
-            }
-            gain.gain.setValueAtTime(startGain, segStart);
-            gain.gain.setValueAtTime(startGain * 0.6, segStart + step);
-            gain.gain.setValueAtTime(startGain * 0.25, segStart + step * 2);
-            gain.gain.setValueAtTime(0.001, segStart + step * 3);
+            this.playUnifiedSE({
+                waveType, duty,
+                envelopeMode: 'legacy4step',
+                sustainTime: segmentDuration,
+                masterVolume: startGain,
+                frequencyStart: startFreq,
+                frequencySlide: endFreq - startFreq,
+                slideType: envelopeType,
+                startTime: t0 + segmentDuration * i
+            });
         }
-
-        const totalDur = segmentDuration * repeatCount;
-        const tail = 0.02;
-        gain.gain.linearRampToValueAtTime(0, t0 + totalDur + tail);
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.start(t0);
-        osc.stop(t0 + totalDur + tail);
     },
 
     /**
      * ノイズ型SE（打撃・爆発等）
-     * filterFreq > 0 のとき LPF を適用（Boom系に有効）
-     *   sustainPunch : 発音直後のゲイン跳ね上がり倍率（0=なし）
-     *   filterFreq   : LPF初期カットオフ Hz（0=フィルタなし）
-     *   filterSweep  : duration 全体でのカットオフ変化量 Hz（負=下降）
-     *   pitchJump    : 発音直後だけカットオフを +Hz 跳ね上げ（0=なし）
      */
     playNoiseSE(config) {
-        this.ensureContext();
         const {
-            duration = 0.1,
-            startGain = 0.2,
-            sustainPunch = 0,
-            filterFreq = 0,
-            filterSweep = 0,
-            pitchJump = 0
+            duration = 0.1, startGain = 0.2, sustainPunch = 0,
+            filterFreq = 0, filterSweep = 0, pitchJump = 0
         } = config;
-
-        const bufferSize = this.ctx.sampleRate * duration;
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
-
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-
-        const gainNode = this.ctx.createGain();
-        const t = this.ctx.currentTime;
-        const step = duration / 4;
-        const peakGain = sustainPunch > 0 ? startGain * (1 + sustainPunch) : startGain;
-        gainNode.gain.setValueAtTime(peakGain, t);
-        gainNode.gain.setValueAtTime(startGain * 0.6, t + step);
-        gainNode.gain.setValueAtTime(startGain * 0.25, t + step * 2);
-        gainNode.gain.setValueAtTime(0.001, t + step * 3);
-
-        if (filterFreq > 0) {
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(filterFreq + pitchJump, t);
-            if (pitchJump > 0) {
-                filter.frequency.linearRampToValueAtTime(filterFreq, t + 0.02);
-            }
-            filter.frequency.linearRampToValueAtTime(
-                Math.max(20, filterFreq + filterSweep), t + duration
-            );
-            source.connect(filter);
-            filter.connect(gainNode);
-        } else {
-            source.connect(gainNode);
-        }
-
-        gainNode.connect(this.masterGain);
-
-        source.start();
-        source.stop(this.ctx.currentTime + duration);
+        this.playUnifiedSE({
+            waveType: 'noise',
+            envelopeMode: 'legacy4step',
+            sustainTime: duration,
+            masterVolume: startGain,
+            sustainPunch,
+            lpfFreq: filterFreq,
+            lpfSweep: filterSweep,
+            lpfPitchJump: pitchJump
+        });
     },
 
     // ==================================================
@@ -502,16 +351,23 @@ const NesAudio = {
         this.ensureContext();
         const {
             waveType = 'square', duty = null,
+            envelopeMode = 'adsr',
             attackTime = 0, sustainTime = 0.1, sustainPunch = 0, decayTime = 0.1,
             masterVolume = 0.2,
             frequencyStart = 440, frequencySlide = 0, slideType = 'exponential',
+            frequencyRamps = null,
             vibratoDepth = 0, vibratoSpeed = 0,
             harmonics = 0, harmonicsFalloff = 0.5,
             hpfFreq = 0, hpfSweep = 0,
-            lpfFreq = 0, lpfSweep = 0, lpfResonance = 1
+            lpfFreq = 0, lpfSweep = 0, lpfResonance = 1, lpfPitchJump = 0,
+            bpfFreq = 0, bpfSweep = 0, bpfQ = 1,
+            startTime = null
         } = config;
-        const totalDur = Math.max(0.01, attackTime + sustainTime + decayTime);
-        const t0 = this.ctx.currentTime;
+        const isLegacy = envelopeMode === 'legacy4step';
+        const totalDur = isLegacy
+            ? Math.max(0.01, sustainTime)
+            : Math.max(0.01, attackTime + sustainTime + decayTime);
+        const t0 = startTime != null ? startTime : this.ctx.currentTime;
         const isNoise = waveType === 'noise';
         const sources = [];
         if (isNoise) {
@@ -541,9 +397,17 @@ const NesAudio = {
                 }
                 const mult = i + 1;
                 const startF = Math.max(20, frequencyStart * mult);
-                const endF = Math.max(20, (frequencyStart + frequencySlide) * mult);
                 osc.frequency.setValueAtTime(startF, t0);
-                if (frequencySlide !== 0) {
+                if (frequencyRamps && frequencyRamps.length > 0) {
+                    let rampT = t0;
+                    for (const r of frequencyRamps) {
+                        const rEnd = Math.max(20, r.freq * mult);
+                        if (slideType === 'exponential') osc.frequency.exponentialRampToValueAtTime(rEnd, rampT + r.time);
+                        else osc.frequency.linearRampToValueAtTime(rEnd, rampT + r.time);
+                        rampT += r.time;
+                    }
+                } else if (frequencySlide !== 0) {
+                    const endF = Math.max(20, (frequencyStart + frequencySlide) * mult);
                     if (slideType === 'exponential') osc.frequency.exponentialRampToValueAtTime(endF, t0 + totalDur);
                     else osc.frequency.linearRampToValueAtTime(endF, t0 + totalDur);
                 }
@@ -565,6 +429,14 @@ const NesAudio = {
         const mixer = this.ctx.createGain();
         sources.forEach(s => s.outNode.connect(mixer));
         let chain = mixer;
+        if (bpfFreq > 0) {
+            const bpf = this.ctx.createBiquadFilter();
+            bpf.type = 'bandpass';
+            bpf.frequency.setValueAtTime(bpfFreq, t0);
+            if (bpfSweep !== 0) bpf.frequency.linearRampToValueAtTime(Math.max(20, bpfFreq + bpfSweep), t0 + totalDur);
+            bpf.Q.value = bpfQ;
+            chain.connect(bpf); chain = bpf;
+        }
         if (hpfFreq > 0) {
             const hpf = this.ctx.createBiquadFilter();
             hpf.type = 'highpass';
@@ -575,25 +447,34 @@ const NesAudio = {
         if (lpfFreq > 0) {
             const lpf = this.ctx.createBiquadFilter();
             lpf.type = 'lowpass';
-            lpf.frequency.setValueAtTime(lpfFreq, t0);
+            lpf.frequency.setValueAtTime(lpfFreq + lpfPitchJump, t0);
+            if (lpfPitchJump > 0) lpf.frequency.linearRampToValueAtTime(lpfFreq, t0 + 0.02);
             if (lpfSweep !== 0) lpf.frequency.linearRampToValueAtTime(Math.max(20, lpfFreq + lpfSweep), t0 + totalDur);
             lpf.Q.value = lpfResonance;
             chain.connect(lpf); chain = lpf;
         }
         const envGain = this.ctx.createGain();
         const peakGain = masterVolume * (1 + sustainPunch);
-        if (attackTime > 0) {
-            envGain.gain.setValueAtTime(0.0001, t0);
-            envGain.gain.linearRampToValueAtTime(peakGain, t0 + attackTime);
-        } else {
+        if (isLegacy) {
+            const step = totalDur / 4;
             envGain.gain.setValueAtTime(peakGain, t0);
+            envGain.gain.setValueAtTime(masterVolume * 0.6, t0 + step);
+            envGain.gain.setValueAtTime(masterVolume * 0.25, t0 + step * 2);
+            envGain.gain.setValueAtTime(0.001, t0 + step * 3);
+        } else {
+            if (attackTime > 0) {
+                envGain.gain.setValueAtTime(0.0001, t0);
+                envGain.gain.linearRampToValueAtTime(peakGain, t0 + attackTime);
+            } else {
+                envGain.gain.setValueAtTime(peakGain, t0);
+            }
+            envGain.gain.setValueAtTime(peakGain, t0 + attackTime);
+            if (sustainPunch > 0 && sustainTime > 0) {
+                envGain.gain.linearRampToValueAtTime(masterVolume, t0 + attackTime + Math.min(sustainTime, sustainTime * 0.3 + 0.02));
+            }
+            envGain.gain.setValueAtTime(masterVolume, t0 + attackTime + sustainTime);
+            if (decayTime > 0) envGain.gain.linearRampToValueAtTime(0.0001, t0 + totalDur);
         }
-        envGain.gain.setValueAtTime(peakGain, t0 + attackTime);
-        if (sustainPunch > 0 && sustainTime > 0) {
-            envGain.gain.linearRampToValueAtTime(masterVolume, t0 + attackTime + Math.min(sustainTime, sustainTime * 0.3 + 0.02));
-        }
-        envGain.gain.setValueAtTime(masterVolume, t0 + attackTime + sustainTime);
-        if (decayTime > 0) envGain.gain.linearRampToValueAtTime(0.0001, t0 + totalDur);
         chain.connect(envGain);
         envGain.connect(this.masterGain);
         sources.forEach(s => { s.toStart.start(t0); s.toStart.stop(t0 + totalDur + 0.02); });
