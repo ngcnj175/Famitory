@@ -492,6 +492,114 @@ const NesAudio = {
         source.stop(this.ctx.currentTime + duration);
     },
 
+    // ==================================================
+    // Unified Synth Engine (統合シンセ, Bfxr風)
+    //   波形: square/sine/triangle/sawtooth/noise
+    //   ADSR + ピッチスライド + vibrato + harmonics + HPF/LPF
+    //   既存の playFreqSweep/playMultiNote/playNoiseSE は変更なし
+    // ==================================================
+    playUnifiedSE(config) {
+        this.ensureContext();
+        const {
+            waveType = 'square', duty = null,
+            attackTime = 0, sustainTime = 0.1, sustainPunch = 0, decayTime = 0.1,
+            masterVolume = 0.2,
+            frequencyStart = 440, frequencySlide = 0, slideType = 'exponential',
+            vibratoDepth = 0, vibratoSpeed = 0,
+            harmonics = 0, harmonicsFalloff = 0.5,
+            hpfFreq = 0, hpfSweep = 0,
+            lpfFreq = 0, lpfSweep = 0, lpfResonance = 1
+        } = config;
+        const totalDur = Math.max(0.01, attackTime + sustainTime + decayTime);
+        const t0 = this.ctx.currentTime;
+        const isNoise = waveType === 'noise';
+        const sources = [];
+        if (isNoise) {
+            const bufSize = Math.max(1, Math.floor(this.ctx.sampleRate * totalDur));
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            sources.push({ outNode: src, toStart: src, freqParam: null });
+        } else {
+            const oscCount = 1 + Math.max(0, Math.min(4, Math.floor(harmonics)));
+            for (let i = 0; i < oscCount; i++) {
+                const osc = this.ctx.createOscillator();
+                if (duty && waveType === 'square') {
+                    const key = `pulse_${duty}`;
+                    if (!this.waveCache[key]) {
+                        const n = 4096;
+                        const real = new Float32Array(n);
+                        const imag = new Float32Array(n);
+                        for (let k = 1; k < n; k++) imag[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * duty);
+                        this.waveCache[key] = this.ctx.createPeriodicWave(real, imag);
+                    }
+                    osc.setPeriodicWave(this.waveCache[key]);
+                } else {
+                    osc.type = waveType;
+                }
+                const mult = i + 1;
+                const startF = Math.max(20, frequencyStart * mult);
+                const endF = Math.max(20, (frequencyStart + frequencySlide) * mult);
+                osc.frequency.setValueAtTime(startF, t0);
+                if (frequencySlide !== 0) {
+                    if (slideType === 'exponential') osc.frequency.exponentialRampToValueAtTime(endF, t0 + totalDur);
+                    else osc.frequency.linearRampToValueAtTime(endF, t0 + totalDur);
+                }
+                const harmGain = this.ctx.createGain();
+                harmGain.gain.value = i === 0 ? 1 : Math.pow(harmonicsFalloff, i);
+                osc.connect(harmGain);
+                sources.push({ outNode: harmGain, toStart: osc, freqParam: osc.frequency });
+            }
+        }
+        let lfo = null;
+        if (!isNoise && vibratoDepth > 0 && vibratoSpeed > 0) {
+            lfo = this.ctx.createOscillator();
+            const lfoGain = this.ctx.createGain();
+            lfo.frequency.value = vibratoSpeed;
+            lfoGain.gain.value = vibratoDepth;
+            lfo.connect(lfoGain);
+            sources.forEach(s => { if (s.freqParam) lfoGain.connect(s.freqParam); });
+        }
+        const mixer = this.ctx.createGain();
+        sources.forEach(s => s.outNode.connect(mixer));
+        let chain = mixer;
+        if (hpfFreq > 0) {
+            const hpf = this.ctx.createBiquadFilter();
+            hpf.type = 'highpass';
+            hpf.frequency.setValueAtTime(hpfFreq, t0);
+            if (hpfSweep !== 0) hpf.frequency.linearRampToValueAtTime(Math.max(20, hpfFreq + hpfSweep), t0 + totalDur);
+            chain.connect(hpf); chain = hpf;
+        }
+        if (lpfFreq > 0) {
+            const lpf = this.ctx.createBiquadFilter();
+            lpf.type = 'lowpass';
+            lpf.frequency.setValueAtTime(lpfFreq, t0);
+            if (lpfSweep !== 0) lpf.frequency.linearRampToValueAtTime(Math.max(20, lpfFreq + lpfSweep), t0 + totalDur);
+            lpf.Q.value = lpfResonance;
+            chain.connect(lpf); chain = lpf;
+        }
+        const envGain = this.ctx.createGain();
+        const peakGain = masterVolume * (1 + sustainPunch);
+        if (attackTime > 0) {
+            envGain.gain.setValueAtTime(0.0001, t0);
+            envGain.gain.linearRampToValueAtTime(peakGain, t0 + attackTime);
+        } else {
+            envGain.gain.setValueAtTime(peakGain, t0);
+        }
+        envGain.gain.setValueAtTime(peakGain, t0 + attackTime);
+        if (sustainPunch > 0 && sustainTime > 0) {
+            envGain.gain.linearRampToValueAtTime(masterVolume, t0 + attackTime + Math.min(sustainTime, sustainTime * 0.3 + 0.02));
+        }
+        envGain.gain.setValueAtTime(masterVolume, t0 + attackTime + sustainTime);
+        if (decayTime > 0) envGain.gain.linearRampToValueAtTime(0.0001, t0 + totalDur);
+        chain.connect(envGain);
+        envGain.connect(this.masterGain);
+        sources.forEach(s => { s.toStart.start(t0); s.toStart.stop(t0 + totalDur + 0.02); });
+        if (lfo) { lfo.start(t0); lfo.stop(t0 + totalDur + 0.02); }
+    },
+
     // ========== ジャンプ系 ==========
     playSE_jump_01() { this.playFreqSweep({ startFreq: 200, endFreq: 600, duration: 0.1, waveType: 'square' }); },
     playSE_jump_02() { this.playFreqSweep({ startFreq: 300, endFreq: 900, duration: 0.08, waveType: 'square' }); },
