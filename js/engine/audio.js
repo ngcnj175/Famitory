@@ -295,11 +295,16 @@ const NesAudio = {
             masterVolume = 0.2,
             frequencyStart = 440, frequencySlide = 0, slideType = 'exponential',
             frequencyRamps = null,
+            pitchJump1Amount = 0, pitchJump1Onset = 0,
+            pitchJump2Amount = 0, pitchJump2Onset = 0,
             vibratoDepth = 0, vibratoSpeed = 0,
             harmonics = 0, harmonicsFalloff = 0.5,
             hpfFreq = 0, hpfSweep = 0,
             lpfFreq = 0, lpfSweep = 0, lpfResonance = 1, lpfPitchJump = 0,
             bpfFreq = 0, bpfSweep = 0, bpfQ = 1,
+            bitCrush = 0,
+            flangerOffset = 0, flangerSweep = 0,
+            compression = 0,
             startTime = null
         } = config;
         const isLegacy = envelopeMode === 'legacy4step';
@@ -365,6 +370,22 @@ const NesAudio = {
             lfo.connect(lfoGain);
             sources.forEach(s => { if (s.freqParam) lfoGain.connect(s.freqParam); });
         }
+        // pitchJump: ConstantSourceで基本周波数に加算 (Bfxr風2段階)
+        let jumpCS = null;
+        if (!isNoise && (pitchJump1Amount || pitchJump2Amount)) {
+            jumpCS = this.ctx.createConstantSource();
+            jumpCS.offset.setValueAtTime(0, t0);
+            let accum = 0;
+            if (pitchJump1Amount && pitchJump1Onset > 0) {
+                accum += pitchJump1Amount;
+                jumpCS.offset.setValueAtTime(accum, t0 + totalDur * pitchJump1Onset);
+            }
+            if (pitchJump2Amount && pitchJump2Onset > 0) {
+                accum += pitchJump2Amount;
+                jumpCS.offset.setValueAtTime(accum, t0 + totalDur * pitchJump2Onset);
+            }
+            sources.forEach(s => { if (s.freqParam) jumpCS.connect(s.freqParam); });
+        }
         const mixer = this.ctx.createGain();
         sources.forEach(s => s.outNode.connect(mixer));
         let chain = mixer;
@@ -392,6 +413,37 @@ const NesAudio = {
             lpf.Q.value = lpfResonance;
             chain.connect(lpf); chain = lpf;
         }
+        // bitCrush: WaveShaperで振幅を量子化 (0=無効, 1=1bit相当)
+        if (bitCrush > 0) {
+            const ws = this.ctx.createWaveShaper();
+            const bits = Math.max(1, 16 - bitCrush * 15);
+            const steps = Math.pow(2, bits);
+            const n = 65536;
+            const curve = new Float32Array(n);
+            for (let i = 0; i < n; i++) {
+                const x = (i / (n / 2)) - 1;
+                curve[i] = Math.round(x * steps) / steps;
+            }
+            ws.curve = curve;
+            chain.connect(ws); chain = ws;
+        }
+        // flanger: ディレイ+スイープでウェット/ドライミックス (Bfxr風静的フランジャー)
+        if (flangerOffset > 0 || flangerSweep !== 0) {
+            const maxDelay = Math.max(0.001, (Math.abs(flangerOffset) + Math.abs(flangerSweep)) / 1000 + 0.001);
+            const delay = this.ctx.createDelay(maxDelay);
+            const startD = Math.max(0, flangerOffset) / 1000;
+            const endD = Math.max(0, flangerOffset + flangerSweep) / 1000;
+            delay.delayTime.setValueAtTime(startD, t0);
+            if (flangerSweep !== 0) delay.delayTime.linearRampToValueAtTime(endD, t0 + totalDur);
+            const wetGain = this.ctx.createGain();
+            const dryGain = this.ctx.createGain();
+            const flangerMix = this.ctx.createGain();
+            wetGain.gain.value = 0.5;
+            dryGain.gain.value = 0.5;
+            chain.connect(delay); delay.connect(wetGain); wetGain.connect(flangerMix);
+            chain.connect(dryGain); dryGain.connect(flangerMix);
+            chain = flangerMix;
+        }
         const envGain = this.ctx.createGain();
         const peakGain = masterVolume * (1 + sustainPunch);
         if (isLegacy) {
@@ -415,9 +467,21 @@ const NesAudio = {
             if (decayTime > 0) envGain.gain.linearRampToValueAtTime(0.0001, t0 + totalDur);
         }
         chain.connect(envGain);
-        envGain.connect(this.masterGain);
+        let outNode = envGain;
+        // compression: DynamicsCompressorで音量の一貫性 (0=無効, 1=最大圧縮)
+        if (compression > 0) {
+            const comp = this.ctx.createDynamicsCompressor();
+            comp.threshold.value = -24 - compression * 20;
+            comp.knee.value = 30;
+            comp.ratio.value = 1 + compression * 19;
+            comp.attack.value = 0.003;
+            comp.release.value = 0.1;
+            envGain.connect(comp); outNode = comp;
+        }
+        outNode.connect(this.masterGain);
         sources.forEach(s => { s.toStart.start(t0); s.toStart.stop(t0 + totalDur + 0.02); });
         if (lfo) { lfo.start(t0); lfo.stop(t0 + totalDur + 0.02); }
+        if (jumpCS) { jumpCS.start(t0); jumpCS.stop(t0 + totalDur + 0.02); }
     },
 
     // ========== ジャンプ系 ==========
