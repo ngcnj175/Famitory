@@ -277,14 +277,15 @@ const NesAudio = {
             return;
         }
         // Repeat mode: repeatCount+segmentDuration で同じ波形を繰り返し
-        if ((config.repeatCount || 1) > 1 && config.segmentDuration) {
+        if ((config.repeatCount || 1) > 1) {
+            const segDur = config.segmentDuration || config.sustainTime || 0.1;
             const baseCfg = { ...config };
             delete baseCfg.repeatCount;
             delete baseCfg.segmentDuration;
-            baseCfg.sustainTime = config.segmentDuration;
+            baseCfg.sustainTime = segDur;
             const t0 = config.startTime != null ? config.startTime : this.ctx.currentTime;
             for (let i = 0; i < config.repeatCount; i++) {
-                this.playUnifiedSE({ ...baseCfg, startTime: t0 + config.segmentDuration * i });
+                this.playUnifiedSE({ ...baseCfg, startTime: t0 + segDur * i });
             }
             return;
         }
