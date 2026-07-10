@@ -248,14 +248,12 @@ const NesAudio = {
 
     // ========== 3つのジェネレータ関数 ==========
 
-    /**
-     * 周波数スイープ型SE（ジャンプ、攻撃、ダメージ等）
-     */
     // ==================================================
     // Unified Synth Engine (統合シンセ, Bfxr風)
+    //   全 playSE_<name> はこの1メソッドを呼び出す
     //   波形: square/sine/triangle/sawtooth/noise
-    //   ADSR + ピッチスライド + vibrato + harmonics + HPF/LPF
-    //   既存の playFreqSweep/playMultiNote/playNoiseSE は変更なし
+    //   ADSR + ピッチスライド + vibrato + harmonics
+    //   HPF/LPF/BPF + pitchJump + bitCrush + flanger + compression
     // ==================================================
     playUnifiedSE(config) {
         this.ensureContext();
