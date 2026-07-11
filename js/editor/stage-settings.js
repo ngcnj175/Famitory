@@ -27,8 +27,13 @@ class StageSettings {
                 this.owner.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
                 this.owner.pendingAreaH = Math.floor(App.projectData.stage.height / 16);
                 this.updateStageSettingsUI();
+                this.adjustContentMaxHeight();
             }
         });
+
+        window.addEventListener('resize', () => {
+            if (!panel.classList.contains('collapsed')) this.adjustContentMaxHeight();
+        }, { passive: true });
 
         // 一時的なサイズ値（保存ボタン押下まで反映しない）
         this.owner.pendingAreaW = Math.floor(App.projectData.stage.width / 16);
@@ -120,8 +125,7 @@ class StageSettings {
 
         // BGM選択ボタン
         this.owner.selectedBgmType = null;
-        const bgmButtons = document.querySelectorAll('.bgm-select-btn');
-        bgmButtons.forEach(btn => {
+        document.querySelectorAll('.bgm-select-btn[data-bgm-type]').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.owner.selectedBgmType = btn.dataset.bgmType;
                 this.owner.openBgmSelectPopup();
@@ -138,6 +142,26 @@ class StageSettings {
                 }
             });
         }
+
+        // 折りたたみグループ（BGM/効果音・サブカテゴリ）
+        document.querySelectorAll('.setting-group-header, .se-subgroup-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const group = header.closest('.setting-group, .se-subgroup');
+                if (!group) return;
+                const collapsed = group.classList.toggle('collapsed');
+                const toggle = header.querySelector('.setting-group-toggle, .se-subgroup-toggle');
+                if (toggle) toggle.textContent = collapsed ? '▶' : '▼';
+            });
+        });
+
+        // 効果音カテゴリ別選択ボタン
+        document.querySelectorAll('.stage-se-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.seCategory;
+                const key = btn.dataset.seKey;
+                this.owner.openStageSeSelectPopup(category, key);
+            });
+        });
 
         // クリア条件（UI表示の切り替えのみ）
         const clearCondition = document.getElementById('stage-clear-condition');
@@ -297,6 +321,23 @@ class StageSettings {
 
         // BGMボタン表示を更新
         this.updateBgmSelects();
+        // 効果音ボタン表示を更新
+        this.updateStageSeSelects();
+    }
+
+    updateStageSeSelects() {
+        const sounds = App.projectData?.sounds || [];
+        const se = App.projectData?.stage?.se || {};
+        document.querySelectorAll('.stage-se-btn').forEach(btn => {
+            const category = btn.dataset.seCategory;
+            const key = btn.dataset.seKey;
+            const idx = se?.[category]?.[key];
+            if (idx === undefined || idx < 0 || idx >= sounds.length) {
+                btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
+            } else {
+                btn.textContent = sounds[idx]?.name || `SE ${idx}`;
+            }
+        });
     }
 
     updateBgmSelects() {
@@ -654,6 +695,15 @@ class StageSettings {
 
         modal.querySelector('#cp-cancel').addEventListener('click', close);
         overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+    }
+
+    adjustContentMaxHeight() {
+        const content = document.getElementById('stage-settings-content');
+        const panelHeader = document.getElementById('stage-settings-header');
+        const screen = document.getElementById('stage-screen');
+        if (!content || !panelHeader || !screen) return;
+        const available = screen.offsetHeight - panelHeader.offsetHeight;
+        content.style.maxHeight = Math.max(200, available - 2) + 'px';
     }
 
     playSePreview(seIndex) {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PixelGameKit - 繧ｹ繝・・繧ｸ繧ｨ繝・ぅ繧ｿ v4・郁ｩｳ邏ｰ險ｭ螳壹ヱ繝阪Ν蟇ｾ蠢懶ｼ・
  */
 
@@ -87,7 +87,6 @@ const StageEditor = {
         this.initAddTileButton();
         this.initConfigPanel();
         this.initSpriteSelectPopup();
-        this.initSeSelectPopup();
         this.initTemplateList();
         this.initCanvasEvents();
         this.initStageSettings();
@@ -588,14 +587,6 @@ const StageEditor = {
                 `;
             }
 
-            // プレイヤー専用 SE設定
-            if (type === 'player') {
-                html += `<div class="param-section-label">${this.t('U240')}</div>`;
-                html += this.renderSeSelect(this.t('U241'), 'seJump', config.seJump ?? 0);
-                html += this.renderSeSelect(this.t('U242'), 'seAttack', config.seAttack ?? 5);
-                html += this.renderSeSelect(this.t('U243'), 'seDamage', config.seDamage ?? 10);
-                html += this.renderSeSelect(this.t('U244'), 'seItemGet', config.seItemGet ?? 15);
-            }
         } else if (type === 'material') {
             html += `
                 <div class="param-row">
@@ -773,61 +764,6 @@ const StageEditor = {
                            min="${min}" max="${max}" value="${value}" step="1">
                     <span class="range-value" data-key="${key}">${value}</span>
                 </div>
-            </div>
-        `;
-    },
-
-    renderSeSelect(label, key, selectedValue) {
-        // soundsがなければデフォルトのSEリストを適用
-        let sounds = App.projectData?.sounds;
-        if (!sounds || sounds.length === 0) {
-            sounds = [
-                // ジャンプ系
-                { id: 0, name: this.t('U256'), type: 'jump_01' },
-                { id: 1, name: this.t('U257'), type: 'jump_02' },
-                { id: 2, name: this.t('U258'), type: 'jump_03' },
-                { id: 3, name: this.t('U259'), type: 'jump_04' },
-                { id: 4, name: this.t('U260'), type: 'jump_05' },
-                // 攻撃系
-                { id: 5, name: this.t('U261'), type: 'attack_01' },
-                { id: 6, name: this.t('U262'), type: 'attack_02' },
-                { id: 7, name: this.t('U263'), type: 'attack_03' },
-                { id: 8, name: this.t('U264'), type: 'attack_04' },
-                { id: 9, name: this.t('U265'), type: 'attack_05' },
-                // ダメージ系
-                { id: 10, name: this.t('U266'), type: 'damage_01' },
-                { id: 11, name: this.t('U267'), type: 'damage_02' },
-                { id: 12, name: this.t('U268'), type: 'damage_03' },
-                { id: 13, name: this.t('U269'), type: 'damage_04' },
-                { id: 14, name: this.t('U270'), type: 'damage_05' },
-                // ゲット系
-                { id: 15, name: this.t('U271'), type: 'itemGet_01' },
-                { id: 16, name: this.t('U272'), type: 'itemGet_02' },
-                { id: 17, name: this.t('U273'), type: 'itemGet_03' },
-                { id: 18, name: this.t('U274'), type: 'itemGet_04' },
-                { id: 19, name: this.t('U275'), type: 'itemGet_05' },
-                // その他
-                { id: 20, name: this.t('U276'), type: 'other_01' },
-                { id: 21, name: this.t('U277'), type: 'other_02' },
-                { id: 22, name: this.t('U278'), type: 'other_03' },
-                { id: 23, name: this.t('U279'), type: 'other_04' },
-                { id: 24, name: this.t('U280'), type: 'other_05' }
-            ];
-            // プロジェクトデータに登録
-            if (App.projectData) {
-                App.projectData.sounds = sounds;
-            }
-        }
-
-        // 驕ｸ謚樔ｸｭ縺ｮSE蜷阪ｒ蜿門ｾ・
-        let selectedName = this.getSeName(sounds[selectedValue]);
-
-        return `
-            <div class="param-row se-row">
-                <span class="param-label">${label}</span>
-                <button class="se-select-btn param-select" data-key="${key}" data-value="${selectedValue}">
-                    ${selectedName}
-                </button>
             </div>
         `;
     },
@@ -1015,31 +951,6 @@ const StageEditor = {
             });
         });
 
-        // SE繝励Ξ繝薙Η繝ｼ繝懊ち繝ｳ
-        document.querySelectorAll('.se-preview-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const key = btn.dataset.key;
-                const select = document.querySelector(`.se-select[data-key="${key}"]`);
-                if (select) {
-                    const seIndex = parseInt(select.value);
-                    if (seIndex >= 0) {
-                        this.playSePreview(seIndex);
-                    }
-                }
-            });
-        });
-
-        // SE驕ｸ謚槭・繧ｿ繝ｳ
-        document.querySelectorAll('.se-select-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const key = btn.dataset.key;
-                const val = parseInt(btn.dataset.value);
-                const currentValue = isNaN(val) ? -1 : val;
-                this.openSeSelectPopup(key, currentValue);
-            });
-        });
-
         // レンジスライダー（射程距離など）
         document.querySelectorAll('.range-slider').forEach(slider => {
             slider.addEventListener('input', (e) => {
@@ -1155,111 +1066,6 @@ const StageEditor = {
         });
     },
 
-    // ========== SE驕ｸ謚槭・繝・・繧｢繝・・ ==========
-    currentSeSelectKey: null,
-    selectedSeIndex: -1,
-
-    initSeSelectPopup() {
-        const cancelBtn = document.getElementById('se-select-cancel');
-        const doneBtn = document.getElementById('se-select-done');
-
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => this.closeSeSelectPopup());
-        }
-
-        if (doneBtn) {
-            doneBtn.addEventListener('click', () => this.confirmSeSelection());
-        }
-    },
-
-    openSeSelectPopup(key, currentValue) {
-        this.currentSeSelectKey = key;
-        this.selectedSeIndex = currentValue;
-
-        const popup = document.getElementById('se-select-popup');
-        const list = popup.querySelector('.se-select-list');
-
-        // SE荳隕ｧ繧堤函謌・
-        let sounds = App.projectData?.sounds;
-        if (!sounds || sounds.length === 0) {
-            sounds = [
-                { id: 0, name: this.t('U201'), type: 'jump' },
-                { id: 1, name: this.t('U202'), type: 'attack' },
-                { id: 2, name: this.t('U281'), type: 'damage' },
-                { id: 3, name: this.t('U282'), type: 'itemGet' }
-            ];
-        }
-
-        let html = `
-            <div class="se-select-item ${this.selectedSeIndex === -1 ? 'current' : ''}" data-se-index="-1">
-                <span class="se-name">${this.t('U220')}</span>
-            </div>
-        `;
-        sounds.forEach((se, idx) => {
-            html += `
-                <div class="se-select-item ${this.selectedSeIndex === idx ? 'current' : ''}" data-se-index="${idx}">
-                    <span class="se-name">${this.getSeName(se)}</span>
-                    <button class="se-preview-btn" data-se-index="${idx}">▶</button>
-                </div>
-            `;
-        });
-
-        list.innerHTML = html;
-
-        // 繝ｪ繧ｹ繝亥・縺ｮ繧ｿ繝・メ繧､繝吶Φ繝井ｼ晄眺繧貞●豁｢・医げ繝ｭ繝ｼ繝舌Ν繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝悶Ο繝・け縺ｮ蝗樣∩・・
-        list.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
-        list.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
-
-        // 繧､繝吶Φ繝医ｒ險ｭ螳・
-        list.querySelectorAll('.se-select-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                // 繝励Ξ繝薙Η繝ｼ繝懊ち繝ｳ繧ｯ繝ｪ繝・け譎ゅ・驕ｸ謚槭＠縺ｪ縺・
-                if (e.target.classList.contains('se-preview-btn')) return;
-
-                // 蜊ｳ蠎ｧ縺ｫ驕ｸ謚槭ｒ遒ｺ螳・
-                this.selectedSeIndex = parseInt(item.dataset.seIndex);
-                this.confirmSeSelection();
-            });
-        });
-
-        list.querySelectorAll('.se-preview-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.dataset.seIndex);
-                this.playSePreview(idx);
-            });
-            // 繧ｿ繝・メ繧､繝吶Φ繝医ｂ霑ｽ蜉・亥渚蠢懈ｧ蜷台ｸ奇ｼ・
-            btn.addEventListener('touchstart', (e) => {
-                e.stopPropagation(); // 繝ｪ繧ｹ繝医・繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ莉･螟悶∈縺ｮ莨晄眺髦ｲ豁｢
-            }, { passive: true });
-        });
-
-        // 繝昴ャ繝励い繝・・螟悶け繝ｪ繝・け縺ｧ髢峨§繧・
-        popup.addEventListener('click', (e) => {
-            if (e.target === popup) {
-                this.closeSeSelectPopup();
-            }
-        }, { once: true });
-
-        popup.classList.remove('hidden');
-    },
-
-    closeSeSelectPopup() {
-        const popup = document.getElementById('se-select-popup');
-        popup.classList.add('hidden');
-        this.currentSeSelectKey = null;
-    },
-
-    confirmSeSelection() {
-        if (this.currentSeSelectKey && this.editingTemplate?.config) {
-            this.editingTemplate.config[this.currentSeSelectKey] = this.selectedSeIndex;
-            // UI繧呈峩譁ｰ
-            this.renderConfigContent();
-            this.initConfigEvents();
-        }
-        this.closeSeSelectPopup();
-    },
-
     // ========== BGM選択ポップアップ ==========
     openBgmSelectPopup() {
         const popup = document.getElementById('bgm-select-popup');
@@ -1369,6 +1175,82 @@ const StageEditor = {
                 btn.classList.remove('playing');
             });
         }
+    },
+
+    // ========== ステージ効果音選択ポップアップ ==========
+    openStageSeSelectPopup(category, key) {
+        const popup = document.getElementById('se-select-popup');
+        const list = popup?.querySelector('.se-select-list');
+        if (!popup || !list) return;
+
+        this._stageSeSelecting = { category, key };
+        const sounds = App.projectData?.sounds || [];
+        const currentIdx = App.projectData?.stage?.se?.[category]?.[key];
+
+        let html = `
+            <div class="se-select-item ${currentIdx === -1 ? 'current' : ''}" data-se-index="-1">
+                <span class="se-name">${this.t('U220') || 'なし'}</span>
+            </div>
+        `;
+        sounds.forEach((se, idx) => {
+            const isCurrent = currentIdx === idx ? 'current' : '';
+            html += `
+                <div class="se-select-item ${isCurrent}" data-se-index="${idx}">
+                    <span class="se-name">${this.getSeName ? this.getSeName(se) : (se.name || `SE ${idx}`)}</span>
+                    <button class="se-preview-btn" data-se-index="${idx}">▶</button>
+                </div>
+            `;
+        });
+        list.innerHTML = html;
+
+        list.querySelectorAll('.se-select-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.classList.contains('se-preview-btn')) return;
+                const idx = parseInt(item.dataset.seIndex);
+                this.confirmStageSeSelection(idx);
+            });
+        });
+
+        list.querySelectorAll('.se-preview-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(btn.dataset.seIndex);
+                if (idx >= 0) this.playSePreview(idx);
+            });
+        });
+
+        // 背景クリックで閉じる
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.classList.add('hidden');
+                this._stageSeSelecting = null;
+            }
+        }, { once: true });
+
+        popup.classList.remove('hidden');
+    },
+
+    confirmStageSeSelection(idx) {
+        const sel = this._stageSeSelecting;
+        if (!sel) return;
+        const stage = App.projectData.stage;
+        if (!stage.se) stage.se = { player: {}, item: {}, env: {} };
+        if (!stage.se[sel.category]) stage.se[sel.category] = {};
+        stage.se[sel.category][sel.key] = idx;
+
+        // 対応ボタンのラベルを更新
+        const btn = document.querySelector(`.stage-se-btn[data-se-category="${sel.category}"][data-se-key="${sel.key}"]`);
+        if (btn) {
+            const sounds = App.projectData.sounds || [];
+            if (idx === -1) {
+                btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
+            } else {
+                btn.textContent = sounds[idx]?.name || `SE ${idx}`;
+            }
+        }
+
+        document.getElementById('se-select-popup')?.classList.add('hidden');
+        this._stageSeSelecting = null;
     },
 
     // ========== スプライト選択モーダル ==========

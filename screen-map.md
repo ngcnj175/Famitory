@@ -41,6 +41,12 @@
 > - **app.js シェア機能の分割（フェーズ11）** ✅
 >   - updateShareStatus/showPublishConfirm/publishAndShare/copyToClipboard/bindShareSimpleEvents を AppShare に抽出
 >   - app.js: 1,082行 → 764行（318行削減）、app-share.js: 289行
+> - **効果音カテゴリ別ユーザー選択対応（2026-07）** ✅
+>   - `stage.se` に player/item/env カテゴリのSE ID割り当て領域を追加（app-project.js）
+>   - ゲーム設定パネルに折りたたみ式SE設定エリアを新設（index.html）
+>   - プレイヤーテンプレートのSE個別設定UI（seJump/seAttack/seDamage/seItemGet）を廃止
+>   - ブロック破壊/扉解錠/爆発/敵撃破/アイテム3分類（coin/powerup/keyItem）を個別選択可能に
+>   - 旧プレイヤーテンプレートSE設定を stage.se へ自動移行
 > - **ゲームエンジン共通化・テンプレート化（フェーズ12）** ✅
 >   - **ProjectileManager 作成**: player.js/enemy.js の射撃ロジック統合（spread, drop, melee, pinball, orbit, straight, arc）
 >     - player.js attack(): 155行 → 15行、enemy.js shoot(): 142行 → 10行（削減 272行）

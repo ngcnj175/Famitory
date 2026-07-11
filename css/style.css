@@ -2845,7 +2845,7 @@ body {
     background: #f5f5f5;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: calc(100dvh - var(--safe-area-top) - var(--safe-area-bottom) - 100px);
+    max-height: calc(100dvh - var(--safe-area-top) - var(--safe-area-bottom) - var(--header-height) - 70px);
 }
 
 .setting-row {
@@ -3144,6 +3144,89 @@ body {
 
 .setting-row-vertical label {
     margin-bottom: 2px;
+}
+
+/* ========== 折りたたみ設定グループ（BGM/効果音） ========== */
+.setting-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 0;
+}
+
+.setting-group-toggle {
+    font-size: 10px;
+    color: var(--color-medium);
+    width: 12px;
+    display: inline-block;
+    text-align: center;
+    transition: transform 0.15s;
+}
+
+.setting-group-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.setting-group-body {
+    width: 100%;
+    overflow: hidden;
+    max-height: 2000px;
+    transition: max-height 0.2s ease-out;
+}
+
+.setting-group.collapsed .setting-group-body {
+    max-height: 0;
+}
+
+/* 効果音サブグループ */
+.se-subgroup {
+    width: 100%;
+    margin-top: 4px;
+    padding-left: 0.5em;
+    box-sizing: border-box;
+}
+
+.se-subgroup-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 0;
+}
+
+.se-subgroup-toggle {
+    font-size: 10px;
+    color: var(--color-medium);
+    width: 12px;
+    display: inline-block;
+    text-align: center;
+}
+
+.se-subgroup-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-medium);
+}
+
+.se-subgroup-body {
+    padding-left: 0.5em;
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 0.2s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.se-subgroup.collapsed .se-subgroup-body {
+    max-height: 0;
+    margin-top: 0;
 }
 
 /* ========== 蜈ｱ譛峨ム繧､繧｢繝ｭ繧ｰ ========== */

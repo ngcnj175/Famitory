@@ -1034,14 +1034,14 @@ const GameEngine = {
                         const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
                         this.showEasterMessage(message);
                         // アイテムゲット音を鳴らす
-                        this.player.playSE('itemGet');
+                        this.player.playSE('powerup');
                         return;
                     }
 
                     // ボム: 画面上の全敵に1ダメージ＋爆発音
                     if (item.itemType === 'bomb') {
                         this.physics.damageAllEnemiesOnScreen(1);
-                        if (typeof NesAudio !== 'undefined') NesAudio.playSE('explosion');
+                        if (this.player) this.player.playSE('explosion');
                     }
                     // 変身: プレイヤー設定を切り替え
                     if (item.itemType === 'transform') {

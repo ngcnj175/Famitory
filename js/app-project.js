@@ -28,8 +28,17 @@ const DEFAULT_SOUNDS = [
     { id: 21, name: 'その他_02(キャンセル)', type: 'other_02'},
     { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
     { id: 23, name: 'その他_04(ポーズ)',  type: 'other_04'  },
-    { id: 24, name: 'その他_05(爆発)',    type: 'other_05'  }
+    { id: 24, name: 'その他_05(爆発)',    type: 'other_05'  },
+    { id: 25, name: '撃破音',             type: 'enemyDefeat' },
+    { id: 26, name: '爆発音',             type: 'explosion' }
 ];
+
+// デフォルトSE割り当て (stage.se)
+const DEFAULT_STAGE_SE = {
+    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 25 },
+    item:   { coin: 15, powerup: 17, keyItem: 19 },
+    env:    { blockBreak: 24, doorUnlock: 16, explosion: 26 }
+};
 
 const AppProject = {
 
@@ -81,6 +90,7 @@ const AppProject = {
                     clear: '',
                     gameover: ''
                 },
+                se: JSON.parse(JSON.stringify(DEFAULT_STAGE_SE)),
                 clearCondition: 'enemies',
                 timeLimit: 0,
                 showScore: true,
@@ -233,6 +243,52 @@ const AppProject = {
                     }
                 });
             }
+        }
+
+        // sounds配列にenemyDefeat/explosionが欠けていれば追加
+        if (App.projectData.sounds) {
+            const existingTypes = new Set(App.projectData.sounds.map(s => s.type));
+            DEFAULT_SOUNDS.forEach(defSe => {
+                if (!existingTypes.has(defSe.type)) {
+                    App.projectData.sounds.push({ ...defSe });
+                }
+            });
+        }
+
+        // stage.se 初期化・旧プレイヤーテンプレートSE設定からの移行
+        if (!stage.se) {
+            stage.se = JSON.parse(JSON.stringify(DEFAULT_STAGE_SE));
+
+            // 旧プレイヤーテンプレートのSE設定を吸い上げ（最初に見つかったプレイヤーテンプレートを採用）
+            if (App.projectData.templates) {
+                const playerTmpl = App.projectData.templates.find(t => t.type === 'player');
+                if (playerTmpl && playerTmpl.config) {
+                    if (playerTmpl.config.seJump    !== undefined) stage.se.player.jump    = playerTmpl.config.seJump;
+                    if (playerTmpl.config.seAttack  !== undefined) stage.se.player.attack  = playerTmpl.config.seAttack;
+                    if (playerTmpl.config.seDamage  !== undefined) stage.se.player.damage  = playerTmpl.config.seDamage;
+                    if (playerTmpl.config.seItemGet !== undefined) stage.se.item.powerup   = playerTmpl.config.seItemGet;
+                }
+            }
+        } else {
+            // 部分的に欠けているキーを補完
+            if (!stage.se.player) stage.se.player = {};
+            if (!stage.se.item)   stage.se.item   = {};
+            if (!stage.se.env)    stage.se.env    = {};
+            Object.keys(DEFAULT_STAGE_SE.player).forEach(k => { if (stage.se.player[k] === undefined) stage.se.player[k] = DEFAULT_STAGE_SE.player[k]; });
+            Object.keys(DEFAULT_STAGE_SE.item  ).forEach(k => { if (stage.se.item[k]   === undefined) stage.se.item[k]   = DEFAULT_STAGE_SE.item[k];   });
+            Object.keys(DEFAULT_STAGE_SE.env   ).forEach(k => { if (stage.se.env[k]    === undefined) stage.se.env[k]    = DEFAULT_STAGE_SE.env[k];    });
+        }
+
+        // 旧プレイヤーテンプレートSEフィールドを削除
+        if (App.projectData.templates) {
+            App.projectData.templates.forEach(tmpl => {
+                if (tmpl.type === 'player' && tmpl.config) {
+                    delete tmpl.config.seJump;
+                    delete tmpl.config.seAttack;
+                    delete tmpl.config.seDamage;
+                    delete tmpl.config.seItemGet;
+                }
+            });
         }
     },
 

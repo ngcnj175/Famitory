@@ -270,7 +270,7 @@ class GamePhysics {
 
         this.createTileParticles(tileX, tileY, tileId);
 
-        if (this.owner.player) this.owner.player.playSE('enemyDefeat');
+        if (this.owner.player) this.owner.player.playSE('blockBreak');
         this.owner.addScore(10);
         this.wakeEnemiesAt(tileX, tileY);
     }
@@ -369,7 +369,7 @@ class GamePhysics {
 
         if (doorOpened) {
             o.player.hasKey = false;
-            o.player.playSE('itemGet');
+            o.player.playSE('doorUnlock');
             o.doorAnimating = true;
         }
     }

@@ -81,42 +81,29 @@ class Player {
         // カギ所持フラグ
         this.hasKey = false;
 
-        // SE設定（-1はOFF）
-        this.seJump = template?.config?.seJump ?? 0;
-        this.seAttack = template?.config?.seAttack ?? 5;
-        this.seDamage = template?.config?.seDamage ?? 10;
-        this.seItemGet = template?.config?.seItemGet ?? 15;
-        this.seEnemyDefeat = template?.config?.seEnemyDefeat ?? 24;
-
         // 喜びジャンプ（クリア演出用）
         this.joyJumpActive = false;
         this.joyJumpStartY = 0;
     }
 
-    // SE再生ヘルパー（設定がOFFの場合は鳴らさない）
+    // SE再生ヘルパー: stage.se の該当カテゴリ・キーから音を引く
+    // key: 'jump'|'attack'|'damage'|'enemyDefeat'（player）
+    //    | 'coin'|'powerup'|'keyItem'（item）
+    //    | 'blockBreak'|'doorUnlock'|'explosion'（env）
     playSE(seKey) {
         if (typeof NesAudio === 'undefined') return;
+        const se = App.projectData?.stage?.se;
+        if (!se) return;
 
-        // enemyDefeatは常にv2.0.1オリジナルの「ポン」音を再生
-        if (seKey === 'enemyDefeat') {
-            NesAudio.playSE('enemyDefeat');
-            return;
-        }
+        let idx = -1;
+        if      (se.player && seKey in se.player) idx = se.player[seKey];
+        else if (se.item   && seKey in se.item)   idx = se.item[seKey];
+        else if (se.env    && seKey in se.env)    idx = se.env[seKey];
 
+        if (idx === undefined || idx < 0) return;
         const sounds = App.projectData?.sounds || [];
-        let seIndex = -1;
-
-        switch (seKey) {
-            case 'jump': seIndex = this.seJump; break;
-            case 'attack': seIndex = this.seAttack; break;
-            case 'damage': seIndex = this.seDamage; break;
-            case 'itemGet': seIndex = this.seItemGet; break;
-        }
-
-        if (seIndex >= 0 && seIndex < sounds.length) {
-            const se = sounds[seIndex];
-            NesAudio.playSE(se.type);
-        }
+        const s = sounds[idx];
+        if (s) NesAudio.playSE(s.type);
     }
 
     update(engine) {
@@ -436,28 +423,26 @@ class Player {
                 if (typeof GameEngine !== 'undefined') {
                     GameEngine.playBgm('invincible');
                 }
-                // SE再生
-                this.playSE('itemGet');
+                this.playSE('powerup');
                 break;
             case 'coin':
                 // コイン取得（スコアはgame-engine.js側で加算）
-                this.playSE('itemGet');
+                this.playSE('coin');
                 break;
             case 'lifeup':
                 if (this.lives < this.maxLives) {
                     this.lives++;
                 }
-                // SE再生
-                this.playSE('itemGet');
+                this.playSE('powerup');
                 break;
             case 'clear':
                 // クリアアイテム取得（カウントはgame-engine.js側で行う）
-                this.playSE('itemGet');
+                this.playSE('keyItem');
                 break;
             case 'weapon':
                 // 武器アイテム取得 → 武器使用可能に
                 this.hasWeapon = true;
-                this.playSE('itemGet');
+                this.playSE('powerup');
                 break;
             case 'bomb':
                 // ボム: 画面上の全敵に1ダメージ＋爆発音はgame-engineで処理
@@ -465,7 +450,7 @@ class Player {
             case 'key':
                 // カギ取得
                 this.hasKey = true;
-                this.playSE('itemGet');
+                this.playSE('keyItem');
                 break;
         }
     }
@@ -507,19 +492,12 @@ class Player {
         this.shotMaxRange = (newTemplate.config?.shotMaxRange || 0) * 2;
         this.wJumpEnabled = newTemplate.config?.wJump || false;
 
-        // SE
-        this.seJump = newTemplate.config?.seJump ?? 0;
-        this.seAttack = newTemplate.config?.seAttack ?? 5;
-        this.seDamage = newTemplate.config?.seDamage ?? 10;
-        this.seItemGet = newTemplate.config?.seItemGet ?? 15;
-        this.seEnemyDefeat = newTemplate.config?.seEnemyDefeat ?? 24;
-
         // アニメーションリセット
         this.animFrame = 0;
         this.animTimer = 0;
         this.state = 'idle';
 
-        this.playSE('itemGet');
+        this.playSE('powerup');
     }
 
     die() {

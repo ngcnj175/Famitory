@@ -354,31 +354,115 @@
                         <label data-i18n="U050">背景色</label>
                         <div id="stage-bg-color" class="color-swatch"></div>
                     </div>
-                    <!-- BGM設定 -->
-                    <div class="setting-row setting-row-vertical">
-                        <label>BGM</label>
-                        <div class="bgm-selects bgm-indented">
-                            <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U413">ステージ</span>
-                                <button id="bgm-stage-btn" class="bgm-select-btn" data-bgm-type="stage">なし</button>
+                    <!-- BGM設定（折りたたみ可・既定=開） -->
+                    <div class="setting-row setting-row-vertical setting-group" id="bgm-settings-group">
+                        <div class="setting-group-header" data-target="bgm-settings-body">
+                            <span class="setting-group-toggle">▼</span>
+                            <span class="setting-group-label">BGM</span>
+                        </div>
+                        <div class="setting-group-body" id="bgm-settings-body">
+                            <div class="bgm-selects bgm-indented">
+                                <div class="bgm-select-row">
+                                    <span class="bgm-label" data-i18n="U413">ステージ</span>
+                                    <button id="bgm-stage-btn" class="bgm-select-btn" data-bgm-type="stage">なし</button>
+                                </div>
+                                <div class="bgm-select-row">
+                                    <span class="bgm-label" data-i18n="U414">無敵</span>
+                                    <button id="bgm-invincible-btn" class="bgm-select-btn"
+                                        data-bgm-type="invincible">なし</button>
+                                </div>
+                                <div class="bgm-select-row">
+                                    <span class="bgm-label" data-i18n="U415">クリア</span>
+                                    <button id="bgm-clear-btn" class="bgm-select-btn" data-bgm-type="clear">なし</button>
+                                </div>
+                                <div class="bgm-select-row">
+                                    <span class="bgm-label" data-i18n="U416">ゲームオーバー</span>
+                                    <button id="bgm-gameover-btn" class="bgm-select-btn"
+                                        data-bgm-type="gameover">なし</button>
+                                </div>
+                                <div class="bgm-select-row">
+                                    <span class="bgm-label" data-i18n="U417">ボス</span>
+                                    <button id="bgm-boss-btn" class="bgm-select-btn" data-bgm-type="boss">なし</button>
+                                </div>
                             </div>
-                            <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U414">無敵</span>
-                                <button id="bgm-invincible-btn" class="bgm-select-btn"
-                                    data-bgm-type="invincible">なし</button>
+                        </div>
+                    </div>
+
+                    <!-- 効果音設定（折りたたみ可・既定=閉） -->
+                    <div class="setting-row setting-row-vertical setting-group collapsed" id="se-settings-group">
+                        <div class="setting-group-header" data-target="se-settings-body">
+                            <span class="setting-group-toggle">▶</span>
+                            <span class="setting-group-label" data-i18n="U460">効果音</span>
+                        </div>
+                        <div class="setting-group-body" id="se-settings-body">
+                            <!-- プレイヤー -->
+                            <div class="se-subgroup collapsed" data-se-group="player">
+                                <div class="se-subgroup-header" data-target="se-body-player">
+                                    <span class="se-subgroup-toggle">▶</span>
+                                    <span class="se-subgroup-label" data-i18n="U193">プレイヤー</span>
+                                </div>
+                                <div class="se-subgroup-body" id="se-body-player">
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U201">ジャンプ</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="player" data-se-key="jump">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U202">攻撃</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="player" data-se-key="attack">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U281">ダメージ</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="player" data-se-key="damage">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U461">敵撃破</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="player" data-se-key="enemyDefeat">なし</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U415">クリア</span>
-                                <button id="bgm-clear-btn" class="bgm-select-btn" data-bgm-type="clear">なし</button>
+
+                            <!-- アイテム取得 -->
+                            <div class="se-subgroup collapsed" data-se-group="item">
+                                <div class="se-subgroup-header" data-target="se-body-item">
+                                    <span class="se-subgroup-toggle">▶</span>
+                                    <span class="se-subgroup-label" data-i18n="U462">アイテム取得</span>
+                                </div>
+                                <div class="se-subgroup-body" id="se-body-item">
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U463">コイン</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="item" data-se-key="coin">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U464">パワーアップ</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="item" data-se-key="powerup">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U465">キーアイテム</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="item" data-se-key="keyItem">なし</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U416">ゲームオーバー</span>
-                                <button id="bgm-gameover-btn" class="bgm-select-btn"
-                                    data-bgm-type="gameover">なし</button>
-                            </div>
-                            <div class="bgm-select-row">
-                                <span class="bgm-label" data-i18n="U417">ボス</span>
-                                <button id="bgm-boss-btn" class="bgm-select-btn" data-bgm-type="boss">なし</button>
+
+                            <!-- 環境 -->
+                            <div class="se-subgroup collapsed" data-se-group="env">
+                                <div class="se-subgroup-header" data-target="se-body-env">
+                                    <span class="se-subgroup-toggle">▶</span>
+                                    <span class="se-subgroup-label" data-i18n="U466">環境</span>
+                                </div>
+                                <div class="se-subgroup-body" id="se-body-env">
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U467">ブロック破壊</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="env" data-se-key="blockBreak">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U468">扉解錠</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="env" data-se-key="doorUnlock">なし</button>
+                                    </div>
+                                    <div class="bgm-select-row">
+                                        <span class="bgm-label" data-i18n="U469">爆発</span>
+                                        <button class="bgm-select-btn stage-se-btn" data-se-category="env" data-se-key="explosion">なし</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
