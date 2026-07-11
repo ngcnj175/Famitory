@@ -17,22 +17,16 @@ const StageEditor = {
 
     // SE名の翻訳取得
     getSeName(se) {
-        if (!se) return this.t('U220'); // なし
-        // デフォルトのSEリスト（U256〜U280）に一致するか確認
+        if (!se) return this.t('U220');
         const nameIdMap = {
             'jump_01': 'U256', 'jump_02': 'U257', 'jump_03': 'U258', 'jump_04': 'U259', 'jump_05': 'U260',
             'attack_01': 'U261', 'attack_02': 'U262', 'attack_03': 'U263', 'attack_04': 'U264', 'attack_05': 'U265',
             'damage_01': 'U266', 'damage_02': 'U267', 'damage_03': 'U268', 'damage_04': 'U269', 'damage_05': 'U270',
             'itemGet_01': 'U271', 'itemGet_02': 'U272', 'itemGet_03': 'U273', 'itemGet_04': 'U274', 'itemGet_05': 'U275',
             'other_01': 'U276', 'other_02': 'U277', 'other_03': 'U278', 'other_04': 'U279', 'other_05': 'U280',
-            // 基本タイプ
-            'jump': 'U201', 'attack': 'U202', 'damage': 'U281', 'itemGet': 'U282'
         };
         const id = nameIdMap[se.type];
-        if (id) {
-            return this.t(id);
-        }
-        return se.name;
+        return id ? this.t(id) : se.name;
     },
 
     // 迥ｶ諷・
@@ -1233,10 +1227,7 @@ const StageEditor = {
     confirmStageSeSelection(idx) {
         const sel = this._stageSeSelecting;
         if (!sel) return;
-        const stage = App.projectData.stage;
-        if (!stage.se) stage.se = { player: {}, item: {}, env: {} };
-        if (!stage.se[sel.category]) stage.se[sel.category] = {};
-        stage.se[sel.category][sel.key] = idx;
+        App.projectData.stage.se[sel.category][sel.key] = idx;
 
         // 対応ボタンのラベルを更新
         const btn = document.querySelector(`.stage-se-btn[data-se-category="${sel.category}"][data-se-key="${sel.key}"]`);

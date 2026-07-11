@@ -709,16 +709,7 @@ class StageSettings {
     playSePreview(seIndex) {
         const sounds = App.projectData?.sounds || [];
         if (seIndex < 0 || seIndex >= sounds.length) return;
-
         const se = sounds[seIndex];
-
-        // グローバルオーディオエンジンを使用
-        const audio = window.NesAudio || window.AudioManager;
-        if (audio) {
-            console.log('Previewing SE:', se.name, se.type);
-            audio.playSE(se.type);
-        } else {
-            console.error('Audio engine (NesAudio/AudioManager) not found.');
-        }
+        window.NesAudio?.playSE(se.type);
     }
 }

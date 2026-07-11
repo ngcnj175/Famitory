@@ -262,11 +262,11 @@ const AppProject = {
             // 旧プレイヤーテンプレートのSE設定を吸い上げ（最初に見つかったプレイヤーテンプレートを採用）
             if (App.projectData.templates) {
                 const playerTmpl = App.projectData.templates.find(t => t.type === 'player');
-                if (playerTmpl && playerTmpl.config) {
-                    if (playerTmpl.config.seJump    !== undefined) stage.se.player.jump    = playerTmpl.config.seJump;
-                    if (playerTmpl.config.seAttack  !== undefined) stage.se.player.attack  = playerTmpl.config.seAttack;
-                    if (playerTmpl.config.seDamage  !== undefined) stage.se.player.damage  = playerTmpl.config.seDamage;
-                    if (playerTmpl.config.seItemGet !== undefined) stage.se.item.powerup   = playerTmpl.config.seItemGet;
+                if (playerTmpl?.config) {
+                    if (playerTmpl.config.seJump    !== undefined) stage.se.player.jump   = playerTmpl.config.seJump;
+                    if (playerTmpl.config.seAttack  !== undefined) stage.se.player.attack = playerTmpl.config.seAttack;
+                    if (playerTmpl.config.seDamage  !== undefined) stage.se.player.damage = playerTmpl.config.seDamage;
+                    if (playerTmpl.config.seItemGet !== undefined) stage.se.item.powerup  = playerTmpl.config.seItemGet;
                 }
             }
         } else {
@@ -287,6 +287,7 @@ const AppProject = {
                     delete tmpl.config.seAttack;
                     delete tmpl.config.seDamage;
                     delete tmpl.config.seItemGet;
+                    delete tmpl.config.seEnemyDefeat;
                 }
             });
         }
