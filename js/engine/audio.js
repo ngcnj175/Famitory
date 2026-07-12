@@ -415,14 +415,7 @@ const NesAudio = {
     playSE_explosion_03() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.24, decayTime: 0.22, masterVolume: 0.29, frequencyStart: 700, duty: 0.25, frequencySlide: -184, vibratoDepth: 30, vibratoSpeed: 7.5, pitchJump1Amount: -620, pitchJump1Onset: 0.04 }); },
     playSE_pause()        { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.1, decayTime: 0.1, masterVolume: 0.5, frequencyStart: 440, duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
 
-    // 旧SE互換用エイリアス
-    playSE_jump() { this.playSE_jump_01(); },
-    playSE_attack() { this.playSE_attack_01(); },
-    playSE_damage() { this.playSE_damage_01(); },
-    playSE_itemGet() { this.playSE_itemGet_01(); },
-
-    // SE: 敵を倒す（短い「ポン」音）- v2.0.1オリジナル
-    playSE_enemyDefeat() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.28, decayTime: 0.1, masterVolume: 0.18, frequencyStart: 493, frequencySlide: -946, pitchJump1Amount: 60, pitchJump1Onset: 0.38 }); }
+    playSE_enemyDefeat()  { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.28, decayTime: 0.1, masterVolume: 0.18, frequencyStart: 493, frequencySlide: -946, pitchJump1Amount: 60, pitchJump1Onset: 0.38 }); }
 };
 
 // グローバル公開と互換性確保
