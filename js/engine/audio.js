@@ -249,11 +249,11 @@ const NesAudio = {
     // ========== 3つのジェネレータ関数 ==========
 
     // ==================================================
-    // Unified Synth Engine (統合シンセ, Bfxr風)
+    // Unified Synth Engine (統合シンセ)
     //   全 playSE_<name> はこの1メソッドを呼び出す
     //   波形: square/sine/triangle/sawtooth/noise
-    //   ADSR + ピッチスライド + vibrato + harmonics
-    //   HPF/LPF/BPF + pitchJump + bitCrush + flanger + compression
+    //   エンベロープ (adsr / legacy4step) + ピッチスライド
+    //   vibrato + pitchJump + notes + repeatCount
     // ==================================================
     playUnifiedSE(config) {
         this.ensureContext();
@@ -290,26 +290,18 @@ const NesAudio = {
         const {
             waveType = 'square', duty = null,
             envelopeMode = 'adsr',
-            attackTime = 0, sustainTime = 0.1, sustainPunch = 0, decayTime = 0.1,
+            sustainTime = 0.1, decayTime = 0.1,
             masterVolume = 0.2,
-            frequencyStart = 440, frequencySlide = 0, slideType = 'exponential',
-            frequencyRamps = null,
+            frequencyStart = 440, frequencySlide = 0,
             pitchJump1Amount = 0, pitchJump1Onset = 0,
             pitchJump2Amount = 0, pitchJump2Onset = 0,
             vibratoDepth = 0, vibratoSpeed = 0,
-            harmonics = 0, harmonicsFalloff = 0.5,
-            hpfFreq = 0, hpfSweep = 0,
-            lpfFreq = 0, lpfSweep = 0, lpfResonance = 1, lpfPitchJump = 0,
-            bpfFreq = 0, bpfSweep = 0, bpfQ = 1,
-            bitCrush = 0,
-            flangerOffset = 0, flangerSweep = 0,
-            compression = 0,
             startTime = null
         } = config;
         const isLegacy = envelopeMode === 'legacy4step';
         const totalDur = isLegacy
             ? Math.max(0.01, sustainTime)
-            : Math.max(0.01, attackTime + sustainTime + decayTime);
+            : Math.max(0.01, sustainTime + decayTime);
         const t0 = startTime != null ? startTime : this.ctx.currentTime;
         const isNoise = waveType === 'noise';
         const sources = [];
@@ -322,43 +314,27 @@ const NesAudio = {
             src.buffer = buf;
             sources.push({ outNode: src, toStart: src, freqParam: null });
         } else {
-            const oscCount = 1 + Math.max(0, Math.min(4, Math.floor(harmonics)));
-            for (let i = 0; i < oscCount; i++) {
-                const osc = this.ctx.createOscillator();
-                if (duty && waveType === 'square') {
-                    const key = `pulse_${duty}`;
-                    if (!this.waveCache[key]) {
-                        const n = 4096;
-                        const real = new Float32Array(n);
-                        const imag = new Float32Array(n);
-                        for (let k = 1; k < n; k++) imag[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * duty);
-                        this.waveCache[key] = this.ctx.createPeriodicWave(real, imag);
-                    }
-                    osc.setPeriodicWave(this.waveCache[key]);
-                } else {
-                    osc.type = waveType;
+            const osc = this.ctx.createOscillator();
+            if (duty && waveType === 'square') {
+                const key = `pulse_${duty}`;
+                if (!this.waveCache[key]) {
+                    const n = 4096;
+                    const real = new Float32Array(n);
+                    const imag = new Float32Array(n);
+                    for (let k = 1; k < n; k++) imag[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * duty);
+                    this.waveCache[key] = this.ctx.createPeriodicWave(real, imag);
                 }
-                const mult = i + 1;
-                const startF = Math.max(20, frequencyStart * mult);
-                osc.frequency.setValueAtTime(startF, t0);
-                if (frequencyRamps && frequencyRamps.length > 0) {
-                    let rampT = t0;
-                    for (const r of frequencyRamps) {
-                        const rEnd = Math.max(20, r.freq * mult);
-                        if (slideType === 'exponential') osc.frequency.exponentialRampToValueAtTime(rEnd, rampT + r.time);
-                        else osc.frequency.linearRampToValueAtTime(rEnd, rampT + r.time);
-                        rampT += r.time;
-                    }
-                } else if (frequencySlide !== 0) {
-                    const endF = Math.max(20, (frequencyStart + frequencySlide) * mult);
-                    if (slideType === 'exponential') osc.frequency.exponentialRampToValueAtTime(endF, t0 + totalDur);
-                    else osc.frequency.linearRampToValueAtTime(endF, t0 + totalDur);
-                }
-                const harmGain = this.ctx.createGain();
-                harmGain.gain.value = i === 0 ? 1 : Math.pow(harmonicsFalloff, i);
-                osc.connect(harmGain);
-                sources.push({ outNode: harmGain, toStart: osc, freqParam: osc.frequency });
+                osc.setPeriodicWave(this.waveCache[key]);
+            } else {
+                osc.type = waveType;
             }
+            const startF = Math.max(20, frequencyStart);
+            osc.frequency.setValueAtTime(startF, t0);
+            if (frequencySlide !== 0) {
+                const endF = Math.max(20, frequencyStart + frequencySlide);
+                osc.frequency.exponentialRampToValueAtTime(endF, t0 + totalDur);
+            }
+            sources.push({ outNode: osc, toStart: osc, freqParam: osc.frequency });
         }
         let lfo = null;
         if (!isNoise && vibratoDepth > 0 && vibratoSpeed > 0) {
@@ -387,97 +363,20 @@ const NesAudio = {
         }
         const mixer = this.ctx.createGain();
         sources.forEach(s => s.outNode.connect(mixer));
-        let chain = mixer;
-        if (bpfFreq > 0) {
-            const bpf = this.ctx.createBiquadFilter();
-            bpf.type = 'bandpass';
-            bpf.frequency.setValueAtTime(bpfFreq, t0);
-            if (bpfSweep !== 0) bpf.frequency.linearRampToValueAtTime(Math.max(20, bpfFreq + bpfSweep), t0 + totalDur);
-            bpf.Q.value = bpfQ;
-            chain.connect(bpf); chain = bpf;
-        }
-        if (hpfFreq > 0) {
-            const hpf = this.ctx.createBiquadFilter();
-            hpf.type = 'highpass';
-            hpf.frequency.setValueAtTime(hpfFreq, t0);
-            if (hpfSweep !== 0) hpf.frequency.linearRampToValueAtTime(Math.max(20, hpfFreq + hpfSweep), t0 + totalDur);
-            chain.connect(hpf); chain = hpf;
-        }
-        if (lpfFreq > 0) {
-            const lpf = this.ctx.createBiquadFilter();
-            lpf.type = 'lowpass';
-            lpf.frequency.setValueAtTime(lpfFreq + lpfPitchJump, t0);
-            if (lpfPitchJump > 0) lpf.frequency.linearRampToValueAtTime(lpfFreq, t0 + 0.02);
-            if (lpfSweep !== 0) lpf.frequency.linearRampToValueAtTime(Math.max(20, lpfFreq + lpfSweep), t0 + totalDur);
-            lpf.Q.value = lpfResonance;
-            chain.connect(lpf); chain = lpf;
-        }
-        // bitCrush: WaveShaperで振幅を量子化 (0=無効, 1=1bit相当)
-        if (bitCrush > 0) {
-            const ws = this.ctx.createWaveShaper();
-            const bits = Math.max(1, 16 - bitCrush * 15);
-            const steps = Math.pow(2, bits);
-            const n = 65536;
-            const curve = new Float32Array(n);
-            for (let i = 0; i < n; i++) {
-                const x = (i / (n / 2)) - 1;
-                curve[i] = Math.round(x * steps) / steps;
-            }
-            ws.curve = curve;
-            chain.connect(ws); chain = ws;
-        }
-        // flanger: ディレイ+スイープでウェット/ドライミックス (Bfxr風静的フランジャー)
-        if (flangerOffset > 0 || flangerSweep !== 0) {
-            const maxDelay = Math.max(0.001, (Math.abs(flangerOffset) + Math.abs(flangerSweep)) / 1000 + 0.001);
-            const delay = this.ctx.createDelay(maxDelay);
-            const startD = Math.max(0, flangerOffset) / 1000;
-            const endD = Math.max(0, flangerOffset + flangerSweep) / 1000;
-            delay.delayTime.setValueAtTime(startD, t0);
-            if (flangerSweep !== 0) delay.delayTime.linearRampToValueAtTime(endD, t0 + totalDur);
-            const wetGain = this.ctx.createGain();
-            const dryGain = this.ctx.createGain();
-            const flangerMix = this.ctx.createGain();
-            wetGain.gain.value = 0.5;
-            dryGain.gain.value = 0.5;
-            chain.connect(delay); delay.connect(wetGain); wetGain.connect(flangerMix);
-            chain.connect(dryGain); dryGain.connect(flangerMix);
-            chain = flangerMix;
-        }
         const envGain = this.ctx.createGain();
-        const peakGain = masterVolume * (1 + sustainPunch);
         if (isLegacy) {
             const step = totalDur / 4;
-            envGain.gain.setValueAtTime(peakGain, t0);
+            envGain.gain.setValueAtTime(masterVolume, t0);
             envGain.gain.setValueAtTime(masterVolume * 0.6, t0 + step);
             envGain.gain.setValueAtTime(masterVolume * 0.25, t0 + step * 2);
             envGain.gain.setValueAtTime(0.001, t0 + step * 3);
         } else {
-            if (attackTime > 0) {
-                envGain.gain.setValueAtTime(0.0001, t0);
-                envGain.gain.linearRampToValueAtTime(peakGain, t0 + attackTime);
-            } else {
-                envGain.gain.setValueAtTime(peakGain, t0);
-            }
-            envGain.gain.setValueAtTime(peakGain, t0 + attackTime);
-            if (sustainPunch > 0 && sustainTime > 0) {
-                envGain.gain.linearRampToValueAtTime(masterVolume, t0 + attackTime + Math.min(sustainTime, sustainTime * 0.3 + 0.02));
-            }
-            envGain.gain.setValueAtTime(masterVolume, t0 + attackTime + sustainTime);
+            envGain.gain.setValueAtTime(masterVolume, t0);
+            envGain.gain.setValueAtTime(masterVolume, t0 + sustainTime);
             if (decayTime > 0) envGain.gain.linearRampToValueAtTime(0.0001, t0 + totalDur);
         }
-        chain.connect(envGain);
-        let outNode = envGain;
-        // compression: DynamicsCompressorで音量の一貫性 (0=無効, 1=最大圧縮)
-        if (compression > 0) {
-            const comp = this.ctx.createDynamicsCompressor();
-            comp.threshold.value = -24 - compression * 20;
-            comp.knee.value = 30;
-            comp.ratio.value = 1 + compression * 19;
-            comp.attack.value = 0.003;
-            comp.release.value = 0.1;
-            envGain.connect(comp); outNode = comp;
-        }
-        outNode.connect(this.masterGain);
+        mixer.connect(envGain);
+        envGain.connect(this.masterGain);
         sources.forEach(s => { s.toStart.start(t0); s.toStart.stop(t0 + totalDur + 0.02); });
         if (lfo) { lfo.start(t0); lfo.stop(t0 + totalDur + 0.02); }
         if (jumpCS) { jumpCS.start(t0); jumpCS.stop(t0 + totalDur + 0.02); }
@@ -487,13 +386,13 @@ const NesAudio = {
     playSE_jump_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 400, frequencySlide: 600, sustainTime: 0.1, masterVolume: 0.15 }); },
     playSE_jump_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 300, frequencySlide: 600, sustainTime: 0.08 }); },
     playSE_jump_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: 400, sustainTime: 0.1 }); },
-    playSE_jump_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 150, sustainTime: 0.1, frequencyRamps: [{ freq: 800, time: 0.04 }, { freq: 400, time: 0.06 }] }); },
+    playSE_jump_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 150, frequencySlide: 250, sustainTime: 0.1 }); },
     playSE_jump_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 304, frequencySlide: 684, sustainTime: 0.205, masterVolume: 0.5 }); },
 
     // ========== 攻撃系 ==========
     playSE_attack_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'sawtooth', duty: 0.25, frequencyStart: 393, frequencySlide: 1001, sustainTime: 0.055, masterVolume: 0.31 }); },
     playSE_attack_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.125, frequencyStart: 800, frequencySlide: -600, sustainTime: 0.06 }); },
-    playSE_attack_03() { this.playUnifiedSE({ waveType: 'noise', attackTime: 0, sustainTime: 0.085, decayTime: 0.06, masterVolume: 0.26, frequencyStart: 3642, sustainPunch: 1.15, frequencySlide: -1044, slideType: 'linear', hpfFreq: 1380, hpfSweep: -3860, lpfFreq: 2120, lpfSweep: 1030, lpfResonance: 0.6, flangerOffset: 0, flangerSweep: 20 }); },
+    playSE_attack_03() { this.playUnifiedSE({ waveType: 'noise', sustainTime: 0.085, decayTime: 0.06, masterVolume: 0.26, frequencyStart: 3642, frequencySlide: -1044 }); },
     playSE_attack_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 600, frequencySlide: -450, sustainTime: 0.06 }); },
     playSE_attack_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 1200, frequencySlide: -800, sustainTime: 0.08 }); },
 
@@ -501,7 +400,7 @@ const NesAudio = {
     playSE_damage_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 400, frequencySlide: -300, sustainTime: 0.15 }); },
     playSE_damage_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 300, frequencySlide: -220, sustainTime: 0.1 }); },
     playSE_damage_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: -150, sustainTime: 0.15 }); },
-    playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', attackTime: 0, sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.34, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1, flangerOffset: 0, flangerSweep: -20 }); },
+    playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.34, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1 }); },
     playSE_damage_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 500, frequencySlide: -440, sustainTime: 0.12 }); },
 
     // ========== アイテムゲット系 ==========
@@ -509,7 +408,7 @@ const NesAudio = {
     playSE_itemGet_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 295, frequencySlide: 2532, sustainTime: 0.24, masterVolume: 0.15 }); },
     playSE_itemGet_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.5, masterVolume: 0.57, notes: [{ freq: 467, duration: 0.061, spacing: 0.035 }, { freq: 945, duration: 0.099 }, { freq: 1429, duration: 0.097, spacing: 0.034 }, { freq: 1416, duration: 0.039 }, { freq: 1219, duration: 0.05 }] }); },
     playSE_itemGet_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, masterVolume: 0.5, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
-    playSE_itemGet_05() { this.playUnifiedSE({ waveType: 'square', attackTime: 0, sustainTime: 0.15, decayTime: 0.195, masterVolume: 0.36, frequencyStart: 85, duty: 0.25, sustainPunch: 0.4, frequencySlide: 3000, vibratoDepth: 13, vibratoSpeed: 17, hpfFreq: 1200, hpfSweep: -1660, lpfSweep: -600, pitchJump1Amount: 480, pitchJump1Onset: 0.42, pitchJump2Amount: 800, pitchJump2Onset: 0.28, flangerOffset: 0, flangerSweep: -20, compression: 0.06, repeatCount: 2 }); },
+    playSE_itemGet_05() { this.playUnifiedSE({ waveType: 'square', sustainTime: 0.15, decayTime: 0.195, masterVolume: 0.36, frequencyStart: 85, duty: 0.25, frequencySlide: 3000, vibratoDepth: 13, vibratoSpeed: 17, pitchJump1Amount: 480, pitchJump1Onset: 0.42, pitchJump2Amount: 800, pitchJump2Onset: 0.28, repeatCount: 2 }); },
 
     // ========== その他系 ==========
     playSE_other_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 440, frequencySlide: 440, sustainTime: 0.05, masterVolume: 0.15 }); },
