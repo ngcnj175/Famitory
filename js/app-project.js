@@ -24,20 +24,16 @@ const DEFAULT_SOUNDS = [
     { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
     { id: 18, name: 'ゲット_04',          type: 'itemGet_04'},
     { id: 19, name: 'ゲット_05',          type: 'itemGet_05'},
-    { id: 20, name: 'その他_01(決定)',    type: 'other_01'  },
-    { id: 21, name: 'その他_02(キャンセル)', type: 'other_02'},
-    { id: 22, name: 'その他_03(カーソル)', type: 'other_03' },
-    { id: 23, name: 'その他_04(ポーズ)',  type: 'other_04'  },
-    { id: 24, name: 'その他_05(爆発)',    type: 'other_05'  },
-    { id: 25, name: '撃破音',             type: 'enemyDefeat' },
-    { id: 26, name: '爆発音',             type: 'explosion' }
+    { id: 20, name: '爆発_01',            type: 'other_05'  },
+    { id: 21, name: '爆発_02',            type: 'enemyDefeat' },
+    { id: 22, name: 'ポーズ',             type: 'pause'     }
 ];
 
 // デフォルトSE割り当て (stage.se)
 const DEFAULT_STAGE_SE = {
-    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 25 },
+    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 21 },
     item:   { coin: 15, powerup: 17, keyItem: 19 },
-    env:    { blockBreak: 24, doorUnlock: 16, explosion: 26 }
+    env:    { blockBreak: 20, doorUnlock: 16, explosion: 20, pause: 22 }
 };
 
 const AppProject = {
@@ -245,7 +241,34 @@ const AppProject = {
             }
         }
 
-        // sounds配列にenemyDefeat/explosionが欠けていれば追加
+        // 旧sounds配列（other_01〜04・explosion含む）を新構造に再構築
+        if (App.projectData.sounds) {
+            const deletedTypes = new Set(['other_01','other_02','other_03','other_04','explosion']);
+            const hasOldTypes = App.projectData.sounds.some(s => deletedTypes.has(s.type));
+            if (hasOldTypes) {
+                const oldIdxToType = {};
+                App.projectData.sounds.forEach((s, i) => { oldIdxToType[i] = s.type; });
+                const newTypeToIdx = {};
+                DEFAULT_SOUNDS.forEach((s, i) => { newTypeToIdx[s.type] = i; });
+                if (stage.se) {
+                    ['player', 'item', 'env'].forEach(cat => {
+                        if (!stage.se[cat]) return;
+                        Object.keys(stage.se[cat]).forEach(k => {
+                            const oldIdx = stage.se[cat][k];
+                            const type = oldIdxToType[oldIdx];
+                            if (type !== undefined && newTypeToIdx[type] !== undefined) {
+                                stage.se[cat][k] = newTypeToIdx[type];
+                            } else if (type !== undefined && deletedTypes.has(type)) {
+                                stage.se[cat][k] = DEFAULT_STAGE_SE[cat]?.[k] ?? -1;
+                            }
+                        });
+                    });
+                }
+                App.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
+            }
+        }
+
+        // 新規追加型が欠けていれば追加
         if (App.projectData.sounds) {
             const existingTypes = new Set(App.projectData.sounds.map(s => s.type));
             DEFAULT_SOUNDS.forEach(defSe => {

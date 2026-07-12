@@ -407,9 +407,13 @@ const GameController = {
         // localStorage に保存（再起動時も維持）
         localStorage.setItem('pgk_darkMode', isDark ? '1' : '0');
 
-        // SE再生（隠しコマンド発動感）
-        if (typeof NesAudio !== 'undefined' && NesAudio.playSE) {
-            NesAudio.playSE('other_01');
+        // SE再生（隠しコマンド発動感）: ステージの扉解錠音を使用
+        if (typeof NesAudio !== 'undefined') {
+            const se = App.projectData?.stage?.se;
+            const sounds = App.projectData?.sounds || [];
+            const idx = se?.env?.doorUnlock ?? 16;
+            const s = sounds[idx];
+            if (s) NesAudio.playSE(s.type);
         }
     },
 

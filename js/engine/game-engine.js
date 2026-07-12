@@ -148,6 +148,7 @@ const GameEngine = {
         } else if (this.isRunning) {
             this.isPaused = true;
             this.renderer.render(); // PAUSE表示のため再描画
+            if (this.player) this.player.playSE('pause');
         }
     },
 

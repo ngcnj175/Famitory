@@ -384,24 +384,24 @@ const NesAudio = {
 
     // ========== ジャンプ系 ==========
     playSE_jump_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 400, frequencySlide: 600, sustainTime: 0.1, masterVolume: 0.15 }); },
-    playSE_jump_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 300, frequencySlide: 600, sustainTime: 0.08 }); },
+    playSE_jump_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 304, frequencySlide: 684, sustainTime: 0.205, masterVolume: 0.5 }); },
     playSE_jump_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: 400, sustainTime: 0.1 }); },
     playSE_jump_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 150, frequencySlide: 250, sustainTime: 0.1 }); },
-    playSE_jump_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 304, frequencySlide: 684, sustainTime: 0.205, masterVolume: 0.5 }); },
+    playSE_jump_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 300, frequencySlide: 600, sustainTime: 0.08 }); },
 
     // ========== 攻撃系 ==========
     playSE_attack_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'sawtooth', duty: 0.25, frequencyStart: 393, frequencySlide: 1001, sustainTime: 0.055, masterVolume: 0.31 }); },
-    playSE_attack_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.125, frequencyStart: 800, frequencySlide: -600, sustainTime: 0.06 }); },
+    playSE_attack_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.125, frequencyStart: 800, frequencySlide: -600, sustainTime: 0.06, masterVolume: 0.5 }); },
     playSE_attack_03() { this.playUnifiedSE({ waveType: 'noise', sustainTime: 0.085, decayTime: 0.06, masterVolume: 0.26, frequencyStart: 3642, frequencySlide: -1044 }); },
     playSE_attack_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 600, frequencySlide: -450, sustainTime: 0.06 }); },
-    playSE_attack_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 1200, frequencySlide: -800, sustainTime: 0.08 }); },
+    playSE_attack_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 1200, frequencySlide: -800, sustainTime: 0.08, masterVolume: 0.43 }); },
 
     // ========== ダメージ系 ==========
     playSE_damage_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 400, frequencySlide: -300, sustainTime: 0.15 }); },
     playSE_damage_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 300, frequencySlide: -220, sustainTime: 0.1 }); },
     playSE_damage_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: -150, sustainTime: 0.15 }); },
-    playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.34, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1 }); },
-    playSE_damage_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 500, frequencySlide: -440, sustainTime: 0.12 }); },
+    playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.18, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1 }); },
+    playSE_damage_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 500, frequencySlide: -440, sustainTime: 0.12, masterVolume: 0.41 }); },
 
     // ========== アイテムゲット系 ==========
     playSE_itemGet_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', notes: [{ freq: 523, duration: 0.05 }, { freq: 784, duration: 0.07 }] }); },
@@ -410,57 +410,15 @@ const NesAudio = {
     playSE_itemGet_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, masterVolume: 0.5, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
     playSE_itemGet_05() { this.playUnifiedSE({ waveType: 'square', sustainTime: 0.15, decayTime: 0.195, masterVolume: 0.36, frequencyStart: 85, duty: 0.25, frequencySlide: 3000, vibratoDepth: 13, vibratoSpeed: 17, pitchJump1Amount: 480, pitchJump1Onset: 0.42, pitchJump2Amount: 800, pitchJump2Onset: 0.28, repeatCount: 2 }); },
 
-    // ========== その他系 ==========
-    playSE_other_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 440, frequencySlide: 440, sustainTime: 0.05, masterVolume: 0.15 }); },
-    playSE_other_02() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 440, frequencySlide: -220, sustainTime: 0.05, masterVolume: 0.15 }); },
-    playSE_other_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 660, sustainTime: 0.03, masterVolume: 0.1 }); },
-    playSE_other_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 330, sustainTime: 0.05 }); },
-    playSE_other_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'noise', sustainTime: 0.15, masterVolume: 0.4 }); },
+    // ========== 爆発・特殊系 ==========
+    playSE_other_05() { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'adsr', sustainTime: 0.145, decayTime: 0.305, masterVolume: 0.15, frequencyStart: 267, frequencySlide: -1033, repeatCount: 2 }); },
+    playSE_pause()    { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.1, decayTime: 0.1, masterVolume: 0.5, frequencyStart: 440, duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
 
     // 旧SE互換用エイリアス
     playSE_jump() { this.playSE_jump_01(); },
     playSE_attack() { this.playSE_attack_01(); },
     playSE_damage() { this.playSE_damage_01(); },
     playSE_itemGet() { this.playSE_itemGet_01(); },
-
-    // SE: 爆発音 - FC風
-    playSE_explosion() {
-        this.ensureContext();
-        const t = this.ctx.currentTime;
-        const dur = 0.3;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(350, t);
-        osc.frequency.exponentialRampToValueAtTime(45, t + dur);
-        const step = dur / 4;
-        gain.gain.setValueAtTime(0.28, t);
-        gain.gain.setValueAtTime(0.17, t + step);
-        gain.gain.setValueAtTime(0.07, t + step * 2);
-        gain.gain.setValueAtTime(0.001, t + step * 3);
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.start(t);
-        osc.stop(t + dur);
-        // アタック: 短いノイズ（フィルタなし）
-        const noiseDur = 0.04;
-        const noiseSize = Math.floor(this.ctx.sampleRate * noiseDur);
-        const noiseBuf = this.ctx.createBuffer(1, noiseSize, this.ctx.sampleRate);
-        const noiseData = noiseBuf.getChannelData(0);
-        for (let i = 0; i < noiseSize; i++) {
-            noiseData[i] = (Math.random() * 2 - 1) * (1 - i / noiseSize);
-        }
-        const noiseSrc = this.ctx.createBufferSource();
-        noiseSrc.buffer = noiseBuf;
-        const noiseGain = this.ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.2, t);
-        noiseGain.gain.setValueAtTime(0.05, t + 0.02);
-        noiseGain.gain.setValueAtTime(0.001, t + noiseDur);
-        noiseSrc.connect(noiseGain);
-        noiseGain.connect(this.masterGain);
-        noiseSrc.start(t);
-        noiseSrc.stop(t + noiseDur);
-    },
 
     // SE: 敵を倒す（短い「ポン」音）- v2.0.1オリジナル
     playSE_enemyDefeat() {

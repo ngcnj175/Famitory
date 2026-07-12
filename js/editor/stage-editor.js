@@ -23,7 +23,7 @@ const StageEditor = {
             'attack_01': 'U261', 'attack_02': 'U262', 'attack_03': 'U263', 'attack_04': 'U264', 'attack_05': 'U265',
             'damage_01': 'U266', 'damage_02': 'U267', 'damage_03': 'U268', 'damage_04': 'U269', 'damage_05': 'U270',
             'itemGet_01': 'U271', 'itemGet_02': 'U272', 'itemGet_03': 'U273', 'itemGet_04': 'U274', 'itemGet_05': 'U275',
-            'other_01': 'U276', 'other_02': 'U277', 'other_03': 'U278', 'other_04': 'U279', 'other_05': 'U280',
+            'other_05': 'U280', 'pause': 'U276',
         };
         const id = nameIdMap[se.type];
         return id ? this.t(id) : se.name;
