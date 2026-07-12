@@ -24,16 +24,17 @@ const DEFAULT_SOUNDS = [
     { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
     { id: 18, name: 'ゲット_04',          type: 'itemGet_04'},
     { id: 19, name: 'ゲット_05',          type: 'itemGet_05'},
-    { id: 20, name: '爆発_01',            type: 'other_05'  },
+    { id: 20, name: '爆発_01',            type: 'other_05'    },
     { id: 21, name: '爆発_02',            type: 'enemyDefeat' },
-    { id: 22, name: 'ポーズ',             type: 'pause'     }
+    { id: 22, name: '爆発_03',            type: 'explosion_03'},
+    { id: 23, name: 'ポーズ',             type: 'pause'       }
 ];
 
 // デフォルトSE割り当て (stage.se)
 const DEFAULT_STAGE_SE = {
     player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 21 },
     item:   { coin: 15, powerup: 17, keyItem: 19 },
-    env:    { blockBreak: 20, doorUnlock: 16, explosion: 20, pause: 22 }
+    env:    { blockBreak: 20, doorUnlock: 16, explosion: 20, pause: 23 }
 };
 
 const AppProject = {
