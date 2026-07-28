@@ -14,6 +14,7 @@ const DEFAULT_SOUNDS = [
     { id: 7,  name: '攻撃_03',            type: 'attack_03' },
     { id: 8,  name: '攻撃_04',            type: 'attack_04' },
     { id: 9,  name: '攻撃_05',            type: 'attack_05' },
+    { id: 24, name: '攻撃_06',            type: 'attack_06' },
     { id: 10, name: 'ダメージ_01',        type: 'damage_01' },
     { id: 11, name: 'ダメージ_02',        type: 'damage_02' },
     { id: 12, name: 'ダメージ_03',        type: 'damage_03' },
@@ -24,9 +25,11 @@ const DEFAULT_SOUNDS = [
     { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
     { id: 18, name: 'ゲット_04',          type: 'itemGet_04'},
     { id: 19, name: 'ゲット_05',          type: 'itemGet_05'},
+    { id: 25, name: 'ゲット_06',          type: 'itemGet_06'},
     { id: 20, name: '爆発_01',            type: 'other_05'    },
     { id: 21, name: '爆発_02',            type: 'enemyDefeat' },
     { id: 22, name: '爆発_03',            type: 'explosion_03'},
+    { id: 26, name: '爆発_04',            type: 'explosion_04'},
     { id: 23, name: 'ポーズ',             type: 'pause'       }
 ];
 
