@@ -14,36 +14,36 @@ const DEFAULT_SOUNDS = [
     { id: 7,  name: '攻撃_03',            type: 'attack_03' },
     { id: 8,  name: '攻撃_04',            type: 'attack_04' },
     { id: 9,  name: '攻撃_05',            type: 'attack_05' },
-    { id: 24, name: '攻撃_06',            type: 'attack_06' },
-    { id: 30, name: '攻撃_07',            type: 'attack_07' },
-    { id: 10, name: 'ダメージ_01',        type: 'damage_01' },
-    { id: 11, name: 'ダメージ_02',        type: 'damage_02' },
-    { id: 12, name: 'ダメージ_03',        type: 'damage_03' },
-    { id: 13, name: 'ダメージ_04',        type: 'damage_04' },
-    { id: 14, name: 'ダメージ_05',        type: 'damage_05' },
-    { id: 27, name: 'ダメージ_06',        type: 'damage_06' },
-    { id: 28, name: 'ダメージ_07',        type: 'damage_07' },
-    { id: 29, name: 'ダメージ_08',        type: 'damage_08' },
-    { id: 32, name: 'ダメージ_09',        type: 'damage_09' },
-    { id: 15, name: 'ゲット_01',          type: 'itemGet_01'},
-    { id: 16, name: 'ゲット_02',          type: 'itemGet_02'},
-    { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
-    { id: 18, name: 'ゲット_04',          type: 'itemGet_04'},
-    { id: 19, name: 'ゲット_05',          type: 'itemGet_05'},
-    { id: 25, name: 'ゲット_06',          type: 'itemGet_06'},
-    { id: 20, name: '爆発_01',            type: 'other_05'    },
-    { id: 21, name: '爆発_02',            type: 'enemyDefeat' },
-    { id: 22, name: '爆発_03',            type: 'explosion_03'},
-    { id: 26, name: '爆発_04',            type: 'explosion_04'},
-    { id: 23, name: 'ポーズ_01',          type: 'pause'       },
-    { id: 31, name: 'ポーズ_02',          type: 'pause_02'    }
+    { id: 10, name: '攻撃_06',            type: 'attack_06' },
+    { id: 11, name: '攻撃_07',            type: 'attack_07' },
+    { id: 12, name: 'ダメージ_01',        type: 'damage_01' },
+    { id: 13, name: 'ダメージ_02',        type: 'damage_02' },
+    { id: 14, name: 'ダメージ_03',        type: 'damage_03' },
+    { id: 15, name: 'ダメージ_04',        type: 'damage_04' },
+    { id: 16, name: 'ダメージ_05',        type: 'damage_05' },
+    { id: 17, name: 'ダメージ_06',        type: 'damage_06' },
+    { id: 18, name: 'ダメージ_07',        type: 'damage_07' },
+    { id: 19, name: 'ダメージ_08',        type: 'damage_08' },
+    { id: 20, name: 'ダメージ_09',        type: 'damage_09' },
+    { id: 21, name: 'ゲット_01',          type: 'itemGet_01'},
+    { id: 22, name: 'ゲット_02',          type: 'itemGet_02'},
+    { id: 23, name: 'ゲット_03',          type: 'itemGet_03'},
+    { id: 24, name: 'ゲット_04',          type: 'itemGet_04'},
+    { id: 25, name: 'ゲット_05',          type: 'itemGet_05'},
+    { id: 26, name: 'ゲット_06',          type: 'itemGet_06'},
+    { id: 27, name: '爆発_01',            type: 'other_05'    },
+    { id: 28, name: '爆発_02',            type: 'enemyDefeat' },
+    { id: 29, name: '爆発_03',            type: 'explosion_03'},
+    { id: 30, name: '爆発_04',            type: 'explosion_04'},
+    { id: 31, name: 'ポーズ_01',          type: 'pause'       },
+    { id: 32, name: 'ポーズ_02',          type: 'pause_02'    }
 ];
 
-// デフォルトSE割り当て (stage.se)
+// デフォルトSE割り当て (stage.se) — 値は sounds 配列のインデックス
 const DEFAULT_STAGE_SE = {
-    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 28 },
-    item:   { coin: 15, powerup: 16, keyItem: 17 },
-    env:    { blockBreak: 32, doorUnlock: 17, explosion: 20, pause: 23 }
+    player: { jump: 0, attack: 5, damage: 12, enemyDefeat: 18 },
+    item:   { coin: 21, powerup: 22, keyItem: 23 },
+    env:    { blockBreak: 20, doorUnlock: 23, explosion: 27, pause: 31 }
 };
 
 const AppProject = {
