@@ -404,7 +404,7 @@ const NesAudio = {
     playSE_damage_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: -150, sustainTime: 0.15 }); },
     playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.13, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1 }); },
     playSE_damage_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 500, frequencySlide: -440, sustainTime: 0.12, masterVolume: 0.41 }); },
-    playSE_damage_06() { this.playUnifiedSE({ waveType: 'triangle', envelopeMode: 'legacy4step', sustainTime: 0.135, decayTime: 0, masterVolume: 0.27, frequencyStart: 613, duty: 0.5, frequencySlide: -1150, pitchJump1Amount: -650, pitchJump1Onset: 0.38 }); },
+    playSE_damage_06() { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'legacy4step', sustainTime: 0.13, decayTime: 0.065, masterVolume: 0.26, frequencyStart: 216, duty: 0.25, frequencySlide: 288, vibratoDepth: 8, vibratoSpeed: 29.5, pitchJump1Amount: 330, pitchJump1Onset: 0.4 }); },
     playSE_damage_07() { this.playUnifiedSE({ waveType: 'triangle', envelopeMode: 'legacy4step', sustainTime: 0.135, decayTime: 0, masterVolume: 0.27, frequencyStart: 613, duty: 0.5, frequencySlide: -1150, pitchJump1Amount: -650, pitchJump1Onset: 0.38 }); },
     playSE_damage_08() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.14, decayTime: 0.245, masterVolume: 0.32, frequencyStart: 261, duty: 0.25, frequencySlide: 71, vibratoDepth: 29, vibratoSpeed: 11.5 }); },
 
