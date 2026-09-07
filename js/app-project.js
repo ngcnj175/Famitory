@@ -24,6 +24,7 @@ const DEFAULT_SOUNDS = [
     { id: 27, name: 'ダメージ_06',        type: 'damage_06' },
     { id: 28, name: 'ダメージ_07',        type: 'damage_07' },
     { id: 29, name: 'ダメージ_08',        type: 'damage_08' },
+    { id: 32, name: 'ダメージ_09',        type: 'damage_09' },
     { id: 15, name: 'ゲット_01',          type: 'itemGet_01'},
     { id: 16, name: 'ゲット_02',          type: 'itemGet_02'},
     { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
