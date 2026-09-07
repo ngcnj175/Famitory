@@ -395,7 +395,8 @@ const NesAudio = {
     playSE_attack_03() { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'adsr', sustainTime: 0.12, decayTime: 0.125, masterVolume: 0.24, frequencyStart: 1054, duty: 0.125, frequencySlide: -1472, vibratoDepth: 21, vibratoSpeed: 21, pitchJump1Amount: -100, pitchJump1Onset: 0.36, pitchJump2Amount: 150, pitchJump2Onset: 0.7 }); },
     playSE_attack_04() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 600, frequencySlide: -450, sustainTime: 0.06 }); },
     playSE_attack_05() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.095, decayTime: 0.21, masterVolume: 0.32, frequencyStart: 353, duty: 0.25, frequencySlide: -324 }); },
-    playSE_attack_06() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.055, decayTime: 0.215, masterVolume: 0.37, frequencyStart: 393, duty: 0.125, frequencySlide: -492, pitchJump1Amount: -420, pitchJump1Onset: 0.56 }); },
+    playSE_attack_06() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.1, decayTime: 0.175, masterVolume: 0.35, frequencyStart: 618, duty: 0.25, frequencySlide: -648, pitchJump1Amount: -350, pitchJump1Onset: 0.28, pitchJump2Amount: 110, pitchJump2Onset: 0.58, notes: [{ freq: 514, duration: 0.06, spacing: 0.031 }, { freq: 965, duration: 0.054 }] }); },
+    playSE_attack_07() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.055, decayTime: 0.12, masterVolume: 0.2, frequencyStart: 963, frequencySlide: 128, vibratoDepth: 22, vibratoSpeed: 13.5, pitchJump1Amount: 200, pitchJump1Onset: 0.3 }); },
 
     // ========== ダメージ系 ==========
     playSE_damage_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 400, frequencySlide: -300, sustainTime: 0.15 }); },
@@ -403,6 +404,9 @@ const NesAudio = {
     playSE_damage_03() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', frequencyStart: 200, frequencySlide: -150, sustainTime: 0.15 }); },
     playSE_damage_04() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.165, decayTime: 0.095, masterVolume: 0.13, frequencyStart: 164, frequencySlide: -122, vibratoDepth: 23, vibratoSpeed: 9.5, pitchJump1Amount: 160, pitchJump1Onset: 0.1 }); },
     playSE_damage_05() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', duty: 0.25, frequencyStart: 500, frequencySlide: -440, sustainTime: 0.12, masterVolume: 0.41 }); },
+    playSE_damage_06() { this.playUnifiedSE({ waveType: 'triangle', envelopeMode: 'legacy4step', sustainTime: 0.135, decayTime: 0, masterVolume: 0.27, frequencyStart: 613, duty: 0.5, frequencySlide: -1150, pitchJump1Amount: -650, pitchJump1Onset: 0.38 }); },
+    playSE_damage_07() { this.playUnifiedSE({ waveType: 'triangle', envelopeMode: 'legacy4step', sustainTime: 0.135, decayTime: 0, masterVolume: 0.27, frequencyStart: 613, duty: 0.5, frequencySlide: -1150, pitchJump1Amount: -650, pitchJump1Onset: 0.38 }); },
+    playSE_damage_08() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.14, decayTime: 0.245, masterVolume: 0.32, frequencyStart: 261, duty: 0.25, frequencySlide: 71, vibratoDepth: 29, vibratoSpeed: 11.5 }); },
 
     // ========== アイテムゲット系 ==========
     playSE_itemGet_01() { this.playUnifiedSE({ envelopeMode: 'legacy4step', waveType: 'square', notes: [{ freq: 523, duration: 0.05 }, { freq: 784, duration: 0.07 }] }); },
@@ -417,6 +421,7 @@ const NesAudio = {
     playSE_explosion_03() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.24, decayTime: 0.22, masterVolume: 0.29, frequencyStart: 700, duty: 0.25, frequencySlide: -184, vibratoDepth: 30, vibratoSpeed: 7.5, pitchJump1Amount: -620, pitchJump1Onset: 0.04 }); },
     playSE_explosion_04() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.15, decayTime: 0.32, masterVolume: 0.18, frequencyStart: 20, frequencySlide: 921, vibratoDepth: 138, vibratoSpeed: 19.5, repeatCount: 3 }); },
     playSE_pause()        { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.1, decayTime: 0.1, masterVolume: 0.5, frequencyStart: 440, duty: 0.25, notes: [{ freq: 523, duration: 0.05 }, { freq: 659, duration: 0.07 }] }); },
+    playSE_pause_02()     { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'legacy4step', sustainTime: 0.055, decayTime: 0.12, masterVolume: 0.2, frequencyStart: 963, frequencySlide: 128, vibratoDepth: 22, vibratoSpeed: 13.5, pitchJump1Amount: 200, pitchJump1Onset: 0.3 }); },
 
     playSE_enemyDefeat()  { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.28, decayTime: 0.1, masterVolume: 0.18, frequencyStart: 493, frequencySlide: -946, pitchJump1Amount: 60, pitchJump1Onset: 0.38 }); }
 };

@@ -15,11 +15,15 @@ const DEFAULT_SOUNDS = [
     { id: 8,  name: '攻撃_04',            type: 'attack_04' },
     { id: 9,  name: '攻撃_05',            type: 'attack_05' },
     { id: 24, name: '攻撃_06',            type: 'attack_06' },
+    { id: 30, name: '攻撃_07',            type: 'attack_07' },
     { id: 10, name: 'ダメージ_01',        type: 'damage_01' },
     { id: 11, name: 'ダメージ_02',        type: 'damage_02' },
     { id: 12, name: 'ダメージ_03',        type: 'damage_03' },
     { id: 13, name: 'ダメージ_04',        type: 'damage_04' },
     { id: 14, name: 'ダメージ_05',        type: 'damage_05' },
+    { id: 27, name: 'ダメージ_06',        type: 'damage_06' },
+    { id: 28, name: 'ダメージ_07',        type: 'damage_07' },
+    { id: 29, name: 'ダメージ_08',        type: 'damage_08' },
     { id: 15, name: 'ゲット_01',          type: 'itemGet_01'},
     { id: 16, name: 'ゲット_02',          type: 'itemGet_02'},
     { id: 17, name: 'ゲット_03',          type: 'itemGet_03'},
@@ -30,7 +34,8 @@ const DEFAULT_SOUNDS = [
     { id: 21, name: '爆発_02',            type: 'enemyDefeat' },
     { id: 22, name: '爆発_03',            type: 'explosion_03'},
     { id: 26, name: '爆発_04',            type: 'explosion_04'},
-    { id: 23, name: 'ポーズ',             type: 'pause'       }
+    { id: 23, name: 'ポーズ_01',          type: 'pause'       },
+    { id: 31, name: 'ポーズ_02',          type: 'pause_02'    }
 ];
 
 // デフォルトSE割り当て (stage.se)
