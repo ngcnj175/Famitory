@@ -41,9 +41,9 @@ const DEFAULT_SOUNDS = [
 
 // デフォルトSE割り当て (stage.se)
 const DEFAULT_STAGE_SE = {
-    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 21 },
-    item:   { coin: 15, powerup: 17, keyItem: 19 },
-    env:    { blockBreak: 20, doorUnlock: 16, explosion: 20, pause: 23 }
+    player: { jump: 0, attack: 5, damage: 10, enemyDefeat: 28 },
+    item:   { coin: 15, powerup: 16, keyItem: 17 },
+    env:    { blockBreak: 32, doorUnlock: 17, explosion: 20, pause: 23 }
 };
 
 const AppProject = {
