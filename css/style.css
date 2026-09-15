@@ -889,8 +889,8 @@ body {
 }
 
 .paint-tool-btn.active {
-    color: var(--color-dark);
-    background: transparent;
+    background: var(--color-dark);
+    color: var(--text-light);
 }
 
 .paint-tool-btn:active {
@@ -2097,8 +2097,8 @@ body {
 }
 
 .sound-ctrl-btn.active {
-    color: var(--color-dark);
-    background: transparent;
+    background: var(--color-dark);
+    color: var(--text-light);
 }
 
 /* 繝斐い繝弱Ο繝ｼ繝ｫ */
@@ -3929,8 +3929,8 @@ body {
 
 .sound-ctrl-btn.active,
 .sound-ctrl-btn.recording {
-    color: var(--color-dark);
-    background: transparent;
+    background: var(--color-dark);
+    color: var(--text-light);
 }
 
 .sound-ctrl-btn:active {
