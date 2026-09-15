@@ -89,8 +89,8 @@ const AppI18N = {
         // ---- 数値入力モーダル ----
         'U166': { JPN: '値を入力を',          ENG: 'Enter Value' },
         // ---- エディットキーモーダル ----
-        'U174': { JPN: 'このゲームを編集するには<br>エディットキーが必要です', ENG: 'An edit key is required<br>to edit this game.' },
-        'U175': { JPN: '8桁のキーを入力',       ENG: 'Enter 8-character key' },
+        'U174': { JPN: 'このゲームを編集するにはエディットキーが必要です', ENG: 'An edit key is required to edit this game.' },
+        'U175': { JPN: 'エディットキーを入力',       ENG: 'Enter edit key' },
         'U176': { JPN: '認証',               ENG: 'Verify' },
         'U179': { JPN: 'キャンセル',          ENG: 'Cancel' },
         'U444': { JPN: 'キーが一致しません',    ENG: 'Key mismatch' },

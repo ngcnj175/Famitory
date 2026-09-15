@@ -392,8 +392,22 @@ const App = {
         const input = document.getElementById('editkey-input');
         const okBtn = document.getElementById('editkey-ok');
         const cancelBtn = document.getElementById('editkey-cancel');
+        const pasteBtn = document.getElementById('editkey-paste');
         const error = document.getElementById('editkey-error');
         if (!modal) return;
+
+        pasteBtn?.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (input) {
+                    input.value = (text || '').trim().slice(0, 8);
+                    if (error) error.classList.add('hidden');
+                    input.focus();
+                }
+            } catch (_) {
+                input?.focus();
+            }
+        });
 
         const verify = () => {
             const inputKey = input?.value?.trim();
