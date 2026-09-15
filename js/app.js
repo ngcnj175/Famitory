@@ -406,8 +406,10 @@ const App = {
                 if (error) error.classList.add('hidden');
                 // input イベントを発火させ、他リスナーへ通知
                 input.dispatchEvent(new Event('input', { bubbles: true }));
+                // 貼付完了後はキーボードを閉じる
+                input.blur();
             } catch (_) {
-                // 許諾拒否・非対応時はフォーカスのみ
+                input.blur();
             }
         });
 
