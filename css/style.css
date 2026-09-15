@@ -891,6 +891,7 @@ body {
 .paint-tool-btn.active {
     background: var(--color-dark);
     color: var(--text-light);
+    border-radius: 6px;
 }
 
 .paint-tool-btn:active {
@@ -1725,6 +1726,7 @@ body {
 .stage-tool-btn.active {
     background: var(--color-dark);
     color: var(--text-light);
+    border-radius: 6px;
 }
 
 .stage-tool-btn:active {
@@ -2099,6 +2101,7 @@ body {
 .sound-ctrl-btn.active {
     background: var(--color-dark);
     color: var(--text-light);
+    border-radius: 6px;
 }
 
 /* 繝斐い繝弱Ο繝ｼ繝ｫ */
@@ -3931,6 +3934,7 @@ body {
 .sound-ctrl-btn.recording {
     background: var(--color-dark);
     color: var(--text-light);
+    border-radius: 6px;
 }
 
 .sound-ctrl-btn:active {
@@ -5389,6 +5393,7 @@ body {
 #app.dark-mode .paint-tool-btn.active {
     background: #2a2a45;
     color: #a0b0d0;
+    border-radius: 6px;
 }
 
 #app.dark-mode .paint-tool-btn:active {
@@ -5466,6 +5471,7 @@ body {
 #app.dark-mode .stage-tool-btn.active {
     background: #2a2a45;
     color: #a0b0d0;
+    border-radius: 6px;
 }
 
 /* タイル設定パネル */
@@ -5569,6 +5575,7 @@ body {
 #app.dark-mode .sound-ctrl-btn:active {
     background: #2a2a45;
     color: #a0b0d0;
+    border-radius: 6px;
 }
 
 /* ピアノロール下部ボタンバー */
