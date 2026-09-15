@@ -397,15 +397,17 @@ const App = {
         if (!modal) return;
 
         pasteBtn?.addEventListener('click', async () => {
+            if (!input) return;
+            // 先に入力欄へフォーカス（iOS で許諾UIが入力欄側に出るように）
+            input.focus();
             try {
                 const text = await navigator.clipboard.readText();
-                if (input) {
-                    input.value = (text || '').trim().slice(0, 8);
-                    if (error) error.classList.add('hidden');
-                    input.focus();
-                }
+                input.value = (text || '').trim().slice(0, 8);
+                if (error) error.classList.add('hidden');
+                // input イベントを発火させ、他リスナーへ通知
+                input.dispatchEvent(new Event('input', { bubbles: true }));
             } catch (_) {
-                input?.focus();
+                // 許諾拒否・非対応時はフォーカスのみ
             }
         });
 

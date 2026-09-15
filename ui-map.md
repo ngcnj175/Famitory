@@ -184,7 +184,7 @@
 | U172 | セーブ | Save | HTML text node (button) | index.html | ✓ |
 | U173 | (削除: エディットキー入力) | (removed: edit key label) | HTML text node | index.html | |
 | U174 | このゲームを編集するにはエディットキーが必要です | An edit key is required to edit this game. | HTML text node | index.html | ✓ |
-| U175 | エディットキーを入力 | Enter edit key | HTML attribute (placeholder) | index.html | ✓ |
+| U175 | エディットキー入力 | Enter edit key | HTML attribute (placeholder) | index.html | ✓ |
 | U176 | 認証 | Verify | HTML text node (button) | index.html | ✓ |
 | U177 | 複製 | Duplicate | JS message/literal | sprite-editor.js | ✓ |
 | U178 | 削除 | Delete | JS message/literal | sprite-editor.js | ✓ |
