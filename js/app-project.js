@@ -534,6 +534,11 @@ const AppProject = {
     },
 
     showSimpleProjectList() {
+        // BGM再生中に開くと setInterval 由来の render ループがモーダル操作に干渉するため停止
+        if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.isPlaying) {
+            SoundEditor.stop();
+        }
+
         const modal = document.getElementById('project-list-modal');
         const listContainer = document.getElementById('project-list');
         const scrollContainer = document.getElementById('project-list-scroll');
