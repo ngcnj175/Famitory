@@ -403,14 +403,12 @@ const App = {
             try {
                 const text = await navigator.clipboard.readText();
                 input.value = (text || '').trim().slice(0, 8);
-                if (error) error.classList.add('hidden');
-                // input イベントを発火させ、他リスナーへ通知
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-                // 貼付完了後はキーボードを閉じる
-                input.blur();
+                error?.classList.add('hidden');
             } catch (_) {
-                input.blur();
+                // 許諾拒否・非対応時は何もしない
             }
+            // 貼付有無に関わらずキーボードを閉じる
+            input.blur();
         });
 
         const verify = () => {
