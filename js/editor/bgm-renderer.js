@@ -189,20 +189,11 @@ class BgmRenderer {
     }
 
     _drawPlayhead(vc) {
-        const { currentStep, isPlaying, isStepRecording, cellSize, scrollX } = vc;
+        const { currentStep, cellSize, scrollX } = vc;
         const x = currentStep * cellSize - scrollX;
         if (x + cellSize < 0 || x > this.canvas.width) return;
 
-        if (isPlaying || isStepRecording) {
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            this.ctx.fillRect(x, 0, cellSize, this.canvas.height);
-        } else {
-            this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
-        }
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        this.ctx.fillRect(x, 0, cellSize, this.canvas.height);
     }
 }
