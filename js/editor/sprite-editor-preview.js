@@ -25,6 +25,15 @@ const SpriteEditorPreview = {
     },
 
     setupEventListeners() {
+        // プレビューエリア開閉トグル
+        const previewTitle = document.getElementById('preview-title');
+        const previewArea = document.getElementById('preview-area');
+        if (previewTitle && previewArea) {
+            previewTitle.addEventListener('click', () => {
+                previewArea.classList.toggle('collapsed');
+            });
+        }
+
         const canvas = document.getElementById('preview-canvas');
         if (!canvas) return;
 

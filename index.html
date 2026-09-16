@@ -140,9 +140,12 @@
         <div id="paint-screen" class="screen">
 
             <div id="paint-content-wrapper">
-                <!-- プレビューエリア -->
-                <div id="preview-area">
-                    <div id="preview-title">Preview</div>
+                <!-- プレビューエリア（折りたたみ可能、デフォルト非表示） -->
+                <div id="preview-area" class="collapsed">
+                    <div id="preview-title">
+                        <span id="preview-toggle">▼</span>
+                        <span>Preview</span>
+                    </div>
                     <div id="preview-body">
                         <canvas id="preview-canvas" width="128" height="128"></canvas>
                         <div id="preview-controls">

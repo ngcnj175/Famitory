@@ -647,6 +647,24 @@ body {
     background: rgba(0, 0, 0, 0.05);
     padding: 6px 0;
     letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+#preview-toggle {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+#preview-area.collapsed #preview-toggle {
+    transform: rotate(-90deg);
+}
+
+#preview-area.collapsed #preview-body {
+    display: none;
 }
 
 #preview-body {
@@ -654,6 +672,9 @@ body {
     align-items: center;
     padding: 8px 10px;
     gap: 12px;
+    max-height: calc(100dvh - var(--safe-area-top) - var(--safe-area-bottom) - var(--header-height) - 260px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 #preview-canvas {
