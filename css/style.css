@@ -632,30 +632,43 @@ body {
     min-height: 0;
 }
 
-/* ========== プレビューエリア ========== */
+/* ========== プレビューエリア（ステージ設定パネル同等の折りたたみ式・影付き） ========== */
 #preview-area {
     flex: 1 1 0;
+    position: relative;
+    z-index: 10;
     margin: 0;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.05);
+    background: #f5f5f5;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: hidden;
+}
+
+#preview-area.collapsed {
+    background: #fff;
+    border-bottom: none;
+    box-shadow: none;
 }
 
 #preview-title {
-    text-align: center;
-    font-size: 12px;
-    font-weight: bold;
-    color: #999;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 6px 0;
-    letter-spacing: 0.5px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    background: #f5f5f5;
+    flex-shrink: 0;
+}
+
+#preview-area.collapsed #preview-title {
+    background: #fff;
 }
 
 #preview-toggle {
