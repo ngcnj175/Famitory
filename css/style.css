@@ -629,12 +629,12 @@ body {
 
 #paint-screen {
     background: var(--bg-device);
+    min-height: 0;
 }
 
 /* ========== プレビューエリア ========== */
 #preview-area {
-    flex-shrink: 0;
-    flex-grow: 1;
+    flex: 1 1 0;
     margin: 0;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.05);
