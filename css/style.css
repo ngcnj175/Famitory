@@ -683,7 +683,6 @@ body {
     padding: 8px 10px;
     gap: 12px;
     background: #f5f5f5;
-    border-bottom: 2px solid var(--border-color);
 }
 
 #preview-canvas {
