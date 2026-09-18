@@ -140,18 +140,31 @@ const AppArcade = {
         thumbWrap.addEventListener('click', () => this.openThumbnailModal(item));
         card.appendChild(thumbWrap);
 
-        // 中央: タイトル / クリエイタ・いいね / コメント
+        // 中央: 4行固定（RemixOK / タイトル / クリエイタ / コメント）
         const body = document.createElement('div');
         body.className = 'arcade-card-body';
 
+        // 1行目: RemixOK タグ（無い場合も高さ確保）
+        const tagRow = document.createElement('div');
+        tagRow.className = 'arcade-card-tagrow';
+        if (item.remixOK) {
+            const tag = document.createElement('span');
+            tag.className = 'arcade-card-remixtag';
+            tag.textContent = 'RemixOK';
+            tagRow.appendChild(tag);
+        } else {
+            tagRow.innerHTML = '&nbsp;';
+        }
+        body.appendChild(tagRow);
+
+        // 2行目: タイトル
         const title = document.createElement('div');
         title.className = 'arcade-card-title';
         title.textContent = item.title || 'NO TITLE';
         body.appendChild(title);
 
-        const meta = document.createElement('div');
-        meta.className = 'arcade-card-meta';
-        const creator = document.createElement('span');
+        // 3行目: クリエイタ
+        const creator = document.createElement('div');
         creator.className = 'arcade-card-creator';
         creator.textContent = item.creator || '-';
         if (item.creator) {
@@ -161,16 +174,12 @@ const AppArcade = {
                 this.setCreatorFilter(item.creator);
             });
         }
-        const likes = document.createElement('span');
-        likes.className = 'arcade-card-likes';
-        likes.textContent = '♥ ' + (item.likes || 0);
-        meta.appendChild(creator);
-        meta.appendChild(likes);
-        body.appendChild(meta);
+        body.appendChild(creator);
 
+        // 4行目: コメント（無い場合も高さ確保）
+        const comment = document.createElement('div');
+        comment.className = 'arcade-card-comment';
         if (item.comment) {
-            const comment = document.createElement('div');
-            comment.className = 'arcade-card-comment';
             const truncated = item.comment.length > 40
                 ? item.comment.slice(0, 40) + '…'
                 : item.comment;
@@ -182,11 +191,20 @@ const AppArcade = {
                     this.openCommentModal(item);
                 });
             }
-            body.appendChild(comment);
+        } else {
+            comment.innerHTML = '&nbsp;';
         }
+        body.appendChild(comment);
+
         card.appendChild(body);
 
-        // 右: PLAYボタン
+        // 右上: いいね数
+        const likes = document.createElement('div');
+        likes.className = 'arcade-card-likes';
+        likes.innerHTML = '<img src="images/like_icon.svg" alt="like"><span>' + (item.likes || 0) + '</span>';
+        card.appendChild(likes);
+
+        // 右下: PLAYボタン
         const playBtn = document.createElement('button');
         playBtn.className = 'arcade-card-play';
         playBtn.type = 'button';

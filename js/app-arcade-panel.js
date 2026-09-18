@@ -128,7 +128,8 @@ const AppArcadePanel = {
             title: meta.name || 'NEW GAME',
             creator: meta.author || '',
             comment: arcade.comment || '',
-            thumbnail: arcade.thumbnail || ''
+            thumbnail: arcade.thumbnail || '',
+            remixOK: !!meta.remixOK
         };
     }
 };

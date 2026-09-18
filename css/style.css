@@ -6552,14 +6552,16 @@ body.dark-mode {
 }
 
 .arcade-card {
+    position: relative;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     gap: 10px;
     background: #f4f4f4;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px;
+    padding-right: 76px; /* PLAYボタンの絶対配置ぶんの余白 */
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     font-size: 12px;
 }
@@ -6578,6 +6580,7 @@ body.dark-mode {
     color: #666;
     font-size: 9px;
     image-rendering: pixelated;
+    align-self: center;
 }
 
 .arcade-card-thumb img {
@@ -6592,7 +6595,25 @@ body.dark-mode {
     min-width: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 2px;
+}
+
+.arcade-card-tagrow {
+    min-height: 16px;
+    line-height: 1;
+    padding-right: 40px; /* 右上のいいねと重ならないよう */
+}
+
+.arcade-card-remixtag {
+    display: inline-block;
+    background: #3a7;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    line-height: 1.2;
 }
 
 .arcade-card-title {
@@ -6605,24 +6626,64 @@ body.dark-mode {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    min-height: 17px;
 }
 
-.arcade-card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #666;
+.arcade-card-creator {
     font-size: 11px;
-    gap: 8px;
+    color: #666;
+    min-height: 14px;
+}
+
+.arcade-card-creator.clickable {
+    color: #3060c0;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.arcade-card-comment {
+    color: #555;
+    font-size: 11px;
+    line-height: 1.4;
+    word-break: break-word;
+    min-height: 15px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.arcade-card-comment.clickable {
+    cursor: pointer;
+    color: #3060c0;
+}
+
+.arcade-card-likes {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.arcade-card-likes img {
+    width: 16px;
+    height: 16px;
 }
 
 .arcade-card-play {
-    flex: 0 0 auto;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
     background: #d05070;
     color: #fff;
     border: none;
     border-radius: 6px;
-    padding: 8px 14px;
+    padding: 6px 12px;
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
