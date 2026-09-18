@@ -176,21 +176,16 @@ const AppArcade = {
         }
         body.appendChild(creator);
 
-        // 4行目: コメント（無い場合も高さ確保）
+        // 4行目: コメント（1行表示、無い場合も高さ確保、タップで全文モーダル）
         const comment = document.createElement('div');
         comment.className = 'arcade-card-comment';
         if (item.comment) {
-            const truncated = item.comment.length > 40
-                ? item.comment.slice(0, 40) + '…'
-                : item.comment;
-            comment.textContent = truncated;
-            if (item.comment.length > 40) {
-                comment.classList.add('clickable');
-                comment.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.openCommentModal(item);
-                });
-            }
+            comment.textContent = item.comment;
+            comment.classList.add('clickable');
+            comment.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.openCommentModal(item);
+            });
         } else {
             comment.innerHTML = '&nbsp;';
         }
