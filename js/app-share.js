@@ -77,6 +77,17 @@ const AppShare = {
                     App.projectData.meta.remixOK = remixOkCheckbox.checked;
                 }
 
+                // ARCADE 登録OFFフラグの永続化
+                const arcadeOffCheckboxForSave = document.getElementById('share-arcade-off');
+                if (arcadeOffCheckboxForSave) {
+                    App.projectData.meta.arcadeOff = arcadeOffCheckboxForSave.checked;
+                }
+
+                // ARCADE設定パネルの入力値を meta.arcade に確定
+                if (typeof AppArcadePanel !== 'undefined') {
+                    AppArcadePanel.saveToProject();
+                }
+
                 const id = await Share.saveOrUpdateGame(shareId, App.projectData, !isFirstTime);
 
                 if (!id) {
@@ -88,6 +99,17 @@ const AppShare = {
                 App.projectData.meta.shareId = id;
                 if (App.currentProjectName) {
                     Storage.saveProject(App.currentProjectName, App.projectData);
+                }
+
+                // ARCADE 登録 / 解除
+                const arcadeOffCheckbox = document.getElementById('share-arcade-off');
+                const arcadeOff = !!(arcadeOffCheckbox && arcadeOffCheckbox.checked);
+                if (typeof ShareArcade !== 'undefined' && typeof AppArcadePanel !== 'undefined') {
+                    if (arcadeOff) {
+                        await ShareArcade.unpublish(id);
+                    } else {
+                        await ShareArcade.publish(id, AppArcadePanel.buildMetaForPublish());
+                    }
                 }
 
                 App._shareUrl = url;

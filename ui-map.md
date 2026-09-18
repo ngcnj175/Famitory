@@ -487,3 +487,21 @@
 | U452 | カラーパレット | Color Palette | JS HTML template | stage-settings.js | ✓ |
 | U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal | app-share.js | ✓ |
 | U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal | app-share.js | ✓ |
+| U500 | ARCADE情報 | ARCADE Info | HTML text node (label) | index.html | ✓ |
+| U501 | コメント | Comment | HTML text node (label) | index.html | ✓ |
+| U502 | サムネイル | Thumbnail | HTML text node (label) | index.html | ✓ |
+| U503 | サムネイル未設定 | No thumbnail | HTML text node | index.html | ✓ |
+| U504 | プレイ画面から取得 | Capture from Play | HTML button label | index.html | ✓ |
+| U505 | 画像アップロード | Upload Image | HTML button label | index.html | ✓ |
+| U506 | クリア | Clear | HTML button label | index.html | ✓ |
+| U507 | まずゲームを一度プレイしてください | Please play the game once first | JS toast | app-arcade-panel.js | ✓ |
+| U508 | ARCADEに登録しない | Do not register to ARCADE | HTML checkbox label | index.html | ✓ |
+| U509 | ARCADE | ARCADE | HTML nav label / screen title | index.html | ✓ |
+| U510 | タイトル・作者・コメントで検索 | Search title / creator / comment | HTML input placeholder | index.html | ✓ |
+| U511 | 更新 | Refresh | HTML button title | index.html | ✓ |
+| U512 | 並び順 | Sort | HTML text (label) | index.html | ✓ |
+| U513 | いいね数 | Likes | HTML option label | index.html | ✓ |
+| U514 | 新着 | Newest | HTML option label | index.html | ✓ |
+| U515 | 更新順 | Updated | HTML option label | index.html | ✓ |
+| U516 | 作品がありません | No games | HTML text | index.html | ✓ |
+| U517 | 読み込み中… | Loading… | HTML text | index.html | ✓ |

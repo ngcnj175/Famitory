@@ -502,6 +502,32 @@
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
+                    <!-- ARCADE 登録情報（折りたたみ可・既定=閉） -->
+                    <div class="setting-row setting-row-vertical setting-group collapsed" id="arcade-settings-group">
+                        <div class="setting-group-header" data-target="arcade-settings-body">
+                            <span class="setting-group-toggle">▶</span>
+                            <span class="setting-group-label" data-i18n="U500">ARCADE情報</span>
+                        </div>
+                        <div class="setting-group-body" id="arcade-settings-body">
+                            <div class="setting-row setting-row-vertical">
+                                <label data-i18n="U501">コメント</label>
+                                <textarea id="arcade-comment-input" rows="3" maxlength="500" placeholder=""></textarea>
+                            </div>
+                            <div class="setting-row setting-row-vertical">
+                                <label data-i18n="U502">サムネイル</label>
+                                <div id="arcade-thumb-preview-wrap">
+                                    <img id="arcade-thumb-preview" alt="thumbnail">
+                                    <div id="arcade-thumb-placeholder" data-i18n="U503">サムネイル未設定</div>
+                                </div>
+                                <div class="arcade-thumb-btns">
+                                    <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
+                                    <button id="arcade-thumb-upload-btn" class="setting-save-btn" type="button" data-i18n="U505">画像アップロード</button>
+                                    <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
+                                </div>
+                                <input type="file" id="arcade-thumb-file-input" accept="image/*" style="display:none">
+                            </div>
+                        </div>
+                    </div>
                     <!-- 保存ボタン -->
                     <div class="setting-row setting-row-center">
                         <button id="stage-settings-save" class="setting-save-btn" data-i18n="U065">設定を保存</button>
@@ -896,6 +922,54 @@
             <!-- 名前変更などのサブメニュー用（必要なら） -->
         </div>
 
+        <!-- ========== ARCADE 画面 ========== -->
+        <div id="arcade-screen" class="screen">
+            <div id="arcade-container">
+                <div id="arcade-toolbar">
+                    <div id="arcade-search-row">
+                        <input type="text" id="arcade-search-input" placeholder="" data-i18n-placeholder="U510">
+                        <button id="arcade-refresh-btn" title="更新" data-i18n-title="U511">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="arcade-filter-row">
+                        <label>
+                            <span data-i18n="U512">並び順</span>
+                            <select id="arcade-sort-select">
+                                <option value="likes" data-i18n="U513">いいね数</option>
+                                <option value="new" data-i18n="U514">新着</option>
+                                <option value="updated" data-i18n="U515">更新順</option>
+                            </select>
+                        </label>
+                        <span id="arcade-creator-chip" class="arcade-chip hidden">
+                            <span id="arcade-creator-chip-label"></span>
+                            <button id="arcade-creator-chip-clear" title="解除">×</button>
+                        </span>
+                    </div>
+                </div>
+                <div id="arcade-list">
+                    <div id="arcade-empty" class="hidden" data-i18n="U516">作品がありません</div>
+                    <div id="arcade-loading" class="hidden" data-i18n="U517">読み込み中…</div>
+                    <div id="arcade-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- コメント全文モーダル -->
+        <div id="arcade-comment-modal" class="modal-overlay hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-body">
+                    <div id="arcade-comment-modal-title"></div>
+                    <div id="arcade-comment-modal-body"></div>
+                </div>
+                <div class="modal-footer-simple">
+                    <button id="arcade-comment-modal-close" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
+                </div>
+            </div>
+        </div>
+
         <!-- フッター（アイコンバー） -->
         <header id="header">
             <div id="toolbar-left">
@@ -927,6 +1001,16 @@
                                 d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
                         </svg>
                         <span class="icon-label" data-i18n="U008">SHARE</span>
+                    </button>
+                    <!-- ARCADE（カセットスタック） -->
+                    <button id="arcade-icon-btn" class="toolbar-icon" title="ARCADE" data-i18n-title="U509">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="3" y="14" width="18" height="6" rx="1"/>
+                            <rect x="4" y="9" width="16" height="4" rx="1" opacity="0.75"/>
+                            <rect x="5" y="5" width="14" height="3" rx="1" opacity="0.5"/>
+                            <rect x="7" y="16" width="3" height="2" rx="0.3" fill="#fff" opacity="0.6"/>
+                        </svg>
+                        <span class="icon-label" data-i18n="U509">ARCADE</span>
                     </button>
                     <!-- ローカライズボタン -->
                     <button id="lang-icon-btn" class="toolbar-icon" title="言語切替">
@@ -1291,6 +1375,11 @@
                 <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U141">リミックスOK</label>
             </div>
 
+            <div class="setting-row" style="margin: 4px 24px 12px; justify-content: center; gap: 8px;">
+                <input type="checkbox" id="share-arcade-off" style="width: 16px; height: 16px;">
+                <label for="share-arcade-off" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U508">ARCADEに登録しない</label>
+            </div>
+
             <!-- 公開ステータスバッジ（公開済みのとき表示） -->
             <div id="share-status" class="share-status hidden">
                 <span class="share-status-dot"></span>
@@ -1549,6 +1638,7 @@
 
     <script src="js/utils/storage.js"></script>
     <script src="js/utils/share.js"></script>
+    <script src="js/utils/share-arcade.js"></script>
 
     <!-- Engine (Must load before Editors) -->
     <script src="js/engine/sprite-utils.js"></script>
@@ -1583,6 +1673,9 @@
     <script src="js/app-dialogs.js"></script>
     <script src="js/app-project.js"></script>
     <script src="js/app-share.js"></script>
+    <script src="js/app-thumbnail.js"></script>
+    <script src="js/app-arcade-panel.js"></script>
+    <script src="js/screen/arcade.js"></script>
     <script src="js/app.js"></script>
 </body>
 

@@ -763,6 +763,15 @@ const GameEngine = {
         }
         this.renderer.render();
 
+        // ARCADE 用サムネイル用に一定間隔でフレームをキャプチャ
+        if (this.titleState === 'playing' && typeof AppThumbnail !== 'undefined') {
+            const now = performance.now();
+            if (!this._lastThumbCaptureAt || now - this._lastThumbCaptureAt > 5000) {
+                AppThumbnail.captureFromCanvas(this.canvas);
+                this._lastThumbCaptureAt = now;
+            }
+        }
+
         // プレイヤー落下チェック（画面外に出たらゲームオーバーへ）
         if (this.titleState === 'playing' && this.player) {
             const stage = App.projectData.stage;

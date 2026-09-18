@@ -320,6 +320,26 @@ const AppI18N = {
         // ---- スコア共有テキスト（テンプレート） ----
         'U453': { JPN: '{gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'Cleared {gameName}!\nScore: {score}\nPlay it now👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
         'U454': { JPN: '{gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: '{gameName} — GAME OVER\nScore: {score}\nCan you do better?👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+
+        // ---- ARCADE ----
+        'U500': { JPN: 'ARCADE情報',              ENG: 'ARCADE Info' },
+        'U501': { JPN: 'コメント',                 ENG: 'Comment' },
+        'U502': { JPN: 'サムネイル',               ENG: 'Thumbnail' },
+        'U503': { JPN: 'サムネイル未設定',         ENG: 'No thumbnail' },
+        'U504': { JPN: 'プレイ画面から取得',       ENG: 'Capture from Play' },
+        'U505': { JPN: '画像アップロード',         ENG: 'Upload Image' },
+        'U506': { JPN: 'クリア',                   ENG: 'Clear' },
+        'U507': { JPN: 'まずゲームを一度プレイしてください', ENG: 'Please play the game once first' },
+        'U508': { JPN: 'ARCADEに登録しない',       ENG: 'Do not register to ARCADE' },
+        'U509': { JPN: 'ARCADE',                   ENG: 'ARCADE' },
+        'U510': { JPN: 'タイトル・作者・コメントで検索', ENG: 'Search title / creator / comment' },
+        'U511': { JPN: '更新',                     ENG: 'Refresh' },
+        'U512': { JPN: '並び順',                   ENG: 'Sort' },
+        'U513': { JPN: 'いいね数',                 ENG: 'Likes' },
+        'U514': { JPN: '新着',                     ENG: 'Newest' },
+        'U515': { JPN: '更新順',                   ENG: 'Updated' },
+        'U516': { JPN: '作品がありません',         ENG: 'No games' },
+        'U517': { JPN: '読み込み中…',              ENG: 'Loading…' },
     },
 
     t(id, vars = {}) {

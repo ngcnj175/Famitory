@@ -526,6 +526,7 @@ const App = {
         const shareBtn = document.getElementById('share-icon-btn');
         // 共有イベントは一度だけバインド
         AppShare.bindShareSimpleEvents();
+        if (typeof AppArcadePanel !== 'undefined') AppArcadePanel.init();
         shareBtn?.addEventListener('click', () => {
             this.projectData.palette = this.nesPalette.slice();
             AppShare._shareLoading = false;
@@ -540,8 +541,24 @@ const App = {
                 remixOkCheckbox.checked = !!this.projectData?.meta?.remixOK;
             }
 
+            // ARCADE登録OFFのチェック状態復元（未設定はデフォルトOFF＝登録する）
+            const arcadeOffCheckbox = document.getElementById('share-arcade-off');
+            if (arcadeOffCheckbox) {
+                arcadeOffCheckbox.checked = !!this.projectData?.meta?.arcadeOff;
+            }
+
             document.getElementById('share-dialog').classList.remove('hidden');
             AppShare.updateShareStatus();
+        });
+
+        // ARCADEボタン → ARCADE画面へ遷移
+        const arcadeBtn = document.getElementById('arcade-icon-btn');
+        arcadeBtn?.addEventListener('click', () => {
+            if (arcadeBtn.classList.contains('locked')) {
+                this.showEditKeyModal();
+                return;
+            }
+            this.switchScreen('arcade');
         });
 
 
@@ -779,6 +796,11 @@ const App = {
             case 'sound':
                 if (typeof SoundEditor !== 'undefined') {
                     SoundEditor.refresh();
+                }
+                break;
+            case 'arcade':
+                if (typeof AppArcade !== 'undefined') {
+                    AppArcade.show();
                 }
                 break;
         }
