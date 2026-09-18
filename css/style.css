@@ -6446,12 +6446,16 @@ body.dark-mode {
     padding: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: none;
 }
 
 #arcade-container {
+    width: 100%;
     max-width: 720px;
     margin: 0 auto;
     padding: 12px 12px 80px;
+    box-sizing: border-box;
 }
 
 #arcade-toolbar {
