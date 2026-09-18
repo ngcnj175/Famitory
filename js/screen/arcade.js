@@ -25,6 +25,8 @@ const AppArcade = {
         const chipClear = document.getElementById('arcade-creator-chip-clear');
         const commentClose = document.getElementById('arcade-comment-modal-close');
         const commentModal = document.getElementById('arcade-comment-modal');
+        const thumbClose = document.getElementById('arcade-thumb-modal-close');
+        const thumbModal = document.getElementById('arcade-thumb-modal');
 
         if (searchInput) searchInput.addEventListener('input', () => this.render());
         if (sortSelect) sortSelect.addEventListener('change', () => this.render());
@@ -34,6 +36,12 @@ const AppArcade = {
         if (commentModal) {
             commentModal.addEventListener('click', (e) => {
                 if (e.target === commentModal) this.closeCommentModal();
+            });
+        }
+        if (thumbClose) thumbClose.addEventListener('click', () => this.closeThumbnailModal());
+        if (thumbModal) {
+            thumbModal.addEventListener('click', (e) => {
+                if (e.target === thumbModal) this.closeThumbnailModal();
             });
         }
     },
@@ -117,7 +125,7 @@ const AppArcade = {
         const card = document.createElement('div');
         card.className = 'arcade-card';
 
-        // サムネ
+        // 左: サムネ（タップで拡大モーダル）
         const thumbWrap = document.createElement('div');
         thumbWrap.className = 'arcade-card-thumb';
         if (item.thumbnail) {
@@ -127,19 +135,20 @@ const AppArcade = {
             thumbWrap.appendChild(img);
         } else {
             thumbWrap.classList.add('no-thumb');
-            thumbWrap.textContent = 'NO IMAGE';
+            thumbWrap.textContent = 'NO IMG';
         }
-        thumbWrap.addEventListener('click', () => this.openGame(item));
+        thumbWrap.addEventListener('click', () => this.openThumbnailModal(item));
         card.appendChild(thumbWrap);
 
-        // タイトル
+        // 中央: タイトル / クリエイタ・いいね / コメント
+        const body = document.createElement('div');
+        body.className = 'arcade-card-body';
+
         const title = document.createElement('div');
         title.className = 'arcade-card-title';
         title.textContent = item.title || 'NO TITLE';
-        title.addEventListener('click', () => this.openGame(item));
-        card.appendChild(title);
+        body.appendChild(title);
 
-        // クリエイター＋いいね
         const meta = document.createElement('div');
         meta.className = 'arcade-card-meta';
         const creator = document.createElement('span');
@@ -157,9 +166,8 @@ const AppArcade = {
         likes.textContent = '♥ ' + (item.likes || 0);
         meta.appendChild(creator);
         meta.appendChild(likes);
-        card.appendChild(meta);
+        body.appendChild(meta);
 
-        // コメント（40文字プレビュー + タップで全文）
         if (item.comment) {
             const comment = document.createElement('div');
             comment.className = 'arcade-card-comment';
@@ -174,10 +182,47 @@ const AppArcade = {
                     this.openCommentModal(item);
                 });
             }
-            card.appendChild(comment);
+            body.appendChild(comment);
         }
+        card.appendChild(body);
+
+        // 右: PLAYボタン
+        const playBtn = document.createElement('button');
+        playBtn.className = 'arcade-card-play';
+        playBtn.type = 'button';
+        playBtn.textContent = (typeof AppI18N !== 'undefined')
+            ? (AppI18N.I18N['U010']?.[AppI18N.currentLang] || 'PLAY')
+            : 'PLAY';
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openGame(item);
+        });
+        card.appendChild(playBtn);
 
         return card;
+    },
+
+    openThumbnailModal(item) {
+        const modal = document.getElementById('arcade-thumb-modal');
+        const img = document.getElementById('arcade-thumb-modal-img');
+        const title = document.getElementById('arcade-thumb-modal-title');
+        if (!modal) return;
+        if (img) {
+            if (item.thumbnail) {
+                img.src = item.thumbnail;
+                img.style.display = 'inline-block';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+            }
+        }
+        if (title) title.textContent = item.title || '';
+        modal.classList.remove('hidden');
+    },
+
+    closeThumbnailModal() {
+        const modal = document.getElementById('arcade-thumb-modal');
+        if (modal) modal.classList.add('hidden');
     },
 
     openGame(item) {
