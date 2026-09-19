@@ -17,6 +17,8 @@ const SpriteUtils = {
         if (!sprite) return;
         const spriteSize = sprite.size || 1;
         const dimension = spriteSize === 2 ? 32 : 16;
+        // 非整数スケール時のみ隙間埋めパディングを付与（整数倍時は薄い縁が出るため付けない）
+        const pad = Number.isInteger(pixelSize) ? 0 : 0.5;
 
         for (let py = 0; py < dimension; py++) {
             for (let px = 0; px < dimension; px++) {
@@ -26,7 +28,7 @@ const SpriteUtils = {
                     const drawX = flipX
                         ? screenX + (dimension - 1 - px) * pixelSize
                         : screenX + px * pixelSize;
-                    ctx.fillRect(drawX, screenY + py * pixelSize, pixelSize + 0.5, pixelSize + 0.5);
+                    ctx.fillRect(drawX, screenY + py * pixelSize, pixelSize + pad, pixelSize + pad);
                 }
             }
         }
