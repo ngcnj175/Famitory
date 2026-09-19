@@ -536,7 +536,7 @@ body {
 #play-logo {
     position: absolute;
     left: 50%;
-    bottom: 100%;
+    top: 0;
     transform: translateX(-50%);
     width: 86px;
     height: auto;
