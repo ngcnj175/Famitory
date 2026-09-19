@@ -439,6 +439,8 @@ body {
     cursor: pointer;
     border-radius: 6px;
     box-shadow: none;
+    /* #dpad::after (十字プラス形の横バー) より上に出して三角シェイプを見せる */
+    z-index: 1;
     /* 髟ｷ謚ｼ縺玲凾縺ｮ譁�ｭ鈴∈謚樣亟豁｢ */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
