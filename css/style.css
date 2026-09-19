@@ -5736,6 +5736,15 @@ body {
     fill: #0c0c16;
 }
 
+/* --- ARCADEアイコン内のラベル穴の色制御 --- */
+.arcade-icon-detail {
+    fill: white;
+}
+
+#app.dark-mode .arcade-icon-detail {
+    fill: #0c0c16;
+}
+
 /* --- STAGE画面: BGM選択ボタン・制限時間入力・設定selectのダークモード --- */
 #app.dark-mode .bgm-select-btn {
     background: #1a1a30;
