@@ -539,11 +539,17 @@ body {
     top: 8px;
     transform: translateX(-50%);
     width: 95px;
-    height: auto;
+    aspect-ratio: 77 / 14;
+    background: url('../Images/famitory_logo.png') no-repeat center / contain;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     pointer-events: none;
     user-select: none;
+}
+
+/* ダークモード時は文字色を背景色(#0a0a0f)にした版に差し替え、輪郭のみ浮き出る */
+#app.dark-mode #play-logo {
+    background-image: url('../Images/famitory_logo_dark.png');
 }
 
 /* Start繝懊ち繝ｳ */
