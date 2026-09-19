@@ -369,17 +369,16 @@ body {
     width: 145px;
     aspect-ratio: 1 / 1;
     flex-shrink: 0;
-    /* 蜀�ｽ｢縺ｮ豬�＞遯ｪ縺ｿ閭梧勹�域万繧√°繧峨�蜈会ｼ� */
-    background: radial-gradient(circle at 35% 35%,
+    /* 窪んだサークル: 光源は左上・凹面は左上が暗く右下が明るい */
+    background: radial-gradient(circle at 65% 65%,
             rgba(255, 255, 255, 0.8) 0%,
             rgba(230, 230, 230, 0.6) 30%,
             rgba(200, 200, 200, 0.4) 60%,
             rgba(180, 180, 180, 0.3) 100%);
     border-radius: 50%;
     box-shadow:
-        inset 2px 2px 6px rgba(255, 255, 255, 0.5),
-        inset -2px -2px 8px rgba(0, 0, 0, 0.15),
-        0 2px 4px rgba(0, 0, 0, 0.1);
+        inset 2px 2px 6px rgba(0, 0, 0, 0.15),
+        inset -2px -2px 8px rgba(255, 255, 255, 0.5);
 }
 
 #dpad {
