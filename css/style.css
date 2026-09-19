@@ -552,6 +552,12 @@ body {
     background-image: url('../Images/famitory_logo_dark.png');
 }
 
+/* 横向き(landscape)時はロゴを画面最下部中央に配置 */
+#app.landscape-play #play-logo {
+    top: auto;
+    bottom: 4px;
+}
+
 /* Start繝懊ち繝ｳ */
 #start-btn-container {
     display: flex;
