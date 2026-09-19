@@ -554,7 +554,7 @@ body {
 
 /* 横向き(landscape)時はロゴを画面左上(十字キーの上)に配置 */
 #app.landscape-play #play-logo {
-    top: 4px;
+    top: 24px;
     left: max(env(safe-area-inset-left, 0px), 8px);
     transform: none;
 }
