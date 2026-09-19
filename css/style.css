@@ -532,6 +532,18 @@ body {
     /* 繧ｯ繝ｪ繝�け繧帝城℃ */
 }
 
+/* PLAY画面のFAMITORYロゴ（ゲーム画面とコントローラーの間） */
+#play-logo {
+    display: block;
+    width: 86px;
+    height: auto;
+    margin: 4px auto 0;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+    user-select: none;
+}
+
 /* Start繝懊ち繝ｳ */
 #start-btn-container {
     display: flex;
