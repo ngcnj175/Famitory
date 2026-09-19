@@ -657,7 +657,7 @@ class GameRenderer {
                 const heartSize = 32;
                 const pixelSize = heartSize / 16;
                 for (let i = 0; i < this.owner.player.lives; i++) {
-                    const posX = 10 + i * (heartSize + 2);
+                    const posX = 10 + i * heartSize;
                     SpriteUtils.drawPixels(ctx, sprite, posX, 10, pixelSize, App.nesPalette);
                 }
             }
