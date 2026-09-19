@@ -654,7 +654,7 @@ class GameRenderer {
             const spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
             const sprite = spriteIdx >= 0 ? App.projectData.sprites[spriteIdx] : null;
             if (sprite) {
-                const heartSize = 20;
+                const heartSize = 16;
                 const pixelSize = heartSize / 16;
                 for (let i = 0; i < this.owner.player.lives; i++) {
                     const posX = 10 + i * (heartSize + 2);
