@@ -166,19 +166,6 @@ body {
     display: flex;
 }
 
-/* 逕ｻ髱｢繧ｿ繧､繝医Ν�亥推逕ｻ髱｢縺ｮ荳企Κ�� */
-.screen-title {
-    flex-shrink: 0;
-    margin-top: auto;
-    text-align: center;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    padding: 2px 0 6px;
-    opacity: 0.6;
-}
-
 /* ========================================
    繝励Ξ繧､逕ｻ髱｢
    ======================================== */
@@ -5322,11 +5309,6 @@ body {
     color: #81c784;
 }
 
-#app.dark-mode .screen-title {
-    color: #4a5060;
-    opacity: 0.9;
-}
-
 #app.dark-mode #controller-area {
     background: #0a0a0f;
 }
@@ -6304,18 +6286,6 @@ body.dark-mode {
 #app.landscape-play #btn-b::before {
     top: -50px;  /* -30px から -20px 補正 */
     bottom: -30px; /* -50px から +20px 補正 */
-}
-
-/* FAMITORYロゴ: 左コントローラー帯・区切り線の上に絶対配置 */
-#app.landscape-play .screen-title {
-    position: absolute;
-    bottom: 4px;
-    left: 0;
-    right: auto;
-    width: calc(165px + env(safe-area-inset-left, 0px));
-    margin-top: 0;
-    text-align: center;
-    padding: 0;
 }
 
 /* フッター: 区切り線を左右分割・中央は開放 / アイコン余白を左右端から1個分確保 */
