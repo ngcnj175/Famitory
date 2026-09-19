@@ -489,6 +489,38 @@ body {
     border-radius: 0 6px 6px 0;
 }
 
+/* 各方向ボタン中央の三角シェイプ（方向を指す） */
+.dpad-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+#btn-up::after {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid #fff;
+}
+#btn-down::after {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #fff;
+}
+#btn-left::after {
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 8px solid #fff;
+}
+#btn-right::after {
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 8px solid #fff;
+}
+
 /* 蜊∝ｭ励く繝ｼ縺ｮ荳ｭ螟ｮ繝舌� */
 #dpad::before {
     content: '';
@@ -5332,6 +5364,12 @@ body {
 #app.dark-mode #dpad {
     filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6));
 }
+
+/* ダークモード時、十字キーの三角シェイプは A/B ボタン文字色に合わせる */
+#app.dark-mode #btn-up::after { border-bottom-color: #8090a0; }
+#app.dark-mode #btn-down::after { border-top-color: #8090a0; }
+#app.dark-mode #btn-left::after { border-right-color: #8090a0; }
+#app.dark-mode #btn-right::after { border-left-color: #8090a0; }
 
 #app.dark-mode .action-btn {
     background: #2a2a45;
