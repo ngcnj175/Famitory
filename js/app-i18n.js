@@ -285,7 +285,6 @@ const AppI18N = {
         'U437': { JPN: 'スコアを共有',    ENG: 'Share Score' },
         'U438': { JPN: 'もう一度',        ENG: 'Retry' },
         'U439': { JPN: 'リミックスする',  ENG: 'Remix' },
-        'U440': { JPN: '編集に戻る',      ENG: 'Back to Edit' },
         'U441': { JPN: 'スコアを共有',    ENG: 'Share Score' },
         'U442': { JPN: 'もどる',          ENG: 'Back' },
         'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },

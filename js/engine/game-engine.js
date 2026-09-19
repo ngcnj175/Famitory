@@ -1521,9 +1521,9 @@ const GameEngine = {
 
     // リザルト画面のイベント初期化（一度だけ呼ぶ）
     initResultEvents() {
+        const overlay = document.getElementById('result-overlay');
         const shareBtn = document.getElementById('result-share-btn');
         const retryBtn = document.getElementById('result-retry-btn');
-        const editBtn = document.getElementById('result-edit-btn');
 
         if (shareBtn) {
             shareBtn.addEventListener('click', () => {
@@ -1549,14 +1549,6 @@ const GameEngine = {
                 this._retryFromResult();
             }
         });
-
-        if (editBtn) {
-            editBtn.addEventListener('click', () => {
-                if (overlay) overlay.classList.add('hidden');
-                this.stop();
-                App.switchScreen('stage');
-            });
-        }
 
         const remixBtn = document.getElementById('result-remix-btn');
         if (remixBtn) {

@@ -792,9 +792,6 @@ class GameRenderer {
             remixBtn.classList.toggle('hidden', !(App.isPlayOnlyMode && App.projectData?.meta?.remixOK));
         }
 
-        const editBtn = document.getElementById('result-edit-btn');
-        if (editBtn) editBtn.classList.toggle('hidden', App.isPlayOnlyMode);
-
         this._updateResultGameInfo(app);
         overlay.classList.remove('hidden');
     }
