@@ -542,8 +542,6 @@ body {
     height: auto;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    /* 黒(#000)を十字キーと同じ --color-dark (#4a4a4a) に変換 */
-    filter: invert(29%);
     pointer-events: none;
     user-select: none;
 }
