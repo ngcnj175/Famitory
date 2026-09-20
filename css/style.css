@@ -3626,7 +3626,7 @@ input, textarea, select, button {
 #result-title.rainbow {
     animation: result-title-rainbow 0.6s linear infinite;
     font-size: 20px;
-    padding-right: 6px; /* !の後ろの余白で右寄りに見える分を中央補正 */
+    padding-right: 3px; /* !の後ろの余白で右寄りに見える分を中央補正 */
 }
 
 #result-score-container {
