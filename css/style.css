@@ -3611,6 +3611,7 @@ input, textarea, select, button {
     color: var(--text-dark);
     letter-spacing: -2px;
     font-family: 'Press Start 2P', 'BIZ UDPGothic', Arial;
+    white-space: nowrap;
 }
 
 #result-score-container {
@@ -6441,7 +6442,7 @@ body.dark-mode {
 
 #app.landscape-play #result-title {
     font-size: 16px;
-    letter-spacing: 1px;
+    letter-spacing: -1px;
 }
 
 #app.landscape-play .result-label {
