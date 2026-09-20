@@ -5360,8 +5360,10 @@ body {
     color: #6878a0;
 }
 
-#app.dark-mode .like-icon-small {
-    filter: brightness(0) invert(0.5);
+#app.dark-mode .like-icon-small,
+#app.dark-mode .like-icon-result,
+#app.dark-mode .arcade-card-likes img {
+    filter: brightness(0) saturate(100%) invert(82%) sepia(10%) saturate(500%) hue-rotate(190deg);
 }
 
 #app.dark-mode .result-like-btn {
