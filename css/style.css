@@ -3609,7 +3609,7 @@ input, textarea, select, button {
     font-size: 24px;
     font-weight: 700;
     color: var(--text-dark);
-    letter-spacing: 2px;
+    letter-spacing: -2px;
     font-family: 'Press Start 2P', 'BIZ UDPGothic', Arial;
 }
 
