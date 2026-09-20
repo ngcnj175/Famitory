@@ -191,6 +191,11 @@ const App = {
         // マージンや位置の個別調整はFlexboxに任せるためクリア
         app.style.marginTop = '0';
 
+        // レイアウト確定後にキャンバスサイズも再計算（横→縦戻し時のDOMオーバーレイ連動用）
+        requestAnimationFrame(() => {
+            if (typeof GameEngine !== 'undefined') GameEngine.resize();
+        });
+
         console.log(`Viewport scaled to ${cappedScale.toFixed(2)} for ${screenWidth}x${screenHeight}`);
     },
 

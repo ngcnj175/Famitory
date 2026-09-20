@@ -248,6 +248,14 @@ const GameEngine = {
         this.canvas.width  = viewTiles * TILE_BASE * scale;
         this.canvas.height = viewTiles * TILE_BASE * scale;
         this.TILE_SIZE = TILE_BASE * scale; // 32px（2倍スケール）
+
+        // タイトル画面のDOMオーバーレイ（タイトル/作者/いいね等）の文字サイズを
+        // canvas CSS幅に連動させる基準値を提供
+        const canvasCssWidth = this.canvas.clientWidth || refSize;
+        const overlay = document.getElementById('push-start-ui');
+        if (overlay) {
+            overlay.style.setProperty('--canvas-css-w', canvasCssWidth + 'px');
+        }
     },
 
     initGame() {
