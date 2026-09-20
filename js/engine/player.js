@@ -364,9 +364,8 @@ class Player {
                     jumpSpeed = this.moveSpeed;
                 }
                 this._airVx = jumpSpeed;
-                if (rightPressed)      this.vx =  jumpSpeed;
-                else if (leftPressed)  this.vx = -jumpSpeed;
-                else if (this.vx !== 0) this.vx = Math.sign(this.vx) * jumpSpeed;
+                if (rightPressed)     this.vx =  jumpSpeed;
+                else if (leftPressed) this.vx = -jumpSpeed;
                 this._dashReleaseTimer = 0;
 
                 this.playSE('jump');
