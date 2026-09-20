@@ -954,6 +954,15 @@ body {
     height: 100%;
 }
 
+.hand-tool-icon {
+    display: block;
+    width: 72%;
+    height: 72%;
+    background-color: currentColor;
+    -webkit-mask: url('../images/hand_icon.svg') no-repeat center / contain;
+    mask: url('../images/hand_icon.svg') no-repeat center / contain;
+}
+
 .paint-tool-btn:hover {
     color: var(--color-medium);
 }
