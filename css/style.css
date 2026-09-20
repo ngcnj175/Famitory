@@ -1152,14 +1152,52 @@ body {
     background: #f5f5f5;
     border-top: 2px solid var(--border-color);
     padding: 12px;
-    padding-top: 8px;
+    padding-top: 4px;
     max-height: 300px;
     overflow-y: auto;
     position: relative;
+    transition: max-height 0.2s ease;
 }
 
 #tile-config-panel:not(.hidden) {
     display: block;
+}
+
+/* ドラッグハンドル（掴みバー） */
+#tile-config-header {
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -12px 4px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#tile-config-header:active {
+    cursor: grabbing;
+}
+
+#tile-config-grabber {
+    width: 40px;
+    height: 4px;
+    background: var(--color-medium, #b0b0b0);
+    border-radius: 2px;
+    opacity: 0.55;
+}
+
+/* 拡大状態：max-height を解除して flex で残り領域を全て使う */
+#tile-config-panel.expanded {
+    max-height: none;
+    flex: 1;
+    min-height: 0;
+}
+
+/* 拡大時はキャンバスとツール列を隠す（キャンバス操作衝突防止も兼ねる） */
+#paint-content-wrapper.tile-config-expanded #paint-main-area {
+    display: none;
 }
 
 /* 繝代ロ繝ｫ髢峨§繧九�繧ｿ繝ｳ�亥承荳岩恤�� */
@@ -5561,6 +5599,11 @@ body {
 #app.dark-mode #tile-config-panel {
     background: #12122a;
     border-top-color: #252540;
+}
+
+#app.dark-mode #tile-config-grabber {
+    background: #444a5a;
+    opacity: 0.7;
 }
 
 #app.dark-mode .config-row label {

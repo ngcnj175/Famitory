@@ -30,12 +30,10 @@ const StageEditor = {
 
     // 險ｭ螳壹ヱ繝阪Ν
     isConfigOpen: false,
+    isConfigExpanded: false,
     editingTemplate: null,
     editingIndex: -1, // -1:譁ｰ隕・ 0莉･荳・邱ｨ髮・
     draggedSpriteIndex: null,
-
-    // 繧ｿ繧､繝ｫ繧ｯ繝ｪ繝・け迥ｶ諷具ｼ医ム繝悶Ν繧ｿ繝・・讀懷・逕ｨ・・
-    tileClickState: { index: null, timer: null, count: 0 },
 
     // UNDO螻･豁ｴ
     undoHistory: [],
@@ -338,6 +336,87 @@ const StageEditor = {
         if (saveBtn) {
             saveBtn.addEventListener('click', () => this.saveTemplate());
         }
+
+        this.initConfigPanelSwipe();
+    },
+
+    // ハンドル領域の上下スワイプで拡大/縮小
+    initConfigPanelSwipe() {
+        const header = document.getElementById('tile-config-header');
+        if (!header) return;
+
+        const THRESHOLD = 24; // 判定に必要な移動量(px)
+        let startY = null;
+        let active = false;
+
+        const onDown = (y) => {
+            startY = y;
+            active = true;
+        };
+        const onMove = (y, ev) => {
+            if (!active || startY === null) return;
+            // 縦方向のスワイプ中はスクロール抑止
+            if (ev.cancelable) ev.preventDefault();
+        };
+        const onUp = (y) => {
+            if (!active || startY === null) return;
+            const dy = y - startY;
+            active = false;
+            startY = null;
+            if (dy <= -THRESHOLD) this.expandConfigPanel();
+            else if (dy >= THRESHOLD) this.collapseConfigPanel();
+        };
+
+        header.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            onDown(e.touches[0].clientY);
+        }, { passive: true });
+        header.addEventListener('touchmove', (e) => {
+            if (e.touches.length !== 1) return;
+            onMove(e.touches[0].clientY, e);
+        }, { passive: false });
+        header.addEventListener('touchend', (e) => {
+            const t = e.changedTouches[0];
+            onUp(t ? t.clientY : startY);
+        });
+        header.addEventListener('touchcancel', () => { active = false; startY = null; });
+
+        // マウス（PC）
+        header.addEventListener('mousedown', (e) => {
+            onDown(e.clientY);
+            const move = (ev) => onMove(ev.clientY, ev);
+            const up = (ev) => {
+                onUp(ev.clientY);
+                window.removeEventListener('mousemove', move);
+                window.removeEventListener('mouseup', up);
+            };
+            window.addEventListener('mousemove', move);
+            window.addEventListener('mouseup', up);
+        });
+    },
+
+    // ステージ画面側の paint-content-wrapper を返す（同IDが複数存在するため closest で解決）
+    getConfigWrapper() {
+        const panel = document.getElementById('tile-config-panel');
+        return panel ? panel.closest('#paint-content-wrapper') : null;
+    },
+
+    expandConfigPanel() {
+        if (this.isConfigExpanded) return;
+        const panel = document.getElementById('tile-config-panel');
+        const wrapper = this.getConfigWrapper();
+        if (panel) panel.classList.add('expanded');
+        if (wrapper) wrapper.classList.add('tile-config-expanded');
+        this.isConfigExpanded = true;
+    },
+
+    collapseConfigPanel() {
+        if (!this.isConfigExpanded) return;
+        const panel = document.getElementById('tile-config-panel');
+        const wrapper = this.getConfigWrapper();
+        if (panel) panel.classList.remove('expanded');
+        if (wrapper) wrapper.classList.remove('tile-config-expanded');
+        this.isConfigExpanded = false;
     },
 
     // 螻樊ｧ繝ｩ繝吶Ν陦ｨ遉ｺ逕ｨ縺ｮ繝槭ャ繝斐Φ繧ｰ
@@ -376,6 +455,8 @@ const StageEditor = {
     closeConfigPanel() {
         const panel = document.getElementById('tile-config-panel');
         if (panel) {
+            // 閉じる際は拡大状態を必ず初期に戻す
+            this.collapseConfigPanel();
             panel.classList.add('hidden');
             this.isConfigOpen = false;
             this.editingTemplate = null;

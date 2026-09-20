@@ -144,7 +144,7 @@ class StageTemplateManager {
 
             let isLongPress = false;
 
-            // タップ/クリック処理（シングル＝座標に選択、ダブル＝設定表示）
+            // タップ/クリック処理（未選択＝選択、選択中の再タップ＝設定パネル表示）
             const handleTap = (e) => {
                 // イベントターゲットがこのdiv内でない場合は無視
                 if (e && e.target && !div.contains(e.target)) {
@@ -154,33 +154,15 @@ class StageTemplateManager {
                 // 長押し判定後はクリック処理を中断
                 if (isLongPress) return;
 
-                const state = this.owner.tileClickState;
-
-                // 同じタイルへの2連続のクリック（ダブルタップ）
-                if (state.index === index && state.count === 1) {
-                    clearTimeout(state.timer);
-                    state.count = 0;
-                    state.index = null;
-
-                    // ダブルタップ：設定表示
+                if (this.owner.selectedTemplate === index) {
+                    // 選択中のタイルを再タップ → 設定パネル表示
                     this.owner.editingTemplate = { ...template, sprites: { ...template.sprites } };
                     this.owner.editingIndex = index;
                     this.owner.openConfigPanel();
                 } else {
-                    // 最初のクリック：座標に選択
-                    clearTimeout(state.timer);
-                    state.index = index;
-                    state.count = 1;
-
-                    // 座標に選択を更新（表示もリファクタなし）
+                    // 未選択タイル → 選択のみ
                     this.owner.selectedTemplate = index;
                     this.owner.initTemplateList();
-
-                    // ダブルタップ用タイマ：２回目のクリックがなければリセット
-                    state.timer = setTimeout(() => {
-                        state.count = 0;
-                        state.index = null;
-                    }, 300);
                 }
             };
 
