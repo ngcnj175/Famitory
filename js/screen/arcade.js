@@ -23,25 +23,23 @@ const AppArcade = {
         const sortSelect = document.getElementById('arcade-sort-select');
         const refreshBtn = document.getElementById('arcade-refresh-btn');
         const chipClear = document.getElementById('arcade-creator-chip-clear');
-        const commentClose = document.getElementById('arcade-comment-modal-close');
-        const commentModal = document.getElementById('arcade-comment-modal');
-        const thumbClose = document.getElementById('arcade-thumb-modal-close');
-        const thumbModal = document.getElementById('arcade-thumb-modal');
+        const detailClose = document.getElementById('arcade-detail-close');
+        const detailModal = document.getElementById('arcade-detail-modal');
+        const detailPlay = document.getElementById('arcade-detail-play');
 
         if (searchInput) searchInput.addEventListener('input', () => this.render());
         if (sortSelect) sortSelect.addEventListener('change', () => this.render());
         if (refreshBtn) refreshBtn.addEventListener('click', () => this.load(true));
         if (chipClear) chipClear.addEventListener('click', () => this.setCreatorFilter(null));
-        if (commentClose) commentClose.addEventListener('click', () => this.closeCommentModal());
-        if (commentModal) {
-            commentModal.addEventListener('click', (e) => {
-                if (e.target === commentModal) this.closeCommentModal();
+        if (detailClose) detailClose.addEventListener('click', () => this.closeDetailModal());
+        if (detailModal) {
+            detailModal.addEventListener('click', (e) => {
+                if (e.target === detailModal) this.closeDetailModal();
             });
         }
-        if (thumbClose) thumbClose.addEventListener('click', () => this.closeThumbnailModal());
-        if (thumbModal) {
-            thumbModal.addEventListener('click', (e) => {
-                if (e.target === thumbModal) this.closeThumbnailModal();
+        if (detailPlay) {
+            detailPlay.addEventListener('click', () => {
+                if (this._detailItem) this.openGame(this._detailItem);
             });
         }
     },
@@ -124,8 +122,9 @@ const AppArcade = {
     createCard(item) {
         const card = document.createElement('div');
         card.className = 'arcade-card';
+        card.addEventListener('click', () => this.openDetailModal(item));
 
-        // 左: サムネ（タップで拡大モーダル）
+        // 左: サムネ
         const thumbWrap = document.createElement('div');
         thumbWrap.className = 'arcade-card-thumb';
         if (item.thumbnail) {
@@ -137,34 +136,20 @@ const AppArcade = {
             thumbWrap.classList.add('no-thumb');
             thumbWrap.textContent = 'NO IMG';
         }
-        thumbWrap.addEventListener('click', () => this.openThumbnailModal(item));
         card.appendChild(thumbWrap);
 
-        // 中央: 4行固定（RemixOK / タイトル / クリエイタ / コメント）
+        // 中央: タイトル / クリエイタ+RemixOK / コメント / いいね
         const body = document.createElement('div');
         body.className = 'arcade-card-body';
 
-        // 1行目: RemixOK タグ（無い場合も高さ確保）
-        const tagRow = document.createElement('div');
-        tagRow.className = 'arcade-card-tagrow';
-        if (item.remixOK) {
-            const tag = document.createElement('span');
-            tag.className = 'arcade-card-remixtag';
-            tag.textContent = 'RemixOK';
-            tagRow.appendChild(tag);
-        } else {
-            tagRow.innerHTML = '&nbsp;';
-        }
-        body.appendChild(tagRow);
-
-        // 2行目: タイトル
         const title = document.createElement('div');
         title.className = 'arcade-card-title';
         title.textContent = item.title || 'NO TITLE';
         body.appendChild(title);
 
-        // 3行目: クリエイタ
-        const creator = document.createElement('div');
+        const metaRow = document.createElement('div');
+        metaRow.className = 'arcade-card-metarow';
+        const creator = document.createElement('span');
         creator.className = 'arcade-card-creator';
         creator.textContent = item.creator || '-';
         if (item.creator) {
@@ -174,38 +159,32 @@ const AppArcade = {
                 this.setCreatorFilter(item.creator);
             });
         }
-        body.appendChild(creator);
+        metaRow.appendChild(creator);
+        if (item.remixOK) {
+            const tag = document.createElement('span');
+            tag.className = 'arcade-remixtag';
+            tag.innerHTML = '<svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg><span>Remix OK</span>';
+            metaRow.appendChild(tag);
+        }
+        body.appendChild(metaRow);
 
-        // 4行目: コメント（1行表示、無い場合も高さ確保、タップで全文モーダル）
         const comment = document.createElement('div');
         comment.className = 'arcade-card-comment';
-        if (item.comment) {
-            comment.textContent = item.comment;
-            comment.classList.add('clickable');
-            comment.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.openCommentModal(item);
-            });
-        } else {
-            comment.innerHTML = '&nbsp;';
-        }
+        comment.textContent = item.comment || ' ';
         body.appendChild(comment);
 
-        card.appendChild(body);
-
-        // 右上: いいね数
         const likes = document.createElement('div');
         likes.className = 'arcade-card-likes';
         likes.innerHTML = '<img src="images/like_icon.svg" alt="like"><span>' + (item.likes || 0) + '</span>';
-        card.appendChild(likes);
+        body.appendChild(likes);
 
-        // 右下: PLAYボタン
+        card.appendChild(body);
+
+        // 右: PLAYボタン（丸ピル）
         const playBtn = document.createElement('button');
-        playBtn.className = 'arcade-card-play';
+        playBtn.className = 'arcade-card-play arcade-play-btn';
         playBtn.type = 'button';
-        playBtn.textContent = (typeof AppI18N !== 'undefined')
-            ? (AppI18N.I18N['U010']?.[AppI18N.currentLang] || 'PLAY')
-            : 'PLAY';
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>Play</span>';
         playBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.openGame(item);
@@ -215,47 +194,43 @@ const AppArcade = {
         return card;
     },
 
-    openThumbnailModal(item) {
-        const modal = document.getElementById('arcade-thumb-modal');
-        const img = document.getElementById('arcade-thumb-modal-img');
-        const title = document.getElementById('arcade-thumb-modal-title');
+    openDetailModal(item) {
+        this._detailItem = item;
+        const modal = document.getElementById('arcade-detail-modal');
         if (!modal) return;
-        if (img) {
+        const thumb = document.getElementById('arcade-detail-thumb');
+        const title = document.getElementById('arcade-detail-title');
+        const creator = document.getElementById('arcade-detail-creator');
+        const tag = document.getElementById('arcade-detail-remixtag');
+        const comment = document.getElementById('arcade-detail-comment');
+        const likesCount = document.getElementById('arcade-detail-likes-count');
+        if (thumb) {
             if (item.thumbnail) {
-                img.src = item.thumbnail;
-                img.style.display = 'inline-block';
+                thumb.src = item.thumbnail;
+                thumb.style.display = 'block';
             } else {
-                img.removeAttribute('src');
-                img.style.display = 'none';
+                thumb.removeAttribute('src');
+                thumb.style.display = 'none';
             }
         }
         if (title) title.textContent = item.title || '';
+        if (creator) creator.textContent = item.creator || '';
+        if (tag) tag.classList.toggle('hidden', !item.remixOK);
+        if (comment) comment.textContent = item.comment || '';
+        if (likesCount) likesCount.textContent = item.likes || 0;
         modal.classList.remove('hidden');
     },
 
-    closeThumbnailModal() {
-        const modal = document.getElementById('arcade-thumb-modal');
+    closeDetailModal() {
+        const modal = document.getElementById('arcade-detail-modal');
         if (modal) modal.classList.add('hidden');
+        this._detailItem = null;
     },
 
     openGame(item) {
+        this.closeDetailModal();
         if (!item || !item.id) return;
         const url = Share.createShortUrl(item.id);
         window.open(url, '_blank');
-    },
-
-    openCommentModal(item) {
-        const modal = document.getElementById('arcade-comment-modal');
-        const title = document.getElementById('arcade-comment-modal-title');
-        const body = document.getElementById('arcade-comment-modal-body');
-        if (!modal) return;
-        if (title) title.textContent = item.title || '';
-        if (body) body.textContent = item.comment || '';
-        modal.classList.remove('hidden');
-    },
-
-    closeCommentModal() {
-        const modal = document.getElementById('arcade-comment-modal');
-        if (modal) modal.classList.add('hidden');
     }
 };
