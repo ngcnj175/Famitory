@@ -80,7 +80,7 @@ class GameRenderer {
 
     _fillTextWithShadow(ctx, text, x, y, color = '#ffffff') {
         ctx.fillStyle = '#000000';
-        ctx.fillText(text, x + 1, y + 1);
+        ctx.fillText(text, x + 2, y + 2);
         ctx.fillStyle = color;
         ctx.fillText(text, x, y);
     }
@@ -713,7 +713,7 @@ class GameRenderer {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillStyle = '#000000';
-            ctx.fillText(scoreText, this.owner.canvas.width / 2 + 1, 11);
+            ctx.fillText(scoreText, this.owner.canvas.width / 2 + 2, 12);
             ctx.fillStyle = '#ffffff';
             ctx.fillText(scoreText, this.owner.canvas.width / 2, 10);
         }
