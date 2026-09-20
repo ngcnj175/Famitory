@@ -347,21 +347,10 @@ const StageEditor = {
 
         const THRESHOLD = 24; // 判定に必要な移動量(px)
         let startY = null;
-        let active = false;
 
-        const onDown = (y) => {
-            startY = y;
-            active = true;
-        };
-        const onMove = (y, ev) => {
-            if (!active || startY === null) return;
-            // 縦方向のスワイプ中はスクロール抑止
-            if (ev.cancelable) ev.preventDefault();
-        };
-        const onUp = (y) => {
-            if (!active || startY === null) return;
-            const dy = y - startY;
-            active = false;
+        const onEnd = (endY) => {
+            if (startY === null) return;
+            const dy = endY - startY;
             startY = null;
             if (dy <= -THRESHOLD) this.expandConfigPanel();
             else if (dy >= THRESHOLD) this.collapseConfigPanel();
@@ -369,28 +358,25 @@ const StageEditor = {
 
         header.addEventListener('touchstart', (e) => {
             if (e.touches.length !== 1) return;
-            onDown(e.touches[0].clientY);
+            startY = e.touches[0].clientY;
         }, { passive: true });
         header.addEventListener('touchmove', (e) => {
-            if (e.touches.length !== 1) return;
-            onMove(e.touches[0].clientY, e);
+            // 縦方向のスワイプ中はスクロール抑止
+            if (startY !== null && e.cancelable) e.preventDefault();
         }, { passive: false });
         header.addEventListener('touchend', (e) => {
             const t = e.changedTouches[0];
-            onUp(t ? t.clientY : startY);
+            onEnd(t ? t.clientY : startY);
         });
-        header.addEventListener('touchcancel', () => { active = false; startY = null; });
+        header.addEventListener('touchcancel', () => { startY = null; });
 
         // マウス（PC）
         header.addEventListener('mousedown', (e) => {
-            onDown(e.clientY);
-            const move = (ev) => onMove(ev.clientY, ev);
+            startY = e.clientY;
             const up = (ev) => {
-                onUp(ev.clientY);
-                window.removeEventListener('mousemove', move);
+                onEnd(ev.clientY);
                 window.removeEventListener('mouseup', up);
             };
-            window.addEventListener('mousemove', move);
             window.addEventListener('mouseup', up);
         });
     },

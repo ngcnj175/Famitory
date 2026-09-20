@@ -1156,7 +1156,6 @@ body {
     max-height: 300px;
     overflow-y: auto;
     position: relative;
-    transition: max-height 0.2s ease;
 }
 
 #tile-config-panel:not(.hidden) {
@@ -1206,31 +1205,6 @@ body {
 /* 拡大時はキャンバスとツール列を隠す（キャンバス操作衝突防止も兼ねる） */
 #paint-content-wrapper.tile-config-expanded #paint-main-area {
     display: none;
-}
-
-/* 繝代ロ繝ｫ髢峨§繧九�繧ｿ繝ｳ�亥承荳岩恤�� */
-.panel-close-btn {
-    position: absolute;
-    top: 4px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.panel-close-btn:hover {
-    color: var(--text-dark);
-}
-
-.panel-close-btn:active {
-    transform: scale(0.9);
 }
 
 /* 繝代ロ繝ｫ髢峨§繧九�繧ｿ繝ｳ�亥承荳岩恤�� */
