@@ -3615,17 +3615,16 @@ input, textarea, select, button {
 }
 
 @keyframes result-title-rainbow {
-    0%   { color: #ff4444; }
-    17%  { color: #ffa500; }
-    34%  { color: #ffd700; }
-    51%  { color: #00e070; }
-    68%  { color: #40b0ff; }
-    85%  { color: #a060ff; }
-    100% { color: #ff4444; }
+    0%,   16.6% { color: #ff4444; }
+    16.7%, 33.3% { color: #ffa500; }
+    33.4%, 50%   { color: #ffd700; }
+    50.1%, 66.6% { color: #00e070; }
+    66.7%, 83.3% { color: #40b0ff; }
+    83.4%, 100%  { color: #a060ff; }
 }
 
 #result-title.rainbow {
-    animation: result-title-rainbow 1.2s steps(6) infinite;
+    animation: result-title-rainbow 0.6s linear infinite;
 }
 
 #result-score-container {
