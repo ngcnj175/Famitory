@@ -712,10 +712,7 @@ class GameRenderer {
             ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillStyle = '#000000';
-            ctx.fillText(scoreText, this.owner.canvas.width / 2 + 2, 12);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(scoreText, this.owner.canvas.width / 2, 10);
+            this._fillTextWithShadow(ctx, scoreText, this.owner.canvas.width / 2, 10);
         }
     }
 
