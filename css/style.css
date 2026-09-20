@@ -310,9 +310,8 @@ body {
 }
 
 .like-icon-small {
-    width: 12px;
-    height: 12px;
-    image-rendering: pixelated;
+    width: 14px;
+    height: 14px;
 }
 
 #game-info .like-icon-small {
@@ -3729,9 +3728,8 @@ body {
 }
 
 .like-icon-result {
-    width: 18px;
-    height: 18px;
-    image-rendering: pixelated;
+    width: 20px;
+    height: 20px;
 }
 
 .result-like-btn.liked .like-icon-result {
@@ -6450,8 +6448,8 @@ body.dark-mode {
 }
 
 #app.landscape-play .like-icon-result {
-    width: 15px;
-    height: 15px;
+    width: 17px;
+    height: 17px;
 }
 
 #app.landscape-play .result-actions {
@@ -6743,8 +6741,8 @@ body.dark-mode {
 }
 
 .arcade-card-likes img {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
 }
 
 .arcade-card-play {

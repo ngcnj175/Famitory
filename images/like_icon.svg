@@ -1,17 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<svg version="1.1" width="16" height="16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-<rect x="7" y="0" width="2" height="8" fill="#4A4A4A" />
-<rect x="9" y="1" width="1" height="6" fill="#4A4A4A" />
-<rect x="6" y="3" width="1" height="6" fill="#4A4A4A" />
-<rect x="5" y="4" width="1" height="12" fill="#4A4A4A" />
-<rect x="4" y="5" width="1" height="11" fill="#4A4A4A" />
-<rect x="10" y="6" width="4" height="1" fill="#4A4A4A" />
-<rect x="13" y="7" width="2" height="5" fill="#4A4A4A" />
-<rect x="0" y="8" width="2" height="7" fill="#4A4A4A" />
-<rect x="3" y="8" width="1" height="7" fill="#4A4A4A" />
-<rect x="9" y="8" width="4" height="8" fill="#4A4A4A" />
-<rect x="7" y="9" width="2" height="2" fill="#4A4A4A" />
-<rect x="8" y="11" width="1" height="4" fill="#4A4A4A" />
-<rect x="6" y="12" width="1" height="4" fill="#4A4A4A" />
-<rect x="13" y="12" width="1" height="3" fill="#4A4A4A" />
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
+<g>
+	<path fill="#4B4B4B" d="M415.48,344.803c17.156-7.422,29.171-24.453,29.171-44.328c0-20.422-12.703-37.797-30.609-44.875
+		c10.469-8.859,17.265-21.922,17.265-36.719c0-26.703-21.625-48.328-48.312-48.328H272.871
+		c10.578-20.813,19.766-48.344,16.625-81.25c-2.922-30.984-29.063-85.75-69.313-88.984c-31.047-2.484-37.047,9.156-37.047,40.281
+		c0,0,0.344,30.156,0.344,49.484c0,34.609-4.469,66.297-52.234,81.422c-76.359,24.203-63,121-63,121v92.188
+		c0,28.875,46.563,127.313,152.547,127.313h122.406c26.703,0,62.813-12.906,62.813-48.328c0-13.25-5.344-25.25-13.984-33.984
+		c23.359-3.375,41.359-23.297,41.359-47.625C433.386,366.975,426.339,353.662,415.48,344.803z"/>
+</g>
 </svg>
