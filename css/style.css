@@ -3607,9 +3607,10 @@ input, textarea, select, button {
 
 #result-title {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-dark);
     letter-spacing: 2px;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', Arial;
 }
 
 #result-score-container {
@@ -3643,18 +3644,18 @@ input, textarea, select, button {
 
 #result-score-value {
     font-size: 24px;
-    font-weight: 400;
+    font-weight: 700;
     color: var(--text-dark);
     line-height: 1;
-    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-family: 'BIZ UDPGothic', monospace;
     letter-spacing: 1px;
 }
 
 #result-highscore-value {
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 700;
     color: var(--text-dark);
-    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-family: 'BIZ UDPGothic', monospace;
     letter-spacing: 1px;
 }
 
