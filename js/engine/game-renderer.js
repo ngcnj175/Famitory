@@ -357,7 +357,7 @@ class GameRenderer {
         const ctx = this.owner.ctx;
         ctx.fillStyle = '#333333';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
-        ctx.font = '12px Arial';
+        ctx.font = '12px "BIZ UDPGothic", Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#ffffff';
@@ -373,7 +373,7 @@ class GameRenderer {
         this.owner.titleBlinkTimer++;
         if (Math.floor(this.owner.titleBlinkTimer / 30) % 2 === 0) {
             const pushStartText = AppI18N.I18N['U449'][AppI18N.currentLang] || 'PUSH START';
-            ctx.font = '13px Arial';
+            ctx.font = '13px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillStyle = '#ffffff';
@@ -434,7 +434,7 @@ class GameRenderer {
         const gameOverText = AppI18N.I18N['U398'][AppI18N.currentLang] || 'GAME OVER';
         ctx.fillStyle = '#333333';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
-        ctx.font = 'bold 16px Arial';
+        ctx.font = 'bold 16px "BIZ UDPGothic", Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         this._fillTextWithShadow(ctx, gameOverText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
@@ -460,7 +460,7 @@ class GameRenderer {
         }
 
         if (Math.floor(this.owner.clearTimer / 10) % 2 === 0) {
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 16px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             this._fillTextWithShadow(ctx, stageClearText, w / 2, h / 2);
@@ -502,7 +502,7 @@ class GameRenderer {
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '16px monospace';
+        ctx.font = '16px "BIZ UDPGothic", monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         lines.forEach((line, idx) => {
@@ -516,7 +516,7 @@ class GameRenderer {
         ctx.fillStyle = '#333333';
         ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '14px monospace';
+        ctx.font = '14px "BIZ UDPGothic", monospace';
         ctx.fillText('とじる', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 
         this.owner.easterCloseButton = { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
@@ -666,7 +666,7 @@ class GameRenderer {
         // PAUSE / RE:START
         if (this.owner.isPaused && !this.owner.restartBlink) {
             const pauseText = AppI18N.I18N['U450'][AppI18N.currentLang] || 'PAUSE';
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 16px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             this._fillTextWithShadow(ctx, pauseText, this.owner.canvas.width / 2, this.owner.canvas.height / 2);
@@ -675,7 +675,7 @@ class GameRenderer {
         if (this.owner.restartBlink) {
             const centerX = this.owner.canvas.width / 2;
             const centerY = this.owner.canvas.height / 2;
-            ctx.font = '16px Arial';
+            ctx.font = '16px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#ffffff';
@@ -700,7 +700,7 @@ class GameRenderer {
             const isLow = this.owner.remainingTime <= 10;
             const color = isLow ? '#ff4444' : '#ffffff';
 
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 16px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             this._fillTextWithShadow(ctx, timeText, this.owner.canvas.width - 10, 10, color);
@@ -709,7 +709,7 @@ class GameRenderer {
         // スコア表示（中央上）
         if (App.projectData.stage.showScore) {
             const scoreText = this.owner.score.toString().padStart(6, '0');
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 16px "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillStyle = '#000000';
