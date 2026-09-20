@@ -289,7 +289,7 @@ class Player {
         }
 
         // 水平速度の設定
-        if (this.onGround) {
+        if (this.onGround || this.onLadder) {
             this.vx = 0;
             if (leftPressed)  { this.vx = -this.dashSpeed; this.facingRight = false; }
             if (rightPressed) { this.vx =  this.dashSpeed; this.facingRight = true;  }
