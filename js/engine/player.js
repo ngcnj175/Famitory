@@ -44,6 +44,11 @@ class Player {
         this._bHoldTimer = 0;
         this._bDashActive = false;
         this._bKeyWasPressed = false;
+        // ダッシュジャンプ用: Bを離した後の猶予窓
+        this._dashReleaseTimer = 0;
+        this._dashSpeedAtRelease = this.moveSpeed;
+        // 空中制御の水平速度上限（ジャンプ離陸時に凍結）
+        this._airVx = this.moveSpeed;
 
         // ダメージシステム
         const templateLives = template?.config?.life || 3;
@@ -247,8 +252,6 @@ class Player {
             return;
         }
 
-        this.vx = 0;
-
         // Bボタン: 立ち上がりで攻撃1発、長押しでダッシュ（bDash ON時）
         const bNow = GameController.isPressed('b');
         if (bNow && !this._bKeyWasPressed) {
@@ -263,26 +266,53 @@ class Player {
                 this._bDashActive = true;
             }
         } else {
+            // Bを離した瞬間、ダッシュ中だったら猶予窓を開く
+            if (this._bDashActive) {
+                this._dashSpeedAtRelease = this.dashSpeed;
+                this._dashReleaseTimer = 15;
+            }
             this._bDashActive = false;
             this._bHoldTimer = 0;
         }
         this._bKeyWasPressed = bNow;
+        if (this._dashReleaseTimer > 0) this._dashReleaseTimer--;
 
-        if (GameController.isPressed('left')) {
-            this.vx = -this.dashSpeed;
-            this.facingRight = false;
-        }
-        if (GameController.isPressed('right')) {
-            this.vx = this.dashSpeed;
-            this.facingRight = true;
-        }
+        const leftPressed = GameController.isPressed('left');
+        const rightPressed = GameController.isPressed('right');
+        const isMovingH = leftPressed || rightPressed;
 
         // ダッシュ速度の更新
-        const isMovingH = GameController.isPressed('left') || GameController.isPressed('right');
         if (this._bDashActive && this.onGround && isMovingH) {
             this.dashSpeed = Math.min(this.dashSpeed + this._dashAccel, this.moveSpeed * 1.5);
         } else if (this.dashSpeed > this.moveSpeed) {
             this.dashSpeed = Math.max(this.dashSpeed * 0.92, this.moveSpeed);
+        }
+
+        // 水平速度の設定
+        if (this.onGround) {
+            this.vx = 0;
+            if (leftPressed)  { this.vx = -this.dashSpeed; this.facingRight = false; }
+            if (rightPressed) { this.vx =  this.dashSpeed; this.facingRight = true;  }
+        } else {
+            // 空中: SMB風制御。_airVx が同方向の上限、逆方向は moveSpeed 上限
+            const airAccel = this.moveSpeed / 15;
+            const maxAir = Math.max(this._airVx, this.moveSpeed);
+            if (rightPressed) {
+                this.facingRight = true;
+                if (this.vx < 0) {
+                    this.vx = Math.min(this.vx + airAccel, this.moveSpeed);
+                } else {
+                    this.vx = Math.min(this.vx + airAccel, maxAir);
+                }
+            } else if (leftPressed) {
+                this.facingRight = false;
+                if (this.vx > 0) {
+                    this.vx = Math.max(this.vx - airAccel, -this.moveSpeed);
+                } else {
+                    this.vx = Math.max(this.vx - airAccel, -maxAir);
+                }
+            }
+            // 無入力: vx維持（慣性）
         }
 
         // はしご上では上下移動（十字キー）、ジャンプ無効（最上部のみジャンプ可）
@@ -303,6 +333,7 @@ class Player {
                 this.onLadder = false;
                 this.hasDoubleJumped = false;
                 this.canDoubleJump = this.wJumpEnabled;
+                this._airVx = this.moveSpeed;
                 this.playSE('jump');
                 this._jumpKeyWasPressed = GameController.isPressed('a');
                 return;
@@ -319,12 +350,36 @@ class Player {
                 this.onGround = false;
                 this.hasDoubleJumped = false;
                 this.canDoubleJump = this.wJumpEnabled;
+
+                // ダッシュジャンプ判定: 水平速度を決定
+                let jumpSpeed;
+                if (this._bDashActive) {
+                    // B+A同時押し（PC等）: 減速0、現ダッシュ速度そのまま
+                    jumpSpeed = this.dashSpeed;
+                } else if (this._dashReleaseTimer > 0) {
+                    // 猶予窓内: 残り時間で線形補間
+                    const t = this._dashReleaseTimer / 15;
+                    jumpSpeed = this.moveSpeed + (this._dashSpeedAtRelease - this.moveSpeed) * t;
+                } else {
+                    jumpSpeed = this.moveSpeed;
+                }
+                this._airVx = jumpSpeed;
+                if (rightPressed)      this.vx =  jumpSpeed;
+                else if (leftPressed)  this.vx = -jumpSpeed;
+                else if (this.vx !== 0) this.vx = Math.sign(this.vx) * jumpSpeed;
+                this._dashReleaseTimer = 0;
+
                 this.playSE('jump');
             } else if (this.wJumpEnabled && this.canDoubleJump && !this.hasDoubleJumped) {
-                // 2段ジャンプ
+                // 2段ジャンプ: ダッシュ慣性をリセット
                 this.vy = this.jumpPower;
                 this.hasDoubleJumped = true;
                 this.canDoubleJump = false;
+                this.dashSpeed = this.moveSpeed;
+                this._airVx = this.moveSpeed;
+                if (Math.abs(this.vx) > this.moveSpeed) {
+                    this.vx = Math.sign(this.vx) * this.moveSpeed;
+                }
                 this.playSE('jump');
             }
         }
@@ -479,6 +534,9 @@ class Player {
         this.bDashEnabled = newTemplate.config?.bDash || false;
         this.dashSpeed = this.moveSpeed;
         this._dashAccel = this.moveSpeed * 0.5 / 30;
+        this._dashReleaseTimer = 0;
+        this._dashSpeedAtRelease = this.moveSpeed;
+        this._airVx = this.moveSpeed;
 
         // ライフ（現在値を維持、最大値は新テンプレートに合わせる）
         const newMaxLives = newTemplate.config?.life ?? 3;
