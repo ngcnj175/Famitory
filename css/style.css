@@ -956,11 +956,17 @@ body {
 
 .hand-tool-icon {
     display: block;
-    width: 72%;
-    height: 72%;
+    width: 100%;
+    height: 100%;
     background-color: currentColor;
-    -webkit-mask: url('../images/hand_icon.svg') no-repeat center / contain;
-    mask: url('../images/hand_icon.svg') no-repeat center / contain;
+    -webkit-mask-image: url('../images/hand_icon.svg');
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: url('../images/hand_icon.svg');
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
 }
 
 .paint-tool-btn:hover {
