@@ -3640,7 +3640,7 @@ input, textarea, select, button {
 }
 
 #result-score-value {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 400;
     color: var(--text-dark);
     line-height: 1;

@@ -700,7 +700,7 @@ class GameRenderer {
             const isLow = this.owner.remainingTime <= 10;
             const color = isLow ? '#ff4444' : '#ffffff';
 
-            ctx.font = '8px "Press Start 2P", "BIZ UDPGothic", Arial';
+            ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             this._fillTextWithShadow(ctx, timeText, this.owner.canvas.width - 10, 10, color);
@@ -709,7 +709,7 @@ class GameRenderer {
         // スコア表示（中央上）
         if (App.projectData.stage.showScore) {
             const scoreText = this.owner.score.toString().padStart(6, '0');
-            ctx.font = '8px "Press Start 2P", "BIZ UDPGothic", Arial';
+            ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillStyle = '#000000';
