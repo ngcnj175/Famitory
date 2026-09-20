@@ -6728,8 +6728,8 @@ body.dark-mode {
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    background: #d1fadf;
-    color: #12b76a;
+    background: #12b76a;
+    color: #fff;
     font-size: 10px;
     font-weight: 700;
     padding: 2px 8px;
