@@ -3614,6 +3614,20 @@ input, textarea, select, button {
     white-space: nowrap;
 }
 
+@keyframes result-title-rainbow {
+    0%   { color: #ff4444; }
+    17%  { color: #ffa500; }
+    34%  { color: #ffd700; }
+    51%  { color: #00e070; }
+    68%  { color: #40b0ff; }
+    85%  { color: #a060ff; }
+    100% { color: #ff4444; }
+}
+
+#result-title.rainbow {
+    animation: result-title-rainbow 1.2s steps(6) infinite;
+}
+
 #result-score-container {
     display: flex;
     flex-direction: column;

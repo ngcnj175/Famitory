@@ -752,9 +752,11 @@ class GameRenderer {
 
         if (this.owner.isCleared) {
             title.textContent = 'STAGE CLEAR!';
-            title.style.color = '#ffd700';
+            title.style.color = '';
+            title.classList.add('rainbow');
         } else {
             title.textContent = 'GAME OVER';
+            title.classList.remove('rainbow');
             title.style.color = '#ff4444';
         }
 
