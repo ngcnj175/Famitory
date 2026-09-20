@@ -3640,19 +3640,20 @@ input, textarea, select, button {
 }
 
 #result-score-value {
-    font-size: 36px;
-    font-weight: 800;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--text-dark);
     line-height: 1;
-    font-family: monospace;
-    /* 謨ｰ蟄励�蟷�ｒ謠�∴繧� */
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    letter-spacing: 1px;
 }
 
 #result-highscore-value {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 400;
     color: var(--text-dark);
-    font-family: monospace;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    letter-spacing: 1px;
 }
 
 .result-actions {
