@@ -453,10 +453,10 @@ class GameRenderer {
 
         if (this.owner.clearTimer > 120) {
             const wipeProgress = Math.min((this.owner.clearTimer - 120) / 30, 1);
-            const darkWidth = (w / 2) * wipeProgress;
+            const darkHeight = (h / 2) * wipeProgress;
             ctx.fillStyle = '#333333';
-            ctx.fillRect(0, 0, darkWidth, h);
-            ctx.fillRect(w - darkWidth, 0, darkWidth, h);
+            ctx.fillRect(0, 0, w, darkHeight);
+            ctx.fillRect(0, h - darkHeight, w, darkHeight);
         }
 
         if (Math.floor(this.owner.clearTimer / 10) % 2 === 0) {
