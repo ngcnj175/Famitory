@@ -1163,13 +1163,14 @@ body {
     display: block;
 }
 
-/* ドラッグハンドル（掴みバー） */
+/* ヘッダー（グラバー+属性ラベル+閉じるボタン、スクロールに追従せず上端に固定） */
 #tile-config-header {
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 -12px 4px;
+    position: sticky;
+    top: -4px; /* パネル padding-top:4px を打ち消し、スクロール時に隙間を出さない */
+    z-index: 2;
+    background: inherit;
+    margin: -4px -12px 0;
+    padding: 4px 0 0;
     cursor: grab;
     touch-action: none;
     user-select: none;
@@ -1183,9 +1184,16 @@ body {
 #tile-config-grabber {
     width: 40px;
     height: 4px;
+    margin: 4px auto 2px;
     background: var(--color-medium, #b0b0b0);
     border-radius: 2px;
     opacity: 0.55;
+}
+
+/* ヘッダー内の属性ラベル：スワイプ範囲を広げるため下マージンを削除 */
+#tile-config-header .config-type-label {
+    margin-bottom: 0;
+    padding: 6px 32px 8px; /* 閉じるボタンと干渉しないよう左右余白 */
 }
 
 /* 拡大状態：max-height を解除して flex で残り領域を全て使う */
