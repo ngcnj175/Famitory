@@ -609,6 +609,13 @@ const App = {
         const authorInput = document.getElementById('game-author');
         const isCreator = !this.isPlayOnlyMode;
 
+        // モードclassを設定（CSSがラベル・"by"の表示を切替）
+        const pushUi = document.getElementById('push-start-ui');
+        if (pushUi) {
+            pushUi.classList.toggle('creator-mode', isCreator);
+            pushUi.classList.toggle('player-mode', !isCreator);
+        }
+
         if (titleInput && this.projectData) {
             const name = this.projectData.meta.name || 'NEW GAME';
             titleInput.value = name;
@@ -703,17 +710,33 @@ const App = {
 
     // PLAY画面Canvasのタイトル/クリエイター名インライン編集（クリエイターモードのみ）
     _bindPlayInlineEdit(input, field) {
+        const isTextarea = input.tagName === 'TEXTAREA';
+
+        // サイズ自動調整（タイトル=高さ, クリエイター=幅）
+        const autoResize = () => {
+            if (isTextarea) {
+                input.style.height = 'auto';
+                input.style.height = input.scrollHeight + 'px';
+            } else {
+                input.size = Math.max(3, (input.value || '').length + 1);
+            }
+        };
+        autoResize();
+
         if (input._playEditBound) return;
         input._playEditBound = true;
 
         const commit = () => {
             if (input.readOnly) return;
-            const raw = (input.value || '').trim().substring(0, 20);
+            // タイトルは改行可、クリエイター名は改行不可
+            let raw = (input.value || '');
             if (field === 'title') {
+                raw = raw.replace(/\n{3,}/g, '\n\n').trim().substring(0, 40);
                 const name = raw || 'NEW GAME';
                 this.projectData.meta.name = name;
                 if (this.projectData.stage) this.projectData.stage.name = name;
             } else {
+                raw = raw.replace(/\s+/g, ' ').trim().substring(0, 20);
                 this.projectData.meta.author = raw || 'You';
             }
             if (this.currentProjectName && typeof Storage !== 'undefined') {
@@ -727,12 +750,22 @@ const App = {
             if (input.readOnly) return;
             input.classList.remove('is-default');
         });
+        input.addEventListener('input', autoResize);
         input.addEventListener('blur', commit);
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-            if (e.key === 'Escape') { input.value = (field === 'title')
-                ? (this.projectData.meta.name || 'NEW GAME')
-                : (this.projectData.meta.author || 'You'); input.blur(); }
+            if (e.key === 'Enter') {
+                // タイトル: Enterで改行、Ctrl/Cmd+Enterで確定
+                if (field === 'title' && !e.ctrlKey && !e.metaKey) return;
+                e.preventDefault();
+                input.blur();
+            }
+            if (e.key === 'Escape') {
+                input.value = (field === 'title')
+                    ? (this.projectData.meta.name || 'NEW GAME')
+                    : (this.projectData.meta.author || 'You');
+                autoResize();
+                input.blur();
+            }
         });
     },
 

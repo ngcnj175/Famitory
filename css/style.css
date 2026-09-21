@@ -181,99 +181,198 @@ input, textarea, select, button {
 }
 
 /* PUSH START state UI: canvas上にabsolute配置、タイトル画面時のみ表示 */
+/* ===== PLAY画面Canvasオーバーレイ（タイトル画面） =====
+   基準: Canvas 352×352px。座標/フォントは --canvas-css-w に連動
+   Player: REMIX OF / タイトル(改行可,中央,下揃え) / by 作者 / ♥数
+   Creator: REMIX OF / タイトル(編集可) / クリエイター(編集可) / EDIT KEY */
 #push-start-ui {
     position: absolute;
-    top: calc(38% - 40px);
-    left: 0;
-    right: 0;
+    inset: 0;
     z-index: 10;
     pointer-events: none;
+    font-family: 'Noto Sans JP', system-ui, sans-serif;
 }
 
 #push-start-ui.hidden {
     display: none !important;
 }
 
-#game-info {
-    padding: 12px 16px 8px;
-    background: transparent;
+/* --- REMIX OF: 上部固定 --- */
+#game-remix-info {
+    position: absolute;
+    top: 4%;
+    left: 4.5%;
+    right: 4.5%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: none;
+}
+
+#game-remix-info.hidden {
+    display: none;
+}
+
+#game-remix-info .remix-label {
+    font-size: calc(var(--canvas-css-w, 375px) * 0.024);
+    letter-spacing: 0.22em;
+    color: #6a6a6a;
+}
+
+#game-remix-info .remix-link {
+    font-size: calc(var(--canvas-css-w, 375px) * 0.0284);
+    line-height: 1.35;
+    color: #b8b8b8;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: #555;
+    text-underline-offset: 2px;
+    pointer-events: auto;
+}
+
+#game-remix-info .remix-sep {
+    color: #555;
+    margin: 0 4px;
+    text-decoration: none;
+}
+
+/* --- 編集ラベル (TITLE ✎ / CREATOR ✎) --- */
+.edit-label {
+    font-size: calc(var(--canvas-css-w, 375px) * 0.0227);
+    letter-spacing: 0.22em;
+    color: #6fd3ff;
+    margin-bottom: 3px;
+    display: none;
+}
+#push-start-ui.creator-mode .edit-label {
+    display: block;
+}
+#push-start-ui.creator-mode .author-prefix {
+    display: none;
+}
+#push-start-ui.player-mode .edit-label {
+    display: none;
+}
+
+/* --- タイトル: 中央/下揃え、改行可 (bottom-anchor) --- */
+#game-title-block {
+    position: absolute;
+    left: 4.5%;
+    right: 4.5%;
+    bottom: 60%; /* クリエイター名との間隔を確保 */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+}
+#push-start-ui.creator-mode #game-title-block .edit-label {
+    align-self: stretch;
+    text-align: left;
 }
 
 #game-title {
-    display: block;
     width: 100%;
     text-align: center;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.048); /* 基準18px @ 375px */
-    font-weight: 600;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.074); /* Player: 26px @ 352 */
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
     color: #ffffff;
-    border: none;
     background: transparent;
+    border: none;
     outline: none;
-    padding: 0px;
+    padding: 4px 6px;
+    margin: 0;
+    resize: none;
+    overflow: hidden;
+    font-family: inherit;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
 }
 
-#game-title:focus {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
+/* --- クリエイター名: タイトル直下、固定Y --- */
+#game-author-block {
+    position: absolute;
+    left: 4.5%;
+    right: 4.5%;
+    top: 42%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    color: #d0d0d0;
+    flex-wrap: wrap;
+}
+#push-start-ui.creator-mode #game-author-block {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
 }
 
-#game-title.readonly,
-#game-author.readonly,
+.author-prefix {
+    font-size: calc(var(--canvas-css-w, 375px) * 0.031);
+    color: #d0d0d0;
+}
+
+/* Creatorモードではクリエイターラベル (CREATOR ✎ 相当) は authorのdashed枠で表現 */
+#game-author {
+    font-size: calc(var(--canvas-css-w, 375px) * 0.031);
+    color: #ffffff;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 2px 6px;
+    text-align: center;
+    font-family: inherit;
+    width: auto;
+    field-sizing: content;
+    min-width: 3ch;
+    max-width: 70%;
+}
+
+/* --- 読み取り専用（プレイヤーモード） --- */
 #game-title[readonly],
 #game-author[readonly] {
     cursor: default;
     pointer-events: none;
 }
 
-#game-title.readonly:focus,
-#game-author.readonly:focus,
-#game-title[readonly]:focus,
-#game-author[readonly]:focus {
-    background: transparent;
-}
-
-/* クリエイターモード：編集可能状態 */
+/* --- 編集可能（クリエイターモード）: シアン破線＋✎ --- */
 #game-title:not([readonly]),
 #game-author:not([readonly]) {
     pointer-events: auto;
     cursor: text;
-    border: 1px dashed rgba(255, 255, 255, 0.35);
-    border-radius: 4px;
+    border: 1px dashed #6fd3ff;
+    border-radius: 3px;
 }
 
 #game-title:not([readonly]):hover,
 #game-author:not([readonly]):hover {
-    border-color: rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(111, 211, 255, 0.06);
 }
 
 #game-title:not([readonly]):focus,
 #game-author:not([readonly]):focus {
-    border-color: rgba(255, 255, 255, 0.9);
-    background: rgba(0, 0, 0, 0.2);
+    border-color: #a4e4ff;
+    background: rgba(111, 211, 255, 0.1);
 }
 
 /* デフォルト値（NEW GAME / You）はプレースホルダー風に薄く表示 */
 #game-title.is-default,
 #game-author.is-default {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.4);
     font-style: italic;
 }
 
-/* PLAY画面Canvasのエディットキー表示（クリエイターモードのみ） */
+/* --- EDIT KEY (Creator): 下部62% 位置 --- */
 #game-editkey-display {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.0293);
-    color: rgba(255, 255, 255, 0.75);
-    padding: 2px 8px;
-    border: 1px dashed rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
+    position: absolute;
+    left: 4.5%;
+    right: 4.5%;
+    top: 62%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
     pointer-events: auto;
 }
 
@@ -282,111 +381,71 @@ input, textarea, select, button {
 }
 
 #game-editkey-display .editkey-label {
-    opacity: 0.7;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.0227);
+    letter-spacing: 0.22em;
+    color: #777;
+}
+
+#game-editkey-display .editkey-box {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 #game-editkey-value {
-    font-family: monospace;
-    letter-spacing: 1.5px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.034);
+    letter-spacing: 0.05em;
+    color: #dcdcdc;
     -webkit-user-select: all;
     user-select: all;
 }
 
 #game-editkey-copy {
     background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.75);
-    cursor: pointer;
-    padding: 2px;
+    border: 1px solid #3a3a3a;
+    width: calc(var(--canvas-css-w, 375px) * 0.057);
+    height: calc(var(--canvas-css-w, 375px) * 0.057);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    color: #cfcfcf;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 2px;
+    flex-shrink: 0;
 }
 
 #game-editkey-copy:hover {
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
+    border-color: #666;
 }
 
-#game-sub-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0 8px;
-}
-
-#game-author {
-    width: 50%;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.032); /* 基準12px @ 375px */
-    color: white;
-    border: none;
-    background: transparent;
-    outline: none;
-    padding: 0px 4px;
-    text-align: center;
-    font-weight: 500;
-}
-
-#game-info-bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 3px;
-}
-
-#game-remix-info {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.0293); /* 基準11px @ 375px */
-    color: white;
-    text-align: center;
-    visibility: visible;
-}
-
-#game-remix-info.hidden {
-    display: block !important;
-    visibility: hidden;
-}
-
-#game-remix-info .remix-link {
-    color: white;
-    cursor: pointer;
-    text-decoration: underline;
-    pointer-events: auto;
-}
-
-#game-author:focus {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-}
-
+/* --- いいね (Player): EDIT KEYと同じY --- */
 #game-likes-display {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 62%;
     display: flex;
-    align-items: center;
-    gap: 3px;
-    opacity: 1;
-    margin-top: 5px;
+    justify-content: center;
+    align-items: baseline;
+    gap: 5px;
+    color: #f5f5f5;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.031);
+    letter-spacing: 0.1em;
 }
 
 #game-likes-display.hidden {
     display: none;
 }
 
-.like-icon-small {
-    width: 14px;
-    height: 14px;
-}
-
-#game-info .like-icon-small {
-    filter: brightness(0) invert(1);
-    width: calc(var(--canvas-css-w, 375px) * 0.0373); /* 基準14px @ 375px */
-    height: calc(var(--canvas-css-w, 375px) * 0.0373);
-}
-
-#game-likes-count {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.0267); /* 基準10px @ 375px */
-    font-weight: 600;
-    color: white;
-    line-height: 1;
+.like-heart {
+    color: #ff5a7a;
 }
 
 /* ゲームビューポート */

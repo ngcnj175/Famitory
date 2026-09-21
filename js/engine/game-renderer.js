@@ -377,7 +377,7 @@ class GameRenderer {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 120);
+            ctx.fillText(pushStartText, this.owner.canvas.width / 2, this.owner.canvas.height - 44);
         }
 
         if (this.owner.titleState === 'title') {

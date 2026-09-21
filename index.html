@@ -32,30 +32,42 @@
             <div id="game-viewport">
                 <!-- PUSH START state UI（タイトル画面時のみ表示・通常フロー） -->
                 <div id="push-start-ui" class="hidden">
-                    <div id="game-info">
-                        <input type="text" id="game-title" value="My Game" placeholder="ゲームタイトル" readonly>
-                        <div id="game-sub-row">
-                            <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                    <!-- REMIX OF: 上部固定 -->
+                    <div id="game-remix-info" class="hidden">
+                        <div class="remix-label">REMIX OF</div>
+                        <div class="remix-link" id="remix-link-wrap">
+                            <span id="game-original-title"></span>
+                            <span class="remix-sep">/</span>
+                            <span id="game-original-author"></span>
                         </div>
-                        <div id="game-info-bottom">
-                            <div id="game-remix-info" class="hidden">
-                                Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
-                            </div>
-                            <div id="game-editkey-display" class="hidden">
-                                <span class="editkey-label" data-i18n="U044">エディットキー</span>
-                                <span id="game-editkey-value"></span>
-                                <button id="game-editkey-copy" title="コピー">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div id="game-likes-display" class="hidden">
-                                <img src="images/like_icon.svg" alt="like" class="like-icon-small">
-                                <span id="game-likes-count">0</span>
-                            </div>
+                    </div>
+                    <!-- タイトル: 中央/下揃え、改行可 -->
+                    <div id="game-title-block">
+                        <div class="edit-label">TITLE <span class="pen-icon">✎</span></div>
+                        <textarea id="game-title" rows="1" placeholder="ゲームタイトル" readonly>NEW GAME</textarea>
+                    </div>
+                    <!-- クリエイター名: タイトル直下、固定Y -->
+                    <div id="game-author-block">
+                        <div class="edit-label">CREATOR <span class="pen-icon">✎</span></div>
+                        <span class="author-prefix">by</span>
+                        <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                    </div>
+                    <!-- 下部: いいね (Player) / エディットキー (Creator) -->
+                    <div id="game-editkey-display" class="hidden">
+                        <div class="editkey-label">EDIT KEY</div>
+                        <div class="editkey-box">
+                            <span id="game-editkey-value"></span>
+                            <button id="game-editkey-copy" title="コピー">
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1">
+                                    <rect x="1" y="3" width="5" height="6"/>
+                                    <rect x="3.5" y="1" width="5" height="6"/>
+                                </svg>
+                            </button>
                         </div>
+                    </div>
+                    <div id="game-likes-display" class="hidden">
+                        <span class="like-heart">♥</span>
+                        <span id="game-likes-count">0</span>
                     </div>
                 </div>
                 <canvas id="game-canvas"></canvas>
