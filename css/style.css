@@ -5026,6 +5026,14 @@ input, textarea, select, button {
     color: #333;
     outline: none;
     font-weight: bold;
+    font-family: inherit;
+}
+
+/* 新規/リミックスモーダル：タイトル入力とクリエイター入力を離す */
+#new-game-modal .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .simple-input:focus {

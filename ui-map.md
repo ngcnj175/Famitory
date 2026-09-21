@@ -158,7 +158,7 @@
 | U147 | ひらく | Open | HTML text node (button) | index.html | ✓ |
 | U148 | けす | Delete | HTML text node (button) | index.html | ✓ |
 | U149 | やめる | Cancel | HTML text node (button) | index.html | ✓ |
-| U150 | あたらしいゲームをつくる | Create New Game | HTML text node | index.html | ✓ |
+| U150 | 新しくゲームをつくる | Create New Game | HTML text node | index.html | ✓ |
 | U151 | つくる | Create | HTML text node (button) | index.html | ✓ |
 | U152 | カラープリセット | Color Preset | HTML text node | index.html | ✓ |
 | U153 | ファミトリー | Famitory | HTML text node | index.html | ✓ |

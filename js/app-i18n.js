@@ -68,7 +68,7 @@ const AppI18N = {
         'U149': { JPN: 'やめる',              ENG: 'Cancel' },
         'U370': { JPN: 'セーブデータなし',     ENG: 'No save data' },
         // ---- 新規作成モーダル ----
-        'U150': { JPN: 'あたらしいゲームをつくる', ENG: 'Create New Game' },
+        'U150': { JPN: '新しくゲームをつくる', ENG: 'Create New Game' },
         'U403': { JPN: 'ゲームタイトル',       ENG: 'Game Title' },
         'U151': { JPN: 'つくる',              ENG: 'Create' },
         'U404': { JPN: 'リミックスをはじめる',  ENG: 'Start Remix' },
