@@ -260,10 +260,10 @@ const SpriteEditorPreview = {
         if (!el) return;
 
         if (this.previewFrames.length === 0) {
-            el.textContent = 'Frame: — / —';
+            el.textContent = 'フレーム: — / —';
             if (controls) controls.classList.add('disabled-preview');
         } else {
-            el.textContent = `Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+            el.textContent = `フレーム: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
             if (controls) controls.classList.remove('disabled-preview');
         }
     },
@@ -277,11 +277,16 @@ const SpriteEditorPreview = {
         canvas.style.backgroundColor = bgColor;
 
         const cw = 128;
-        canvas.width = cw;
-        canvas.height = cw;
-        ctx.clearRect(0, 0, cw, cw);
 
         if (this.previewFrames.length === 0) {
+            // プレースホルダーはアンチエイリアス描画するため高DPRで描画
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = cw * dpr;
+            canvas.height = cw * dpr;
+            canvas.style.imageRendering = 'auto';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, cw, cw);
+
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
             // Tile Modeと同じフォント指定（12px, 600）
             ctx.font = '600 12px "BIZ UDPGothic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -313,6 +318,11 @@ const SpriteEditorPreview = {
 
             return;
         }
+
+        canvas.style.imageRendering = '';
+        canvas.width = cw;
+        canvas.height = cw;
+        ctx.clearRect(0, 0, cw, cw);
 
         const spriteIdx = this.previewFrames[this.previewCurrentFrame];
         const sprite = App.projectData?.sprites?.[spriteIdx];

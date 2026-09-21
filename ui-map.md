@@ -33,7 +33,7 @@
 | U018 | ゲームタイトル | Game Title | HTML attribute (placeholder) | index.html | |
 | U019 | なまえ | Name | HTML attribute (placeholder) | index.html | |
 | U020 | いいね！ | Like! | HTML text node | index.html | ✓ |
-| U021 | Frame: — / — | Frame: — / — | HTML text node | index.html | |
+| U021 | フレーム: — / — | フレーム: — / — | HTML text node | index.html | |
 | U022 | 前フレーム | Prev Frame | HTML attribute (title) | index.html | |
 | U023 | 再生/停止 | Play/Stop | HTML attribute (title) | index.html | |
 | U024 | 次フレーム | Next Frame | HTML attribute (title) | index.html | |
@@ -199,8 +199,8 @@
 | U188 | スプライトをクリアしますか？ | Clear this sprite? | JS message/literal | sprite-editor.js | |
 | U189 | <rect x= | <rect x= | JS dom text assign | sprite-editor.js | |
 | U190 | <path d= | <path d= | JS dom text assign | sprite-editor.js | |
-| U191 | Frame: — / — | Frame: — / — | JS dom text assign | sprite-editor.js | |
-| U192 | Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | Frame: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | JS dom text assign | sprite-editor.js | |
+| U191 | フレーム: — / — | フレーム: — / — | JS dom text assign | sprite-editor-preview.js | |
+| U192 | フレーム: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | フレーム: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length} | JS dom text assign | sprite-editor-preview.js | |
 | U193 | プレイヤー | Player | JS message/literal | stage-editor.js | ✓ |
 | U194 | てき | Enemy | JS message/literal | stage-editor.js | ✓ |
 | U195 | ブロック・背景 | Block/BG | JS message/literal | stage-editor.js | ✓ |
