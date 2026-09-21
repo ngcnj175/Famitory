@@ -600,9 +600,6 @@ const App = {
         // エディットキーモーダル初期化
         this.initEditKeyModal();
 
-        // タイトル・作成者名はPLAY画面では常に読み取り専用
-        // （編集はゲーム設定パネルでのみ行う）
-
         // ローカライズボタン初期化
         AppI18N.initLangBtn();
     },
@@ -610,26 +607,48 @@ const App = {
     updateGameInfo() {
         const titleInput = document.getElementById('game-title');
         const authorInput = document.getElementById('game-author');
+        const isCreator = !this.isPlayOnlyMode;
 
         if (titleInput && this.projectData) {
-            titleInput.value = this.projectData.meta.name || 'My Game';
-            titleInput.readOnly = true;
-            titleInput.style.cursor = 'default';
-            titleInput.onclick = null;
+            const name = this.projectData.meta.name || 'NEW GAME';
+            titleInput.value = name;
+            titleInput.readOnly = !isCreator;
+            titleInput.style.cursor = isCreator ? 'text' : 'default';
+            titleInput.classList.toggle('is-default', isCreator && name === 'NEW GAME');
+            this._bindPlayInlineEdit(titleInput, 'title');
         }
         if (authorInput && this.projectData) {
-            authorInput.value = this.projectData.meta.author || 'You';
-            authorInput.readOnly = true;
-            authorInput.style.cursor = 'default';
-            authorInput.onclick = null;
+            const author = this.projectData.meta.author || 'You';
+            authorInput.value = author;
+            authorInput.readOnly = !isCreator;
+            authorInput.style.cursor = isCreator ? 'text' : 'default';
+            authorInput.classList.toggle('is-default', isCreator && author === 'You');
+            this._bindPlayInlineEdit(authorInput, 'author');
         }
 
-        // shareIdがあればいいね数を取得・表示（モード問わず常に表示）
+        // いいね数はプレイヤーモード時のみ表示
         const gid = this._sharedGameId || this.projectData?.meta?.shareId;
-        if (gid) {
+        const likesDisplay = document.getElementById('game-likes-display');
+        if (isCreator) {
+            if (likesDisplay) likesDisplay.classList.add('hidden');
+        } else if (gid) {
             this.fetchAndShowLikes(gid);
         } else {
             this.updateLikesDisplay(0);
+        }
+
+        // エディットキーはクリエイターモード時のみ表示
+        const editKeyDisplay = document.getElementById('game-editkey-display');
+        const editKeyValue = document.getElementById('game-editkey-value');
+        const editKey = this.projectData?.meta?.editKey || '';
+        if (editKeyDisplay && editKeyValue) {
+            if (isCreator && editKey) {
+                editKeyValue.textContent = editKey;
+                editKeyDisplay.classList.remove('hidden');
+                this._bindEditKeyCopy();
+            } else {
+                editKeyDisplay.classList.add('hidden');
+            }
         }
 
         // リミックス元（原作者）情報の表示（リミックス元がない場合は非表示、原作の行は空欄）
@@ -658,67 +677,63 @@ const App = {
         }
     },
 
-    // テキスト編集ポップアップ（タイトル/作成者名共用）
-    _textEditField: null,
-
-    openTextEditPopup(field) {
-        const popup = document.getElementById('text-edit-popup');
-        const input = document.getElementById('text-edit-input');
-        const title = document.getElementById('text-edit-popup-title');
-        if (!popup || !input || !title) return;
-
-        this._textEditField = field;
-
-        if (field === 'title') {
-            title.textContent = 'タイトル変更';
-            input.value = this.projectData.meta.name || '';
-            input.placeholder = 'ゲームタイトルを入力';
-        } else {
-            title.textContent = 'なまえ変更';
-            input.value = this.projectData.meta.author || '';
-            input.placeholder = 'なまえを入力';
-        }
-
-        popup.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
-
-        // イベントバインド（毎回上書きで多重防止）
-        document.getElementById('text-edit-save').onclick = () => this.saveTextEdit();
-        document.getElementById('text-edit-cancel').onclick = () => this.closeTextEditPopup();
-    },
-
-    closeTextEditPopup() {
-        const popup = document.getElementById('text-edit-popup');
-        if (popup) popup.classList.add('hidden');
-        this._textEditField = null;
-    },
-
-    saveTextEdit() {
-        const input = document.getElementById('text-edit-input');
-        if (!input) return;
-
-        const newValue = input.value.trim().substring(0, 20);
-        if (!newValue) {
-            this.closeTextEditPopup();
-            return;
-        }
-
-        if (this._textEditField === 'title') {
-            this.projectData.meta.name = newValue;
-            if (this.projectData.stage) {
-                this.projectData.stage.name = newValue;
+    // エディットキーのコピーボタン（1度だけバインド）
+    _bindEditKeyCopy() {
+        const copyBtn = document.getElementById('game-editkey-copy');
+        if (!copyBtn || copyBtn._bound) return;
+        copyBtn._bound = true;
+        copyBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const value = document.getElementById('game-editkey-value')?.textContent || '';
+            if (!value) return;
+            const toast = AppI18N.I18N['U436']?.[AppI18N.currentLang] || 'エディットキーをコピーしました';
+            try {
+                await navigator.clipboard.writeText(value);
+            } catch {
+                const tmp = document.createElement('textarea');
+                tmp.value = value;
+                document.body.appendChild(tmp);
+                tmp.select();
+                document.execCommand('copy');
+                document.body.removeChild(tmp);
             }
-        } else if (this._textEditField === 'author') {
-            this.projectData.meta.author = newValue;
-        }
+            this.showToast(toast);
+        });
+    },
 
-        this.closeTextEditPopup();
-        this.updateGameInfo();
+    // PLAY画面Canvasのタイトル/クリエイター名インライン編集（クリエイターモードのみ）
+    _bindPlayInlineEdit(input, field) {
+        if (input._playEditBound) return;
+        input._playEditBound = true;
 
-        // ゲーム設定パネルの表示も同期
-        if (typeof StageEditor !== 'undefined') {
-            StageEditor.updateStageSettingsUI?.();
-        }
+        const commit = () => {
+            if (input.readOnly) return;
+            const raw = (input.value || '').trim().substring(0, 20);
+            if (field === 'title') {
+                const name = raw || 'NEW GAME';
+                this.projectData.meta.name = name;
+                if (this.projectData.stage) this.projectData.stage.name = name;
+            } else {
+                this.projectData.meta.author = raw || 'You';
+            }
+            if (this.currentProjectName && typeof Storage !== 'undefined') {
+                Storage.saveProject(this.currentProjectName, this.projectData);
+                Storage.save('currentProject', this.projectData);
+            }
+            this.updateGameInfo();
+        };
+
+        input.addEventListener('focus', () => {
+            if (input.readOnly) return;
+            input.classList.remove('is-default');
+        });
+        input.addEventListener('blur', commit);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+            if (e.key === 'Escape') { input.value = (field === 'title')
+                ? (this.projectData.meta.name || 'NEW GAME')
+                : (this.projectData.meta.author || 'You'); input.blur(); }
+        });
     },
 
     // いいね数を取得してプレイ画面に表示
@@ -734,9 +749,13 @@ const App = {
         const countEl = document.getElementById('game-likes-count');
         if (!display || !countEl) return;
 
-        // 常に表示する
         countEl.textContent = count;
-        display.classList.remove('hidden');
+        // クリエイターモードではPLAY画面のいいね数を非表示
+        if (this.isPlayOnlyMode) {
+            display.classList.remove('hidden');
+        } else {
+            display.classList.add('hidden');
+        }
 
         const resultCount = document.getElementById('result-like-count');
         if (resultCount) resultCount.textContent = count;

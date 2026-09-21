@@ -465,72 +465,104 @@ const AppProject = {
         reader.readAsText(file);
     },
 
-    showNewGameModal() {
+    // タイトル/クリエイター名 入力モーダル（新規作成・リミックス共用）
+    openTitleAuthorModal({ headerKey, submitKey, initialTitle, initialAuthor, validateTitleUnique, onSubmit }) {
         const modal = document.getElementById('new-game-modal');
-        const input = document.getElementById('new-game-name');
+        const header = document.getElementById('new-game-modal-header');
+        const nameInput = document.getElementById('new-game-name');
+        const authorInput = document.getElementById('new-game-author');
         const createBtn = document.getElementById('new-game-create-btn');
         const cancelBtn = document.getElementById('new-game-cancel-btn');
 
         if (!modal) return;
 
-        input.value = "NEW GAME";
+        const lang = AppI18N.currentLang;
+        if (header && headerKey && AppI18N.I18N[headerKey]) {
+            header.textContent = AppI18N.I18N[headerKey][lang];
+            header.setAttribute('data-i18n', headerKey);
+        }
+        if (createBtn && submitKey && AppI18N.I18N[submitKey]) {
+            createBtn.textContent = AppI18N.I18N[submitKey][lang];
+            createBtn.setAttribute('data-i18n', submitKey);
+        }
+
+        nameInput.value = initialTitle ?? 'NEW GAME';
+        authorInput.value = initialAuthor ?? 'You';
         modal.classList.remove('hidden');
-        input.focus();
-        input.select();
+        nameInput.focus();
+        nameInput.select();
 
         const close = () => {
             modal.classList.add('hidden');
-            input.onkeydown = null;
+            nameInput.onkeydown = null;
+            authorInput.onkeydown = null;
             createBtn.onclick = null;
             cancelBtn.onclick = null;
         };
 
-        const create = () => {
-            const name = input.value.trim();
+        const submit = () => {
+            const name = nameInput.value.trim();
+            const author = authorInput.value.trim() || 'You';
             if (!name) return;
 
-            if (Storage.projectExists(name)) {
+            if (validateTitleUnique && Storage.projectExists(name)) {
                 alert('そのなまえは すでに つかわれています');
                 return;
             }
 
-            App.nesPalette = App.PALETTE_PRESETS.famitory.colors.slice();
-            App.projectData = this.createDefaultProject();
-            App.projectData.meta.name = name;
-            App.projectData.stage.name = name;
-            App.currentProjectName = name;
-
-            delete App.projectData.meta.originalAuthor;
-            delete App.projectData.meta.originalTitle;
-            delete App.projectData.meta.originalShareId;
-
-            App._sharedGameId = null;
-            App._likesCount = 0;
-            App._hasLikedThisSession = false;
-            App.isPlayOnlyMode = false;
-            App.updateLikesDisplay(0);
-
-            document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
-                btn.classList.remove('locked');
-            });
-
-            Storage.saveProject(name, App.projectData);
-            Storage.save('currentProject', App.projectData);
-
-            App.updateGameInfo();
-            App.refreshCurrentScreen();
-
-            App.showToast(AppI18N.I18N['U369']?.[AppI18N.currentLang] || 'あたらしいゲームを つくりました');
+            onSubmit(name, author);
             close();
         };
 
-        createBtn.onclick = create;
+        createBtn.onclick = submit;
         cancelBtn.onclick = close;
 
-        input.onkeydown = (e) => {
-            if (e.key === 'Enter') create();
+        const keyHandler = (e) => {
+            if (e.key === 'Enter') submit();
             if (e.key === 'Escape') close();
         };
+        nameInput.onkeydown = keyHandler;
+        authorInput.onkeydown = keyHandler;
+    },
+
+    showNewGameModal() {
+        this.openTitleAuthorModal({
+            headerKey: 'U150',
+            submitKey: 'U151',
+            initialTitle: 'NEW GAME',
+            initialAuthor: 'You',
+            validateTitleUnique: true,
+            onSubmit: (name, author) => {
+                App.nesPalette = App.PALETTE_PRESETS.famitory.colors.slice();
+                App.projectData = this.createDefaultProject();
+                App.projectData.meta.name = name;
+                App.projectData.meta.author = author;
+                App.projectData.stage.name = name;
+                App.currentProjectName = name;
+
+                delete App.projectData.meta.originalAuthor;
+                delete App.projectData.meta.originalTitle;
+                delete App.projectData.meta.originalShareId;
+
+                App._sharedGameId = null;
+                App._likesCount = 0;
+                App._hasLikedThisSession = false;
+                App.isPlayOnlyMode = false;
+                App.updateLikesDisplay(0);
+
+                document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
+                    btn.classList.remove('locked');
+                });
+
+                Storage.saveProject(name, App.projectData);
+                Storage.save('currentProject', App.projectData);
+
+                App.updateGameInfo();
+                App.refreshCurrentScreen();
+
+                App.showToast(AppI18N.I18N['U369']?.[AppI18N.currentLang] || 'あたらしいゲームを つくりました');
+            }
+        });
     },
 
     showSimpleProjectList() {

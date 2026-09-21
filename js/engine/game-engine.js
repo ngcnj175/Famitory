@@ -1561,44 +1561,51 @@ const GameEngine = {
         const remixBtn = document.getElementById('result-remix-btn');
         if (remixBtn) {
             remixBtn.addEventListener('click', () => {
+                if (!App.projectData) return;
                 if (overlay) overlay.classList.add('hidden');
                 this.stop();
 
-                // リミックス処理の実行
-                if (App.projectData) {
-                    App.isPlayOnlyMode = false;
+                // タイトル/クリエイター名 入力モーダルを表示
+                AppProject.openTitleAuthorModal({
+                    headerKey: 'U404',
+                    submitKey: 'U405',
+                    initialTitle: App.projectData.meta.name || 'NEW GAME',
+                    initialAuthor: 'You',
+                    validateTitleUnique: false,
+                    onSubmit: (name, author) => {
+                        App.isPlayOnlyMode = false;
 
-                    // 原作者情報の待避（すでにoriginalAuthorがある場合は上書きしない）
-                    if (!App.projectData.meta.originalAuthor) {
-                        App.projectData.meta.originalAuthor = App.projectData.meta.author || 'Unknown';
-                        App.projectData.meta.originalTitle = App.projectData.meta.name || 'Unknown';
-                        App.projectData.meta.originalShareId = App.projectData.meta.shareId || App._sharedGameId || '';
+                        // 原作者情報の待避（すでにoriginalAuthorがある場合は上書きしない）
+                        if (!App.projectData.meta.originalAuthor) {
+                            App.projectData.meta.originalAuthor = App.projectData.meta.author || 'Unknown';
+                            App.projectData.meta.originalTitle = App.projectData.meta.name || 'Unknown';
+                            App.projectData.meta.originalShareId = App.projectData.meta.shareId || App._sharedGameId || '';
+                        }
+
+                        // タイトル・作者を新規入力値に更新
+                        App.projectData.meta.name = name;
+                        App.projectData.stage.name = name;
+                        App.projectData.meta.author = author;
+                        App.projectData.meta.shareId = null;
+                        App._sharedGameId = null;
+                        App._likesCount = 0;
+                        App._hasLikedThisSession = false;
+
+                        // 新しいエディットキーを発行
+                        App.projectData.meta.editKey = App.generateEditKey();
+
+                        // UIロック解除と画面更新
+                        App.unlockCreatorMode();
+                        App.switchScreen('stage');
+
+                        App.currentProjectName = name;
+                        if (typeof Storage !== 'undefined') {
+                            Storage.saveProject(name, App.projectData);
+                            Storage.save('currentProject', App.projectData);
+                        }
+                        App.updateGameInfo();
                     }
-
-                    // 現在の作者・IDリセット
-                    App.projectData.meta.author = 'You';
-                    App.projectData.meta.shareId = null;
-                    App._sharedGameId = null;
-                    App._likesCount = 0;
-                    App._hasLikedThisSession = false;
-
-                    // 新しいエディットキーを発行
-                    App.projectData.meta.editKey = App.generateEditKey();
-
-                    // UIロック解除と画面更新
-                    App.unlockCreatorMode();
-                    App.switchScreen('stage');
-
-                    // ストレージに保存（タイトルはそのまま）
-                    const name = App.projectData.meta.name || 'Game';
-                    App.currentProjectName = name;
-
-                    if (typeof Storage !== 'undefined') {
-                        Storage.saveProject(name, App.projectData);
-                        Storage.save('currentProject', App.projectData);
-                    }
-                    App.updateGameInfo();
-                }
+                });
             });
         }
 

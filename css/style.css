@@ -236,17 +236,74 @@ input, textarea, select, button {
     background: transparent;
 }
 
-/* エディットキー表示フィールド（ステージ設定パネル内） */
-#stage-editkey-display {
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px dashed var(--color-light);
-    color: var(--text-dark);
+/* クリエイターモード：編集可能状態 */
+#game-title:not([readonly]),
+#game-author:not([readonly]) {
+    pointer-events: auto;
+    cursor: text;
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+}
+
+#game-title:not([readonly]):hover,
+#game-author:not([readonly]):hover {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#game-title:not([readonly]):focus,
+#game-author:not([readonly]):focus {
+    border-color: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* デフォルト値（NEW GAME / You）はプレースホルダー風に薄く表示 */
+#game-title.is-default,
+#game-author.is-default {
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
+}
+
+/* PLAY画面Canvasのエディットキー表示（クリエイターモードのみ） */
+#game-editkey-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.0293);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 2px 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    pointer-events: auto;
+}
+
+#game-editkey-display.hidden {
+    display: none;
+}
+
+#game-editkey-display .editkey-label {
+    opacity: 0.7;
+}
+
+#game-editkey-value {
+    font-family: monospace;
+    letter-spacing: 1.5px;
     -webkit-user-select: all;
     user-select: all;
-    cursor: default;
-    font-family: monospace;
-    letter-spacing: 2px;
-    text-align: center;
+}
+
+#game-editkey-copy {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#game-editkey-copy:hover {
+    color: rgba(255, 255, 255, 1);
 }
 
 #game-sub-row {
@@ -3005,45 +3062,6 @@ input, textarea, select, button {
     box-sizing: border-box;
 }
 
-.editkey-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 50%;
-}
-
-.editkey-container input[type="text"] {
-    width: 100%;
-    background: #ffffff;
-    border: 1px dashed #ccc;
-    text-align: center;
-    font-family: monospace;
-    letter-spacing: 2px;
-    font-size: 13px;
-    color: #666;
-}
-
-.editkey-copy-btn {
-    width: 32px;
-    height: 30px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.editkey-copy-btn:hover {
-    background: #f5f5f5;
-}
-
-.editkey-copy-btn:active {
-    background: #e0e0e0;
-}
-
 .setting-row input[type="text"]:focus {
     outline: none;
     border-color: var(--color-dark);
@@ -4946,7 +4964,8 @@ input, textarea, select, button {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    width: 80px;
+    min-width: 80px;
+    white-space: nowrap;
     box-shadow: 0 4px 0 #444;
     transition: transform 0.1s, box-shadow 0.1s;
     text-align: center;

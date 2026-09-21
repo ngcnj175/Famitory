@@ -55,10 +55,9 @@
 | U038 | おてほん | Guide | HTML attribute (title) | index.html | |
 | U039 | ▼ | ▼ | HTML text node | index.html | |
 | U040 | ゲーム設定 | Game Settings | HTML text node | index.html | ✓ |
-| U041 | ゲームタイトル | Title | HTML text node (label) | index.html | ✓ |
 | U042 | NEW GAME | NEW GAME | HTML attribute (placeholder) | index.html | |
 | U043 | クリエイター | Creator | HTML text node (label) | index.html | ✓ |
-| U044 | エディットキー | Edit Key | HTML text node (label) | index.html | ✓ |
+| U044 | エディットキー | Edit Key | HTML text node (label, PLAY画面Canvas上) | index.html | ✓ |
 | U045 | ステージサイズ | Stage Size | HTML text node (label) | index.html | ✓ |
 | U046 | 縦 | H | HTML text node | index.html | ✓ |
 | U047 | － | － | HTML text node | index.html | |
@@ -423,8 +422,8 @@
 | U401 | エクスポート | Export | HTML text node | index.html | ✓ |
 | U402 | インポート | Import | HTML text node | index.html | ✓ |
 | U403 | ゲームタイトル | Game Title | HTML text node (label) | index.html | ✓ |
-| U404 | ゲームタイトル | Game Title | HTML text node (label) | index.html | ✓ |
-| U405 | コピー | Copy | HTML attribute (title) | index.html | |
+| U404 | リミックスをはじめる | Start Remix | JS modal header (共用) | app-project.js / game-engine.js | ✓ |
+| U405 | はじめる | Start | JS modal submit button | app-project.js / game-engine.js | ✓ |
 | U406 | 複製 | Duplicate | JS action menu | bgm-editor.js | |
 | U407 | 削除 | Delete | JS action menu | bgm-editor.js | |
 | U408 | キャンセル | Cancel | JS action menu | bgm-editor.js | |

@@ -25,7 +25,6 @@ const AppI18N = {
         'U016': { JPN: 'BGM',       ENG: 'BGM' },
         // ---- ゲーム設定パネル ----
         'U040': { JPN: 'ゲーム設定',    ENG: 'Game Settings' },
-        'U041': { JPN: 'ゲームタイトル',  ENG: 'Title' },
         'U043': { JPN: 'クリエイター',    ENG: 'Creator' },
         'U044': { JPN: 'エディットキー',  ENG: 'Edit Key' },
         'U045': { JPN: 'ステージサイズ',  ENG: 'Stage Size' },
@@ -72,6 +71,8 @@ const AppI18N = {
         'U150': { JPN: 'あたらしいゲームをつくる', ENG: 'Create New Game' },
         'U403': { JPN: 'ゲームタイトル',       ENG: 'Game Title' },
         'U151': { JPN: 'つくる',              ENG: 'Create' },
+        'U404': { JPN: 'リミックスをはじめる',  ENG: 'Start Remix' },
+        'U405': { JPN: 'はじめる',            ENG: 'Start' },
         // ---- セーブ/トースト ----
         'U167': { JPN: 'セーブしました',       ENG: 'Saved!' },
         'U172': { JPN: 'セーブ',              ENG: 'Save' },

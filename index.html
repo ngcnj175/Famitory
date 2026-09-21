@@ -41,6 +41,16 @@
                             <div id="game-remix-info" class="hidden">
                                 Remix of <span class="remix-link" id="remix-link-wrap"><span id="game-original-title"></span> by <span id="game-original-author"></span></span>
                             </div>
+                            <div id="game-editkey-display" class="hidden">
+                                <span class="editkey-label" data-i18n="U044">エディットキー</span>
+                                <span id="game-editkey-value"></span>
+                                <button id="game-editkey-copy" title="コピー">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
                             <div id="game-likes-display" class="hidden">
                                 <img src="images/like_icon.svg" alt="like" class="like-icon-small">
                                 <span id="game-likes-count">0</span>
@@ -304,29 +314,6 @@
                     <span data-i18n="U040">ゲーム設定</span>
                 </div>
                 <div id="stage-settings-content">
-                    <!-- ステージタイトル -->
-                    <div class="setting-row">
-                        <label data-i18n="U041">ゲームタイトル</label>
-                        <input type="text" id="stage-name-input" placeholder="NEW GAME">
-                    </div>
-                    <!-- 作成者名 -->
-                    <div class="setting-row">
-                        <label data-i18n="U043">クリエイター</label>
-                        <input type="text" id="stage-author-input" placeholder="You">
-                    </div>
-                    <!-- エディットキー -->
-                    <div class="setting-row">
-                        <label data-i18n="U044">エディットキー</label>
-                        <div class="editkey-container">
-                            <input type="text" id="stage-editkey-display" readonly>
-                            <button id="copy-editkey-btn" class="editkey-copy-btn" title="コピー">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
                     <!-- ステージサイズ（縦横2行レイアウト） -->
                     <div class="setting-row setting-row-size">
                         <label data-i18n="U045">ステージサイズ</label>
@@ -691,23 +678,6 @@
                     <button class="type-select-item" data-type="enemy" data-i18n="U074">てき</button>
                     <button class="type-select-item" data-type="material" data-i18n="U075">ブロック・背景</button>
                     <button class="type-select-item" data-type="item" data-i18n="U076">アイテム</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- テキスト編集ポップアップ（タイトル/作成者名共用） -->
-        <div id="text-edit-popup" class="popup-overlay hidden">
-            <div class="popup-content song-name-content">
-                <div class="popup-header">
-                    <span class="popup-title" id="text-edit-popup-title">編集</span>
-                    <button id="text-edit-cancel" class="popup-close">✕</button>
-                </div>
-                <div class="popup-body" style="padding: 16px; display: flex; justify-content: center;">
-                    <input type="text" id="text-edit-input" maxlength="20" placeholder=""
-                        style="width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                <div class="popup-actions">
-                    <button id="text-edit-save" class="popup-btn primary">保存</button>
                 </div>
             </div>
         </div>
@@ -1478,11 +1448,15 @@
     <!-- 新規作成モーダル -->
     <div id="new-game-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple" data-i18n="U150">あたらしいゲームをつくる</div>
+            <div class="modal-header-simple" id="new-game-modal-header" data-i18n="U150">あたらしいゲームをつくる</div>
             <div class="modal-body">
                 <div class="input-group">
                     <label data-i18n="U403">ゲームタイトル</label>
                     <input type="text" id="new-game-name" value="NEW GAME" class="simple-input">
+                </div>
+                <div class="input-group">
+                    <label data-i18n="U043">クリエイター</label>
+                    <input type="text" id="new-game-author" value="You" class="simple-input">
                 </div>
             </div>
             <div class="modal-footer-actions">

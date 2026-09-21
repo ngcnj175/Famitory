@@ -48,30 +48,6 @@ class StageSettings {
         const areaHPlus = document.getElementById('area-h-plus');
         const bgColorSwatch = document.getElementById('stage-bg-color');
         const saveBtn = document.getElementById('stage-settings-save');
-        const copyEditKeyBtn = document.getElementById('copy-editkey-btn');
-
-        // エディットキーをコピー
-        if (copyEditKeyBtn) {
-            copyEditKeyBtn.addEventListener('click', async () => {
-                const editKeyDisplay = document.getElementById('stage-editkey-display');
-                if (editKeyDisplay && editKeyDisplay.value) {
-                    try {
-                        await navigator.clipboard.writeText(editKeyDisplay.value);
-                        if (App && typeof App.showToast === 'function') {
-                            App.showToast(this.owner.t('U436') || 'エディットキーをコピーしました');
-                        }
-                    } catch (err) {
-                        console.error('Failed to copy: ', err);
-                        // フォールバック
-                        editKeyDisplay.select();
-                        document.execCommand('copy');
-                        if (App && typeof App.showToast === 'function') {
-                            App.showToast(this.owner.t('U436') || 'エディットキーをコピーしました');
-                        }
-                    }
-                }
-            });
-        }
 
         // 現在の値を反映
         this.updateStageSettingsUI();
@@ -194,7 +170,6 @@ class StageSettings {
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
                 const stage = App.projectData.stage;
-                const meta = App.projectData.meta;
 
                 // クリア条件を一度確認（フォーム値から）
                 if (clearCondition) {
@@ -215,18 +190,6 @@ class StageSettings {
                     const message = AppI18N.I18N['U394']?.[AppI18N.currentLang] || 'サバイバルモードでは制限時間を設定してください';
                     alert(message);
                     return;
-                }
-
-                // タイトル・作成者
-                const nameInput = document.getElementById('stage-name-input');
-                if (nameInput) {
-                    stage.name = nameInput.value;
-                    if (meta) meta.name = nameInput.value || 'NEW GAME';
-                }
-
-                const authorInput = document.getElementById('stage-author-input');
-                if (authorInput && meta) {
-                    meta.author = authorInput.value || 'You';
                 }
 
                 // スコア表示設定
@@ -257,33 +220,12 @@ class StageSettings {
     updateStageSettingsUI(preserveFormState = false) {
         const stage = App.projectData.stage;
 
-        const nameInput = document.getElementById('stage-name-input');
         const areaWValue = document.getElementById('area-w-value');
         const areaHValue = document.getElementById('area-h-value');
         const bgColorSwatch = document.getElementById('stage-bg-color');
         const transparentSelect = document.getElementById('stage-transparent-index');
         const timeMin = document.getElementById('stage-time-min');
         const timeSec = document.getElementById('stage-time-sec');
-        const authorInput = document.getElementById('stage-author-input');
-
-        // 入力欄の現在値をprojectDataに反映（背景色変更時など他設定の更新で上書きされないように）
-        if (preserveFormState) {
-            if (nameInput) {
-                stage.name = nameInput.value;
-                if (App.projectData.meta) App.projectData.meta.name = nameInput.value || 'NEW GAME';
-            }
-            if (authorInput && App.projectData.meta) {
-                App.projectData.meta.author = authorInput.value || 'You';
-            }
-        }
-
-        // ステージタイトル・作成者名の表示
-        if (nameInput) nameInput.value = stage.name || App.projectData.meta?.name || 'NEW GAME';
-        if (authorInput) authorInput.value = App.projectData.meta?.author || 'You';
-
-        // エディットキー表示
-        const editKeyDisplay = document.getElementById('stage-editkey-display');
-        if (editKeyDisplay) editKeyDisplay.value = App.projectData.meta?.editKey || '';
 
         // ステージサイズ（preserveFormState時は現在のUI値を保持）
         if (!preserveFormState) {
