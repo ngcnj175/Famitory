@@ -510,8 +510,10 @@ const AppProject = {
                 return;
             }
 
-            onSubmit(name, author);
+            // モーダルを閉じてからonSubmit実行（keyboard/safe-areaが戻ってから
+            // viewport/canvasの再計算がされるように）
             close();
+            requestAnimationFrame(() => onSubmit(name, author));
         };
 
         createBtn.onclick = submit;

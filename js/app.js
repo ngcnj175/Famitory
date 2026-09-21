@@ -712,26 +712,54 @@ const App = {
     _bindPlayInlineEdit(input, field) {
         const isTextarea = input.tagName === 'TEXTAREA';
 
+        // タイトルは最大2行（\n 1つまで）に正規化
+        const clampTitle = (s) => {
+            const idx = s.indexOf('\n');
+            if (idx < 0) return s;
+            const rest = s.substring(idx + 1).replace(/\n/g, '');
+            return s.substring(0, idx) + '\n' + rest;
+        };
+
         // サイズ自動調整（タイトル=高さ, クリエイター=幅）
         const autoResize = () => {
             if (isTextarea) {
+                // hidden時 scrollHeight=0 で潰れるのを回避（CSSのmin-heightに任せる）
                 input.style.height = 'auto';
-                input.style.height = input.scrollHeight + 'px';
+                const h = input.scrollHeight;
+                if (h > 0) {
+                    input.style.height = h + 'px';
+                } else {
+                    input.style.removeProperty('height');
+                }
             } else {
                 input.size = Math.max(3, (input.value || '').length + 1);
             }
         };
+        input._autoResize = autoResize;
         autoResize();
+
+        // 親のvisibility変化に追随（他画面から戻ってきた際の再計算）
+        if (isTextarea && !input._visObserved) {
+            input._visObserved = true;
+            const pushUi = document.getElementById('push-start-ui');
+            if (pushUi) {
+                const mo = new MutationObserver(() => {
+                    if (!pushUi.classList.contains('hidden')) {
+                        requestAnimationFrame(autoResize);
+                    }
+                });
+                mo.observe(pushUi, { attributes: true, attributeFilter: ['class'] });
+            }
+        }
 
         if (input._playEditBound) return;
         input._playEditBound = true;
 
         const commit = () => {
             if (input.readOnly) return;
-            // タイトルは改行可、クリエイター名は改行不可
             let raw = (input.value || '');
             if (field === 'title') {
-                raw = raw.replace(/\n{3,}/g, '\n\n').trim().substring(0, 40);
+                raw = clampTitle(raw).trim().substring(0, 40);
                 const name = raw || 'NEW GAME';
                 this.projectData.meta.name = name;
                 if (this.projectData.stage) this.projectData.stage.name = name;
@@ -750,12 +778,22 @@ const App = {
             if (input.readOnly) return;
             input.classList.remove('is-default');
         });
-        input.addEventListener('input', autoResize);
+        input.addEventListener('input', () => {
+            if (field === 'title') {
+                const clamped = clampTitle(input.value);
+                if (clamped !== input.value) input.value = clamped;
+            }
+            autoResize();
+        });
         input.addEventListener('blur', commit);
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                // タイトル: Enterで改行、Ctrl/Cmd+Enterで確定
-                if (field === 'title' && !e.ctrlKey && !e.metaKey) return;
+                // タイトル: Enterで改行（1回のみ）、Ctrl/Cmd+Enterで確定
+                if (field === 'title' && !e.ctrlKey && !e.metaKey) {
+                    // すでに改行が含まれていたら次のEnterを禁止
+                    if (input.value.includes('\n')) e.preventDefault();
+                    return;
+                }
                 e.preventDefault();
                 input.blur();
             }

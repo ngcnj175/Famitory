@@ -1604,6 +1604,10 @@ const GameEngine = {
                             Storage.save('currentProject', App.projectData);
                         }
                         App.updateGameInfo();
+
+                        // モーダル閉/画面遷移直後は viewport 寸法が確定していないことがあるため、
+                        // 少し遅延させて再計算
+                        setTimeout(() => App.adjustViewportScale(), 100);
                     }
                 });
             });

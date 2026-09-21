@@ -41,16 +41,16 @@
                             <span id="game-original-author"></span>
                         </div>
                     </div>
-                    <!-- タイトル: 中央/下揃え、改行可 -->
+                    <!-- タイトル: 中央/下揃え、最大2行 -->
                     <div id="game-title-block">
                         <div class="edit-label">TITLE <span class="pen-icon">✎</span></div>
-                        <textarea id="game-title" rows="1" placeholder="ゲームタイトル" readonly>NEW GAME</textarea>
+                        <textarea id="game-title" rows="2" maxlength="40" placeholder="ゲームタイトル" readonly>NEW GAME</textarea>
                     </div>
                     <!-- クリエイター名: タイトル直下、固定Y -->
                     <div id="game-author-block">
                         <div class="edit-label">CREATOR <span class="pen-icon">✎</span></div>
                         <span class="author-prefix">by</span>
-                        <input type="text" id="game-author" value="You" placeholder="なまえ" readonly>
+                        <input type="text" id="game-author" maxlength="20" value="You" placeholder="なまえ" readonly>
                     </div>
                     <!-- 下部: いいね (Player) / エディットキー (Creator) -->
                     <div id="game-editkey-display" class="hidden">
@@ -66,7 +66,7 @@
                         </div>
                     </div>
                     <div id="game-likes-display" class="hidden">
-                        <span class="like-heart">♥</span>
+                        <img src="images/like_icon.svg" alt="like" class="like-icon-small">
                         <span id="game-likes-count">0</span>
                     </div>
                 </div>
