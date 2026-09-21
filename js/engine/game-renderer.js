@@ -678,8 +678,7 @@ class GameRenderer {
             ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('RE:START', centerX, centerY);
+            this._fillTextWithShadow(ctx, 'RE:START', centerX, centerY);
 
             if (this.owner.restartProgress > 0) {
                 const barWidth = 80;
