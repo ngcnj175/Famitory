@@ -340,6 +340,12 @@ const AppI18N = {
         'U515': { JPN: '更新順',                   ENG: 'Updated' },
         'U516': { JPN: '作品がありません',         ENG: 'No games' },
         'U517': { JPN: '読み込み中…',              ENG: 'Loading…' },
+        'U518': { JPN: 'プレビュー',               ENG: 'Preview' },
+        'U519': { JPN: 'タイルモード',             ENG: 'Tile Mode' },
+        'U520': { JPN: 'タイトル',                 ENG: 'Title' },
+        'U521': { JPN: 'クリエーター',             ENG: 'Creator' },
+        'U522': { JPN: 'エディットキー',           ENG: 'Edit Key' },
+        'U523': { JPN: 'フレーム',                 ENG: 'Frame' },
     },
 
     t(id, vars = {}) {
@@ -385,6 +391,9 @@ const AppI18N = {
             if (StageEditor.isConfigOpen && StageEditor.renderConfigContent) {
                 StageEditor.renderConfigContent();
             }
+        }
+        if (typeof SpriteEditorPreview !== 'undefined' && SpriteEditorPreview._updatePreviewUI) {
+            SpriteEditorPreview._updatePreviewUI();
         }
     },
 

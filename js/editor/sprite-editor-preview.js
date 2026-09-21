@@ -259,11 +259,13 @@ const SpriteEditorPreview = {
         const controls = document.getElementById('preview-controls');
         if (!el) return;
 
+        const label = (typeof AppI18N !== 'undefined' && AppI18N.I18N['U523'])
+            ? AppI18N.I18N['U523'][AppI18N.currentLang] : 'フレーム';
         if (this.previewFrames.length === 0) {
-            el.textContent = 'フレーム: — / —';
+            el.textContent = `${label}: — / —`;
             if (controls) controls.classList.add('disabled-preview');
         } else {
-            el.textContent = `フレーム: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
+            el.textContent = `${label}: ${this.previewCurrentFrame + 1} / ${this.previewFrames.length}`;
             if (controls) controls.classList.remove('disabled-preview');
         }
     },
