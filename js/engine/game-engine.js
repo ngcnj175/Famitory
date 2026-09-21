@@ -1569,7 +1569,7 @@ const GameEngine = {
                 AppProject.openTitleAuthorModal({
                     headerKey: 'U404',
                     submitKey: 'U405',
-                    initialTitle: App.projectData.meta.name || 'NEW GAME',
+                    initialTitle: 'NEW GAME',
                     initialAuthor: 'You',
                     validateTitleUnique: false,
                     onSubmit: (name, author) => {
