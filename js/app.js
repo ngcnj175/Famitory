@@ -837,8 +837,10 @@ const App = {
         // 横向きPLAYレイアウトの付与/除去（.activeクラス適用後に実行）
         this.adjustViewportScale();
 
-        // ナビアイコンのアクティブ状態を同期（play/paint/stage/sound）
-        const navBtn = document.getElementById(`nav-${screenName}-btn`);
+        // ナビアイコンのアクティブ状態を同期（play/paint/stage/sound/arcade）
+        const navBtn = screenName === 'arcade'
+            ? document.getElementById('arcade-icon-btn')
+            : document.getElementById(`nav-${screenName}-btn`);
         if (navBtn) {
             document.querySelectorAll('#toolbar-nav .toolbar-icon').forEach(b => b.classList.remove('active-nav'));
             navBtn.classList.add('active-nav');
