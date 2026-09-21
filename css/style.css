@@ -285,12 +285,16 @@ input, textarea, select, button {
     resize: none;
     overflow: hidden;
     font-family: inherit;
+    box-sizing: border-box;
+}
+/* rows=1: 自動折り返し無し（\nのみで改行） */
+#game-title[rows="1"] {
+    white-space: pre;
+}
+/* rows=2: \n含む時のみ2行表示 */
+#game-title[rows="2"] {
     white-space: pre-wrap;
     word-break: break-word;
-    box-sizing: border-box;
-    /* 最小高さ確保（親hidden時にscrollHeight=0で潰れないよう） */
-    min-height: calc(var(--canvas-css-w, 375px) * 0.085);
-    max-height: calc(var(--canvas-css-w, 375px) * 0.17); /* 約2行分 */
 }
 
 /* --- クリエイター名: タイトル直下、固定Y --- */
@@ -313,13 +317,13 @@ input, textarea, select, button {
 }
 
 .author-prefix {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.031);
+    font-size: calc(var(--canvas-css-w, 375px) * 0.042);
     color: #d0d0d0;
 }
 
 /* Creatorモードではクリエイターラベル (CREATOR ✎ 相当) は authorのdashed枠で表現 */
 #game-author {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.031);
+    font-size: calc(var(--canvas-css-w, 375px) * 0.042);
     color: #ffffff;
     background: transparent;
     border: none;
@@ -408,7 +412,7 @@ input, textarea, select, button {
 
 #game-editkey-value {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.034);
+    font-size: calc(var(--canvas-css-w, 375px) * 0.048);
     letter-spacing: 0.05em;
     color: #dcdcdc;
     -webkit-user-select: all;
@@ -418,16 +422,21 @@ input, textarea, select, button {
 #game-editkey-copy {
     background: transparent;
     border: 1px solid #3a3a3a;
-    width: calc(var(--canvas-css-w, 375px) * 0.057);
-    height: calc(var(--canvas-css-w, 375px) * 0.057);
+    width: calc(var(--canvas-css-w, 375px) * 0.075);
+    height: calc(var(--canvas-css-w, 375px) * 0.075);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: #cfcfcf;
     cursor: pointer;
     padding: 0;
-    border-radius: 2px;
+    border-radius: 3px;
     flex-shrink: 0;
+}
+
+#game-editkey-copy svg {
+    width: 60%;
+    height: 60%;
 }
 
 #game-editkey-copy:hover {

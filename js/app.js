@@ -720,17 +720,12 @@ const App = {
             return s.substring(0, idx) + '\n' + rest;
         };
 
-        // サイズ自動調整（タイトル=高さ, クリエイター=幅）
+        // サイズ自動調整（タイトル=行数（\n有無）で1/2行, クリエイター=幅）
         const autoResize = () => {
             if (isTextarea) {
-                // hidden時 scrollHeight=0 で潰れるのを回避（CSSのmin-heightに任せる）
-                input.style.height = 'auto';
-                const h = input.scrollHeight;
-                if (h > 0) {
-                    input.style.height = h + 'px';
-                } else {
-                    input.style.removeProperty('height');
-                }
+                const hasNewline = (input.value || '').includes('\n');
+                input.rows = hasNewline ? 2 : 1;
+                input.style.removeProperty('height');
             } else {
                 input.size = Math.max(3, (input.value || '').length + 1);
             }

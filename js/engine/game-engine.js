@@ -1594,9 +1594,9 @@ const GameEngine = {
                         // 新しいエディットキーを発行
                         App.projectData.meta.editKey = App.generateEditKey();
 
-                        // UIロック解除と画面更新
+                        // UIロック解除と画面更新（リミックス後はまずPLAY画面を表示）
                         App.unlockCreatorMode();
-                        App.switchScreen('stage');
+                        App.switchScreen('play');
 
                         App.currentProjectName = name;
                         if (typeof Storage !== 'undefined') {
