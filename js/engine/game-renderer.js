@@ -373,7 +373,7 @@ class GameRenderer {
         this.owner.titleBlinkTimer++;
         if (Math.floor(this.owner.titleBlinkTimer / 30) % 2 === 0) {
             const pushStartText = AppI18N.I18N['U449'][AppI18N.currentLang] || 'PUSH START';
-            ctx.font = '8px "Press Start 2P", "BIZ UDPGothic", Arial';
+            ctx.font = '13px "Press Start 2P", "BIZ UDPGothic", Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillStyle = '#ffffff';
