@@ -284,7 +284,7 @@ const AppI18N = {
         'U375': { JPN: 'URLが発行され、だれでもプレイできるようになります', ENG: 'A URL will be generated so anyone can play' },
         'U376': { JPN: '現在の内容で上書き保存されます', ENG: 'The current content will be overwritten' },
         'U437': { JPN: 'スコアを共有',    ENG: 'Share Score' },
-        'U438': { JPN: 'もう一度',        ENG: 'Retry' },
+        'U438': { JPN: 'もう一度プレイ',        ENG: 'Play Again' },
         'U439': { JPN: 'リミックスする',  ENG: 'Remix' },
         'U441': { JPN: 'スコアを共有',    ENG: 'Share Score' },
         'U442': { JPN: 'もどる',          ENG: 'Back' },
