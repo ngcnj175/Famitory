@@ -237,10 +237,10 @@ input, textarea, select, button {
     text-decoration: none;
 }
 
-/* --- 編集ラベル (TITLE ✎ / CREATOR ✎) --- */
+/* --- 編集ラベル (タイトル ✎ / クリエーター ✎) --- */
 .edit-label {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.0227);
-    letter-spacing: 0.22em;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.028);
+    letter-spacing: 0.05em;
     color: #6fd3ff;
     margin-bottom: 3px;
     display: none;
@@ -307,7 +307,7 @@ input, textarea, select, button {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2px;
+    gap: 1px;
     color: #d0d0d0;
     flex-wrap: wrap;
 }
@@ -322,14 +322,14 @@ input, textarea, select, button {
     color: #d0d0d0;
 }
 
-/* Creatorモードではクリエイターラベル (CREATOR ✎ 相当) は authorのdashed枠で表現 */
+/* Creatorモードではクリエイターラベル (タイトル ✎ 相当) は authorのdashed枠で表現 */
 #game-author {
     font-size: calc(var(--canvas-css-w, 375px) * 0.042);
     color: #ffffff;
     background: transparent;
     border: none;
     outline: none;
-    padding: 2px 2px;
+    padding: 2px 1px;
     text-align: center;
     font-family: inherit;
     width: auto;
@@ -401,8 +401,8 @@ input, textarea, select, button {
 }
 
 #game-editkey-display .editkey-label {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.0227);
-    letter-spacing: 0.22em;
+    font-size: calc(var(--canvas-css-w, 375px) * 0.028);
+    letter-spacing: 0.05em;
     color: #777;
 }
 

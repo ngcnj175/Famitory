@@ -64,11 +64,12 @@ const GameEngine = {
         this.physics = new GamePhysics(this);
 
         // タイトル画面のキャンバスタップでゲーム開始（STARTボタンが反応しない場合のフォールバック）
+        // クリエイターモードでは編集中の誤タップ防止のため無効化
         this.canvas.addEventListener('pointerdown', () => {
-            if (this.titleState === 'title' && typeof App !== 'undefined' && App.currentScreen === 'play') {
-                if (typeof NesAudio !== 'undefined') NesAudio.ensureContext();
-                this.togglePause();
-            }
+            if (this.titleState !== 'title' || typeof App === 'undefined' || App.currentScreen !== 'play') return;
+            if (!App.isPlayOnlyMode) return; // クリエイターモードはSTARTボタン経由のみ
+            if (typeof NesAudio !== 'undefined') NesAudio.ensureContext();
+            this.togglePause();
         });
 
         // イースターエッグウィンドウ用クリックハンドラ
