@@ -723,29 +723,12 @@ const App = {
         // サイズ自動調整（タイトル=行数（\n有無）で1/2行, クリエイター=幅）
         const autoResize = () => {
             if (isTextarea) {
-                const hasNewline = (input.value || '').includes('\n');
-                input.rows = hasNewline ? 2 : 1;
-                input.style.removeProperty('height');
+                input.rows = (input.value || '').includes('\n') ? 2 : 1;
             } else {
                 input.size = Math.max(3, (input.value || '').length + 1);
             }
         };
-        input._autoResize = autoResize;
         autoResize();
-
-        // 親のvisibility変化に追随（他画面から戻ってきた際の再計算）
-        if (isTextarea && !input._visObserved) {
-            input._visObserved = true;
-            const pushUi = document.getElementById('push-start-ui');
-            if (pushUi) {
-                const mo = new MutationObserver(() => {
-                    if (!pushUi.classList.contains('hidden')) {
-                        requestAnimationFrame(autoResize);
-                    }
-                });
-                mo.observe(pushUi, { attributes: true, attributeFilter: ['class'] });
-            }
-        }
 
         if (input._playEditBound) return;
         input._playEditBound = true;
