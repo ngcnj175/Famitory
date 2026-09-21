@@ -454,9 +454,9 @@ input, textarea, select, button {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     color: #f5f5f5;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.048);
+    font-size: calc(var(--canvas-css-w, 375px) * 0.0398); /* 14px @ 352 */
     letter-spacing: 0.05em;
 }
 
@@ -466,8 +466,8 @@ input, textarea, select, button {
 
 #game-likes-display .like-icon-small {
     filter: brightness(0) invert(1);
-    width: calc(var(--canvas-css-w, 375px) * 0.058);
-    height: calc(var(--canvas-css-w, 375px) * 0.058);
+    width: calc(var(--canvas-css-w, 375px) * 0.048); /* 約17px @ 352 */
+    height: calc(var(--canvas-css-w, 375px) * 0.048);
 }
 
 #game-likes-count {
