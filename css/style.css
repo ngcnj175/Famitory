@@ -1043,7 +1043,7 @@ input, textarea, select, button {
 }
 
 .sprite-item.selected {
-    border-color: var(--color-dark);
+    border-color: #ffd700;
     transform: scale(1.15);
     z-index: 1;
 }
@@ -1201,7 +1201,7 @@ input, textarea, select, button {
 }
 
 .palette-color.selected {
-    border-color: var(--color-dark);
+    border-color: #ffd700;
     transform: scale(1.15);
     z-index: 1;
 }
@@ -1233,7 +1233,7 @@ input, textarea, select, button {
 }
 
 .tile-item.selected {
-    border-color: var(--color-dark);
+    border-color: #ffd700;
     transform: scale(1.15);
     z-index: 1;
 }
