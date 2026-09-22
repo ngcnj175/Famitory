@@ -170,6 +170,7 @@ const AppI18N = {
         'U470': { JPN: 'アニメーション',      ENG: 'Animation' },
         'U471': { JPN: '設定',               ENG: 'Settings' },
         'U472': { JPN: '基本設定',           ENG: 'Basics' },
+        'U524': { JPN: '画像をトリミング',   ENG: 'Crop Image' },
         'U213': { JPN: '動かない',            ENG: 'Static' },
         'U214': { JPN: 'ぴょんぴょん',        ENG: 'Hop' },
         'U215': { JPN: 'うろぴょん',          ENG: 'Wander+Hop' },

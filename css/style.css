@@ -6860,14 +6860,111 @@ body.dark-mode {
 .arcade-thumb-btns {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 6px;
 }
 
 .arcade-thumb-btns .setting-save-btn {
     flex: 1 1 auto;
-    font-size: 11px;
-    padding: 4px 6px;
+    font-size: 13px;
+    padding: 10px 12px;
     min-width: 0;
+    white-space: nowrap;
+}
+
+/* ========== ARCADE サムネイル トリミング モーダル ========== */
+.arcade-crop-content {
+    max-width: 360px;
+    width: 92vw;
+}
+
+.arcade-crop-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.arcade-crop-stage {
+    width: 260px;
+    height: 260px;
+    max-width: 82vw;
+    max-height: 82vw;
+    background: #222;
+    position: relative;
+    overflow: hidden;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    border: 1px solid #444;
+}
+
+.arcade-crop-stage:active {
+    cursor: grabbing;
+}
+
+#arcade-crop-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    max-width: none;
+    max-height: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.arcade-crop-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 260px;
+}
+
+.arcade-crop-zoom-label {
+    font-size: 16px;
+    color: var(--text-dark);
+    width: 16px;
+    text-align: center;
+}
+
+#arcade-crop-zoom {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border-color);
+    border-radius: 3px;
+    outline: none;
+}
+
+#arcade-crop-zoom::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--color-dark);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#arcade-crop-zoom::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--color-dark);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.arcade-crop-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding-top: 4px;
 }
 
 /* ========== ARCADE 画面 ========== */
