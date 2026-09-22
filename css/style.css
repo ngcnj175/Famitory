@@ -1370,23 +1370,33 @@ input, textarea, select, button {
     opacity: 0.55;
 }
 
-/* ヘッダー内の属性ラベル：横並び時は中央寄せ・余白リセット */
+/* ヘッダー内の属性ラベル（大項目）：太字・一文字分右にオフセット */
 #tile-config-header .config-type-label {
     margin: 0;
-    padding: 2px 0;
+    padding: 2px 0 2px 14px;
     border-bottom: none;
     flex: 1;
     text-align: left;
     font-size: 15px;
+    font-weight: bold;
     color: var(--text-dark);
 }
 
-/* ヘッダー内の保存ボタン */
+/* ヘッダー内の保存ボタン：ゲーム設定の「設定を保存」と同シェイプ */
 #tile-config-header #config-save-btn {
     touch-action: manipulation;
-    padding: 4px 14px;
+    padding: 6px 18px;
+    border: none;
+    border-radius: 6px;
+    background: var(--color-dark);
+    color: #fff;
     font-size: 12px;
+    font-weight: 600;
     flex-shrink: 0;
+}
+
+#tile-config-header #config-save-btn:active {
+    opacity: 0.8;
 }
 
 /* ヘッダー内の閉じるボタン：フローに沿わせる */
