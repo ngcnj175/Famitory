@@ -141,13 +141,14 @@ input, textarea, select, button {
     background: transparent;
 }
 
-/* 繝翫ン繧｢繧､繧ｳ繝ｳ�郁埋繧ｰ繝ｬ繝ｼ縲√い繧ｯ繝�ぅ繝悶�縺ｿ豼�￥�� */
+/* ナビアイコン：常時ON表示、アクティブは背景ハイライトで示す */
 .nav-icon {
-    color: var(--color-light);
+    color: var(--color-dark);
 }
 
 .nav-icon.active-nav {
     color: var(--color-dark);
+    background: var(--border-color);
 }
 
 
@@ -5633,11 +5634,12 @@ input, textarea, select, button {
 }
 
 #app.dark-mode .nav-icon {
-    color: #3a3f55;
+    color: #8aa0c0;
 }
 
 #app.dark-mode .nav-icon.active-nav {
     color: #8aa0c0;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 #app.dark-mode .icon-label {
