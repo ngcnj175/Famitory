@@ -6,7 +6,7 @@
 
 const ShareArcade = {
 
-    CACHE_KEY: 'arcade_list_cache_v1',
+    CACHE_KEY: 'arcade_list_cache_v2',
     CACHE_TTL_MS: 5 * 60 * 1000,
 
     // ARCADE に登録（既存の games/{id} レコードに published と meta を追記）
