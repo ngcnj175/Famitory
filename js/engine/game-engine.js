@@ -147,6 +147,12 @@ const GameEngine = {
                 this.gameLoop();
             }
         } else if (this.isRunning) {
+            // PAUSE 文字が描かれる直前のフレームをサムネ用に確保する
+            // （プレイヤーが最高の瞬間で一時停止 → 取得したいユースケース対応）
+            if (typeof AppThumbnail !== 'undefined' && this.titleState === 'playing') {
+                AppThumbnail.captureFromCanvas(this.canvas);
+                this._lastThumbCaptureAt = performance.now();
+            }
             this.isPaused = true;
             this.renderer.render(); // PAUSE表示のため再描画
             if (this.player) this.player.playSE('pause');
@@ -773,7 +779,8 @@ const GameEngine = {
         this.renderer.render();
 
         // ARCADE 用サムネイル用に一定間隔でフレームをキャプチャ
-        if (this.titleState === 'playing' && typeof AppThumbnail !== 'undefined') {
+        // PAUSE 中は PAUSE 文字が描かれた状態なのでスキップ（pauseGame 側で確保済み）
+        if (this.titleState === 'playing' && !this.isPaused && typeof AppThumbnail !== 'undefined') {
             const now = performance.now();
             if (!this._lastThumbCaptureAt || now - this._lastThumbCaptureAt > 5000) {
                 AppThumbnail.captureFromCanvas(this.canvas);
