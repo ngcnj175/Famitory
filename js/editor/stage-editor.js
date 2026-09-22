@@ -456,6 +456,7 @@ const StageEditor = {
         if (!spriteSection || !paramSection || !this.editingTemplate) return;
 
         const type = this.editingTemplate.type;
+        let spriteRows = '';
 
         if (type === 'player' || type === 'enemy') {
             // スプライトセクション: 立ち・歩き・のぼる・ジャンプ・攻撃（プレイヤー変身時は変身アイテムを攻撃の下に追加）
@@ -465,25 +466,29 @@ const StageEditor = {
             if (type === 'player' && !isBasePlayer) {
                 baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack', 'transformItem'];
             }
-            let spriteHtml = '';
-            baseSprites.forEach(key => {
-                spriteHtml += this.renderSpriteRow(key);
-            });
-            spriteSection.innerHTML = spriteHtml;
+            baseSprites.forEach(key => { spriteRows += this.renderSpriteRow(key); });
         } else {
             // その他（material, item, goal）: 従来通り全スプライト行
             const spriteKeys = this.getSpriteKeysForType(type);
-            let spriteHtml = '';
-            spriteKeys.forEach(key => {
-                spriteHtml += this.renderSpriteRow(key);
-            });
-            spriteSection.innerHTML = spriteHtml;
+            spriteKeys.forEach(key => { spriteRows += this.renderSpriteRow(key); });
         }
+
+        spriteSection.innerHTML = this.renderCard(this.t('U470'), spriteRows);
 
         // パラメータセクション
         paramSection.innerHTML = this.renderParamSection(type);
 
         this.initConfigEvents();
+    },
+
+    // 中項目カード（見出し付きの区切り枠）
+    renderCard(label, innerHtml) {
+        return `
+            <div class="config-card">
+                <div class="config-card-label">${label}</div>
+                <div class="config-card-body">${innerHtml}</div>
+            </div>
+        `;
     },
 
 
@@ -518,30 +523,24 @@ const StageEditor = {
         let html = '';
 
         if (type === 'player' || type === 'enemy') {
-            // ① 能力
-            html += `<div class="param-section-label">${this.t('U206')}</div>`;
-            html += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
+            // ==== 能力カード ====
+            let abilityHtml = '';
+            abilityHtml += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
 
-            // ② ジャンプ力（プレイヤーは 2段ジャンプトグル付き）
             if (type === 'player') {
-                html += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20, this.t('U209'), 'wJump', config.wJump);
+                abilityHtml += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20, this.t('U209'), 'wJump', config.wJump);
+                abilityHtml += this.renderSpriteRow('life');
+                abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 3, 1, 5);
             } else {
-                html += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20);
+                abilityHtml += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 10, 1, 20);
+                abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 1, 1, 5);
             }
+            html += this.renderCard(this.t('U206'), abilityHtml);
 
-            // ③ ライフ スプライト行 ＋ ライフ数（プレイヤーのみ）
-            if (type === 'player') {
-                html += this.renderSpriteRow('life');
-                html += this.renderSlider(this.t('U210'), 'life', config.life ?? 3, 1, 5);
-            } else {
-                // てきはライフスプライトなしでライフ数のみ
-                html += this.renderSlider(this.t('U210'), 'life', config.life ?? 1, 1, 5);
-            }
-
-            // てき専用: 特性セクション（武器より先に表示）
+            // ==== 特性カード（てき専用） ====
             if (type === 'enemy') {
-                html += `<div class="param-section-label">${this.t('U211')}</div>`;
-                html += `
+                let traitHtml = '';
+                traitHtml += `
                     <div class="param-row">
                         <span class="param-label">${this.t('U424')}</span>
                         <select class="param-select" data-key="move">
@@ -557,9 +556,9 @@ const StageEditor = {
                     </div>
                 `;
                 if (config.move !== 'clinging') {
-                    html += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
+                    traitHtml += this.renderToggle(this.t('U218'), 'isAerial', config.isAerial);
                 }
-                html += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
+                traitHtml += this.renderToggle(this.t('U219'), 'isBoss', config.isBoss);
                 {
                     const itemTemplates = (App.projectData.templates || [])
                         .map((t, i) => ({ t, i }))
@@ -578,29 +577,27 @@ const StageEditor = {
                             const sel = config.dropItem === i ? 'selected' : '';
                             return `<option value="${i}" ${sel}>${label}</option>`;
                         }).join('');
-                        html += `
+                        traitHtml += `
                             <div class="param-row">
                                 <span class="param-label">${this.t('U425')}</span>
-                                <div style="display:flex;align-items:center;gap:6px;">
-                                    <select class="param-select" data-key="dropItem" style="min-width:140px;">
+                                <div class="param-select-with-preview">
+                                    <select class="param-select" data-key="dropItem">
                                         <option value="none" ${!config.dropItem || config.dropItem === 'none' ? 'selected' : ''}>${this.t('U220')}</option>
                                         ${dropOptions}
                                     </select>
-                                    <canvas class="drop-item-preview" width="16" height="16" style="border:1px solid #e0e0e0;image-rendering:pixelated;width:32px;height:32px;background:#fff;"></canvas>
+                                    <canvas class="drop-item-preview" width="16" height="16"></canvas>
                                 </div>
                             </div>
                         `;
                     }
                 }
+                html += this.renderCard(this.t('U211'), traitHtml);
             }
 
-            // ④ 武器
-            html += `<div class="param-section-label">${this.t('U228')}</div>`;
-            // 飛び道具 スプライト行
-            html += this.renderSpriteRow('shot');
-
-            // ⑤ 軌道
-            html += `
+            // ==== 武器カード ====
+            let weaponHtml = '';
+            weaponHtml += this.renderSpriteRow('shot');
+            weaponHtml += `
                 <div class="param-row">
                     <span class="param-label">${this.t('U428')}</span>
                     <select class="param-select" data-key="shotType">
@@ -616,32 +613,17 @@ const StageEditor = {
                     </select>
                 </div>
             `;
-
-            // ⑥ 速度
-            html += this.renderBlockGauge(this.t('U237'), 'shotSpeed', config.shotSpeed ?? 3, 1, 5);
-
-            // ⑦ 連射
-            html += this.renderBlockGauge(this.t('U238'), 'shotRate', config.shotRate ?? 3, 1, 5);
-
-            // ⑧ 届く距離（旧射程距離）
-            html += this.renderBlockGauge(this.t('U239'), 'shotMaxRange', config.shotMaxRange ?? 3, 1, 5);
-
-            // プレイヤー専用: はじめから使える
+            weaponHtml += this.renderBlockGauge(this.t('U237'), 'shotSpeed', config.shotSpeed ?? 3, 1, 5);
+            weaponHtml += this.renderBlockGauge(this.t('U238'), 'shotRate', config.shotRate ?? 3, 1, 5);
+            weaponHtml += this.renderBlockGauge(this.t('U239'), 'shotMaxRange', config.shotMaxRange ?? 3, 1, 5);
             if (type === 'player') {
-                html += `
-                    <div class="param-row param-row-toggle">
-                        <span class="param-label"></span>
-                        <label class="toggle-switch toggle-inline" style="margin-left: 0;">
-                            <span class="toggle-label" style="margin-right: 6px; font-weight: normal;">${this.t('U423')}</span>
-                            <input type="checkbox" data-key="weaponFromStart" ${config.weaponFromStart ?? true ? 'checked' : ''}>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                `;
+                weaponHtml += this.renderToggle(this.t('U423'), 'weaponFromStart', config.weaponFromStart ?? true);
             }
+            html += this.renderCard(this.t('U228'), weaponHtml);
 
         } else if (type === 'material') {
-            html += `
+            let inner = '';
+            inner += `
                 <div class="param-row">
                     <span class="param-label">${this.t('U426')}</span>
                     <select class="param-select" data-key="gimmick">
@@ -657,41 +639,41 @@ const StageEditor = {
                 </div>
             `;
             if (config.gimmick === 'spring') {
-                html += this.renderBlockGauge(this.t('U251'), 'springPower', config.springPower ?? 3, 1, 5);
+                inner += this.renderBlockGauge(this.t('U251'), 'springPower', config.springPower ?? 3, 1, 5);
             }
             if (config.gimmick === 'spawner') {
-                html += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
+                inner += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
                 const templates = App.projectData.templates || [];
                 const enemyTemplates = templates
                     .map((t, i) => ({ t, i }))
                     .filter(({ t }) => t.type === 'enemy');
                 if (enemyTemplates.length > 0) {
-                    // デフォルト選択値を確定保存（未設定の場合は先頭の敵）
                     if (config.spawnerEnemy === undefined) {
                         config.spawnerEnemy = enemyTemplates[0].i;
                     }
                     let options = enemyTemplates.map(({ i }, seq) =>
                         `<option value="${i}" ${config.spawnerEnemy === i ? 'selected' : ''}>${this.t('U457')}${seq + 1}</option>`
                     ).join('');
-                    html += `
+                    inner += `
                         <div class="param-row">
                             <span class="param-label">${this.t('U457')}</span>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <select class="param-select" data-key="spawnerEnemy" style="min-width:72px;">${options}</select>
-                                <canvas class="spawner-enemy-preview" width="16" height="16" style="border:1px solid #555;image-rendering:pixelated;width:32px;height:32px;"></canvas>
+                            <div class="param-select-with-preview">
+                                <select class="param-select" data-key="spawnerEnemy">${options}</select>
+                                <canvas class="spawner-enemy-preview" width="16" height="16"></canvas>
                             </div>
                         </div>
                     `;
                 }
-                html += this.renderBlockGauge(this.t('U458'), 'spawnerRate', config.spawnerRate ?? 3, 1, 5);
+                inner += this.renderBlockGauge(this.t('U458'), 'spawnerRate', config.spawnerRate ?? 3, 1, 5);
             }
-            // ギミック「なし」の時のみ当たり判定・耐久性を表示
             if (!config.gimmick || config.gimmick === 'none') {
-                html += this.renderToggle(this.t('U252'), 'collision', config.collision !== false);
-                html += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
+                inner += this.renderToggle(this.t('U252'), 'collision', config.collision !== false);
+                inner += this.renderSlider(this.t('U253'), 'life', config.life ?? -1, -1, 10);
             }
+            html += this.renderCard(this.t('U471'), inner);
         } else if (type === 'item') {
-            html += `
+            let inner = '';
+            inner += `
                 <div class="param-row">
                     <span class="param-label">${this.t('U427')}</span>
                     <select class="param-select" data-key="itemType">
@@ -706,17 +688,17 @@ const StageEditor = {
                     </select>
                 </div>
             `;
-            // イースターエッグの場合のみメッセージ入力欄を表示
             if (config.itemType === 'easter') {
-                html += `
+                inner += `
                     <div class="param-row">
                         <span class="param-label">${this.t('U445')}</span>
-                        <input type="text" class="param-input" data-key="easterMessage" 
-                               value="${config.easterMessage || ''}" 
+                        <input type="text" class="param-input" data-key="easterMessage"
+                               value="${config.easterMessage || ''}"
                                maxlength="20" placeholder="${this.t('U255')}">
                     </div>
                 `;
             }
+            html += this.renderCard(this.t('U471'), inner);
         }
 
         return html;
@@ -760,15 +742,15 @@ const StageEditor = {
     },
 
     renderSliderWithCheck(label, sliderKey, sliderValue, min, max, checkLabel, checkKey, checkValue) {
-        // ブロックゲージ + トグルスイッチに統合
+        // ゲージ行 + サブトグル行（小項目下にトグルを配置）
         return `
             <div class="param-row param-row-gauge">
                 <span class="param-label">${label}</span>
                 <div class="block-gauge" data-key="${sliderKey}" data-min="${min}" data-max="${max}">
                     ${this.renderBlockGaugeItems(sliderKey, sliderValue, min, max)}
                 </div>
-                ${this.renderToggleInline(checkLabel, checkKey, checkValue)}
             </div>
+            ${this.renderToggle(checkLabel, checkKey, checkValue)}
         `;
     },
 
@@ -786,24 +768,16 @@ const StageEditor = {
     },
 
     renderToggle(label, key, value) {
+        // トグルはゲージ列に配置し、右にラベル
         return `
             <div class="param-row param-row-toggle">
-                <span class="param-label">${label}</span>
+                <span class="param-label"></span>
                 <label class="toggle-switch">
                     <input type="checkbox" data-key="${key}" ${value ? 'checked' : ''}>
                     <span class="toggle-slider"></span>
+                    <span class="toggle-label">${label}</span>
                 </label>
             </div>
-        `;
-    },
-
-    renderToggleInline(label, key, value) {
-        return `
-            <label class="toggle-switch toggle-inline" title="${label}">
-                <span class="toggle-label" style="margin-right: 6px;">${label}</span>
-                <input type="checkbox" data-key="${key}" ${value ? 'checked' : ''}>
-                <span class="toggle-slider"></span>
-            </label>
         `;
     },
 

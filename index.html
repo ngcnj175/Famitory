@@ -616,11 +616,14 @@
 
                 <!-- タイル設定パネル（インライン展開） -->
                 <div id="tile-config-panel" class="hidden">
-                    <!-- ヘッダー（ドラッグハンドル + 属性ラベル + 閉じるボタン、スワイプ範囲兼固定領域） -->
+                    <!-- ヘッダー（ドラッグハンドル + 属性ラベル + 保存 + 閉じるボタン、スワイプ範囲兼固定領域） -->
                     <div id="tile-config-header">
                         <div id="tile-config-grabber"></div>
-                        <div id="tile-type-label" class="config-type-label">素材</div>
-                        <button id="config-close-btn" class="panel-close-btn">✕</button>
+                        <div class="tile-config-header-row">
+                            <div id="tile-type-label" class="config-type-label">素材</div>
+                            <button id="config-save-btn" class="config-btn primary compact" data-i18n="U005">保存</button>
+                            <button id="config-close-btn" class="panel-close-btn">✕</button>
+                        </div>
                     </div>
 
                     <!-- スプライト設定（属性によって表示内容変更） -->
@@ -631,11 +634,6 @@
                     <!-- パラメータ設定（属性によって表示内容変更） -->
                     <div id="param-config-section">
                         <!-- JSで動的生成 -->
-                    </div>
-
-                    <!-- アクションボタン -->
-                    <div class="config-row config-actions">
-                        <button id="config-save-btn" class="config-btn primary" data-i18n="U005">保存</button>
                     </div>
                 </div>
             </div>

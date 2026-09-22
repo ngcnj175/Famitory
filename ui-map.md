@@ -502,3 +502,5 @@
 | U515 | 更新順 | Updated | HTML option label | index.html | ✓ |
 | U516 | 作品がありません | No games | HTML text | index.html | ✓ |
 | U517 | 読み込み中… | Loading… | HTML text | index.html | ✓ |
+| U470 | アニメーション | Animation | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
+| U471 | 設定 | Settings | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |

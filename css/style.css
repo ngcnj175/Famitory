@@ -1319,9 +1319,9 @@ input, textarea, select, button {
 ======================================== */
 #tile-config-panel {
     display: none;
-    background: #f5f5f5;
+    background: #eef1f5;
     border-top: 2px solid var(--border-color);
-    padding: 12px;
+    padding: 8px 10px 12px;
     padding-top: 4px;
     max-height: 300px;
     overflow-y: auto;
@@ -1332,18 +1332,29 @@ input, textarea, select, button {
     display: block;
 }
 
-/* ヘッダー（グラバー+属性ラベル+閉じるボタン、スクロールに追従せず上端に固定） */
+/* ヘッダー（グラバー+属性ラベル+保存+閉じるボタン、スクロールに追従せず上端に固定） */
 #tile-config-header {
     position: sticky;
     top: -4px; /* パネル padding-top:4px を打ち消し、スクロール時に隙間を出さない */
     z-index: 2;
     background: inherit;
-    margin: -4px -12px 0;
-    padding: 4px 0 0;
+    margin: -4px -10px 8px;
+    padding: 4px 0 6px;
     cursor: grab;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ヘッダー内の行：属性ラベル・保存・閉じるを横並び */
+.tile-config-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px 0;
+    position: relative;
 }
 
 #tile-config-header:active {
@@ -1359,10 +1370,31 @@ input, textarea, select, button {
     opacity: 0.55;
 }
 
-/* ヘッダー内の属性ラベル：スワイプ範囲を広げるため下マージンを削除 */
+/* ヘッダー内の属性ラベル：横並び時は中央寄せ・余白リセット */
 #tile-config-header .config-type-label {
-    margin-bottom: 0;
-    padding: 6px 32px 8px; /* 閉じるボタンと干渉しないよう左右余白 */
+    margin: 0;
+    padding: 2px 0;
+    border-bottom: none;
+    flex: 1;
+    text-align: left;
+    font-size: 15px;
+    color: var(--text-dark);
+}
+
+/* ヘッダー内の保存ボタン */
+#tile-config-header #config-save-btn {
+    touch-action: manipulation;
+    padding: 4px 14px;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+/* ヘッダー内の閉じるボタン：フローに沿わせる */
+#tile-config-header .panel-close-btn {
+    position: static;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
 }
 
 /* 拡大状態：max-height を解除して flex で残り領域を全て使う */
@@ -1430,25 +1462,53 @@ input, textarea, select, button {
 
 /* 繧ｹ繝励Λ繧､繝郁ｨｭ螳壹そ繧ｯ繧ｷ繝ｧ繝ｳ */
 #sprite-config-section {
-    margin-bottom: 12px;
+    margin-bottom: 0;
 }
 
-/* スプライト行 */
-.sprite-row {
+/* ============ カード（中項目） ============ */
+.config-card {
+    background: #ffffff;
+    border: 1px solid #d5dae2;
+    border-radius: 8px;
+    margin: 0 0 10px 0;
+    padding: 6px 10px 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.config-card-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #3a4b6b;
+    padding: 2px 0 6px;
+    margin: 0 0 4px;
+    border-bottom: 1px dashed #d5dae2;
+    letter-spacing: 0.02em;
+}
+
+.config-card-body {
     display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* カード内は param-section-label を使わない（旧見出しの余白を無効化） */
+.config-card-body .param-section-label {
+    display: none;
+}
+
+/* スプライト行（統一グリッド：ラベル / スロット / ゲージ / トグル） */
+.sprite-row {
+    display: grid;
+    grid-template-columns: 82px 44px 1fr auto;
     align-items: center;
-    gap: 0;
-    /* gapは0にして個別にマージン設定 */
-    margin-bottom: 6px;
-    padding: 4px 0;
+    column-gap: 8px;
+    margin-bottom: 4px;
+    padding: 3px 0;
 }
 
 .sprite-row-label {
-    width: 66px;
-    /* 60px -> 66px */
     font-size: 12px;
     line-height: 1.2;
-    /* 改行時の間隔 */
     font-weight: bold;
     color: var(--text-dark);
     white-space: pre-line;
@@ -1467,8 +1527,6 @@ input, textarea, select, button {
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
-    margin-right: 12px;
-    /* ゲージとの間隔を空ける */
 }
 
 .sprite-slot:active {
@@ -1525,21 +1583,22 @@ input, textarea, select, button {
 
 /* 繝代Λ繝｡繝ｼ繧ｿ險ｭ螳壹そ繧ｯ繧ｷ繝ｧ繝ｳ */
 #param-config-section {
-    padding-top: 8px;
-    margin-top: 8px;
+    padding-top: 0;
+    margin-top: 0;
 }
 
-/* 繝代Λ繝｡繝ｼ繧ｿ陦� */
+/* パラメータ行（統一グリッド：ラベル / [空] / ゲージ・入力 / トグル） */
 .param-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 82px 44px 1fr auto;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    column-gap: 8px;
+    margin-bottom: 0;
+    padding: 3px 0;
 }
 
 .param-label {
-    width: 90px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     color: var(--text-dark);
 }
@@ -4698,21 +4757,56 @@ input, textarea, select, button {
     /* 微調整 */
 }
 
-/* 繝代Λ繝｡繝ｼ繧ｿ陦� */
-.param-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 0;
+/* パラメータ行 統一グリッド内のセル配置 */
+.config-card-body .param-row > .block-gauge,
+.config-card-body .sprite-row > .block-gauge {
+    grid-column: 3;
+    justify-self: start;
 }
 
-.param-row-gauge {
-    flex-wrap: wrap;
+.config-card-body .param-row > .gauge-infinity {
+    grid-column: 4;
+    justify-self: start;
+}
+
+.config-card-body .param-row > .param-select,
+.config-card-body .param-row > .param-input,
+.config-card-body .param-row > .param-select-with-preview,
+.config-card-body .param-row > .range-slider-container {
+    grid-column: 2 / -1;
+    width: auto;
+    justify-self: stretch;
+    min-width: 0;
+}
+
+.config-card-body .param-row-toggle > .toggle-switch {
+    grid-column: 3 / -1;
+    justify-self: start;
+}
+
+/* dropItem / spawnerEnemy のセレクト+プレビューまとめ */
+.param-select-with-preview {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.param-select-with-preview .param-select {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+}
+.param-select-with-preview canvas {
+    border: 1px solid #d0d5dd;
+    image-rendering: pixelated;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    flex-shrink: 0;
 }
 
 /* レンジスライダー（射程距離用） */
 .param-row-range {
-    flex-wrap: nowrap;
+    align-items: center;
 }
 
 .range-slider-container {
@@ -5742,6 +5836,26 @@ input, textarea, select, button {
 #app.dark-mode #tile-config-panel {
     background: #12122a;
     border-top-color: #252540;
+}
+
+#app.dark-mode #tile-config-header {
+    border-bottom-color: #252540;
+}
+
+#app.dark-mode .config-card {
+    background: #1a1a30;
+    border-color: #2a2a45;
+    box-shadow: none;
+}
+
+#app.dark-mode .config-card-label {
+    color: #a0b0d0;
+    border-bottom-color: #2a2a45;
+}
+
+#app.dark-mode .param-select-with-preview canvas {
+    border-color: #2a2a45;
+    background: #0d0d1c;
 }
 
 #app.dark-mode #tile-config-grabber {
