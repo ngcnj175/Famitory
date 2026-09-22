@@ -391,6 +391,10 @@ const AppProject = {
             App._likesCount = 0;
             App._hasLikedThisSession = false;
             App.isPlayOnlyMode = false;
+            // プレイヤーモードで開いた場合に備え、grayed-out状態を解除
+            document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
+                btn.classList.remove('locked');
+            });
 
             if (App.projectData.palette) {
                 App.nesPalette = App.projectData.palette;

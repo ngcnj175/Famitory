@@ -351,8 +351,8 @@ const App = {
 
     // プレイ専用モードのUI適用（ヘッダーはクリエイターと同じ配置、許可外はグレーアウト）
     applyPlayOnlyMode() {
-        // ファイルツールバー: NEW のみ有効、OPEN / SAVE / SHARE はグレーアウト
-        const lockedFileIds = ['load-icon-btn', 'save-icon-btn', 'share-icon-btn'];
+        // ファイルツールバー: NEW / OPEN は有効（自分の保存データにアクセス可）、SAVE / SHARE はグレーアウト
+        const lockedFileIds = ['save-icon-btn', 'share-icon-btn'];
         lockedFileIds.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) btn.classList.add('locked');
@@ -585,7 +585,7 @@ const App = {
         });
 
         // ファイルツールバーのグレーアウトボタンにもエディットキーモーダルを設定
-        ['load-icon-btn', 'save-icon-btn', 'share-icon-btn'].forEach(id => {
+        ['save-icon-btn', 'share-icon-btn'].forEach(id => {
             const btn = document.getElementById(id);
             if (!btn) return;
             // 既存のイベントの前にキャプチャフェーズで割り込み
