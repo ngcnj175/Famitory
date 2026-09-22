@@ -504,3 +504,4 @@
 | U517 | 読み込み中… | Loading… | HTML text | index.html | ✓ |
 | U470 | アニメーション | Animation | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
 | U471 | 設定 | Settings | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
+| U472 | 基本設定 | Basics | HTML text node (ゲーム設定 基本設定カード見出し) | index.html | ✓ |

@@ -325,29 +325,67 @@
                     <span data-i18n="U040">ゲーム設定</span>
                 </div>
                 <div id="stage-settings-content">
-                    <!-- ステージサイズ（縦横2行レイアウト） -->
-                    <div class="setting-row setting-row-size">
-                        <label data-i18n="U045">ステージサイズ</label>
-                        <div class="size-row">
-                            <span class="size-label" data-i18n="U046">縦</span>
-                            <button id="area-h-minus" class="size-btn">－</button>
-                            <span id="area-h-value">1</span>
-                            <button id="area-h-plus" class="size-btn">＋</button>
+                    <!-- 基本設定カード -->
+                    <div class="setting-row setting-row-vertical setting-group" id="basic-settings-group">
+                        <div class="setting-group-header" data-target="basic-settings-body">
+                            <span class="setting-group-toggle">▼</span>
+                            <span class="setting-group-label" data-i18n="U472">基本設定</span>
                         </div>
-                    </div>
-                    <div class="setting-row setting-row-size-sub">
-                        <label></label>
-                        <div class="size-row">
-                            <span class="size-label" data-i18n="U049">横</span>
-                            <button id="area-w-minus" class="size-btn">－</button>
-                            <span id="area-w-value">1</span>
-                            <button id="area-w-plus" class="size-btn">＋</button>
+                        <div class="setting-group-body" id="basic-settings-body">
+                            <!-- ステージサイズ（縦横2行レイアウト） -->
+                            <div class="setting-row setting-row-size">
+                                <label data-i18n="U045">ステージサイズ</label>
+                                <div class="size-row">
+                                    <span class="size-label" data-i18n="U046">縦</span>
+                                    <button id="area-h-minus" class="size-btn">－</button>
+                                    <span id="area-h-value">1</span>
+                                    <button id="area-h-plus" class="size-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="setting-row setting-row-size-sub">
+                                <label></label>
+                                <div class="size-row">
+                                    <span class="size-label" data-i18n="U049">横</span>
+                                    <button id="area-w-minus" class="size-btn">－</button>
+                                    <span id="area-w-value">1</span>
+                                    <button id="area-w-plus" class="size-btn">＋</button>
+                                </div>
+                            </div>
+                            <!-- 背景色 -->
+                            <div class="setting-row">
+                                <label data-i18n="U050">背景色</label>
+                                <div id="stage-bg-color" class="color-swatch"></div>
+                            </div>
+                            <!-- クリア条件 -->
+                            <div class="setting-row">
+                                <label data-i18n="U056">クリア条件</label>
+                                <select id="stage-clear-condition" class="setting-select">
+                                    <option value="none" data-i18n="U051">なし</option>
+                                    <option value="item" data-i18n="U057">アイテム取得</option>
+                                    <option value="enemies" data-i18n="U058" selected>敵ぜんめつ</option>
+                                    <option value="boss" data-i18n="U059">ボス撃破</option>
+                                    <option value="survival" data-i18n="U060">サバイバル</option>
+                                </select>
+                            </div>
+                            <!-- 制限時間 -->
+                            <div class="setting-row" id="time-limit-row">
+                                <label id="time-limit-label" data-i18n="U061">制限時間</label>
+                                <div class="time-control">
+                                    <input type="number" id="stage-time-min" min="0" max="99" value="0">
+                                    <span data-i18n="U062">分</span>
+                                    <input type="number" id="stage-time-sec" min="0" max="59" value="0">
+                                    <span data-i18n="U063">秒</span>
+                                </div>
+                            </div>
+                            <!-- スコア表示設定 -->
+                            <div class="setting-row">
+                                <label data-i18n="U064">スコア表示</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="stage-show-score" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <!-- 背景色 -->
-                    <div class="setting-row">
-                        <label data-i18n="U050">背景色</label>
-                        <div id="stage-bg-color" class="color-swatch"></div>
                     </div>
                     <!-- BGM設定（折りたたみ可・既定=開） -->
                     <div class="setting-row setting-row-vertical setting-group" id="bgm-settings-group">
@@ -464,35 +502,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- クリア条件 -->
-                    <div class="setting-row">
-                        <label data-i18n="U056">クリア条件</label>
-                        <select id="stage-clear-condition" class="setting-select">
-                            <option value="none" data-i18n="U051">なし</option>
-                            <option value="item" data-i18n="U057">アイテム取得</option>
-                            <option value="enemies" data-i18n="U058" selected>敵ぜんめつ</option>
-                            <option value="boss" data-i18n="U059">ボス撃破</option>
-                            <option value="survival" data-i18n="U060">サバイバル</option>
-                        </select>
-                    </div>
-                    <!-- 制限時間 -->
-                    <div class="setting-row" id="time-limit-row">
-                        <label id="time-limit-label" data-i18n="U061">制限時間</label>
-                        <div class="time-control">
-                            <input type="number" id="stage-time-min" min="0" max="99" value="0">
-                            <span data-i18n="U062">分</span>
-                            <input type="number" id="stage-time-sec" min="0" max="59" value="0">
-                            <span data-i18n="U063">秒</span>
-                        </div>
-                    </div>
-                    <!-- スコア表示設定 -->
-                    <div class="setting-row">
-                        <label data-i18n="U064">スコア表示</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="stage-show-score" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                     <!-- ARCADE 登録情報（折りたたみ可・既定=閉） -->
                     <div class="setting-row setting-row-vertical setting-group collapsed" id="arcade-settings-group">

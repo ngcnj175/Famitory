@@ -3450,14 +3450,35 @@ input, textarea, select, button {
     margin-bottom: 2px;
 }
 
-/* ========== 折りたたみ設定グループ（BGM/効果音） ========== */
+/* ========== 折りたたみ設定グループ（BGM/効果音/基本設定/ARCADE） カード表示 ========== */
+#stage-settings-content .setting-group {
+    background: #ffffff;
+    border: 1px solid #d5dae2;
+    border-radius: 8px;
+    padding: 6px 10px 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+#stage-settings-content .setting-group.collapsed {
+    padding-bottom: 6px;
+}
+
 .setting-group-header {
     display: flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
     user-select: none;
-    padding: 2px 0;
+    padding: 2px 0 6px;
+    border-bottom: 1px dashed #d5dae2;
+    margin-bottom: 6px;
+}
+
+#stage-settings-content .setting-group.collapsed .setting-group-header {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 2px;
 }
 
 .setting-group-toggle {
@@ -3471,8 +3492,9 @@ input, textarea, select, button {
 
 .setting-group-label {
     font-size: 13px;
-    font-weight: 600;
-    color: var(--color-dark);
+    font-weight: bold;
+    color: #3a4b6b;
+    letter-spacing: 0.02em;
 }
 
 .setting-group-body {
@@ -5799,6 +5821,20 @@ input, textarea, select, button {
 
 #app.dark-mode #stage-settings-panel.collapsed {
     box-shadow: none;
+}
+
+#app.dark-mode #stage-settings-content .setting-group {
+    background: #1a1a30;
+    border-color: #2a2a45;
+    box-shadow: none;
+}
+
+#app.dark-mode .setting-group-header {
+    border-bottom-color: #2a2a45;
+}
+
+#app.dark-mode .setting-group-label {
+    color: #a0b0d0;
 }
 
 #app.dark-mode #stage-settings-content {
