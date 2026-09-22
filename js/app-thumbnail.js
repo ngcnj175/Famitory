@@ -6,35 +6,32 @@
 
 const AppThumbnail = {
 
-    // ゲーム論理ピクセル基準（10タイル × 16px）でドット絵完全保持
+    // アップロード画像クロップ時の出力目標サイズ（論理ピクセル基準）
     SIZE: 160,
 
     // プレイ中のゲームキャンバスから取得した最新フレーム（dataURL）
     _lastFrame: null,
 
-    // GameEngine 側から定期的に呼ぶ想定。canvas 中央を 2:1 の整数比でダウンサンプルし
-    // 160x160（=10タイル×16px 論理ピクセル）で PNG dataURL 化する。
+    // GameEngine 側から呼ばれる。ゲームキャンバスは論理ピクセルの 2倍描画（TILE_SIZE=32,
+    // 論理=16）なので、canvas 全体を 2:1 の整数比で縮小して論理解像度の PNG dataURL 化する。
+    // 保存サイズは端末（viewTiles）に応じ可変（160〜200 前後）。見切れなしで完全ドット絵。
     captureFromCanvas(canvas) {
         if (!canvas) return;
         try {
+            const size = Math.min(canvas.width, canvas.height);
+            const outSize = Math.max(2, Math.floor(size / 2));
+            const srcSize = outSize * 2;
             const off = document.createElement('canvas');
-            off.width = this.SIZE;
-            off.height = this.SIZE;
+            off.width = outSize;
+            off.height = outSize;
             const ctx = off.getContext('2d');
             ctx.imageSmoothingEnabled = false;
-            // ゲームキャンバスは論理ピクセルの 2倍描画（TILE_SIZE=32, 論理=16）。
-            // 中央の SIZE*2 (=320) 領域を取り、2:1 の整数比で SIZE に落とす。
-            // 万一キャンバスが小さい場合は入りうる最大の偶数正方領域を採用する。
-            const srcMax = Math.min(canvas.width, canvas.height);
-            const desiredSrc = this.SIZE * 2;
-            const srcSize = srcMax >= desiredSrc
-                ? desiredSrc
-                : Math.max(2, Math.floor(srcMax / 2) * 2);
+            // canvas が正方なら crop=0、非正方でも中央正方領域を採用
             const sx = Math.floor((canvas.width - srcSize) / 2);
             const sy = Math.floor((canvas.height - srcSize) / 2);
             ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, this.SIZE, this.SIZE);
-            ctx.drawImage(canvas, sx, sy, srcSize, srcSize, 0, 0, this.SIZE, this.SIZE);
+            ctx.fillRect(0, 0, outSize, outSize);
+            ctx.drawImage(canvas, sx, sy, srcSize, srcSize, 0, 0, outSize, outSize);
             this._lastFrame = off.toDataURL('image/png');
         } catch (e) {
             console.warn('[AppThumbnail] captureFromCanvas failed:', e);
