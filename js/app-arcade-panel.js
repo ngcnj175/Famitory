@@ -52,7 +52,7 @@ const AppArcadePanel = {
     _crop: {
         img: null,        // 元画像 Image
         stageSize: 260,   // 表示ステージのサイズ（px、正方形）
-        outSize: 128,     // 出力サイズ
+        outSize: 160,     // 出力サイズ（AppThumbnail.SIZE と一致）
         minScale: 1,      // 最小スケール（cover fit）
         userScale: 1,     // ユーザーによる追加倍率 1〜4
         tx: 0,            // 画像左上の x オフセット (px)
