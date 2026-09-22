@@ -120,13 +120,14 @@ class StageSettings {
         }
 
         // 折りたたみグループ（BGM/効果音・サブカテゴリ）
+        // トグル記号は常に ▼ を保持し、collapsed 時は CSS で回転させる（サイズ変化防止）
         document.querySelectorAll('.setting-group-header, .se-subgroup-header').forEach(header => {
+            const toggle = header.querySelector('.setting-group-toggle, .se-subgroup-toggle');
+            if (toggle) toggle.textContent = '▼';
             header.addEventListener('click', () => {
                 const group = header.closest('.setting-group, .se-subgroup');
                 if (!group) return;
-                const collapsed = group.classList.toggle('collapsed');
-                const toggle = header.querySelector('.setting-group-toggle, .se-subgroup-toggle');
-                if (toggle) toggle.textContent = collapsed ? '▶' : '▼';
+                group.classList.toggle('collapsed');
             });
         });
 

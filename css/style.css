@@ -3473,6 +3473,8 @@ input, textarea, select, button {
     padding: 2px 0 6px;
     border-bottom: 1px dashed #d5dae2;
     margin-bottom: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #stage-settings-content .setting-group.collapsed .setting-group-header {
@@ -3482,12 +3484,20 @@ input, textarea, select, button {
 }
 
 .setting-group-toggle {
-    font-size: 10px;
+    font-size: 11px;
+    line-height: 1;
     color: var(--color-medium);
     width: 12px;
     display: inline-block;
     text-align: center;
     transition: transform 0.15s;
+    transform-origin: center;
+}
+
+/* 折りたたみ時は ▼ を左向きに回転（サイズ・字形は同一のまま） */
+.setting-group.collapsed > .setting-group-header .setting-group-toggle,
+.se-subgroup.collapsed > .se-subgroup-header .se-subgroup-toggle {
+    transform: rotate(-90deg);
 }
 
 .setting-group-label {
@@ -3495,6 +3505,31 @@ input, textarea, select, button {
     font-weight: bold;
     color: #3a4b6b;
     letter-spacing: 0.02em;
+}
+
+/* 小項目ラベルの色を統一（薄いグレーではなく本文と同じ濃色） */
+#stage-settings-content .bgm-label,
+#stage-settings-content .se-subgroup-label {
+    color: var(--text-dark);
+}
+
+/* サムネイル：プレビューの右にボタンを縦に並べる */
+.arcade-thumb-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.arcade-thumb-row .arcade-thumb-btns {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.arcade-thumb-row .arcade-thumb-btns .setting-save-btn {
+    width: 100%;
+    flex: 0 0 auto;
 }
 
 .setting-group-body {
@@ -3526,17 +3561,20 @@ input, textarea, select, button {
 }
 
 .se-subgroup-toggle {
-    font-size: 10px;
+    font-size: 11px;
+    line-height: 1;
     color: var(--color-medium);
     width: 12px;
     display: inline-block;
     text-align: center;
+    transition: transform 0.15s;
+    transform-origin: center;
 }
 
 .se-subgroup-label {
     font-size: 12px;
     font-weight: 600;
-    color: var(--color-medium);
+    color: var(--text-dark);
 }
 
 .se-subgroup-body {
