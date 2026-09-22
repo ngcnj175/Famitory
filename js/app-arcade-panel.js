@@ -304,7 +304,10 @@ const AppArcadePanel = {
             creator: meta.author || '',
             comment: arcade.comment || '',
             thumbnail: arcade.thumbnail || '',
-            remixOK: !!meta.remixOK
+            remixOK: !!meta.remixOK,
+            originalTitle: meta.originalTitle || '',
+            originalAuthor: meta.originalAuthor || '',
+            originalShareId: meta.originalShareId || ''
         };
     }
 };

@@ -7284,13 +7284,35 @@ body.dark-mode {
     word-break: break-word;
 }
 
-#arcade-detail-footer {
+#arcade-detail-remix-source {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
     width: 100%;
     max-width: 260px;
-    margin-top: 4px;
+    padding: 6px 10px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #6b7280;
+    box-sizing: border-box;
+}
+
+.arcade-detail-remix-label {
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.arcade-detail-remix-sep {
+    color: #d1d5db;
+}
+
+#arcade-detail-remix-title,
+#arcade-detail-remix-author {
+    color: #374151;
+    font-weight: 600;
 }
 
 #arcade-detail-likes {
@@ -7305,4 +7327,56 @@ body.dark-mode {
 #arcade-detail-likes img {
     width: 16px;
     height: 16px;
+}
+
+#arcade-detail-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 260px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.arcade-play-btn-large {
+    gap: 8px;
+    padding: 12px 36px;
+    font-size: 15px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.4);
+}
+
+.arcade-play-btn-large:hover {
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.5);
+    transform: translateY(-1px);
+}
+
+.arcade-detail-close-x {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arcade-detail-close-x:hover {
+    background: #f3f4f6;
+    color: #4b5563;
 }

@@ -975,19 +975,23 @@
                         </span>
                     </div>
                     <div id="arcade-detail-comment"></div>
-                    <div id="arcade-detail-footer">
-                        <span id="arcade-detail-likes">
-                            <img src="images/like_icon.svg" alt="like">
-                            <span id="arcade-detail-likes-count">0</span>
-                        </span>
-                        <button id="arcade-detail-play" class="arcade-play-btn" type="button">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            <span>Play</span>
-                        </button>
+                    <div id="arcade-detail-remix-source" class="hidden">
+                        <span class="arcade-detail-remix-label">Remix元:</span>
+                        <span id="arcade-detail-remix-title"></span>
+                        <span class="arcade-detail-remix-sep">/</span>
+                        <span id="arcade-detail-remix-author"></span>
                     </div>
-                </div>
-                <div class="modal-footer-simple">
-                    <button id="arcade-detail-close" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
+                    <div id="arcade-detail-likes">
+                        <img src="images/like_icon.svg" alt="like">
+                        <span id="arcade-detail-likes-count">0</span>
+                    </div>
+                    <div id="arcade-detail-actions">
+                        <button id="arcade-detail-play" class="arcade-play-btn arcade-play-btn-large" type="button">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <span>PLAY</span>
+                        </button>
+                        <button id="arcade-detail-close" class="arcade-detail-close-x" type="button" aria-label="Close">×</button>
+                    </div>
                 </div>
             </div>
         </div>

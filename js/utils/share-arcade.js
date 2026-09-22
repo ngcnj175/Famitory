@@ -10,7 +10,7 @@ const ShareArcade = {
     CACHE_TTL_MS: 5 * 60 * 1000,
 
     // ARCADE に登録（既存の games/{id} レコードに published と meta を追記）
-    // meta = { title, creator, comment, thumbnail, remixOK }
+    // meta = { title, creator, comment, thumbnail, remixOK, originalTitle, originalAuthor, originalShareId }
     async publish(id, meta) {
         if (!window.firebaseDB || !id) return false;
         try {
@@ -22,6 +22,9 @@ const ShareArcade = {
                     comment: meta.comment || '',
                     thumbnail: meta.thumbnail || '',
                     remixOK: !!meta.remixOK,
+                    originalTitle: meta.originalTitle || '',
+                    originalAuthor: meta.originalAuthor || '',
+                    originalShareId: meta.originalShareId || '',
                     updatedAt: Date.now()
                 }
             });
@@ -67,6 +70,9 @@ const ShareArcade = {
                     comment: rec.meta.comment || '',
                     thumbnail: rec.meta.thumbnail || '',
                     remixOK: !!rec.meta.remixOK,
+                    originalTitle: rec.meta.originalTitle || '',
+                    originalAuthor: rec.meta.originalAuthor || '',
+                    originalShareId: rec.meta.originalShareId || '',
                     likes: rec.likes || 0,
                     createdAt: rec.createdAt || 0,
                     updatedAt: rec.updatedAt || 0

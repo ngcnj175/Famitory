@@ -218,6 +218,21 @@ const AppArcade = {
         if (tag) tag.classList.toggle('hidden', !item.remixOK);
         if (comment) comment.textContent = item.comment || '';
         if (likesCount) likesCount.textContent = item.likes || 0;
+
+        // リミックス元情報（配置固定・元情報がない場合は非表示）
+        const remixSrc = document.getElementById('arcade-detail-remix-source');
+        const remixTitle = document.getElementById('arcade-detail-remix-title');
+        const remixAuthor = document.getElementById('arcade-detail-remix-author');
+        const hasRemixSource = !!(item.originalAuthor || item.originalTitle);
+        if (remixSrc) {
+            if (hasRemixSource) {
+                if (remixTitle) remixTitle.textContent = item.originalTitle || 'Unknown';
+                if (remixAuthor) remixAuthor.textContent = item.originalAuthor || '-';
+                remixSrc.classList.remove('hidden');
+            } else {
+                remixSrc.classList.add('hidden');
+            }
+        }
         modal.classList.remove('hidden');
     },
 
