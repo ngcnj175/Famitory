@@ -6834,8 +6834,8 @@ body.dark-mode {
 }
 
 #arcade-thumb-preview-wrap {
-    width: 320px;
-    height: 320px;
+    width: 160px;
+    height: 160px;
     max-width: 100%;
     aspect-ratio: 1 / 1;
     border: 1px solid #666;
@@ -7252,8 +7252,8 @@ body.dark-mode {
 }
 
 #arcade-detail-thumb {
-    width: 320px;
-    height: 320px;
+    width: 160px;
+    height: 160px;
     max-width: 100%;
     image-rendering: pixelated;
     background: #222;
