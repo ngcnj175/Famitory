@@ -123,6 +123,14 @@ const AppProject = {
         };
     },
 
+    // 共有URL読み込み時の初期プレースホルダ（ローカル自プロジェクトを露出させない）
+    loadPlaceholderProject() {
+        App.projectData = this.createDefaultProject();
+        App.projectData.meta.name = '';
+        App.projectData.meta.author = '';
+        App.projectData.meta.editKey = '';
+    },
+
     loadOrCreateProject() {
         const saved = Storage.load('currentProject');
         if (saved) {

@@ -65,8 +65,19 @@ const App = {
         }
 
         this.registerServiceWorker();
-        AppProject.loadOrCreateProject();
+
+        // 共有URL(?g= or #hash)か同期判定 — クリエイターUI/エディットキーの一瞬表示を防ぐ
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasSharedGame = !!urlParams.get('g') || !!window.location.hash.slice(1);
+        if (hasSharedGame) {
+            this.isPlayOnlyMode = true;
+            // ローカルの自プロジェクトを読み込まず、空プレースホルダで描画
+            AppProject.loadPlaceholderProject();
+        } else {
+            AppProject.loadOrCreateProject();
+        }
         this.initMenu();
+        if (hasSharedGame) this.applyPlayOnlyMode();
         AppProject.checkUrlData();
 
         // 各エディタ初期化
