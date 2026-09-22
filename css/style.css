@@ -131,14 +131,9 @@ input, textarea, select, button {
     background: var(--border-color);
 }
 
-/* グレーアウト（プレイヤーモードでロック中） */
+/* プレイヤーモードでロック中（見た目は通常、タップでエディットキー入力へ誘導） */
 .toolbar-icon.locked {
-    opacity: 0.3;
     pointer-events: auto;
-}
-
-.toolbar-icon.locked:active {
-    background: transparent;
 }
 
 /* ナビアイコン：常時ON表示、アクティブは背景ハイライトで示す */
@@ -6162,13 +6157,21 @@ input, textarea, select, button {
     background: #252540;
 }
 
-/* --- PLAYアイコン内の十字・丸の色制御 --- */
+/* --- PLAYアイコン内の十字・丸の色制御（アクティブ時は反転色に合わせる） --- */
 .play-icon-detail {
     fill: white;
 }
 
+.nav-icon.active-nav .play-icon-detail {
+    fill: var(--color-dark);
+}
+
 #app.dark-mode .play-icon-detail {
     fill: #0c0c16;
+}
+
+#app.dark-mode .nav-icon.active-nav .play-icon-detail {
+    fill: #8aa0c0;
 }
 
 /* --- ARCADEアイコン内のラベル穴の色制御 --- */
@@ -6176,8 +6179,16 @@ input, textarea, select, button {
     fill: white;
 }
 
+.nav-icon.active-nav .arcade-icon-detail {
+    fill: var(--color-dark);
+}
+
 #app.dark-mode .arcade-icon-detail {
     fill: #0c0c16;
+}
+
+#app.dark-mode .nav-icon.active-nav .arcade-icon-detail {
+    fill: #8aa0c0;
 }
 
 /* --- STAGE画面: BGM選択ボタン・制限時間入力・設定selectのダークモード --- */
