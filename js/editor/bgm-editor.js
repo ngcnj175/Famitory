@@ -570,17 +570,26 @@ const SoundEditor = {
         if (!container) return;
 
         container.innerHTML = '';
-        // 楽器名のみ表示（TR1～4は削除）
-        const trackLabels = ['SQUARE1', 'SQUARE2', 'TRIANGLE', 'NOISE'];
+        // 波形シンボル（SQUARE1: 50%デューティ, SQUARE2: 25%デューティ, TRIANGLE, NOISE）
+        const trackIcons = [
+            // SQUARE1 - 矩形波 50%デューティ
+            `<svg class="track-icon" viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15 H10 V5 H20 V15 H28 V5 H38"/></svg>`,
+            // SQUARE2 - 矩形波 25%デューティ（山が細い）
+            `<svg class="track-icon" viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15 H8 V5 H14 V15 H26 V5 H32 V15 H38"/></svg>`,
+            // TRIANGLE - 三角波
+            `<svg class="track-icon" viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15 L11 5 L20 15 L29 5 L38 15"/></svg>`,
+            // NOISE - ノイズ（不揃いの縦バー）
+            `<svg class="track-icon" viewBox="0 0 40 20" fill="currentColor"><rect x="3" y="7" width="2" height="6" rx="1"/><rect x="8" y="4" width="2" height="12" rx="1"/><rect x="13" y="9" width="2" height="2" rx="1"/><rect x="18" y="2" width="2" height="16" rx="1"/><rect x="23" y="8" width="2" height="4" rx="1"/><rect x="28" y="5" width="2" height="10" rx="1"/><rect x="33" y="7" width="2" height="6" rx="1"/></svg>`
+        ];
 
-        trackLabels.forEach((label, idx) => {
+        trackIcons.forEach((iconSvg, idx) => {
             const div = document.createElement('div');
             div.className = 'channel-strip-track' + (idx === this.currentTrack ? ' active' : '');
             div.dataset.track = idx;
 
             div.innerHTML = `
                 <div class="track-info">
-                    <span class="track-name">${label}</span>
+                    <span class="track-name">${iconSvg}</span>
                 </div>
                 <div class="track-knobs">
                     <div class="knob-wrap">
