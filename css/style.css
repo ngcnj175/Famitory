@@ -6875,6 +6875,16 @@ body.dark-mode {
     min-height: 60px;
     font-size: 12px;
     padding: 4px 6px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+#arcade-comment-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
 }
 
 /* ========== ARCADE 画面 ========== */
