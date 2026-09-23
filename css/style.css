@@ -4246,10 +4246,10 @@ input, textarea, select, button {
 }
 
 .title-lcd {
-    width: 130px;
+    width: 100px;
     overflow: hidden;
     white-space: nowrap;
-    text-align: center;
+    text-align: left;
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
@@ -4258,7 +4258,7 @@ input, textarea, select, button {
     border-radius: 4px;
     padding: 6px 10px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
