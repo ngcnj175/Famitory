@@ -147,9 +147,7 @@ const AppArcade = {
         title.textContent = item.title || 'NO TITLE';
         body.appendChild(title);
 
-        const metaRow = document.createElement('div');
-        metaRow.className = 'arcade-card-metarow';
-        const creator = document.createElement('span');
+        const creator = document.createElement('div');
         creator.className = 'arcade-card-creator';
         creator.textContent = item.creator ? 'by ' + item.creator : '-';
         if (item.creator) {
@@ -159,8 +157,7 @@ const AppArcade = {
                 this.setCreatorFilter(item.creator);
             });
         }
-        metaRow.appendChild(creator);
-        body.appendChild(metaRow);
+        body.appendChild(creator);
 
         const likes = document.createElement('div');
         likes.className = 'arcade-card-likes';

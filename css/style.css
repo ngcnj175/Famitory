@@ -7060,17 +7060,11 @@ body.dark-mode {
     text-overflow: ellipsis;
 }
 
-.arcade-card-metarow {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 16px;
-}
-
 .arcade-card-creator {
     font-size: 11px;
     color: #6b7280;
     line-height: 1.2;
+    min-height: 16px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
