@@ -4357,7 +4357,7 @@ input, textarea, select, button {
 }
 
 #bar-display.value-lcd {
-    width: 7ch;
+    width: 5.5ch;
 }
 
 .value-lcd:active {
