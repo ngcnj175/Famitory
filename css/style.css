@@ -7080,11 +7080,12 @@ body.dark-mode {
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    background: #12b76a;
-    color: #fff;
+    background: transparent;
+    color: #12b76a;
+    border: 1px solid #12b76a;
     font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
+    font-weight: 500;
+    padding: 1px 7px;
     border-radius: 999px;
     line-height: 1.2;
     flex: 0 0 auto;
