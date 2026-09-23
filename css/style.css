@@ -4247,6 +4247,8 @@ input, textarea, select, button {
 
 .title-lcd {
     width: 120px;
+    height: 32px;
+    box-sizing: border-box;
     overflow: hidden;
     white-space: nowrap;
     text-align: left;
@@ -4256,7 +4258,7 @@ input, textarea, select, button {
     color: var(--text-dark);
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
-    padding: 6px 10px;
+    padding: 0 10px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -4281,8 +4283,9 @@ input, textarea, select, button {
 }
 
 .console-nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
     background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 6px;
