@@ -4347,6 +4347,7 @@ input, textarea, select, button {
     text-align: center;
     font-size: 12px;
     font-weight: 600;
+    letter-spacing: -1px;
     color: var(--text-dark);
     cursor: pointer;
     background: rgba(0, 0, 0, 0.05);
