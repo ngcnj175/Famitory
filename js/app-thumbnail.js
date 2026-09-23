@@ -41,9 +41,5 @@ const AppThumbnail = {
 
     hasLastFrame() {
         return !!this._lastFrame;
-    },
-
-    clearLastFrame() {
-        this._lastFrame = null;
     }
 };

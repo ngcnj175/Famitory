@@ -3517,16 +3517,47 @@ input, textarea, select, button {
     gap: 10px;
 }
 
-.arcade-thumb-row .arcade-thumb-btns {
+#arcade-thumb-preview-wrap {
+    width: 160px;
+    height: 160px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #666;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+    image-rendering: pixelated;
+}
+
+#arcade-thumb-preview {
+    width: 100%;
+    height: 100%;
+    display: none;
+    image-rendering: pixelated;
+}
+
+#arcade-thumb-placeholder {
+    color: #888;
+    font-size: 11px;
+    text-align: center;
+}
+
+.arcade-thumb-btns {
+    display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
     flex: 1;
+    gap: 6px;
     min-width: 0;
 }
 
-.arcade-thumb-row .arcade-thumb-btns .setting-save-btn {
+.arcade-thumb-btns .setting-save-btn {
     width: 100%;
-    flex: 0 0 auto;
+    font-size: 13px;
+    padding: 10px 12px;
+    min-width: 0;
+    white-space: nowrap;
 }
 
 .setting-group-body {
@@ -6844,47 +6875,6 @@ body.dark-mode {
     min-height: 60px;
     font-size: 12px;
     padding: 4px 6px;
-}
-
-#arcade-thumb-preview-wrap {
-    width: 160px;
-    height: 160px;
-    max-width: 100%;
-    aspect-ratio: 1 / 1;
-    border: 1px solid #666;
-    background: #222;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 4px 0;
-    image-rendering: pixelated;
-}
-
-#arcade-thumb-preview {
-    width: 100%;
-    height: 100%;
-    display: none;
-    image-rendering: pixelated;
-}
-
-#arcade-thumb-placeholder {
-    color: #888;
-    font-size: 11px;
-    text-align: center;
-}
-
-.arcade-thumb-btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.arcade-thumb-btns .setting-save-btn {
-    flex: 1 1 auto;
-    font-size: 13px;
-    padding: 10px 12px;
-    min-width: 0;
-    white-space: nowrap;
 }
 
 /* ========== ARCADE 画面 ========== */
