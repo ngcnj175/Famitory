@@ -138,7 +138,7 @@ const AppArcade = {
         }
         card.appendChild(thumbWrap);
 
-        // 中央: タイトル / クリエイタ+RemixOK / コメント / いいね
+        // 中央: タイトル / クリエイタ / いいね+RemixOK / コメント
         const body = document.createElement('div');
         body.className = 'arcade-card-body';
 
@@ -162,11 +162,6 @@ const AppArcade = {
         metaRow.appendChild(creator);
         body.appendChild(metaRow);
 
-        const comment = document.createElement('div');
-        comment.className = 'arcade-card-comment';
-        comment.textContent = item.comment || ' ';
-        body.appendChild(comment);
-
         const likes = document.createElement('div');
         likes.className = 'arcade-card-likes';
         likes.innerHTML = '<img src="images/like_icon.svg" alt="like"><span>' + (item.likes || 0) + '</span>';
@@ -178,13 +173,18 @@ const AppArcade = {
         }
         body.appendChild(likes);
 
+        const comment = document.createElement('div');
+        comment.className = 'arcade-card-comment';
+        comment.textContent = item.comment || ' ';
+        body.appendChild(comment);
+
         card.appendChild(body);
 
         // 右: PLAYボタン（丸ピル）
         const playBtn = document.createElement('button');
         playBtn.className = 'arcade-card-play arcade-play-btn';
         playBtn.type = 'button';
-        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>Play</span>';
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>PLAY</span>';
         playBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.openGame(item);

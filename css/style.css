@@ -6884,6 +6884,7 @@ body.dark-mode {
     -webkit-overflow-scrolling: touch;
     width: 100%;
     max-width: none;
+    background: #eef1f5;
 }
 
 #arcade-container {
@@ -7126,7 +7127,7 @@ body.dark-mode {
     color: #fff;
     border: none;
     border-radius: 999px;
-    padding: 6px 14px;
+    padding: 12px 14px;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
