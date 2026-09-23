@@ -7252,7 +7252,8 @@ body.dark-mode {
 
 /* ========== ARCADE 詳細モーダル ========== */
 #arcade-detail-modal .modal-content {
-    width: auto;
+    position: relative;
+    width: 300px;
     max-width: 90vw;
 }
 
@@ -7346,7 +7347,6 @@ body.dark-mode {
 }
 
 #arcade-detail-actions {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7373,10 +7373,8 @@ body.dark-mode {
 
 .arcade-detail-close-x {
     position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 6px;
+    right: 8px;
+    top: 8px;
     width: 32px;
     height: 32px;
     padding: 0;
@@ -7390,6 +7388,7 @@ body.dark-mode {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .arcade-detail-close-x:hover {
