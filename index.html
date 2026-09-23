@@ -524,11 +524,9 @@
                                     </div>
                                     <div class="arcade-thumb-btns">
                                         <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
-                                        <button id="arcade-thumb-upload-btn" class="setting-save-btn" type="button" data-i18n="U505">画像アップロード</button>
                                         <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
                                     </div>
                                 </div>
-                                <input type="file" id="arcade-thumb-file-input" accept="image/*" style="display:none">
                             </div>
                         </div>
                     </div>
@@ -721,29 +719,6 @@
         </div>
 
         <!-- 数値コピー＆ペースト ポップアップ -->
-        <!-- ARCADE サムネイル トリミングモーダル -->
-        <div id="arcade-crop-popup" class="popup-overlay hidden">
-            <div class="popup-content arcade-crop-content">
-                <div class="popup-header">
-                    <span class="popup-title" data-i18n="U524">画像をトリミング</span>
-                    <button id="arcade-crop-cancel" class="popup-close">✕</button>
-                </div>
-                <div class="popup-body arcade-crop-body">
-                    <div class="arcade-crop-stage" id="arcade-crop-stage">
-                        <img id="arcade-crop-image" alt="" draggable="false">
-                    </div>
-                    <div class="arcade-crop-controls">
-                        <span class="arcade-crop-zoom-label">−</span>
-                        <input type="range" id="arcade-crop-zoom" min="100" max="400" value="100" step="1">
-                        <span class="arcade-crop-zoom-label">＋</span>
-                    </div>
-                    <div class="arcade-crop-actions">
-                        <button id="arcade-crop-confirm" class="setting-save-btn" data-i18n="U120">決定</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="numcopy-popup" class="popup-overlay hidden">
             <div class="popup-content song-name-content">
                 <div class="popup-header">

@@ -489,7 +489,6 @@
 | U502 | サムネイル | Thumbnail | HTML text node (label) | index.html | ✓ |
 | U503 | サムネイル未設定 | No thumbnail | HTML text node | index.html | ✓ |
 | U504 | プレイ画面から取得 | Capture from Play | HTML button label | index.html | ✓ |
-| U505 | 画像アップロード | Upload Image | HTML button label | index.html | ✓ |
 | U506 | クリア | Clear | HTML button label | index.html | ✓ |
 | U507 | まずゲームを一度プレイしてください | Please play the game once first | JS toast | app-arcade-panel.js | ✓ |
 | U508 | ARCADEに登録しない | Do not register to ARCADE | HTML checkbox label | index.html | ✓ |
@@ -505,4 +504,3 @@
 | U470 | アニメーション | Animation | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
 | U471 | 設定 | Settings | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
 | U472 | 基本設定 | Basics | HTML text node (ゲーム設定 基本設定カード見出し) | index.html | ✓ |
-| U524 | 画像をトリミング | Crop Image | HTML text node (サムネイル トリミングモーダル見出し) | index.html | ✓ |

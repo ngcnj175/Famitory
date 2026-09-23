@@ -1,13 +1,9 @@
 /**
  * PixelGameKit - サムネイル生成
- * ゲーム画面の自動キャプチャキャッシュと、画像アップロード時のトリミング処理を提供。
- * 出力は 128x128 PNG の dataURL。
+ * ゲーム画面の自動キャプチャキャッシュを提供。
  */
 
 const AppThumbnail = {
-
-    // アップロード画像クロップ時の出力目標サイズ（論理ピクセル基準）
-    SIZE: 160,
 
     // プレイ中のゲームキャンバスから取得した最新フレーム（dataURL）
     _lastFrame: null,
@@ -49,39 +45,5 @@ const AppThumbnail = {
 
     clearLastFrame() {
         this._lastFrame = null;
-    },
-
-    // ファイル(File)からトリミング用の Image を読み込み
-    loadImageFromFile(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    },
-
-    // 画像を正方形中央トリミングして 128x128 PNG dataURL 化
-    cropCenterSquare(img) {
-        try {
-            const size = Math.min(img.width, img.height);
-            const sx = (img.width - size) / 2;
-            const sy = (img.height - size) / 2;
-            const off = document.createElement('canvas');
-            off.width = this.SIZE;
-            off.height = this.SIZE;
-            const ctx = off.getContext('2d');
-            ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(img, sx, sy, size, size, 0, 0, this.SIZE, this.SIZE);
-            return off.toDataURL('image/png');
-        } catch (e) {
-            console.warn('[AppThumbnail] cropCenterSquare failed:', e);
-            return null;
-        }
     }
 };
