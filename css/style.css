@@ -4345,13 +4345,13 @@ input, textarea, select, button {
     width: 3ch;
     box-sizing: content-box;
     text-align: center;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-dark);
     cursor: pointer;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
-    padding: 4px 6px;
+    padding: 2px 4px;
 }
 
 .value-lcd:active {
