@@ -2556,7 +2556,7 @@ input, textarea, select, button {
 
 #piano-keyboard {
     display: flex;
-    height: 100px;
+    height: 80px;
     position: relative;
     min-width: max-content;
 }
@@ -2568,7 +2568,7 @@ input, textarea, select, button {
 
 .piano-key.white {
     width: 40px;
-    height: 100px;
+    height: 80px;
     background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
     border: 1px solid #666;
     border-radius: 0 0 6px 6px;
@@ -2577,7 +2577,7 @@ input, textarea, select, button {
 
 .piano-key.black {
     width: 24px;
-    height: 60px;
+    height: 40px;
     background: linear-gradient(180deg, #333 0%, #000 100%);
     border: 1px solid #000;
     border-radius: 0 0 4px 4px;
@@ -4125,7 +4125,7 @@ input, textarea, select, button {
 
 /* --- 1. Console Header (繧ｽ繝ｳ繧ｰ蛻ｶ蠕｡繝倥ャ繝繝ｼ) --- */
 #bgm-console-header {
-    height: 40px;
+    height: 60px;
     background: #f5f5f5;
     border-bottom: none;
     display: flex;
