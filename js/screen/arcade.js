@@ -151,7 +151,7 @@ const AppArcade = {
         metaRow.className = 'arcade-card-metarow';
         const creator = document.createElement('span');
         creator.className = 'arcade-card-creator';
-        creator.textContent = item.creator || '-';
+        creator.textContent = item.creator ? 'by ' + item.creator : '-';
         if (item.creator) {
             creator.classList.add('clickable');
             creator.addEventListener('click', (e) => {
@@ -214,7 +214,7 @@ const AppArcade = {
             }
         }
         if (title) title.textContent = item.title || '';
-        if (creator) creator.textContent = item.creator || '';
+        if (creator) creator.textContent = item.creator ? 'by ' + item.creator : '';
         if (tag) tag.classList.toggle('hidden', !item.remixOK);
         if (comment) comment.textContent = item.comment || '';
         if (likesCount) likesCount.textContent = item.likes || 0;
