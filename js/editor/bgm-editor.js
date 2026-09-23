@@ -154,15 +154,25 @@ const SoundEditor = {
             this.deleteSong();
         });
 
-        // 前へ
-        document.getElementById('song-prev-btn')?.addEventListener('click', () => {
-            this.selectSong(this.songManager.getPrevIdx());
-        });
-
-        // 次へ
-        document.getElementById('song-next-btn')?.addEventListener('click', () => {
-            this.selectSong(this.songManager.getNextIdx());
-        });
+        // 曲選択ドロップダウン
+        const selectBtn = document.getElementById('song-select-btn');
+        const dropdown = document.getElementById('song-select-dropdown');
+        if (selectBtn && dropdown) {
+            selectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (dropdown.classList.contains('hidden')) {
+                    this.renderSongDropdown();
+                    dropdown.classList.remove('hidden');
+                } else {
+                    dropdown.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== selectBtn) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
 
         // 数値入力モーダル初期化
         const numModal = document.getElementById('number-input-modal');
@@ -484,6 +494,25 @@ const SoundEditor = {
         }
         if (bpmEl) bpmEl.textContent = song.bpm;
         if (barEl) barEl.textContent = song.bars;
+    },
+
+    renderSongDropdown() {
+        const dropdown = document.getElementById('song-select-dropdown');
+        if (!dropdown) return;
+        const songs = this.songManager.songs || [];
+        const currentIdx = this.songManager.currentIdx;
+        dropdown.innerHTML = '';
+        songs.forEach((song, idx) => {
+            const item = document.createElement('div');
+            item.className = 'song-select-item' + (idx === currentIdx ? ' active' : '');
+            item.textContent = song.name;
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.selectSong(idx);
+                dropdown.classList.add('hidden');
+            });
+            dropdown.appendChild(item);
+        });
     },
 
     // ========== ソング名変更モーダル ==========

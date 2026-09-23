@@ -4126,13 +4126,92 @@ input, textarea, select, button {
 /* --- 1. Console Header (繧ｽ繝ｳ繧ｰ蛻ｶ蠕｡繝倥ャ繝繝ｼ) --- */
 #bgm-console-header {
     height: 40px;
-    background: var(--bg-device);
+    background: #f5f5f5;
     border-bottom: none;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     padding: 0 12px;
     flex-shrink: 0;
+}
+
+.console-lcd-group.left {
+    gap: 10px;
+}
+
+/* タイトル欄＋曲選択マーク */
+.song-title-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 0 2px 0 0;
+}
+
+.song-title-wrap .title-lcd {
+    background: transparent;
+    padding: 4px 4px 4px 8px;
+}
+
+.song-select-btn {
+    width: 20px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+.song-select-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.song-select-btn:active {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+}
+
+.song-select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    padding: 4px 0;
+}
+
+.song-select-dropdown.hidden {
+    display: none;
+}
+
+.song-select-item {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text-dark);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.song-select-item:hover,
+.song-select-item:active {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.song-select-item.active {
+    background: rgba(0, 0, 0, 0.12);
+    font-weight: 600;
 }
 
 .console-spacer {
@@ -4213,10 +4292,14 @@ input, textarea, select, button {
     background: var(--border-color);
 }
 
-/* ソング追加・削除ボタン（文字大きめ・サイズは元のまま） */
+/* ソング追加・削除ボタン */
 .song-action-btn {
     font-size: 20px;
     font-weight: 300;
+}
+
+.song-action-btn svg {
+    display: block;
 }
 
 
@@ -6008,7 +6091,26 @@ input, textarea, select, button {
 
 /* BGMコンソールヘッダー */
 #app.dark-mode #bgm-console-header {
-    background: #0c0c16;
+    background: #12122a;
+}
+
+#app.dark-mode .song-select-dropdown {
+    background: #1a1a2e;
+    border-color: #252535;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#app.dark-mode .song-select-item {
+    color: #a0a8c0;
+}
+
+#app.dark-mode .song-select-item:hover,
+#app.dark-mode .song-select-item:active {
+    background: #252545;
+}
+
+#app.dark-mode .song-select-item.active {
+    background: #2a2a45;
 }
 
 #app.dark-mode .console-lcd {

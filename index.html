@@ -768,12 +768,20 @@
 
             <!-- 1. ヘッダー：ソング制御盤 -->
             <div id="bgm-console-header">
-                <div class="console-lcd-group right">
-                    <button id="song-delete-btn" class="console-nav-btn song-action-btn" title="BGM削除">-</button>
-                    <button id="song-prev-btn" class="console-nav-btn">〈</button>
-                    <div id="song-title-display" class="console-lcd title-lcd" title="タップで名前変更"><span>BGM 1</span></div>
-                    <button id="song-next-btn" class="console-nav-btn">〉</button>
-                    <button id="song-add-btn" class="console-nav-btn song-action-btn" title="BGM追加">+</button>
+                <div class="console-lcd-group left">
+                    <div id="song-title-wrap" class="song-title-wrap">
+                        <div id="song-title-display" class="console-lcd title-lcd" title="タップで名前変更"><span>BGM 1</span></div>
+                        <button id="song-select-btn" class="song-select-btn" title="曲を選択">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div id="song-select-dropdown" class="song-select-dropdown hidden"></div>
+                    </div>
+                    <button id="song-add-btn" class="console-nav-btn song-action-btn" title="BGM追加">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    </button>
+                    <button id="song-delete-btn" class="console-nav-btn song-action-btn" title="BGM削除">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
 
                     <div class="console-param">
                         <span class="label">SPEED</span>
