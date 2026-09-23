@@ -4163,8 +4163,8 @@ input, textarea, select, button {
 }
 
 .song-select-btn {
-    width: 20px;
-    height: 24px;
+    width: 26px;
+    height: 30px;
     background: transparent;
     border: none;
     padding: 0;
@@ -4176,8 +4176,8 @@ input, textarea, select, button {
 }
 
 .song-select-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
 }
 
 .song-select-btn:active {
@@ -4246,17 +4246,17 @@ input, textarea, select, button {
 }
 
 .title-lcd {
-    width: 100px;
+    width: 130px;
     overflow: hidden;
     white-space: nowrap;
     text-align: center;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 16px;
     cursor: pointer;
     color: var(--text-dark);
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -4281,13 +4281,13 @@ input, textarea, select, button {
 }
 
 .console-nav-btn {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     color: var(--color-dark);
-    font-size: 12px;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4342,15 +4342,15 @@ input, textarea, select, button {
 }
 
 .value-lcd {
-    min-width: 28px;
+    min-width: 36px;
     text-align: center;
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-dark);
     cursor: pointer;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
-    padding: 2px 4px;
+    padding: 4px 6px;
 }
 
 .value-lcd:active {
