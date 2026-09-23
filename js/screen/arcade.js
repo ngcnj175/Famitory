@@ -216,7 +216,10 @@ const AppArcade = {
         if (title) title.textContent = item.title || '';
         if (creator) creator.textContent = item.creator ? 'by ' + item.creator : '';
         if (tag) tag.classList.toggle('hidden', !item.remixOK);
-        if (comment) comment.textContent = item.comment || '';
+        if (comment) {
+            comment.textContent = item.comment || '';
+            comment.classList.toggle('hidden', !item.comment);
+        }
         if (likesCount) likesCount.textContent = item.likes || 0;
 
         // リミックス元情報（配置固定・元情報がない場合は非表示）

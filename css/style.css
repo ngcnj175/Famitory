@@ -7174,12 +7174,10 @@ body.dark-mode {
     margin-top: 4px;
 }
 
-#arcade-detail-metarow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+#arcade-detail-creator {
     font-size: 12px;
     color: #6b7280;
+    text-align: center;
 }
 
 #arcade-detail-comment {
