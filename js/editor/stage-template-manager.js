@@ -160,8 +160,13 @@ class StageTemplateManager {
                     this.owner.editingIndex = index;
                     this.owner.openConfigPanel();
                 } else {
-                    // 未選択タイル → 選択のみ
+                    // 未選択タイル → 選択、パネル表示中なら内容も同期
                     this.owner.selectedTemplate = index;
+                    if (this.owner.isConfigOpen) {
+                        this.owner.editingTemplate = { ...template, sprites: { ...template.sprites } };
+                        this.owner.editingIndex = index;
+                        this.owner.openConfigPanel();
+                    }
                     this.owner.initTemplateList();
                 }
             };
