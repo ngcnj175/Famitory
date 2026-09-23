@@ -4144,9 +4144,17 @@ input, textarea, select, button {
     position: relative;
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.05);
+    background: #ffffff;
     border-radius: 4px;
     padding: 0 2px 0 0;
+}
+
+#bgm-console-header .console-nav-btn {
+    background: #ffffff;
+}
+
+#bgm-console-header .value-lcd {
+    background: #ffffff;
 }
 
 .song-title-wrap .title-lcd {
@@ -6092,6 +6100,18 @@ input, textarea, select, button {
 /* BGMコンソールヘッダー */
 #app.dark-mode #bgm-console-header {
     background: #12122a;
+}
+
+#app.dark-mode .song-title-wrap {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#app.dark-mode #bgm-console-header .console-nav-btn {
+    background: transparent;
+}
+
+#app.dark-mode #bgm-console-header .value-lcd {
+    background: rgba(255, 255, 255, 0.04);
 }
 
 #app.dark-mode .song-select-dropdown {
