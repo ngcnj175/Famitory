@@ -4342,7 +4342,8 @@ input, textarea, select, button {
 }
 
 .value-lcd {
-    min-width: 36px;
+    width: 3ch;
+    box-sizing: content-box;
     text-align: center;
     font-size: 15px;
     font-weight: 600;
