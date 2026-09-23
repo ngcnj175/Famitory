@@ -493,7 +493,14 @@ const SoundEditor = {
             }
         }
         if (bpmEl) bpmEl.textContent = song.bpm;
-        if (barEl) barEl.textContent = song.bars;
+        this.updateStepDisplay();
+    },
+
+    updateStepDisplay() {
+        const song = this.getCurrentSong();
+        if (!song) return;
+        const barEl = document.getElementById('bar-display');
+        if (barEl) barEl.textContent = `${(this.currentStep || 0) + 1}/${song.bars}`;
     },
 
     renderSongDropdown() {
@@ -2201,6 +2208,7 @@ const SoundEditor = {
     // ========== レンダリング ==========
     render() {
         if (!this.renderer) return;
+        this.updateStepDisplay();
         this.renderer.render({
             song:           this.getCurrentSong(),
             trackIndex:     this.currentTrack,

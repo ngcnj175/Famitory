@@ -4348,11 +4348,16 @@ input, textarea, select, button {
     font-size: 12px;
     font-weight: 600;
     letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
     color: var(--text-dark);
     cursor: pointer;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
     padding: 2px 4px;
+}
+
+#bar-display.value-lcd {
+    width: 7ch;
 }
 
 .value-lcd:active {
