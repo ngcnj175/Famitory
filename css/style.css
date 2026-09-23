@@ -4159,7 +4159,6 @@ input, textarea, select, button {
 
 .song-title-wrap .title-lcd {
     background: transparent;
-    padding: 4px 4px 4px 8px;
 }
 
 .song-select-btn {
@@ -4222,19 +4221,10 @@ input, textarea, select, button {
     font-weight: 600;
 }
 
-.console-spacer {
-    width: 16px;
-    flex-shrink: 0;
-}
-
 .console-lcd-group {
     display: flex;
     align-items: center;
     gap: 6px;
-}
-
-.console-lcd-group.right {
-    gap: 10px;
 }
 
 .console-lcd {
@@ -4315,20 +4305,6 @@ input, textarea, select, button {
 
 
 
-
-.console-menu-btn {
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--color-dark);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
 
 .console-param {
     display: flex;
@@ -4575,10 +4551,6 @@ input, textarea, select, button {
     background: var(--bg-screen);
 }
 
-.channel-strip-track.active .track-num,
-.channel-strip-track.active .track-type {
-    color: var(--text-light);
-}
 
 .track-info {
     display: flex;
@@ -4589,11 +4561,6 @@ input, textarea, select, button {
 }
 
 .track-name {
-    font-size: 9px;
-    color: var(--color-medium);
-    /* VOL/PAN縺ｨ蜷後§濶ｲ */
-    font-weight: 600;
-    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -570,7 +570,7 @@ const SoundEditor = {
         if (!container) return;
 
         container.innerHTML = '';
-        // 波形シンボル（SQUARE1: 50%デューティ, SQUARE2: 25%デューティ, TRIANGLE, NOISE）
+        // 波形シンボル（SQUARE×2, TRIANGLE, NOISE）
         const trackIcons = [
             // SQUARE1 - 矩形波（均等間隔の2パルス）
             `<svg class="track-icon" viewBox="0 0 37 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 15 H8 V5 H15 V15 H22 V5 H29 V15 H36"/></svg>`,
