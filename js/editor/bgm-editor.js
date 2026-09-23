@@ -578,8 +578,8 @@ const SoundEditor = {
             `<svg class="track-icon" viewBox="0 0 37 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 15 H8 V5 H15 V15 H22 V5 H29 V15 H36"/></svg>`,
             // TRIANGLE - 三角波
             `<svg class="track-icon" viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15 L11 5 L20 15 L29 5 L38 15"/></svg>`,
-            // NOISE - ノイズ（不揃いの縦バー）
-            `<svg class="track-icon" viewBox="0 0 40 20" fill="currentColor"><rect x="3" y="7" width="2" height="6" rx="1"/><rect x="8" y="4" width="2" height="12" rx="1"/><rect x="13" y="9" width="2" height="2" rx="1"/><rect x="18" y="2" width="2" height="16" rx="1"/><rect x="23" y="8" width="2" height="4" rx="1"/><rect x="28" y="5" width="2" height="10" rx="1"/><rect x="33" y="7" width="2" height="6" rx="1"/></svg>`
+            // NOISE - ノイズ（左右対称の縦バー）
+            `<svg class="track-icon" viewBox="0 0 40 20" fill="currentColor"><rect x="1" y="7" width="2" height="6" rx="1"/><rect x="7" y="4" width="2" height="12" rx="1"/><rect x="13" y="6" width="2" height="8" rx="1"/><rect x="19" y="2" width="2" height="16" rx="1"/><rect x="25" y="6" width="2" height="8" rx="1"/><rect x="31" y="4" width="2" height="12" rx="1"/><rect x="37" y="7" width="2" height="6" rx="1"/></svg>`
         ];
 
         trackIcons.forEach((iconSvg, idx) => {
