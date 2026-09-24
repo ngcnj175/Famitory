@@ -2207,7 +2207,7 @@ const SoundEditor = {
 
         if (state === 'play') {
             // 停止アイコン（■）
-            svg.innerHTML = '<rect x="6" y="6" width="12" height="12" />';
+            svg.innerHTML = '<rect x="7" y="7" width="10" height="10" rx="1.5" />';
         } else {
             // 再生アイコン（▶）
             svg.innerHTML = '<path d="M8 5v14l11-7z" />';

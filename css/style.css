@@ -4431,11 +4431,18 @@ input, textarea, select, button {
     background: var(--bg-device);
 }
 
+.sound-bottom-divider {
+    width: 1px;
+    height: 28px;
+    background: #b0b0b0;
+    margin: 0 4px;
+}
+
 .sound-bottom-btn {
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 34px;
     border: none;
-    border-radius: 50%;
+    border-radius: 8px;
     background: #e0e0e0;
     color: #555;
     cursor: pointer;
@@ -4463,12 +4470,12 @@ input, textarea, select, button {
 }
 
 .sound-bottom-btn.play-stop {
-    background: #4a7c59;
-    color: #fff;
+    background: #22b14c;
+    color: #0e3a1c;
 }
 
 .sound-bottom-btn.play-stop.active {
-    background: #355a40;
+    background: #1c9640;
 }
 
 .sound-bottom-btn.step-rec {
@@ -6196,13 +6203,17 @@ input, textarea, select, button {
     color: #8090a0;
 }
 
+#app.dark-mode .sound-bottom-divider {
+    background: #3a3a55;
+}
+
 #app.dark-mode .sound-bottom-btn:active {
     background: #3a3a55;
 }
 
 #app.dark-mode .sound-bottom-btn.play-stop {
-    background: #2a5838;
-    color: #c0e0d0;
+    background: #22b14c;
+    color: #0e3a1c;
 }
 
 #app.dark-mode .sound-bottom-btn.step-rec {
