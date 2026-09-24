@@ -630,22 +630,32 @@ class Player {
                 const centerX = spriteDrawX + renderSize / 2;
                 const centerY = spriteDrawY + renderSize / 2;
 
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                ctx.rotate(this.deathRotation);
-                if (!this.facingRight) ctx.scale(-1, 1);
-                ctx.translate(-renderSize / 2, -renderSize / 2);
-
+                if (!Player._deathCanvas) {
+                    Player._deathCanvas = document.createElement('canvas');
+                }
+                const off = Player._deathCanvas;
+                if (off.width !== dimension || off.height !== dimension) {
+                    off.width = dimension;
+                    off.height = dimension;
+                }
+                const offCtx = off.getContext('2d');
+                offCtx.clearRect(0, 0, dimension, dimension);
                 for (let y = 0; y < dimension; y++) {
                     for (let x = 0; x < dimension; x++) {
                         const colorIndex = sprite.data[y]?.[x];
                         if (colorIndex >= 0) {
-                            ctx.fillStyle = palette[colorIndex];
-                            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                            offCtx.fillStyle = palette[colorIndex];
+                            offCtx.fillRect(x, y, 1, 1);
                         }
                     }
                 }
 
+                ctx.save();
+                ctx.imageSmoothingEnabled = false;
+                ctx.translate(centerX, centerY);
+                ctx.rotate(this.deathRotation);
+                if (!this.facingRight) ctx.scale(-1, 1);
+                ctx.drawImage(off, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
                 ctx.restore();
             }
             return;
