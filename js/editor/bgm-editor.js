@@ -1093,11 +1093,11 @@ const SoundEditor = {
 
     // Undo実行
     undo() {
-        // REC中: スナップショットで現録音トラックを復元
+        // REC中: スナップショットで現録音トラックのみ復元
         if (this.isStepRecording && this.recSnapshot) {
-            const song = this.getCurrentSong();
-            const track = song.tracks[this.recSnapshot.trackIdx];
-            track.notes = JSON.parse(JSON.stringify(this.recSnapshot.notes));
+            const snap = this.recSnapshot;
+            const track = this.getCurrentSong().tracks[snap.trackIdx];
+            track.notes = JSON.parse(JSON.stringify(snap.songBefore.tracks[snap.trackIdx].notes));
             this.rtNoteStartStep = -1;
             this.rtNotePitch = -1;
             this.render();
@@ -1163,24 +1163,19 @@ const SoundEditor = {
         if (stepRecBtn) {
             stepRecBtn.addEventListener('click', () => {
                 if (!this.isStepRecording) {
-                    // OFF→ON: 現録音トラックのスナップショット取得
-                    const track = this.getCurrentSong().tracks[this.currentTrack];
+                    // OFF→ON: pre-REC状態のsong全体snapshotを取得
                     this.recSnapshot = {
                         trackIdx: this.currentTrack,
-                        notes: JSON.parse(JSON.stringify(track.notes))
+                        songBefore: this._cloneSong(this.getCurrentSong())
                     };
                     this.isStepRecording = true;
                     stepRecBtn.classList.add('active');
                     this.currentStep = 0;
                     this.render();
                 } else {
-                    // ON→OFF: pre-REC状態を汎用履歴へ積む（現行songのcloneを直接組み立て）
+                    // ON→OFF: snapshotを汎用履歴へ積んで後追いUndoを可能に
                     if (this.recSnapshot) {
-                        const song = this.getCurrentSong();
-                        const preRecSong = this._cloneSong(song);
-                        preRecSong.tracks[this.recSnapshot.trackIdx].notes =
-                            JSON.parse(JSON.stringify(this.recSnapshot.notes));
-                        this.history.push(preRecSong);
+                        this.history.push(this.recSnapshot.songBefore);
                         if (this.history.length > this.historyLimit) {
                             this.history.shift();
                         }
@@ -1853,31 +1848,6 @@ const SoundEditor = {
         }
     },
 
-    inputRest() {
-        const song = this.getCurrentSong();
-        const maxSteps = song.bars;
-        if (this.currentStep < maxSteps) {
-            this.currentStep++;
-            this.render();
-        }
-    },
-
-    inputTie() {
-        const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-        const maxSteps = song.bars;
-
-        if (track.notes.length > 0) {
-            const lastNote = track.notes[track.notes.length - 1];
-            lastNote.length++;
-            // ノートを伸ばした分、currentStepも進める
-            if (this.currentStep < maxSteps) {
-                this.currentStep++;
-            }
-            this.render();
-        }
-    },
-
     // 再生バーを1STEP戻す（録音時は戻り先を含むノートを1STEP分削る）
     stepBackward() {
         if (this.player.isPlaying) return;
@@ -2227,49 +2197,12 @@ const SoundEditor = {
         return step >= sStep && step <= eStep && pitch >= sPitch && pitch <= ePitch;
     },
 
-    handleTap(step, pitch) {
-        const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-
-        // 既存ノートがあれば削除、なければ追加
-        const existingNote = this.findNoteAt(step, pitch);
-
-        this.pushHistory();
-        if (existingNote) {
-            // 削除
-            const idx = track.notes.indexOf(existingNote);
-            if (idx >= 0) {
-                track.notes.splice(idx, 1);
-            }
-        } else {
-            // 追加
-            const { note, octave } = this.player.pitchToNote(pitch);
-            const trackType = this.trackTypes[this.currentTrack];
-            this.player.playNote(note, octave, trackType, track);
-            track.notes.push({ step, pitch, length: 1 });
-        }
-        this.render();
-    },
-
     findNoteAt(step, pitch) {
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
         return track.notes.find(n =>
             n.step <= step && n.step + n.length > step && n.pitch === pitch
         );
-    },
-
-    deleteNoteAt(step, pitch) {
-        const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-        const idx = track.notes.findIndex(n =>
-            n.step <= step && n.step + n.length > step && n.pitch === pitch
-        );
-        if (idx >= 0) {
-            this.pushHistory();
-            track.notes.splice(idx, 1);
-            this.render();
-        }
     },
 
     seekToStep(step) {
