@@ -51,6 +51,11 @@ const SoundEditor = {
     // 入力位置
     currentStep: 0,
 
+    // Undo履歴
+    history: [],           // 汎用操作履歴（song全体のdeep clone配列）
+    historyLimit: 50,
+    recSnapshot: null,     // { trackIdx, notes } REC ON時に取得
+
     // 音階定義（5オクターブ = C1-B5）
     noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
 
@@ -282,6 +287,7 @@ const SoundEditor = {
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 const delta = Math.round((startYBpm - clientY) / 3);
                 if (Math.abs(delta) > 0) {
+                    if (!hasDraggedBpm) this.pushHistory();
                     hasDraggedBpm = true;
                     const song = this.getCurrentSong();
                     song.bpm = Math.max(60, Math.min(240, startValueBpm + delta));
@@ -309,6 +315,7 @@ const SoundEditor = {
                 if (now - lastTapBpm < 350) {
                     // ダブルタップ
                     if (bpmTapTimeout) clearTimeout(bpmTapTimeout);
+                    this.pushHistory();
                     this.getCurrentSong().bpm = 120;
                     this.updateConsoleDisplay();
                     lastTapBpm = 0;
@@ -356,6 +363,7 @@ const SoundEditor = {
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 const delta = Math.round((startYBar - clientY) / 10);
                 if (Math.abs(delta) > 0) {
+                    if (!hasDraggedBar) this.pushHistory();
                     hasDraggedBar = true;
                     const song = this.getCurrentSong();
                     song.bars = Math.max(1, Math.min(256, startValueBar + delta));
@@ -384,6 +392,7 @@ const SoundEditor = {
                 if (now - lastTapBar < 350) {
                     // ダブルタップ
                     if (barTapTimeout) clearTimeout(barTapTimeout);
+                    this.pushHistory();
                     this.getCurrentSong().bars = 16;
                     this.updateConsoleDisplay();
                     this.render();
@@ -446,6 +455,7 @@ const SoundEditor = {
                 const wasPlaying = this.player.isPlaying;
                 if (wasPlaying) this.stop();
 
+                this.pushHistory();
                 this.getCurrentSong().bpm = value;
                 this.updateConsoleDisplay();
 
@@ -464,6 +474,7 @@ const SoundEditor = {
                 const wasPlaying = this.player.isPlaying;
                 if (wasPlaying) this.stop();
 
+                this.pushHistory();
                 this.getCurrentSong().bars = value;
                 this.updateConsoleDisplay();
                 this.render();
@@ -685,6 +696,7 @@ const SoundEditor = {
             btn.className = 'tone-menu-btn' + (track.tone === opt.val ? ' active' : '');
             btn.innerText = App.I18N[opt.id]?.[App.currentLang] || opt.fallback;
             btn.onclick = () => {
+                if (track.tone !== opt.val) this.pushHistory();
                 track.tone = opt.val;
                 // UI反映（必要なら）
                 menu.remove();
@@ -746,6 +758,7 @@ const SoundEditor = {
         let activeKnob = null;
         let startY = 0;
         let startVal = 0;
+        let knobHistorySaved = false;
 
         // ダブルタップ検出用
         let lastTapTime = {};
@@ -765,6 +778,7 @@ const SoundEditor = {
                 const song = this.getCurrentSong();
                 const track = song.tracks[trackIdx];
 
+                this.pushHistory();
                 if (type === 'vol') {
                     track.volume = 0.65; // デフォルト65%
                 } else {
@@ -792,6 +806,7 @@ const SoundEditor = {
 
             startY = e.touches ? e.touches[0].pageY : e.pageY;
             startVal = (type === 'vol') ? track.volume : track.pan;
+            knobHistorySaved = false;
 
             window.addEventListener('mousemove', handleMove);
             window.addEventListener('mouseup', handleEnd);
@@ -813,6 +828,11 @@ const SoundEditor = {
 
             // 感度調整
             const Sensitivity = 0.005;
+
+            if (Math.abs(deltaY) > 0 && !knobHistorySaved) {
+                this.pushHistory();
+                knobHistorySaved = true;
+            }
 
             if (type === 'vol') {
                 let newVal = startVal + (deltaY * Sensitivity);
@@ -1040,6 +1060,8 @@ const SoundEditor = {
         this.songManager.select(idx);
         this.scrollX = 0;
         this.currentStep = 0;
+        this.history = [];
+        this.recSnapshot = null;
         this.updateConsoleDisplay();
         this.updateChannelStripUI();
         this.render();
@@ -1052,6 +1074,42 @@ const SoundEditor = {
 
     getCurrentSong() {
         return this.songManager.current;
+    },
+
+    // ========== Undo履歴管理 ==========
+    _cloneSong(song) {
+        return JSON.parse(JSON.stringify(song));
+    },
+
+    // 現在の song 状態を履歴へ保存（変更操作の直前に呼ぶ）
+    pushHistory() {
+        // REC中は個別の変更を積まない（RECスナップショットで一括復元するため）
+        if (this.isStepRecording) return;
+        this.history.push(this._cloneSong(this.getCurrentSong()));
+        if (this.history.length > this.historyLimit) {
+            this.history.shift();
+        }
+    },
+
+    // Undo実行
+    undo() {
+        // REC中: スナップショットで現録音トラックを復元
+        if (this.isStepRecording && this.recSnapshot) {
+            const song = this.getCurrentSong();
+            const track = song.tracks[this.recSnapshot.trackIdx];
+            track.notes = JSON.parse(JSON.stringify(this.recSnapshot.notes));
+            this.rtNoteStartStep = -1;
+            this.rtNotePitch = -1;
+            this.render();
+            return;
+        }
+        // 通常: 汎用履歴から復元
+        if (this.history.length === 0) return;
+        const prev = this.history.pop();
+        this.songManager.songs[this.songManager.currentIdx] = prev;
+        this.updateConsoleDisplay();
+        this.updateChannelStripUI();
+        this.render();
     },
 
     // ========== 編集ツール ==========
@@ -1104,12 +1162,32 @@ const SoundEditor = {
         const stepRecBtn = document.getElementById('sound-step-rec-btn');
         if (stepRecBtn) {
             stepRecBtn.addEventListener('click', () => {
-                this.isStepRecording = !this.isStepRecording;
-                stepRecBtn.classList.toggle('active', this.isStepRecording);
-                if (this.isStepRecording) {
-                    // ステップ録音ON: 現在位置をリセット
+                if (!this.isStepRecording) {
+                    // OFF→ON: 現録音トラックのスナップショット取得
+                    const track = this.getCurrentSong().tracks[this.currentTrack];
+                    this.recSnapshot = {
+                        trackIdx: this.currentTrack,
+                        notes: JSON.parse(JSON.stringify(track.notes))
+                    };
+                    this.isStepRecording = true;
+                    stepRecBtn.classList.add('active');
                     this.currentStep = 0;
                     this.render();
+                } else {
+                    // ON→OFF: pre-REC状態を汎用履歴へ積む（現行songのcloneを直接組み立て）
+                    if (this.recSnapshot) {
+                        const song = this.getCurrentSong();
+                        const preRecSong = this._cloneSong(song);
+                        preRecSong.tracks[this.recSnapshot.trackIdx].notes =
+                            JSON.parse(JSON.stringify(this.recSnapshot.notes));
+                        this.history.push(preRecSong);
+                        if (this.history.length > this.historyLimit) {
+                            this.history.shift();
+                        }
+                        this.recSnapshot = null;
+                    }
+                    this.isStepRecording = false;
+                    stepRecBtn.classList.remove('active');
                 }
             });
         }
@@ -1243,6 +1321,12 @@ const SoundEditor = {
             });
         }
 
+        // UNDO（取り消し）
+        const undoBtn = document.getElementById('sound-undo-btn');
+        if (undoBtn) {
+            undoBtn.addEventListener('click', () => this.undo());
+        }
+
         // PEN（通常入力モードに戻る）
         const penBtn = document.getElementById('sound-pen-btn');
         if (penBtn) {
@@ -1300,12 +1384,13 @@ const SoundEditor = {
                     if (this.selectionStart && this.selectionEnd) {
                         const song = this.getCurrentSong();
                         const track = song.tracks[this.currentTrack];
-                        
+
                         const sStep = Math.min(this.selectionStart.step, this.selectionEnd.step);
                         const eStep = Math.max(this.selectionStart.step, this.selectionEnd.step);
                         const sPitch = Math.min(this.selectionStart.pitch, this.selectionEnd.pitch);
                         const ePitch = Math.max(this.selectionStart.pitch, this.selectionEnd.pitch);
 
+                        this.pushHistory();
                         track.notes = track.notes.filter(n => {
                             // 範囲内にあるノートは除外（削除）
                             return !(n.step >= sStep && n.step <= eStep && n.pitch >= sPitch && n.pitch <= ePitch);
@@ -1491,6 +1576,18 @@ const SoundEditor = {
 
             const key = e.key.toUpperCase();
 
+            // Ctrl/Cmd + Z: Undo
+            if ((e.ctrlKey || e.metaKey) && key === 'Z' && !e.shiftKey) {
+                e.preventDefault();
+                if (e.repeat) return;
+                const undoBtn = document.getElementById('sound-undo-btn');
+                if (undoBtn) {
+                    undoBtn.classList.add('pressed');
+                    undoBtn.click();
+                }
+                return;
+            }
+
             // スペースキー操作
             if (key === ' ' || e.code === 'Space') {
                 e.preventDefault();
@@ -1601,6 +1698,9 @@ const SoundEditor = {
             if (e.key === 'ArrowRight') {
                 document.getElementById('sound-rest-btn')?.classList.remove('pressed');
                 document.getElementById('sound-tie-btn')?.classList.remove('pressed');
+            }
+            if (key === 'Z') {
+                document.getElementById('sound-undo-btn')?.classList.remove('pressed');
             }
         });
     },
@@ -1828,6 +1928,7 @@ const SoundEditor = {
         // iOSでconfirmダイアログ後にAudioContextが壊れる対策：再作成
         this.resetAudioContext();
 
+        this.pushHistory();
         track.notes = [];
         this.currentStep = 0;
         this.render();
@@ -1938,6 +2039,7 @@ const SoundEditor = {
         const track = song.tracks[this.currentTrack];
         const maxSteps = song.bars;
 
+        this.pushHistory();
         // ペーストデータを追加
         this.noteClipboard.notes.forEach(copyNote => {
             const newStep = this.pasteOffset.step + copyNote.relStep;
@@ -2085,6 +2187,7 @@ const SoundEditor = {
         const song = this.getCurrentSong();
         const track = song.tracks[this.currentTrack];
 
+        this.pushHistory();
         // ペーストデータを現在のトラックに追加
         this.pasteData.notes.forEach(note => {
             const newStep = this.pasteOffset.step + note.step;
@@ -2131,6 +2234,7 @@ const SoundEditor = {
         // 既存ノートがあれば削除、なければ追加
         const existingNote = this.findNoteAt(step, pitch);
 
+        this.pushHistory();
         if (existingNote) {
             // 削除
             const idx = track.notes.indexOf(existingNote);
@@ -2162,6 +2266,7 @@ const SoundEditor = {
             n.step <= step && n.step + n.length > step && n.pitch === pitch
         );
         if (idx >= 0) {
+            this.pushHistory();
             track.notes.splice(idx, 1);
             this.render();
         }
@@ -2438,6 +2543,7 @@ const SoundEditor = {
         const copyLength = toStep - fromStep + 1;
         let maxPastedStep = 0;
 
+        this.pushHistory();
         tracks.forEach(trackIdx => {
             const track = song.tracks[trackIdx];
             if (!track) return;

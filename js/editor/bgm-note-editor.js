@@ -292,6 +292,7 @@ class NoteEditor {
         // ── 選択ツール ──
         if (o.currentTool === 'select') {
             if (o.isStepInSelection(step, pitch)) {
+                o.pushHistory();
                 o.isMovingSelection  = true;
                 o.selectionMoveStart = { step, pitch };
                 const song  = o.getCurrentSong();
@@ -322,12 +323,18 @@ class NoteEditor {
 
         // ── 消しゴム ──
         if (o.currentTool === 'eraser') {
+            this._eraserPushed = false;
             const note = o.findNoteAt(step, pitch);
             if (note) {
                 const song  = o.getCurrentSong();
                 const track = song.tracks[o.currentTrack];
                 const idx   = track.notes.indexOf(note);
-                if (idx >= 0) { track.notes.splice(idx, 1); o.render(); }
+                if (idx >= 0) {
+                    o.pushHistory();
+                    this._eraserPushed = true;
+                    track.notes.splice(idx, 1);
+                    o.render();
+                }
             }
             return;
         }
@@ -410,13 +417,24 @@ class NoteEditor {
                 const song  = o.getCurrentSong();
                 const track = song.tracks[o.currentTrack];
                 const idx   = track.notes.indexOf(note);
-                if (idx >= 0) { track.notes.splice(idx, 1); o.render(); }
+                if (idx >= 0) {
+                    if (!this._eraserPushed) {
+                        o.pushHistory();
+                        this._eraserPushed = true;
+                    }
+                    track.notes.splice(idx, 1);
+                    o.render();
+                }
             }
             return;
         }
 
         // 長押しドラッグ: ノート移動
         if (this._isLongPress && this._draggingNote) {
+            if (!this._dragMovePushed) {
+                o.pushHistory();
+                this._dragMovePushed = true;
+            }
             this._draggingNote.step  = Math.max(0, step);
             this._draggingNote.pitch = pitch;
             o.render();
@@ -463,6 +481,7 @@ class NoteEditor {
                     const d    = this._pendingData;
                     const song = o.getCurrentSong();
                     const note = { step: d.step, pitch: d.pitch, length: 1 };
+                    o.pushHistory();
                     song.tracks[o.currentTrack].notes.push(note);
                     const { note: noteName, octave } = o.player.pitchToNote(d.pitch);
                     o.player.playNote(noteName, octave, o.trackTypes[o.currentTrack], song.tracks[o.currentTrack]);
@@ -478,7 +497,7 @@ class NoteEditor {
                     const song  = o.getCurrentSong();
                     const track = song.tracks[o.currentTrack];
                     const idx   = track.notes.indexOf(existing);
-                    if (idx >= 0) { track.notes.splice(idx, 1); o.render(); }
+                    if (idx >= 0) { o.pushHistory(); track.notes.splice(idx, 1); o.render(); }
                 }
             }
         }
@@ -493,7 +512,7 @@ class NoteEditor {
                 const song  = o.getCurrentSong();
                 const track = song.tracks[o.currentTrack];
                 const idx   = track.notes.indexOf(existing);
-                if (idx >= 0) { track.notes.splice(idx, 1); o.render(); }
+                if (idx >= 0) { o.pushHistory(); track.notes.splice(idx, 1); o.render(); }
             }
         }
 
@@ -502,6 +521,8 @@ class NoteEditor {
         this._draggingNote   = null;
         this._isCreatingNote = false;
         this._creatingNote   = null;
+        this._dragMovePushed = false;
+        this._eraserPushed   = false;
         clearTimeout(this._longPressTimer);
     }
 
@@ -513,6 +534,7 @@ class NoteEditor {
         const o    = this._o;
         const song = o.getCurrentSong();
         const newNote = { step, pitch, length: 1 };
+        o.pushHistory();
         song.tracks[o.currentTrack].notes.push(newNote);
         this._isCreatingNote  = true;
         this._creatingNote    = newNote;
