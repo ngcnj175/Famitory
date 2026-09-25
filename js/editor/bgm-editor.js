@@ -1148,8 +1148,10 @@ const SoundEditor = {
                     // ダブルクリック: 停止（位置リセット）
                     this.stop();
                 } else if (this.player.isPlaying) {
-                    // 再生中シングルクリック: 一時停止
-                    this.pause();
+                    // 再生中シングルクリック: 一時停止（録音中は停止させない）
+                    if (!this.isStepRecording) {
+                        this.pause();
+                    }
                 } else if (this.player.isPaused) {
                     // 一時停止中シングルクリック: 再開
                     this.resume();
@@ -2244,8 +2246,8 @@ const SoundEditor = {
             // onStep コールバック: UIを更新する
             this.currentStep = step;
             this.render();
-            // メトロノーム: リアルタイム録音中、STEP 1/5/9/13… (4STEPごと) でクリック
-            if (this.isMetronomeOn && this.isStepRecording && step % 4 === 0) {
+            // メトロノーム: ON時、STEP 1/5/9/13… (4STEPごと) でクリック
+            if (this.isMetronomeOn && step % 4 === 0) {
                 this.player.playMetronomeClick(step === 0);
             }
         });

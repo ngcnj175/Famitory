@@ -758,7 +758,7 @@ class BgmPlayer {
         gain.gain.setValueAtTime(0.15, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
         osc.connect(gain);
-        gain.connect(this.getOutputNode());
+        gain.connect(this.getOutput());
         osc.start(now);
         osc.stop(now + 0.06);
     }
