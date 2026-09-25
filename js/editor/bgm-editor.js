@@ -592,12 +592,12 @@ const SoundEditor = {
                     <span class="track-name">${iconSvg}</span>
                 </div>
                 <div class="track-knobs">
-                    <div class="knob-wrap">
-                        <div class="knob-ctrl vol-knob" data-type="vol" data-track="${idx}"></div>
+                    <div class="knob-wrap" data-type="vol" data-track="${idx}">
+                        <div class="knob-ctrl vol-knob"></div>
                         <span class="knob-label">VOL</span>
                     </div>
-                    <div class="knob-wrap">
-                        <div class="knob-ctrl pan-knob" data-type="pan" data-track="${idx}"></div>
+                    <div class="knob-wrap" data-type="pan" data-track="${idx}">
+                        <div class="knob-ctrl pan-knob"></div>
                         <span class="knob-label">PAN</span>
                     </div>
                 </div>
@@ -623,7 +623,7 @@ const SoundEditor = {
 
             trackInfo.addEventListener('click', (e) => {
                 // ノブ操作時はトラック切り替えしない
-                if (e.target.classList.contains('knob-ctrl')) return;
+                if (e.target.closest('.knob-wrap')) return;
 
                 this.currentTrack = idx;
                 this.updateChannelStripUI();
@@ -752,11 +752,11 @@ const SoundEditor = {
         const DOUBLE_TAP_DELAY = 300;
 
         const handleDoubleTap = (e) => {
-            if (!e.target.classList.contains('knob-ctrl')) return;
+            const wrap = e.target.closest('.knob-wrap');
+            if (!wrap) return;
 
-            const knob = e.target;
-            const trackIdx = parseInt(knob.dataset.track);
-            const type = knob.dataset.type;
+            const trackIdx = parseInt(wrap.dataset.track);
+            const type = wrap.dataset.type;
             const now = Date.now();
             const key = `${type}_${trackIdx}`;
 
@@ -779,11 +779,12 @@ const SoundEditor = {
         };
 
         const handleStart = (e) => {
-            if (!e.target.classList.contains('knob-ctrl')) return;
+            const wrap = e.target.closest('.knob-wrap');
+            if (!wrap) return;
             e.preventDefault();
             e.stopPropagation();
 
-            activeKnob = e.target;
+            activeKnob = wrap;
             const trackIdx = parseInt(activeKnob.dataset.track);
             const type = activeKnob.dataset.type;
             const song = this.getCurrentSong();
@@ -840,7 +841,7 @@ const SoundEditor = {
         container.addEventListener('click', handleDoubleTap);
         container.addEventListener('touchend', (e) => {
             // タッチでのダブルタップ検出（iPhone対応）
-            if (e.target.classList.contains('knob-ctrl')) {
+            if (e.target.closest('.knob-wrap')) {
                 handleDoubleTap(e);
             }
         });

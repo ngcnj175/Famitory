@@ -4586,15 +4586,18 @@ input, textarea, select, button {
 .track-knobs {
     flex-grow: 1;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    align-items: stretch;
 }
 
 .knob-wrap {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 1px;
+    cursor: ew-resize;
+    touch-action: none;
 }
 
 /* 繧ｷ繝ｳ繝励Ν縺ｪ繝弱ヶ繧ｹ繧ｿ繧､繝ｫ */
