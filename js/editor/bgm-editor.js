@@ -262,6 +262,11 @@ const SoundEditor = {
             this.closeSongNameModal();
         });
 
+        // 入力変更時にエラー表示をクリア
+        document.getElementById('song-name-input')?.addEventListener('input', () => {
+            document.getElementById('song-name-error')?.classList.add('hidden');
+        });
+
         // メニュー（ジュークボックスを開く）
 
 
@@ -541,6 +546,8 @@ const SoundEditor = {
         const song = this.getCurrentSong();
         const popup = document.getElementById('song-name-popup');
         const input = document.getElementById('song-name-input');
+        const err = document.getElementById('song-name-error');
+        if (err) err.classList.add('hidden');
         if (popup && input) {
             input.value = song.name;
             popup.classList.remove('hidden');
@@ -563,19 +570,27 @@ const SoundEditor = {
 
     saveSongName() {
         const input = document.getElementById('song-name-input');
-        if (input) {
-            const newName = input.value.trim().substring(0, 16);
-            if (newName) {
-                const song = this.getCurrentSong();
-                song.name = newName;
-                this.updateConsoleDisplay();
-                // ステージエディタ等の更新
-                if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
-                    StageEditor.updateBgmSelects();
-                }
-            }
+        const err = document.getElementById('song-name-error');
+        if (!input) return;
+        const newName = input.value.trim().substring(0, 16);
+        if (!newName) {
             this.closeSongNameModal();
+            return;
         }
+        const song = this.getCurrentSong();
+        // 同名重複チェック（自分自身の名前はOK）
+        const duplicate = this.songManager.songs.some(s => s !== song && s.name === newName);
+        if (duplicate) {
+            if (err) err.classList.remove('hidden');
+            return;
+        }
+        song.name = newName;
+        this.updateConsoleDisplay();
+        // ステージエディタ等の更新
+        if (typeof StageEditor !== 'undefined' && StageEditor.updateBgmSelects) {
+            StageEditor.updateBgmSelects();
+        }
+        this.closeSongNameModal();
     },
 
     // ========== Channel Strip (フッターミキサー) ==========
@@ -998,7 +1013,14 @@ const SoundEditor = {
             const song = this.songManager.songs[idx];
             const newName = prompt('新しい名前', song.name);
             if (newName) {
-                song.name = newName;
+                const trimmed = newName.trim().substring(0, 16);
+                if (!trimmed) return;
+                const duplicate = this.songManager.songs.some(s => s !== song && s.name === trimmed);
+                if (duplicate) {
+                    alert('同じ名前のBGMが既に存在します');
+                    return;
+                }
+                song.name = trimmed;
                 this.renderJukeboxList();
                 this.updateConsoleDisplay();
             }
@@ -1010,7 +1032,7 @@ const SoundEditor = {
         if (!currentSong) return;
         const duplicatedSong = JSON.parse(JSON.stringify(currentSong));
 
-        duplicatedSong.name = currentSong.name + "のコピー";
+        duplicatedSong.name = this.songManager.generateUniqueName(currentSong.name + "のコピー");
         this.songManager.songs.push(duplicatedSong);
 
         // 追加したソングへ移動

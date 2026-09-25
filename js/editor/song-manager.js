@@ -17,11 +17,27 @@ class SongManager {
     }
 
     /**
+     * 既存名と重複しない名前を生成する
+     * baseName がユニークならそのまま、重複時は " (2)", " (3)" ... を付与
+     */
+    generateUniqueName(baseName) {
+        const existing = new Set(this.songs.map(s => s.name));
+        if (!existing.has(baseName)) return baseName;
+        let n = 2;
+        while (existing.has(`${baseName} (${n})`)) n++;
+        return `${baseName} (${n})`;
+    }
+
+    /**
      * Add a new song to the list
      */
     add() {
+        // 未使用の最小番号を割り当て（例: [BGM 1, BGM 3] → BGM 2）
+        const existing = new Set(this.songs.map(s => s.name));
+        let n = 1;
+        while (existing.has(`BGM ${n}`)) n++;
         const newSong = {
-            name: `BGM ${this.songs.length + 1}`,
+            name: `BGM ${n}`,
             bpm: 120,
             bars: 16,
             tracks: [

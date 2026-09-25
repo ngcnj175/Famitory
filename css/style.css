@@ -4847,6 +4847,17 @@ input, textarea, select, button {
     max-width: 300px;
 }
 
+.song-name-error {
+    padding: 0 16px 8px;
+    color: #d33;
+    font-size: 12px;
+    text-align: center;
+}
+
+.song-name-error.hidden {
+    display: none;
+}
+
 /* ========================================
    Block Gauge & Toggle Switch
    ======================================== */
