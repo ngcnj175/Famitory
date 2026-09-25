@@ -726,8 +726,8 @@ const SoundEditor = {
         // ノブの回転更新
         const song = this.getCurrentSong();
         song.tracks.forEach((track, idx) => {
-            const volKnob = document.querySelector(`.vol-knob[data-track="${idx}"]`);
-            const panKnob = document.querySelector(`.pan-knob[data-track="${idx}"]`);
+            const volKnob = document.querySelector(`.knob-wrap[data-type="vol"][data-track="${idx}"] .vol-knob`);
+            const panKnob = document.querySelector(`.knob-wrap[data-type="pan"][data-track="${idx}"] .pan-knob`);
 
             if (volKnob) {
                 // Vol 0.0-1.0 => -135deg to +135deg
