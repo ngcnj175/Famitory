@@ -743,6 +743,26 @@ class BgmPlayer {
         }, stepDuration * 1000);
     }
 
+    /**
+     * メトロノーム用の短いクリック音を鳴らす
+     * @param {boolean} accent - 小節頭のアクセント音（高め）にするか
+     */
+    playMetronomeClick(accent = false) {
+        if (!this.audioCtx) return;
+        const ctx = this.audioCtx;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = accent ? 2000 : 1200;
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(this.getOutputNode());
+        osc.start(now);
+        osc.stop(now + 0.06);
+    }
+
     pause() {
         this.isPlaying = false;
         this.isPaused = true;

@@ -56,6 +56,9 @@ const SoundEditor = {
     historyLimit: 50,
     recSnapshot: null,     // { trackIdx, notes } REC ON時に取得
 
+    // メトロノーム（リアルタイム録音時のガイド音）
+    isMetronomeOn: false,
+
     // 音階定義（5オクターブ = C1-B5）
     noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
 
@@ -1186,6 +1189,15 @@ const SoundEditor = {
             });
         }
 
+        // METRONOME（リアルタイム録音時のガイド音 ON/OFF）
+        const metronomeBtn = document.getElementById('sound-metronome-btn');
+        if (metronomeBtn) {
+            metronomeBtn.addEventListener('click', () => {
+                this.isMetronomeOn = !this.isMetronomeOn;
+                metronomeBtn.classList.toggle('active', this.isMetronomeOn);
+            });
+        }
+
         // SELECT
         const selectBtn = document.getElementById('sound-select-btn');
         if (selectBtn) {
@@ -2232,6 +2244,10 @@ const SoundEditor = {
             // onStep コールバック: UIを更新する
             this.currentStep = step;
             this.render();
+            // メトロノーム: リアルタイム録音中、STEP 1/5/9/13… (4STEPごと) でクリック
+            if (this.isMetronomeOn && this.isStepRecording && step % 4 === 0) {
+                this.player.playMetronomeClick(step === 0);
+            }
         });
     },
 

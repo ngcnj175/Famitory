@@ -4478,6 +4478,15 @@ input, textarea, select, button {
     background: #1c9640;
 }
 
+.sound-bottom-btn.active {
+    background: #d0d0d0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+}
+
+#app.dark-mode .sound-bottom-btn.active {
+    background: #3a3a55;
+}
+
 .sound-bottom-btn.step-rec {
     background: #666;
     color: #ccc;
