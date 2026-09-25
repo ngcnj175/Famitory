@@ -1067,11 +1067,11 @@ const SoundEditor = {
 
     // ========== プレイヤーパネル ==========
     initPlayerPanel() {
-        // 戻る（旧DEL） - タップ: 直前のノート削除
+        // 戻る - 再生バーを1STEP戻す（録音時は戻り先のノートを1STEP分削る）
         const delBtn = document.getElementById('sound-del-btn');
         if (delBtn) {
             delBtn.addEventListener('click', () => {
-                this.deleteLastNote();
+                this.stepBackward();
             });
         }
 
@@ -1209,19 +1209,11 @@ const SoundEditor = {
             });
         }
 
-        // REST（ステップを進める、休符入力）
+        // REST（進む）- 再生バーを1STEP進める
         const restBtn = document.getElementById('sound-rest-btn');
         if (restBtn) {
             restBtn.addEventListener('click', () => {
-                if (this.isStepRecording) {
-                    this.currentStep++;
-                    const song = this.getCurrentSong();
-                    const maxSteps = song.bars;
-                    if (this.currentStep >= maxSteps) {
-                        this.currentStep = 0;
-                    }
-                    this.render();
-                }
+                this.stepForward();
             });
         }
 
@@ -1785,14 +1777,37 @@ const SoundEditor = {
         }
     },
 
-    deleteLastNote() {
+    // 再生バーを1STEP戻す（録音時は戻り先を含むノートを1STEP分削る）
+    stepBackward() {
+        if (this.player.isPlaying) return;
         const song = this.getCurrentSong();
-        const track = song.tracks[this.currentTrack];
-        if (track.notes.length > 0) {
-            track.notes.pop();
-            if (this.currentStep > 0) this.currentStep--;
-            this.render();
+        const maxSteps = song.bars;
+        this.currentStep = (this.currentStep - 1 + maxSteps) % maxSteps;
+
+        if (this.isStepRecording) {
+            const track = song.tracks[this.currentTrack];
+            const target = this.currentStep;
+            // 戻り先の位置を含むノート（step <= target < step+length）を検索
+            const idx = track.notes.findIndex(n => n.step <= target && target < n.step + n.length);
+            if (idx !== -1) {
+                const note = track.notes[idx];
+                if (note.length > 1) {
+                    note.length--;
+                } else {
+                    track.notes.splice(idx, 1);
+                }
+            }
         }
+        this.render();
+    },
+
+    // 再生バーを1STEP進める
+    stepForward() {
+        if (this.player.isPlaying) return;
+        const song = this.getCurrentSong();
+        const maxSteps = song.bars;
+        this.currentStep = (this.currentStep + 1) % maxSteps;
+        this.render();
     },
 
     clearCurrentTrack() {
