@@ -1170,7 +1170,6 @@ const SoundEditor = {
                     };
                     this.isStepRecording = true;
                     stepRecBtn.classList.add('active');
-                    this.currentStep = 0;
                     this.render();
                 } else {
                     // ON→OFF: snapshotを汎用履歴へ積んで後追いUndoを可能に
