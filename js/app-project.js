@@ -423,8 +423,9 @@ const AppProject = {
 
     exportProject(filename) {
         App.projectData.palette = App.nesPalette.slice();
+        if (App.projectData.version === undefined) App.projectData.version = 1;
 
-        const data = JSON.stringify(App.projectData, null, 2);
+        const data = JSON.stringify(App.projectData);
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
@@ -446,6 +447,16 @@ const AppProject = {
         reader.onload = (event) => {
             try {
                 const data = JSON.parse(event.target.result);
+
+                if (!data || typeof data !== 'object'
+                    || !data.meta || typeof data.meta !== 'object'
+                    || !data.stage || typeof data.stage !== 'object'
+                    || !data.stage.layers
+                    || !Array.isArray(data.sprites)) {
+                    alert('Famitory の保存データではないようです');
+                    return;
+                }
+
                 let baseName = file.name.replace(/\.(json|pgk)$/i, '');
                 let importName = baseName;
                 let counter = 1;
