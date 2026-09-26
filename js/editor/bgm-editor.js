@@ -1818,11 +1818,9 @@ const SoundEditor = {
         if (this.isStepRecording) {
             if (this.player.isPlaying) {
                 // リアルタイム録音：サブステップ精度で開始位置とピッチを記録
-                const song = this.getCurrentSong();
-                const maxSteps = song.bars;
-                const elapsed = this.stepStartTime ? (performance.now() - this.stepStartTime) : 0;
-                const frac = this.stepDurationMs ? Math.min(1, Math.max(0, elapsed / this.stepDurationMs)) : 0;
-                this.rtNoteStartStep = (Math.round(this.currentStep + frac)) % maxSteps;
+                const maxSteps = this.getCurrentSong().bars;
+                const frac = Math.min(1, (performance.now() - this.stepStartTime) / this.stepDurationMs);
+                this.rtNoteStartStep = Math.round(this.currentStep + frac) % maxSteps;
                 this.rtNotePitch = pitch;
             } else {
                 // 通常のステップ録音
@@ -2279,12 +2277,13 @@ const SoundEditor = {
 
         const song = this.getCurrentSong();
         const startStep = this.player.isPaused ? this.currentStep : 0;
+        this.stepDurationMs = 60000 / song.bpm / 4;
+        this.stepStartTime = performance.now();
 
         this.player.play(song, this.trackTypes, startStep, (step) => {
             // onStep コールバック: UIを更新する
             this.currentStep = step;
             this.stepStartTime = performance.now();
-            this.stepDurationMs = 60000 / song.bpm / 4;
             this.render();
             // メトロノーム: ON時、STEP 1/5/9/13… (4STEPごと) でクリック
             if (this.isMetronomeOn && step % 4 === 0) {
