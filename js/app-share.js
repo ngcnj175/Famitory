@@ -152,24 +152,21 @@ const AppShare = {
                     return;
                 }
                 this._shareLoading = true;
-                try {
-                    await window.firebaseDB.ref('games/' + id).remove();
+                const ok = await Share.deleteGame(id);
+                if (ok) {
                     if (typeof ShareArcade !== 'undefined') {
                         ShareArcade.invalidateCache();
                     }
                     App.projectData.meta.shareId = '';
-                    App._shareUrl = '';
                     if (App.currentProjectName) {
                         Storage.saveProject(App.currentProjectName, App.projectData);
                     }
                     this.updateShareStatus();
                     App.showToast(AppI18N.t('U527'));
-                } catch (e) {
-                    console.error('[Share] unpublish failed:', e);
+                } else {
                     App.showToast(AppI18N.t('U528'));
-                } finally {
-                    this._shareLoading = false;
                 }
+                this._shareLoading = false;
             }
         );
     },
