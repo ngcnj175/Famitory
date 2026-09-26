@@ -112,6 +112,46 @@ class BgmPlayer {
         }
     }
 
+    /**
+     * オシレーターの波形と triangle 音量スケールをまとめて設定する。
+     * @returns {number} triangle sawtooth用のvolumeScale補正(通常1.0)
+     */
+    setupToneWaveform(osc, trackType, tone) {
+        if (trackType === 'square') {
+            // Sharp系(3-5) と Sharp (Slide)(8) はデューティ12.5%のパルス波
+            if ((tone >= 3 && tone <= 5) || tone === 8) {
+                const wave = this.getPeriodicWave(0.125);
+                if (wave) { osc.setPeriodicWave(wave); return 1.0; }
+            }
+            osc.type = 'square';
+            return 1.0;
+        }
+        if (trackType === 'triangle') {
+            if (tone === 1) { osc.type = 'sine'; return 1.0; }
+            if (tone === 2) { osc.type = 'sawtooth'; return 0.6; }
+            osc.type = 'triangle';
+            return 1.0;
+        }
+        return 1.0;
+    }
+
+    /**
+     * tone別の基本音量を取得する。
+     */
+    getBaseVol(trackType, tone) {
+        if (trackType !== 'square') return 0.2;
+        switch (tone) {
+            case 1: return 0.135; // Standard (Short)
+            case 2: return 0.135; // Standard (FadeIn)
+            case 3: return 0.275; // Sharp
+            case 4: return 0.385; // Sharp (Short)
+            case 5: return 0.33;  // Sharp (FadeIn)
+            case 6: return 0.05;  // Tremolo
+            case 8: return 0.275; // Sharp (Slide)
+            default: return 0.108; // Standard(0) / Standard Slide(7) / 未定義
+        }
+    }
+
     getPeriodicWave(duty) {
         if (!this.audioCtx) return null;
         const cacheKey = `pulse_${duty}`;
@@ -169,42 +209,10 @@ class BgmPlayer {
 
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
-        let volumeScale = 1.0;
-
-        // 波形タイプ
-        if (trackType === 'square') {
-            if (tone >= 3 && tone <= 5) {
-                const wave = this.getPeriodicWave(0.125);
-                if (wave) osc.setPeriodicWave(wave);
-                else osc.type = 'square';
-            } else {
-                osc.type = 'square';
-            }
-        } else if (trackType === 'triangle') {
-            if (tone === 0) osc.type = 'triangle';
-            else if (tone === 1) osc.type = 'sine';
-            else if (tone === 2) { osc.type = 'sawtooth'; volumeScale = 0.6; }
-        }
-
+        const volumeScale = this.setupToneWaveform(osc, trackType, tone);
         osc.frequency.value = freq;
 
-        // tone別の基本音量
-        let baseVol;
-        if (trackType === 'square') {
-            switch (tone) {
-                case 0: baseVol = 0.108; break; // Standard
-                case 1: baseVol = 0.135; break; // Standard (Short)
-                case 2: baseVol = 0.135; break; // Standard (FadeIn)
-                case 3: baseVol = 0.275; break; // Sharp
-                case 4: baseVol = 0.385; break; // Sharp (Short)
-                case 5: baseVol = 0.33; break;  // Sharp (FadeIn)
-                case 6: baseVol = 0.05; break; // Tremolo
-                default: baseVol = 0.12; break;
-            }
-        } else {
-            baseVol = 0.2; // Triangle等
-        }
-        const volume = baseVol * track.volume * volumeScale;
+        const volume = this.getBaseVol(trackType, tone) * track.volume * volumeScale;
 
         // エンベロープ設定
         const isShort = (tone === 1 || tone === 4);
@@ -281,23 +289,7 @@ class BgmPlayer {
 
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
-        let volumeScale = 1.0;
-
-        // 波形タイプ
-        if (trackType === 'square') {
-            if ((tone >= 3 && tone <= 5) || tone === 8) {
-                // Sharp系 と Sharp (Slide)
-                const wave = this.getPeriodicWave(0.125);
-                if (wave) osc.setPeriodicWave(wave);
-                else osc.type = 'square';
-            } else {
-                osc.type = 'square';
-            }
-        } else if (trackType === 'triangle') {
-            if (tone === 0) osc.type = 'triangle';
-            else if (tone === 1) osc.type = 'sine';
-            else if (tone === 2) { osc.type = 'sawtooth'; volumeScale = 0.6; }
-        }
+        const volumeScale = this.setupToneWaveform(osc, trackType, tone);
 
         const t = this.audioCtx.currentTime;
 
@@ -305,34 +297,16 @@ class BgmPlayer {
         const doSlide = isSlideTone
             && currentStep !== null
             && this.lastFreq[trackIdx] != null;
-        // スライド時間はノート長に応じて短縮（短い音符でも成立するように）
-        const slideTime = Math.min(0.2, duration * 0.7);
         if (doSlide) {
+            // スライド時間はノート長に応じて短縮（短い音符でも成立するように）
+            const slideTime = Math.min(0.2, duration * 0.7);
             osc.frequency.setValueAtTime(this.lastFreq[trackIdx], t);
             osc.frequency.linearRampToValueAtTime(freq, t + slideTime);
         } else {
             osc.frequency.value = freq;
         }
 
-        // tone別の基本音量
-        let baseVol;
-        if (trackType === 'square') {
-            switch (tone) {
-                case 0: baseVol = 0.108; break;
-                case 1: baseVol = 0.135; break;
-                case 2: baseVol = 0.135; break;
-                case 3: baseVol = 0.275; break;
-                case 4: baseVol = 0.385; break;
-                case 5: baseVol = 0.33; break;
-                case 6: baseVol = 0.05; break;
-                case 7: baseVol = 0.108; break; // Standard Slide (同: Standard)
-                case 8: baseVol = 0.275; break; // Sharp Slide (同: Sharp)
-                default: baseVol = 0.108; break;
-            }
-        } else {
-            baseVol = 0.2;
-        }
-        const volume = baseVol * track.volume * volumeScale;
+        const volume = this.getBaseVol(trackType, tone) * track.volume * volumeScale;
 
         // エンベロープ設定
         const isShort = (tone === 1 || tone === 4);
@@ -680,38 +654,9 @@ class BgmPlayer {
         gain.connect(panner);
         panner.connect(this.getOutput());
 
-        let volumeScale = 1.0;
-        if (trackType === 'square') {
-            if (tone >= 3 && tone <= 5) {
-                const wave = this.getPeriodicWave(0.125);
-                if (wave) osc.setPeriodicWave(wave);
-                else osc.type = 'square';
-            } else {
-                osc.type = 'square';
-            }
-        } else if (trackType === 'triangle') {
-            if (tone === 0) osc.type = 'triangle';
-            else if (tone === 1) osc.type = 'sine';
-            else if (tone === 2) { osc.type = 'sawtooth'; volumeScale = 0.6; }
-        }
-
+        const volumeScale = this.setupToneWaveform(osc, trackType, tone);
         osc.frequency.value = freq;
-        let baseVol = (trackType === 'square') ? 0.108 : 0.2;
-        if (trackType === 'square') {
-            switch (tone) {
-                case 0: baseVol = 0.108; break;
-                case 1: baseVol = 0.135; break;
-                case 2: baseVol = 0.135; break;
-                case 3: baseVol = 0.275; break;
-                case 4: baseVol = 0.385; break;
-                case 5: baseVol = 0.33; break;
-                case 6: baseVol = 0.05; break;
-                case 7: baseVol = 0.108; break; // Standard Slide (同: Standard)
-                case 8: baseVol = 0.275; break; // Sharp Slide (同: Sharp)
-            }
-        }
-        if (trackType === 'triangle' && tone === 2) volumeScale = 0.6;
-        gain.gain.value = baseVol * track.volume * volumeScale;
+        gain.gain.value = this.getBaseVol(trackType, tone) * track.volume * volumeScale;
 
         this.connectOscToGain(osc, gain, trackType, tone);
         osc.start();
