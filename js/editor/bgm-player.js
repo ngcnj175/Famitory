@@ -696,7 +696,7 @@ class BgmPlayer {
      * @param {number} startStep - 開始ステップ（一時停止後は resume から渡す）
      * @param {Function} onStep - ステップ更新コールバック (step) => void
      */
-    play(song, trackTypes, startStep, onStep, loop = true, isPausedFn = null) {
+    play(song, trackTypes, startStep, onStep, loop = true, isPausedFn = null, mutedTracksFn = null) {
         if (this.isPlaying) return;
         this.isPlaying = true;
 
@@ -715,7 +715,9 @@ class BgmPlayer {
             if (this.isPaused) return;
             if (isPausedFn && isPausedFn()) return;
 
+            const muted = mutedTracksFn ? mutedTracksFn() : null;
             song.tracks.forEach((track, trackIdx) => {
+                if (muted && muted[trackIdx]) return;
                 track.notes.forEach(note => {
                     if (note.step === step) {
                         const { note: noteName, octave } = this.pitchToNote(note.pitch);

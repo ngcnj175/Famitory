@@ -303,6 +303,8 @@ const AppI18N = {
         // ---- 言語切り替え ----
         'U446': { JPN: '言語を日本語に変更しました', ENG: 'Language set to Japanese' },
         'U447': { JPN: 'Language set to English', ENG: 'Language set to English' },
+        // ---- BGMエディタ ミュート ----
+        'U520': { JPN: 'ミュート', ENG: 'Mute' },
         // ---- 共有テキスト（トースト） ----
         'U377': { JPN: '処理中です…少しお待ちください', ENG: 'Processing… Please wait' },
         'U378': { JPN: 'クラウド接続がありません', ENG: 'No cloud connection' },

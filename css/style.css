@@ -4563,11 +4563,39 @@ input, textarea, select, button {
 
 
 .track-info {
+    position: relative;
     display: flex;
     justify-content: center;
     /* 荳ｭ螟ｮ蟇�○ */
     align-items: center;
     margin-bottom: 2px;
+}
+
+.track-mute-badge {
+    position: absolute;
+    left: 2px;
+    top: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    background: #d64545;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: bold;
+    line-height: 1;
+    border-radius: 2px;
+    pointer-events: none;
+    user-select: none;
+}
+
+.channel-strip-track.muted .track-mute-badge {
+    display: flex;
+}
+
+.channel-strip-track.muted .track-icon {
+    opacity: 0.35;
 }
 
 .track-name {

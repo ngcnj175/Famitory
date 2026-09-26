@@ -59,6 +59,9 @@ const SoundEditor = {
     // メトロノーム（リアルタイム録音時のガイド音）
     isMetronomeOn: false,
 
+    // トラックミュート状態（エディタセッション内のみ保持、曲データには保存しない）
+    mutedTracks: [false, false, false, false],
+
     // 音階定義（5オクターブ = C1-B5）
     noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
 
@@ -618,6 +621,7 @@ const SoundEditor = {
 
             div.innerHTML = `
                 <div class="track-info">
+                    <span class="track-mute-badge" title="${this.t('U520') || 'ミュート'}">M</span>
                     <span class="track-name">${iconSvg}</span>
                 </div>
                 <div class="track-knobs">
@@ -654,7 +658,17 @@ const SoundEditor = {
                 // ノブ操作時はトラック切り替えしない
                 if (e.target.closest('.knob-wrap')) return;
 
-                this.currentTrack = idx;
+                if (this.mutedTracks[idx]) {
+                    // ミュート中 → 解除して選択
+                    this.mutedTracks[idx] = false;
+                    this.currentTrack = idx;
+                } else if (this.currentTrack === idx) {
+                    // 選択中トラックを再タップ → ミュート
+                    this.mutedTracks[idx] = true;
+                } else {
+                    // 未選択 → 選択
+                    this.currentTrack = idx;
+                }
                 this.updateChannelStripUI();
                 this.render();
             });
@@ -751,6 +765,7 @@ const SoundEditor = {
         const tracks = document.querySelectorAll('.channel-strip-track');
         tracks.forEach((t, idx) => {
             t.classList.toggle('active', idx === this.currentTrack);
+            t.classList.toggle('muted', !!this.mutedTracks[idx]);
         });
 
         // ノブの回転更新
@@ -1792,8 +1807,10 @@ const SoundEditor = {
         const trackType = this.trackTypes[this.currentTrack];
         const pitch = this.player.noteToPitch(note, octave);
 
-        // 音声再生は BgmPlayer に委譲
-        this.player.startKeySound(note, octave, trackType, track);
+        // 音声再生は BgmPlayer に委譲（ミュート中は音のみスキップ、ハイライトと録音は継続）
+        if (!this.mutedTracks[this.currentTrack]) {
+            this.player.startKeySound(note, octave, trackType, track);
+        }
 
         // ピアノロールのハイライト
         this.highlightPitch = pitch;
@@ -2272,7 +2289,7 @@ const SoundEditor = {
             if (this.isMetronomeOn && step % 4 === 0) {
                 this.player.playMetronomeClick(step === 0);
             }
-        });
+        }, true, null, () => this.mutedTracks);
     },
 
     pause() {
