@@ -291,9 +291,11 @@ class BgmPlayer {
             && currentStep !== null
             && this.lastFreq[trackIdx] != null
             && this.lastNoteEndStep[trackIdx] >= currentStep;
+        // スライド時間はノート長に応じて短縮（短い音符でも成立するように）
+        const slideTime = Math.min(0.08, duration * 0.5);
         if (doSlide) {
             osc.frequency.setValueAtTime(this.lastFreq[trackIdx], t);
-            osc.frequency.linearRampToValueAtTime(freq, t + 0.03);
+            osc.frequency.linearRampToValueAtTime(freq, t + slideTime);
         } else {
             osc.frequency.value = freq;
         }
@@ -330,6 +332,12 @@ class BgmPlayer {
             gain.gain.exponentialRampToValueAtTime(volume, t + duration * 0.7);
             gain.gain.setValueAtTime(volume, t + duration * 0.9);
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
+        } else if (doSlide) {
+            // スライド時は再アタックを目立たせないよう短くフェードイン
+            gain.gain.setValueAtTime(volume * 0.4, t);
+            gain.gain.linearRampToValueAtTime(volume, t + 0.012);
+            gain.gain.setValueAtTime(volume, t + duration - 0.05);
+            gain.gain.linearRampToValueAtTime(0.01, t + duration);
         } else {
             gain.gain.setValueAtTime(volume, t);
             gain.gain.setValueAtTime(volume, t + duration - 0.05);
