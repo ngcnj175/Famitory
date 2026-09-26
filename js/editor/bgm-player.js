@@ -14,6 +14,9 @@ class BgmPlayer {
         this.isPaused = false;
         this.playInterval = null;
         this.activeOscillators = [null, null, null, null];
+        // ポルタメント（スライド音色）用: 直前音の周波数と終端ステップをトラック毎に保持
+        this.lastFreq = [null, null, null, null];
+        this.lastNoteEndStep = [-1, -1, -1, -1];
         this.outputNode = null; // 外部から設定可能な出力先（未設定時はaudioCtx.destination）
 
         // キーボードプレビュー用
@@ -56,6 +59,8 @@ class BgmPlayer {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.waveCache = {};
         this.activeOscillators = [null, null, null, null];
+        this.lastFreq = [null, null, null, null];
+        this.lastNoteEndStep = [-1, -1, -1, -1];
 
         // ゲームエンジンのBGMプレイヤーもクリア
         if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer) {
@@ -216,7 +221,7 @@ class BgmPlayer {
     /**
      * 再生ループ用モノフォニック発音（トラックごとに同時発音1に制限）
      */
-    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track) {
+    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track, currentStep = null, noteLength = 1) {
         if (!this.audioCtx) return;
         const tone = track.tone || 0;
 
@@ -225,6 +230,9 @@ class BgmPlayer {
             try { this.activeOscillators[trackIdx].osc.stop(); } catch (e) { }
             this.activeOscillators[trackIdx] = null;
         }
+
+        // スライド音色（Square: tone 7=Standard Slide, 8=Sharp Slide）
+        const isSlideTone = (trackType === 'square' && (tone === 7 || tone === 8));
 
         // ノイズトラック
         if (trackType === 'noise') {
@@ -262,7 +270,8 @@ class BgmPlayer {
 
         // 波形タイプ
         if (trackType === 'square') {
-            if (tone >= 3 && tone <= 5) {
+            if ((tone >= 3 && tone <= 5) || tone === 8) {
+                // Sharp系 と Sharp (Slide)
                 const wave = this.getPeriodicWave(0.125);
                 if (wave) osc.setPeriodicWave(wave);
                 else osc.type = 'square';
@@ -275,7 +284,19 @@ class BgmPlayer {
             else if (tone === 2) { osc.type = 'sawtooth'; volumeScale = 0.6; }
         }
 
-        osc.frequency.value = freq;
+        const t = this.audioCtx.currentTime;
+
+        // 周波数設定（スライド判定: 直前ノートが隣接ステップまでの場合のみ）
+        const doSlide = isSlideTone
+            && currentStep !== null
+            && this.lastFreq[trackIdx] != null
+            && this.lastNoteEndStep[trackIdx] >= currentStep;
+        if (doSlide) {
+            osc.frequency.setValueAtTime(this.lastFreq[trackIdx], t);
+            osc.frequency.linearRampToValueAtTime(freq, t + 0.03);
+        } else {
+            osc.frequency.value = freq;
+        }
 
         // tone別の基本音量
         let baseVol;
@@ -288,13 +309,14 @@ class BgmPlayer {
                 case 4: baseVol = 0.35; break;
                 case 5: baseVol = 0.3; break;
                 case 6: baseVol = 0.05; break;
+                case 7: baseVol = 0.12; break; // Standard Slide (同: Standard)
+                case 8: baseVol = 0.25; break; // Sharp Slide (同: Sharp)
                 default: baseVol = 0.12; break;
             }
         } else {
             baseVol = 0.2;
         }
         const volume = baseVol * track.volume * volumeScale;
-        const t = this.audioCtx.currentTime;
 
         // エンベロープ設定
         const isShort = (tone === 1 || tone === 4);
@@ -319,6 +341,12 @@ class BgmPlayer {
         osc.stop(t + duration + 0.05);
 
         this.activeOscillators[trackIdx] = { osc, gain };
+
+        // スライド判定用に直前音の情報を記録
+        if (currentStep !== null) {
+            this.lastFreq[trackIdx] = freq;
+            this.lastNoteEndStep[trackIdx] = currentStep + noteLength;
+        }
 
         // 停止後にクリア
         setTimeout(() => {
@@ -726,7 +754,9 @@ class BgmPlayer {
                             stepDuration * note.length,
                             trackIdx,
                             trackTypes[trackIdx],
-                            track
+                            track,
+                            step,
+                            note.length
                         );
                     }
                 });
@@ -738,6 +768,9 @@ class BgmPlayer {
             if (step >= maxSteps) {
                 if (loop) {
                     step = 0;
+                    // ループ先頭に戻る際はスライド用の直前音情報をリセット
+                    this.lastFreq = [null, null, null, null];
+                    this.lastNoteEndStep = [-1, -1, -1, -1];
                 } else {
                     this.stop();
                 }
@@ -781,5 +814,8 @@ class BgmPlayer {
             clearInterval(this.playInterval);
             this.playInterval = null;
         }
+        // スライド用の直前音情報をリセット
+        this.lastFreq = [null, null, null, null];
+        this.lastNoteEndStep = [-1, -1, -1, -1];
     }
 }

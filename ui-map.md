@@ -316,6 +316,8 @@
 | U300 | Sharp (Short) | Sharp (Short) | JS object config | bgm-editor.js | |
 | U301 | Sharp (FadeIn) | Sharp (FadeIn) | JS object config | bgm-editor.js | |
 | U302 | Tremolo (高速) | Tremolo (Fast) | JS message/literal | bgm-editor.js | |
+| U532 | Standard (Slide) | Standard (Slide) | JS object config | bgm-editor.js | |
+| U533 | Sharp (Slide) | Sharp (Slide) | JS object config | bgm-editor.js | |
 | U303 | Soft (Sine) | Soft (Sine) | JS object config | bgm-editor.js | |
 | U304 | Power (Saw) | Power (Saw) | JS object config | bgm-editor.js | |
 | U305 | Kick (ピッチ下降) | Kick (Pitch Down) | JS message/literal | bgm-editor.js | |

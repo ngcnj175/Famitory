@@ -268,6 +268,8 @@ const AppI18N = {
         'U300': { JPN: 'Sharp (Short)',      ENG: 'Sharp (Short)' },
         'U301': { JPN: 'Sharp (FadeIn)',     ENG: 'Sharp (FadeIn)' },
         'U302': { JPN: 'Tremolo (高速)',     ENG: 'Tremolo (Fast)' },
+        'U532': { JPN: 'Standard (Slide)',   ENG: 'Standard (Slide)' },
+        'U533': { JPN: 'Sharp (Slide)',      ENG: 'Sharp (Slide)' },
         'U303': { JPN: 'Soft (Sine)',        ENG: 'Soft (Sine)' },
         'U304': { JPN: 'Power (Saw)',        ENG: 'Power (Saw)' },
         'U305': { JPN: 'Kick (ピッチ下降)',   ENG: 'Kick (Pitch Down)' },
