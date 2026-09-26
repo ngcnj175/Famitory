@@ -97,6 +97,21 @@ class BgmPlayer {
         return { note: this.noteNames[noteIdx], octave };
     }
 
+    /**
+     * オシレーターとゲインの接続。Standard系(tone 0,1,2,7)は低域を薄く削って軽い響きに。
+     */
+    connectOscToGain(osc, gain, trackType, tone) {
+        if (trackType === 'square' && (tone === 0 || tone === 1 || tone === 2 || tone === 7)) {
+            const hp = this.audioCtx.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 180;
+            osc.connect(hp);
+            hp.connect(gain);
+        } else {
+            osc.connect(gain);
+        }
+    }
+
     getPeriodicWave(duty) {
         if (!this.audioCtx) return null;
         const cacheKey = `pulse_${duty}`;
@@ -213,7 +228,7 @@ class BgmPlayer {
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
         }
 
-        osc.connect(gain);
+        this.connectOscToGain(osc, gain, trackType, tone);
         osc.start();
         osc.stop(t + duration);
     }
@@ -345,7 +360,7 @@ class BgmPlayer {
             gain.gain.linearRampToValueAtTime(0.01, t + duration);
         }
 
-        osc.connect(gain);
+        this.connectOscToGain(osc, gain, trackType, tone);
         osc.start();
         osc.stop(t + duration + 0.05);
 
@@ -698,7 +713,7 @@ class BgmPlayer {
         if (trackType === 'triangle' && tone === 2) volumeScale = 0.6;
         gain.gain.value = baseVol * track.volume * volumeScale;
 
-        osc.connect(gain);
+        this.connectOscToGain(osc, gain, trackType, tone);
         osc.start();
         this.currentKeyOsc = osc;
         this.currentKeyGain = gain;
