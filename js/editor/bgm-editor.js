@@ -704,12 +704,12 @@ const SoundEditor = {
                 { val: 0, id: 'U296', fallback: 'Standard' },
                 { val: 1, id: 'U297', fallback: 'Standard (Short)' },
                 { val: 2, id: 'U298', fallback: 'Standard (FadeIn)' },
+                { val: 7, id: 'U532', fallback: 'Standard (Slide)' },
                 { val: 3, id: 'U299', fallback: 'Sharp' },
                 { val: 4, id: 'U300', fallback: 'Sharp (Short)' },
                 { val: 5, id: 'U301', fallback: 'Sharp (FadeIn)' },
-                { val: 6, id: 'U302', fallback: 'Tremolo (高速)' },
-                { val: 7, id: 'U532', fallback: 'Standard (Slide)' },
-                { val: 8, id: 'U533', fallback: 'Sharp (Slide)' }
+                { val: 8, id: 'U533', fallback: 'Sharp (Slide)' },
+                { val: 6, id: 'U302', fallback: 'Tremolo (高速)' }
             ];
         } else if (trackType === 'triangle') {
             options = [

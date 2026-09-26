@@ -14,9 +14,8 @@ class BgmPlayer {
         this.isPaused = false;
         this.playInterval = null;
         this.activeOscillators = [null, null, null, null];
-        // ポルタメント（スライド音色）用: 直前音の周波数と終端ステップをトラック毎に保持
+        // ポルタメント（スライド音色）用: 直前音の周波数をトラック毎に保持
         this.lastFreq = [null, null, null, null];
-        this.lastNoteEndStep = [-1, -1, -1, -1];
         this.outputNode = null; // 外部から設定可能な出力先（未設定時はaudioCtx.destination）
 
         // キーボードプレビュー用
@@ -60,7 +59,6 @@ class BgmPlayer {
         this.waveCache = {};
         this.activeOscillators = [null, null, null, null];
         this.lastFreq = [null, null, null, null];
-        this.lastNoteEndStep = [-1, -1, -1, -1];
 
         // ゲームエンジンのBGMプレイヤーもクリア
         if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer) {
@@ -221,7 +219,7 @@ class BgmPlayer {
     /**
      * 再生ループ用モノフォニック発音（トラックごとに同時発音1に制限）
      */
-    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track, currentStep = null, noteLength = 1) {
+    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track, currentStep = null) {
         if (!this.audioCtx) return;
         const tone = track.tone || 0;
 
@@ -286,11 +284,10 @@ class BgmPlayer {
 
         const t = this.audioCtx.currentTime;
 
-        // 周波数設定（スライド判定: 直前ノートが隣接ステップまでの場合のみ）
+        // 周波数設定（スライド判定: 同じトラックで直前に鳴った音があれば距離を問わずスライド）
         const doSlide = isSlideTone
             && currentStep !== null
-            && this.lastFreq[trackIdx] != null
-            && this.lastNoteEndStep[trackIdx] >= currentStep;
+            && this.lastFreq[trackIdx] != null;
         // スライド時間はノート長に応じて短縮（短い音符でも成立するように）
         const slideTime = Math.min(0.08, duration * 0.5);
         if (doSlide) {
@@ -350,10 +347,9 @@ class BgmPlayer {
 
         this.activeOscillators[trackIdx] = { osc, gain };
 
-        // スライド判定用に直前音の情報を記録
+        // スライド判定用に直前音の周波数を記録
         if (currentStep !== null) {
             this.lastFreq[trackIdx] = freq;
-            this.lastNoteEndStep[trackIdx] = currentStep + noteLength;
         }
 
         // 停止後にクリア
@@ -763,8 +759,7 @@ class BgmPlayer {
                             trackIdx,
                             trackTypes[trackIdx],
                             track,
-                            step,
-                            note.length
+                            step
                         );
                     }
                 });
@@ -778,7 +773,6 @@ class BgmPlayer {
                     step = 0;
                     // ループ先頭に戻る際はスライド用の直前音情報をリセット
                     this.lastFreq = [null, null, null, null];
-                    this.lastNoteEndStep = [-1, -1, -1, -1];
                 } else {
                     this.stop();
                 }
@@ -824,6 +818,5 @@ class BgmPlayer {
         }
         // スライド用の直前音情報をリセット
         this.lastFreq = [null, null, null, null];
-        this.lastNoteEndStep = [-1, -1, -1, -1];
     }
 }
