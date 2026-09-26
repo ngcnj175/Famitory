@@ -1185,10 +1185,8 @@ const SoundEditor = {
                     // ダブルクリック: 停止（位置リセット）
                     this.stop();
                 } else if (this.player.isPlaying) {
-                    // 再生中シングルクリック: 一時停止（録音中は停止させない）
-                    if (!this.isStepRecording) {
-                        this.pause();
-                    }
+                    // 再生中シングルクリック: 一時停止（録音中でも可）
+                    this.pause();
                 } else if (this.player.isPaused) {
                     // 一時停止中シングルクリック: 再開
                     this.resume();
