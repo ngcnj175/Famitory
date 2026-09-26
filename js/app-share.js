@@ -4,12 +4,13 @@
 
 const AppShare = {
 
-    // 共有ダイアログの公開ステータスバッジを更新
+    // 共有ダイアログの公開ステータスバッジと「非公開に戻す」ボタンを更新
     updateShareStatus() {
         const badge = document.getElementById('share-status');
-        if (!badge) return;
+        const unpublishBtn = document.getElementById('share-unpublish-btn');
         const hasShareId = !!(App.projectData?.meta?.shareId);
-        badge.classList.toggle('hidden', !hasShareId);
+        if (badge) badge.classList.toggle('hidden', !hasShareId);
+        if (unpublishBtn) unpublishBtn.classList.toggle('hidden', !hasShareId);
     },
 
     // 公開確認ダイアログを表示し、OKされたら onConfirm を呼ぶ
@@ -115,6 +116,15 @@ const AppShare = {
                 App._shareUrl = url;
                 this.updateShareStatus();
                 App.showToast(AppI18N.t(isFirstTime ? 'U380' : 'U381'));
+
+                // 初回公開時はエディットキーの保管を促す
+                if (isFirstTime) {
+                    const key = App.projectData?.meta?.editKey || '';
+                    const sub = key
+                        ? `${AppI18N.t('U522')}: ${key}\n${AppI18N.t('U531')}`
+                        : AppI18N.t('U531');
+                    AppDialogs.showAlert(AppI18N.t('U530'), sub);
+                }
             } catch (e) {
                 console.error('[Share] publishAndShare error:', e);
                 App.showToast(AppI18N.t('U382'));
@@ -122,6 +132,46 @@ const AppShare = {
                 this._shareLoading = false;
             }
         });
+    },
+
+    // ゲームを非公開に戻す（Firebase の games/{id} を完全削除 + ARCADE 登録も解除）
+    async unpublishGame() {
+        if (this._shareLoading) {
+            App.showToast(AppI18N.t('U377'));
+            return;
+        }
+        const id = App.projectData?.meta?.shareId;
+        if (!id) return;
+
+        AppDialogs.showConfirm(
+            AppI18N.t('U525'),
+            AppI18N.t('U526'),
+            async () => {
+                if (!window.firebaseDB) {
+                    App.showToast(AppI18N.t('U378'));
+                    return;
+                }
+                this._shareLoading = true;
+                try {
+                    await window.firebaseDB.ref('games/' + id).remove();
+                    if (typeof ShareArcade !== 'undefined') {
+                        ShareArcade.invalidateCache();
+                    }
+                    App.projectData.meta.shareId = '';
+                    App._shareUrl = '';
+                    if (App.currentProjectName) {
+                        Storage.saveProject(App.currentProjectName, App.projectData);
+                    }
+                    this.updateShareStatus();
+                    App.showToast(AppI18N.t('U527'));
+                } catch (e) {
+                    console.error('[Share] unpublish failed:', e);
+                    App.showToast(AppI18N.t('U528'));
+                } finally {
+                    this._shareLoading = false;
+                }
+            }
+        );
     },
 
     // クリップボードコピー（iOS対応強化版）
@@ -221,6 +271,12 @@ const AppShare = {
                 window.open(twitterUrl, '_blank');
             });
         };
+
+        // 非公開に戻す
+        const unpublishBtn = document.getElementById('share-unpublish-btn');
+        if (unpublishBtn) {
+            unpublishBtn.onclick = () => this.unpublishGame();
+        }
 
         // Discord → 公開確認 → テキスト+URLをクリップボードへ
         discordBtn.onclick = () => {

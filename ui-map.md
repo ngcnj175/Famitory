@@ -505,3 +505,11 @@
 | U471 | 設定 | Settings | JS message/literal (中項目カード見出し) | stage-editor.js | ✓ |
 | U472 | 基本設定 | Basics | HTML text node (ゲーム設定 基本設定カード見出し) | index.html | ✓ |
 | U520 | ミュート | Mute | JS attribute (title) BGMチャンネルストリップのミュートバッジ | bgm-editor.js | ✓ |
+| U524 | 非公開に戻す | Unpublish | HTML text node (シェアダイアログ 非公開に戻すボタン) | index.html | ✓ |
+| U525 | 非公開に戻しますか？ | Unpublish this game? | JS message/literal (非公開化確認ダイアログ 見出し) | app-share.js | ✓ |
+| U526 | URLは無効になり、ARCADEからも削除されます。この操作は取り消せません。 | The URL will stop working and it will be removed from ARCADE. This action cannot be undone. | JS message/literal (非公開化確認ダイアログ 本文) | app-share.js | ✓ |
+| U527 | 非公開に戻しました | Unpublished | JS message/literal (非公開化成功トースト) | app-share.js | ✓ |
+| U528 | 非公開化に失敗しました | Failed to unpublish | JS message/literal (非公開化失敗トースト) | app-share.js | ✓ |
+| U529 | このキーを紛失すると、以後このゲームを編集・非公開化できません。必ず控えを保管してください。 | If you lose this key, you cannot edit or unpublish this game later. Please save it. | HTML text node (プレイ画面 エディットキー欄の警告文) | index.html | ✓ |
+| U530 | エディットキーを控えてください | Save your edit key | JS message/literal (初回公開成功アラート 見出し) | app-share.js | ✓ |
+| U531 | 今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。 | You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen. | JS message/literal (初回公開成功アラート 本文) | app-share.js | ✓ |
