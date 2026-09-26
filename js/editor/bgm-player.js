@@ -177,9 +177,9 @@ class BgmPlayer {
         let baseVol;
         if (trackType === 'square') {
             switch (tone) {
-                case 0: baseVol = 0.12; break; // Standard
-                case 1: baseVol = 0.15; break; // Standard (Short)
-                case 2: baseVol = 0.15; break; // Standard (FadeIn)
+                case 0: baseVol = 0.108; break; // Standard
+                case 1: baseVol = 0.135; break; // Standard (Short)
+                case 2: baseVol = 0.135; break; // Standard (FadeIn)
                 case 3: baseVol = 0.275; break; // Sharp
                 case 4: baseVol = 0.385; break; // Sharp (Short)
                 case 5: baseVol = 0.33; break;  // Sharp (FadeIn)
@@ -303,16 +303,16 @@ class BgmPlayer {
         let baseVol;
         if (trackType === 'square') {
             switch (tone) {
-                case 0: baseVol = 0.12; break;
-                case 1: baseVol = 0.15; break;
-                case 2: baseVol = 0.15; break;
+                case 0: baseVol = 0.108; break;
+                case 1: baseVol = 0.135; break;
+                case 2: baseVol = 0.135; break;
                 case 3: baseVol = 0.275; break;
                 case 4: baseVol = 0.385; break;
                 case 5: baseVol = 0.33; break;
                 case 6: baseVol = 0.05; break;
-                case 7: baseVol = 0.12; break;  // Standard Slide (同: Standard)
+                case 7: baseVol = 0.108; break; // Standard Slide (同: Standard)
                 case 8: baseVol = 0.275; break; // Sharp Slide (同: Sharp)
-                default: baseVol = 0.12; break;
+                default: baseVol = 0.108; break;
             }
         } else {
             baseVol = 0.2;
@@ -681,16 +681,18 @@ class BgmPlayer {
         }
 
         osc.frequency.value = freq;
-        let baseVol = (trackType === 'square') ? 0.12 : 0.2;
+        let baseVol = (trackType === 'square') ? 0.108 : 0.2;
         if (trackType === 'square') {
             switch (tone) {
-                case 0: baseVol = 0.12; break;
-                case 1: baseVol = 0.15; break;
-                case 2: baseVol = 0.15; break;
+                case 0: baseVol = 0.108; break;
+                case 1: baseVol = 0.135; break;
+                case 2: baseVol = 0.135; break;
                 case 3: baseVol = 0.275; break;
                 case 4: baseVol = 0.385; break;
                 case 5: baseVol = 0.33; break;
                 case 6: baseVol = 0.05; break;
+                case 7: baseVol = 0.108; break; // Standard Slide (同: Standard)
+                case 8: baseVol = 0.275; break; // Sharp Slide (同: Sharp)
             }
         }
         if (trackType === 'triangle' && tone === 2) volumeScale = 0.6;
