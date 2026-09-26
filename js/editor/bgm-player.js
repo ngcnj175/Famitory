@@ -200,8 +200,10 @@ class BgmPlayer {
             gain.gain.setValueAtTime(volume, t);
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration * 0.5);
         } else if (isFadeIn) {
+            // ピーク到達を早めて拍に乗るよう改善
+            const fadePeak = Math.min(duration * 0.25, 0.06);
             gain.gain.setValueAtTime(0.01, t);
-            gain.gain.exponentialRampToValueAtTime(volume, t + duration * 0.7);
+            gain.gain.exponentialRampToValueAtTime(volume, t + fadePeak);
             gain.gain.setValueAtTime(volume, t + duration * 0.9);
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
         } else {
@@ -325,8 +327,10 @@ class BgmPlayer {
             gain.gain.setValueAtTime(volume, t);
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration * 0.5);
         } else if (isFadeIn) {
+            // ピーク到達を早めて拍に乗るよう改善
+            const fadePeak = Math.min(duration * 0.25, 0.06);
             gain.gain.setValueAtTime(0.01, t);
-            gain.gain.exponentialRampToValueAtTime(volume, t + duration * 0.7);
+            gain.gain.exponentialRampToValueAtTime(volume, t + fadePeak);
             gain.gain.setValueAtTime(volume, t + duration * 0.9);
             gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
         } else if (doSlide) {
