@@ -1847,11 +1847,18 @@ const SoundEditor = {
                 }
             }
 
-            if (length > 0) {
+            // クオンタイズ（8分=2ステップ、最近傍丸め）
+            const GRID = 2;
+            let quantStep = Math.round(this.rtNoteStartStep / GRID) * GRID;
+            if (quantStep >= maxSteps) quantStep = 0; // 末尾はループ先頭に寄せる
+            let quantLength = Math.round(length / GRID) * GRID;
+            if (quantLength < GRID) quantLength = GRID;
+
+            if (quantLength > 0) {
                 track.notes.push({
-                    step: this.rtNoteStartStep,
+                    step: quantStep,
                     pitch: this.rtNotePitch,
-                    length: length
+                    length: quantLength
                 });
             }
 
