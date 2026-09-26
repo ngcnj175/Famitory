@@ -180,9 +180,9 @@ class BgmPlayer {
                 case 0: baseVol = 0.12; break; // Standard
                 case 1: baseVol = 0.15; break; // Standard (Short)
                 case 2: baseVol = 0.15; break; // Standard (FadeIn)
-                case 3: baseVol = 0.25; break; // Sharp
-                case 4: baseVol = 0.35; break; // Sharp (Short)
-                case 5: baseVol = 0.3; break;  // Sharp (FadeIn)
+                case 3: baseVol = 0.275; break; // Sharp
+                case 4: baseVol = 0.385; break; // Sharp (Short)
+                case 5: baseVol = 0.33; break;  // Sharp (FadeIn)
                 case 6: baseVol = 0.05; break; // Tremolo
                 default: baseVol = 0.12; break;
             }
@@ -306,12 +306,12 @@ class BgmPlayer {
                 case 0: baseVol = 0.12; break;
                 case 1: baseVol = 0.15; break;
                 case 2: baseVol = 0.15; break;
-                case 3: baseVol = 0.25; break;
-                case 4: baseVol = 0.35; break;
-                case 5: baseVol = 0.3; break;
+                case 3: baseVol = 0.275; break;
+                case 4: baseVol = 0.385; break;
+                case 5: baseVol = 0.33; break;
                 case 6: baseVol = 0.05; break;
-                case 7: baseVol = 0.12; break; // Standard Slide (同: Standard)
-                case 8: baseVol = 0.25; break; // Sharp Slide (同: Sharp)
+                case 7: baseVol = 0.12; break;  // Standard Slide (同: Standard)
+                case 8: baseVol = 0.275; break; // Sharp Slide (同: Sharp)
                 default: baseVol = 0.12; break;
             }
         } else {
@@ -687,9 +687,9 @@ class BgmPlayer {
                 case 0: baseVol = 0.12; break;
                 case 1: baseVol = 0.15; break;
                 case 2: baseVol = 0.15; break;
-                case 3: baseVol = 0.25; break;
-                case 4: baseVol = 0.35; break;
-                case 5: baseVol = 0.3; break;
+                case 3: baseVol = 0.275; break;
+                case 4: baseVol = 0.385; break;
+                case 5: baseVol = 0.33; break;
                 case 6: baseVol = 0.05; break;
             }
         }
