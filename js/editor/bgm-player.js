@@ -289,7 +289,7 @@ class BgmPlayer {
             && currentStep !== null
             && this.lastFreq[trackIdx] != null;
         // スライド時間はノート長に応じて短縮（短い音符でも成立するように）
-        const slideTime = Math.min(0.08, duration * 0.5);
+        const slideTime = Math.min(0.2, duration * 0.7);
         if (doSlide) {
             osc.frequency.setValueAtTime(this.lastFreq[trackIdx], t);
             osc.frequency.linearRampToValueAtTime(freq, t + slideTime);
