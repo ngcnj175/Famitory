@@ -1847,8 +1847,8 @@ const SoundEditor = {
                 }
             }
 
-            // クオンタイズ（8分=2ステップ、最近傍丸め）
-            const GRID = 2;
+            // クオンタイズ（16分=1ステップ、最近傍丸め）
+            const GRID = 1;
             let quantStep = Math.round(this.rtNoteStartStep / GRID) * GRID;
             if (quantStep >= maxSteps) quantStep = 0; // 末尾はループ先頭に寄せる
             let quantLength = Math.round(length / GRID) * GRID;
