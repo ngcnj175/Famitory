@@ -1819,8 +1819,12 @@ const SoundEditor = {
         // ステップ録音/リアルタイム録音
         if (this.isStepRecording) {
             if (this.player.isPlaying) {
-                // リアルタイム録音：開始位置とピッチを記録
-                this.rtNoteStartStep = this.currentStep;
+                // リアルタイム録音：サブステップ精度で開始位置とピッチを記録
+                const song = this.getCurrentSong();
+                const maxSteps = song.bars;
+                const elapsed = this.stepStartTime ? (performance.now() - this.stepStartTime) : 0;
+                const frac = this.stepDurationMs ? Math.min(1, Math.max(0, elapsed / this.stepDurationMs)) : 0;
+                this.rtNoteStartStep = (Math.round(this.currentStep + frac)) % maxSteps;
                 this.rtNotePitch = pitch;
             } else {
                 // 通常のステップ録音
@@ -1836,31 +1840,21 @@ const SoundEditor = {
             const track = song.tracks[this.currentTrack];
             const maxSteps = song.bars;
 
-            // 長さを計算
+            // 長さを計算（rtNoteStartStepは繰り上げ済みの可能性あり）
             let length = this.currentStep - this.rtNoteStartStep;
-            if (length <= 0) {
-                // ループまたぎの考慮
+            if (length < 1) {
+                // 同一/直前ステップでのリリース、またはループまたぎ
                 if (this.currentStep < this.rtNoteStartStep) {
                     length = (maxSteps - this.rtNoteStartStep) + this.currentStep;
-                } else {
-                    length = 1; // 同一ステップ内でのリリース
                 }
+                if (length < 1) length = 1;
             }
 
-            // クオンタイズ（16分=1ステップ、最近傍丸め）
-            const GRID = 1;
-            let quantStep = Math.round(this.rtNoteStartStep / GRID) * GRID;
-            if (quantStep >= maxSteps) quantStep = 0; // 末尾はループ先頭に寄せる
-            let quantLength = Math.round(length / GRID) * GRID;
-            if (quantLength < GRID) quantLength = GRID;
-
-            if (quantLength > 0) {
-                track.notes.push({
-                    step: quantStep,
-                    pitch: this.rtNotePitch,
-                    length: quantLength
-                });
-            }
+            track.notes.push({
+                step: this.rtNoteStartStep,
+                pitch: this.rtNotePitch,
+                length: length
+            });
 
             this.rtNoteStartStep = -1;
             this.rtNotePitch = -1;
@@ -2291,6 +2285,8 @@ const SoundEditor = {
         this.player.play(song, this.trackTypes, startStep, (step) => {
             // onStep コールバック: UIを更新する
             this.currentStep = step;
+            this.stepStartTime = performance.now();
+            this.stepDurationMs = 60000 / song.bpm / 4;
             this.render();
             // メトロノーム: ON時、STEP 1/5/9/13… (4STEPごと) でクリック
             if (this.isMetronomeOn && step % 4 === 0) {
