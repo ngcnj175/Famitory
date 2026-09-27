@@ -248,11 +248,8 @@ class BgmPlayer {
         if (!this.audioCtx) return;
         const tone = track.tone || 0;
 
-        // 前の音を停止
-        if (this.activeOscillators[trackIdx]) {
-            try { this.activeOscillators[trackIdx].osc.stop(); } catch (e) { }
-            this.activeOscillators[trackIdx] = null;
-        }
+        // 前の音を停止（osc / noise どちらも対応）
+        this._stopActive(trackIdx);
 
         // スライド音色（Square: tone 7=Standard Slide, 8=Sharp Slide）
         const isSlideTone = (trackType === 'square' && (tone === 7 || tone === 8));
@@ -261,22 +258,27 @@ class BgmPlayer {
         if (trackType === 'noise') {
             const pitch = this.noteToPitch(note, octave);
             if (tone === 0) {
-                this.playPitchedNoise(pitch, duration, track.volume, track.pan);
+                // PitchedNoise はモノフォニック（1トラック=1音のコンセプト）
+                const src = this.playPitchedNoise(pitch, duration, track.volume, track.pan);
+                if (src) this.activeOscillators[trackIdx] = src;
             } else {
+                // Drum系 (tone=1〜7) はファミコン準拠でポリフォニック（連打を許容）
                 this.playDrum(pitch, duration, track.volume, track.pan, tone);
             }
             return;
         }
 
-        // TRIANGLE Kickトーン
+        // TRIANGLE Kickトーン（モノフォニック）
         if (trackType === 'triangle' && tone === 3) {
-            this.playKickTone(note, octave, track.volume, track.pan, duration);
+            const src = this.playKickTone(note, octave, track.volume, track.pan, duration);
+            if (src) this.activeOscillators[trackIdx] = src;
             return;
         }
 
-        // SQUARE Tremoloトーン
+        // SQUARE Tremoloトーン（モノフォニック）
         if (trackType === 'square' && tone === 6) {
-            this.playTremolo(note, octave, track.volume, track.pan, duration);
+            const src = this.playTremolo(note, octave, track.volume, track.pan, duration);
+            if (src) this.activeOscillators[trackIdx] = src;
             return;
         }
 
@@ -353,9 +355,18 @@ class BgmPlayer {
         }, duration * 1000);
     }
 
+    // ========== 内部ヘルパ: トラック単位で発音中の音を即停止 ==========
+    _stopActive(trackIdx) {
+        const prev = this.activeOscillators[trackIdx];
+        if (!prev) return;
+        const src = prev.osc || prev.noise;
+        if (src) { try { src.stop(); } catch (e) { } }
+        this.activeOscillators[trackIdx] = null;
+    }
+
     // ========== Kickトーン（短くピッチ下降する音） ==========
     playKickTone(note, octave, volume, pan, duration = 0.15) {
-        if (!this.audioCtx) return;
+        if (!this.audioCtx) return null;
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
@@ -374,11 +385,12 @@ class BgmPlayer {
         osc.connect(gain);
         osc.start();
         osc.stop(t + duration);
+        return { osc, gain };
     }
 
     // ========== トレモロ（1オクターブ上と交互に高速切替） ==========
     playTremolo(note, octave, volume, pan, duration) {
-        if (!this.audioCtx) return;
+        if (!this.audioCtx) return null;
         const freq1 = this.getFrequency(note, octave);
         const freq2 = freq1 * 2;
         const osc = this.audioCtx.createOscillator();
@@ -406,6 +418,7 @@ class BgmPlayer {
         osc.connect(gain);
         osc.start();
         osc.stop(t + duration);
+        return { osc, gain };
     }
 
     // ========== Noise (ピッチ) - 音程対応の持続ノイズ ==========
