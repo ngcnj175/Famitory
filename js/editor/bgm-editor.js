@@ -2365,9 +2365,10 @@ const SoundEditor = {
 
         // デフォルト値設定
         this._numcopyTracks = [this.currentTrack];
-        document.getElementById('numcopy-from').textContent = '0';
-        document.getElementById('numcopy-to').textContent = String(song.bars - 1);
-        document.getElementById('numcopy-paste-at').textContent = String(song.bars);
+        // 表示は1-indexed（内部データは0-indexed、execNumCopy で -1 変換）
+        document.getElementById('numcopy-from').textContent = '1';
+        document.getElementById('numcopy-to').textContent = String(song.bars);
+        document.getElementById('numcopy-paste-at').textContent = String(song.bars + 1);
 
         // トラックボタン状態リセット
         document.querySelectorAll('.numcopy-track-btn').forEach(btn => {
@@ -2439,9 +2440,9 @@ const SoundEditor = {
 
         // ドラッグ数値操作（3つの要素に適用）
         const song = this.getCurrentSong();
-        this._setupNumCopyDrag('numcopy-from', 0, 255);
-        this._setupNumCopyDrag('numcopy-to', 0, 255);
-        this._setupNumCopyDrag('numcopy-paste-at', 0, 255);
+        this._setupNumCopyDrag('numcopy-from', 1, 256);
+        this._setupNumCopyDrag('numcopy-to', 1, 256);
+        this._setupNumCopyDrag('numcopy-paste-at', 1, 256);
 
         // 実行ボタン
         document.getElementById('numcopy-exec').onclick = () => this.execNumCopy();
@@ -2523,9 +2524,10 @@ const SoundEditor = {
             return;
         }
 
-        const fromStep = parseInt(document.getElementById('numcopy-from').textContent) || 0;
-        const toStep = parseInt(document.getElementById('numcopy-to').textContent) || 0;
-        const pasteAt = parseInt(document.getElementById('numcopy-paste-at').textContent) || 0;
+        // 表示は1-indexed → 内部の0-indexedに変換
+        const fromStep = (parseInt(document.getElementById('numcopy-from').textContent) || 1) - 1;
+        const toStep = (parseInt(document.getElementById('numcopy-to').textContent) || 1) - 1;
+        const pasteAt = (parseInt(document.getElementById('numcopy-paste-at').textContent) || 1) - 1;
 
         if (fromStep > toStep) {
             App.showAlert(this.t('U331'));
