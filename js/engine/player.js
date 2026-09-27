@@ -389,6 +389,9 @@ class Player {
         // 武器を持っていない場合は攻撃不可
         if (!this.hasWeapon) return;
 
+        // 武器の基本スプライト未登録時は攻撃不可（SEも鳴らさない）
+        if (this.template?.sprites?.shot?.frames?.[0] === undefined) return;
+
         // ダメージによる無敵中（starPower以外）は攻撃不可
         if (this.invincible && !this.starPower) return;
 
