@@ -2067,7 +2067,7 @@ const SoundEditor = {
             const newPitch = this.pasteOffset.pitch + copyNote.relPitch;
 
             // 範囲チェック
-            if (newStep >= 0 && newStep < maxSteps && newPitch >= 0 && newPitch < 72) {
+            if (newStep >= 0 && newStep < maxSteps && newPitch >= 0 && newPitch < 84) {
                 // 既存ノートとの重複チェック
                 const exists = track.notes.some(n => n.step === newStep && n.pitch === newPitch);
                 if (!exists) {
