@@ -101,11 +101,16 @@ class NoteEditor {
     //  イベントハンドラ
     // ─────────────────────────────────────────
 
+    // 縦スクロール上限（全ピッチ表示に必要な最大スクロール量）
+    _maxScrollY() {
+        return (BgmRenderer.MAX_PITCH + 1) * this._o.cellSize - this._canvas.height;
+    }
+
     _onWheel(e) {
         if (App.currentScreen !== 'sound') return;
         e.preventDefault();
         const o = this._o;
-        const maxScrollY = 84 * o.cellSize - this._canvas.height;
+        const maxScrollY = this._maxScrollY();
         const speed = 0.3;
         o.scrollX = Math.max(0, o.scrollX + (e.shiftKey ? e.deltaY : 0) * speed);
         o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (e.shiftKey ? 0 : e.deltaY) * speed));
@@ -182,7 +187,7 @@ class NoteEditor {
             const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             const o  = this._o;
-            const maxScrollY = 84 * o.cellSize - this._canvas.height;
+            const maxScrollY = this._maxScrollY();
             o.scrollX = Math.max(0, o.scrollX + (this._lastTouchX - cx));
             o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._lastTouchY - cy)));
             this._lastTouchX = cx;
@@ -196,7 +201,7 @@ class NoteEditor {
         if (this._isHandPan && e.touches.length === 1) {
             e.preventDefault();
             const o = this._o;
-            const maxScrollY = 84 * o.cellSize - this._canvas.height;
+            const maxScrollY = this._maxScrollY();
             o.scrollX = Math.max(0, o.scrollX + (this._handPanX - e.touches[0].clientX));
             o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._handPanY - e.touches[0].clientY)));
             this._handPanX = e.touches[0].clientX;
@@ -236,7 +241,7 @@ class NoteEditor {
         // 中ボタンパン
         if (this._isMidPan) {
             const o = this._o;
-            const maxScrollY = 84 * o.cellSize - this._canvas.height;
+            const maxScrollY = this._maxScrollY();
             o.scrollX = Math.max(0, o.scrollX + (this._midPanX - e.clientX));
             o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._midPanY - e.clientY)));
             this._midPanX = e.clientX;
@@ -246,7 +251,7 @@ class NoteEditor {
         // ハンドツールパン
         if (this._isHandPan) {
             const o = this._o;
-            const maxScrollY = 84 * o.cellSize - this._canvas.height;
+            const maxScrollY = this._maxScrollY();
             o.scrollX = Math.max(0, o.scrollX + (this._handPanX - e.clientX));
             o.scrollY = Math.max(0, Math.min(maxScrollY, o.scrollY + (this._handPanY - e.clientY)));
             this._handPanX = e.clientX;
@@ -587,12 +592,12 @@ class NoteEditor {
     }
 
     _getStepPitch(pos) {
-        const o        = this._o;
-        const scrollY  = o.scrollY || 0;
-        const maxPitch = 83;
-        const step     = Math.floor((pos.x + o.scrollX) / o.cellSize);
-        const row      = Math.floor((pos.y + scrollY)   / o.cellSize);
-        const pitch    = Math.max(0, Math.min(83, maxPitch - row));
+        const o       = this._o;
+        const scrollY = o.scrollY || 0;
+        const step    = Math.floor((pos.x + o.scrollX) / o.cellSize);
+        const row     = Math.floor((pos.y + scrollY)   / o.cellSize);
+        // row>=0 のため BgmRenderer.MAX_PITCH-row は必ずMAX_PITCH以下、下限のみクランプ
+        const pitch   = Math.max(0, BgmRenderer.MAX_PITCH - row);
         return { step, pitch };
     }
 
@@ -622,7 +627,7 @@ class NoteEditor {
                 if (!this._isDragging) { this._stopAutoScroll(); return; }
 
                 const o          = this._o;
-                const maxScrollY = 84 * o.cellSize - this._canvas.height;
+                const maxScrollY = this._maxScrollY();
                 const oldX       = o.scrollX;
                 const oldY       = o.scrollY;
 

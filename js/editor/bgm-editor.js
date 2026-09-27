@@ -2067,7 +2067,7 @@ const SoundEditor = {
             const newPitch = this.pasteOffset.pitch + copyNote.relPitch;
 
             // 範囲チェック
-            if (newStep >= 0 && newStep < maxSteps && newPitch >= 0 && newPitch < 84) {
+            if (newStep >= 0 && newStep < maxSteps && newPitch >= 0 && newPitch <= BgmRenderer.MAX_PITCH) {
                 // 既存ノートとの重複チェック
                 const exists = track.notes.some(n => n.step === newStep && n.pitch === newPitch);
                 if (!exists) {
@@ -2183,14 +2183,14 @@ const SoundEditor = {
         const scrollStep = Math.floor(this.scrollX / this.cellSize);
         // 音程はC4付近または画面中央
         // スクロールYは上端からのピクセル数。Pitch 71が一番上(y=0)
-        // 画面上端のピッチ = 83 - Math.floor(scrollY / cellSize)
-        const topPitch = 83 - Math.floor(this.scrollY / this.cellSize);
+        // 画面上端のピッチ = MAX_PITCH - Math.floor(scrollY / cellSize)
+        const topPitch = BgmRenderer.MAX_PITCH - Math.floor(this.scrollY / this.cellSize);
         // コピーした内容の高さ(Pitch幅)を考慮して少し下（Pitchは小さい方が下）にオフセット
         const pastePitchOffset = topPitch - 4 - Math.floor((this.pasteData.height || 1) / 2);
 
         this.pasteOffset = {
             step: Math.max(0, scrollStep + 2),
-            pitch: Math.max(0, Math.min(83, pastePitchOffset))
+            pitch: Math.max(0, Math.min(BgmRenderer.MAX_PITCH, pastePitchOffset))
         };
 
         this.currentTool = 'paste';
@@ -2215,7 +2215,7 @@ const SoundEditor = {
             const newPitch = this.pasteOffset.pitch + note.pitch; // ノートのピッチオフセットを加算
 
             // 範囲チェック
-            if (newStep >= 0 && newStep < song.bars && newPitch >= 0 && newPitch <= 83) {
+            if (newStep >= 0 && newStep < song.bars && newPitch >= 0 && newPitch <= BgmRenderer.MAX_PITCH) {
                 // 重なるノートを削除するかどうかだが、PixelGameKitの仕様としては重ねてOKまたは上書き
                 // 単音トラックなら上書きすべきだが、データ構造的には重複許容
                 // ここでは既存の同じ位置・ピッチのノートがあれば削除して上書き
