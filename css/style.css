@@ -4345,15 +4345,13 @@ input, textarea, select, button {
 /* STEP表示（現在/総STEP）- 幅を絶対値で固定（font-size変動に依存しない） */
 #bar-display.value-lcd {
     width: 56px;
+    padding: 2px 0; /* 横パディング0で内容領域を最大化 */
     line-height: 14px; /* SPEED欄と縦高を揃える */
-    text-align: center;
-    padding: 2px 0; /* 横パディングは0にして内容領域を最大化 */
 }
 
 /* 4桁を含む場合のみ文字サイズを縮小して同じ枠内に収める */
 #bar-display.value-lcd.compact {
     font-size: 0.65em;
-    letter-spacing: -1px;
 }
 
 .value-lcd:active {
