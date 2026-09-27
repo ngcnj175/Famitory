@@ -4342,18 +4342,14 @@ input, textarea, select, button {
     padding: 2px 4px;
 }
 
+/* STEP表示（現在/総STEP: 例 "2048/2048"）- 4桁/4桁固定サイズ、SPEED欄と縦幅一致 */
 #bar-display.value-lcd {
-    width: 5.5ch;
-    /* 縦幅を固定してcompact切替時の変動を防ぐ（SPEED欄との縦バランス維持） */
-    line-height: 16px;
-}
-
-/* 4桁になったら文字サイズを縮小＋横幅拡張で枠内に収める */
-#bar-display.value-lcd.compact {
+    width: 7.5ch;
     font-size: 0.65em;
     letter-spacing: -1px;
-    width: 7.5ch;
     padding: 2px 1px;
+    line-height: 14.4px; /* SPEED欄(12px * 1.2)と縦高を揃える */
+    text-align: center;
 }
 
 .value-lcd:active {
