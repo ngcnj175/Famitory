@@ -4351,8 +4351,9 @@ input, textarea, select, button {
 /* 4桁になったら文字サイズを縮小＋横幅拡張で枠内に収める */
 #bar-display.value-lcd.compact {
     font-size: 0.65em;
-    letter-spacing: -0.5px;
-    width: 9ch;
+    letter-spacing: -1px;
+    width: 7.5ch;
+    padding: 2px 1px;
 }
 
 .value-lcd:active {
