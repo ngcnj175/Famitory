@@ -2535,7 +2535,9 @@ const SoundEditor = {
         }
 
         const copyLength = toStep - fromStep + 1;
-        let maxPastedStep = 0;
+        // ペースト範囲の終端（音符の実在有無に関わらず、コピー範囲分の枠を確保）
+        const pasteRangeEnd = pasteAt + copyLength;
+        let maxPastedStep = pasteRangeEnd;
 
         this.pushHistory();
         tracks.forEach(trackIdx => {
@@ -2555,7 +2557,7 @@ const SoundEditor = {
             copiedNotes.forEach(note => {
                 const newStep = pasteAt + note.step;
                 track.notes.push({ ...note, step: newStep });
-                // ノートの終了位置を考慮
+                // ノートの終了位置を考慮（枠を超えるlengthを持つノートに対応）
                 const noteEnd = newStep + (note.length || 1);
                 if (noteEnd > maxPastedStep) maxPastedStep = noteEnd;
             });
