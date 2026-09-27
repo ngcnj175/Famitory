@@ -862,10 +862,10 @@ input, textarea, select, button {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 3px 0;
+    gap: 8px;
+    padding: 8px 12px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-dark);
     background: #f5f5f5;
@@ -1008,6 +1008,8 @@ input, textarea, select, button {
     align-items: center;
     background: #f5f5f5;
     padding: 6px 0;
+    /* sprite / color / tile の全ギャラリー行を60pxで共通化（中身量による高さジャンプ防止） */
+    min-height: 60px;
 }
 
 /* 霑ｽ蜉�繝懊ち繝ｳ�亥ｷｦ蝗ｺ螳壹√ヤ繝ｼ繝ｫ縺ｨ邵ｦ霆ｸ謠�∴=48px蟷�∵棧邱壹↑縺暦ｼ� */
@@ -1040,7 +1042,7 @@ input, textarea, select, button {
 #sprite-list {
     display: flex;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 2px 8px;
 }
 
 .sprite-item {
@@ -1201,7 +1203,7 @@ input, textarea, select, button {
 #color-list {
     display: flex;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 2px 8px;
 }
 
 .palette-color {
@@ -1226,16 +1228,12 @@ input, textarea, select, button {
     padding-bottom: calc(6px + var(--safe-area-bottom));
 }
 
-/* タイル0個の時でも高さが変わらないよう、カラーパレットエリアと同じ高さで固定 */
-#tile-area {
-    min-height: 70px;
-}
 
 /* 繧ｿ繧､繝ｫ繝ｪ繧ｹ繝� */
 #tile-list {
     display: flex;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 2px 8px;
 }
 
 .tile-item {
