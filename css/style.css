@@ -1228,7 +1228,7 @@ input, textarea, select, button {
 
 /* タイル0個の時でも高さが変わらないよう、1個ある時の高さで最小高さを固定 */
 #tile-list {
-    min-height: 48px;
+    min-height: 56px;
 }
 
 /* 繧ｿ繧､繝ｫ繝ｪ繧ｹ繝� */
