@@ -266,6 +266,17 @@ input, textarea, select, button {
     text-align: left;
 }
 
+/* --- Creatorモード: タイトル〜エディットキー注意文までを上方向にシフト --- */
+#push-start-ui.creator-mode #game-title-block {
+    bottom: 72%;
+}
+#push-start-ui.creator-mode #game-author-block {
+    top: 30%;
+}
+#push-start-ui.creator-mode #game-editkey-display {
+    top: 50%;
+}
+
 #game-title {
     width: 100%;
     text-align: center;
@@ -415,7 +426,7 @@ input, textarea, select, button {
 #game-editkey-display .editkey-note {
     font-size: calc(var(--canvas-css-w, 375px) * 0.024);
     line-height: 1.35;
-    color: #c0392b;
+    color: #ffffff;
     margin-top: 3px;
 }
 

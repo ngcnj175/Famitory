@@ -357,7 +357,7 @@ const AppI18N = {
         'U526': { JPN: 'URLは無効になり、ARCADEからも削除されます。\nこの操作は取り消せません。', ENG: 'The URL will stop working and it will be removed from ARCADE.\nThis action cannot be undone.' },
         'U527': { JPN: '非公開に戻しました',       ENG: 'Unpublished' },
         'U528': { JPN: '非公開化に失敗しました',   ENG: 'Failed to unpublish' },
-        'U529': { JPN: 'このキーを紛失すると、以後このゲームを編集・非公開化できません。必ず控えを保管してください。', ENG: 'If you lose this key, you cannot edit or unpublish this game later. Please save it.' },
+        'U529': { JPN: 'このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。', ENG: 'This key is required to edit or publish this game. Please save it.' },
         'U530': { JPN: 'エディットキーを控えてください', ENG: 'Save your edit key' },
         'U531': { JPN: '今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。', ENG: 'You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen.' },
     },
