@@ -2306,6 +2306,7 @@ const SoundEditor = {
     stop() {
         this.player.stop();
         this.currentStep = 0;
+        this.scrollX = 0; // キャンバス表示も先頭に戻す
         this.updatePlayButton('stop');
         this.render();
     },
