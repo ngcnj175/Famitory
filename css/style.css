@@ -1060,7 +1060,7 @@ input, textarea, select, button {
 
 .sprite-item.selected {
     border-color: #00ff66;
-    transform: scale(1.15);
+    transform: scale(1.09);
     z-index: 1;
 }
 
@@ -1218,7 +1218,7 @@ input, textarea, select, button {
 
 .palette-color.selected {
     border-color: #00ff66;
-    transform: scale(1.15);
+    transform: scale(1.09);
     z-index: 1;
 }
 
@@ -1251,7 +1251,7 @@ input, textarea, select, button {
 
 .tile-item.selected {
     border-color: #00ff66;
-    transform: scale(1.15);
+    transform: scale(1.09);
     z-index: 1;
 }
 
@@ -2159,7 +2159,7 @@ input, textarea, select, button {
 
 .tile-template.selected {
     border-color: var(--color-dark);
-    transform: scale(1.15);
+    transform: scale(1.09);
     z-index: 1;
 }
 
