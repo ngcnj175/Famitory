@@ -29,7 +29,7 @@ const SoundEditor = {
     // ピアノロール
     cellSize: 20,
     scrollX: 0, // 横スクロール位置
-    scrollY: 480, // 縦スクロール位置（C4が下端に表示: (71-36)*20=700、表示領域を考慮して調整）
+    scrollY: 720, // 縦スクロール位置（C4が下端に表示: (83-36)*20=940、表示領域を考慮して調整）
     highlightPitch: -1, // ハイライト中の音階
 
     // 編集ツール
@@ -62,7 +62,7 @@ const SoundEditor = {
     // トラックミュート状態（エディタセッション内のみ保持、曲データには保存しない）
     mutedTracks: [false, false, false, false],
 
-    // 音階定義（5オクターブ = C1-B5）
+    // 音階定義（7オクターブ = C1-B7）
     noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
 
     // Web Audio (BgmPlayer に委譲)
@@ -1468,8 +1468,8 @@ const SoundEditor = {
         if (!container || !keyboardArea) return;
         container.innerHTML = '';
 
-        // 6オクターブ (C1-B6)
-        const octaves = [1, 2, 3, 4, 5, 6];
+        // 7オクターブ (C1-B7)
+        const octaves = [1, 2, 3, 4, 5, 6, 7];
         let whiteKeyIndex = 0;
         const whiteKeyWidth = 40; // CSS拡大版に合わせる
 
@@ -2183,14 +2183,14 @@ const SoundEditor = {
         const scrollStep = Math.floor(this.scrollX / this.cellSize);
         // 音程はC4付近または画面中央
         // スクロールYは上端からのピクセル数。Pitch 71が一番上(y=0)
-        // 画面上端のピッチ = 71 - Math.floor(scrollY / cellSize)
-        const topPitch = 71 - Math.floor(this.scrollY / this.cellSize);
+        // 画面上端のピッチ = 83 - Math.floor(scrollY / cellSize)
+        const topPitch = 83 - Math.floor(this.scrollY / this.cellSize);
         // コピーした内容の高さ(Pitch幅)を考慮して少し下（Pitchは小さい方が下）にオフセット
         const pastePitchOffset = topPitch - 4 - Math.floor((this.pasteData.height || 1) / 2);
 
         this.pasteOffset = {
             step: Math.max(0, scrollStep + 2),
-            pitch: Math.max(0, Math.min(71, pastePitchOffset))
+            pitch: Math.max(0, Math.min(83, pastePitchOffset))
         };
 
         this.currentTool = 'paste';
@@ -2215,7 +2215,7 @@ const SoundEditor = {
             const newPitch = this.pasteOffset.pitch + note.pitch; // ノートのピッチオフセットを加算
 
             // 範囲チェック
-            if (newStep >= 0 && newStep < song.bars && newPitch >= 0 && newPitch <= 71) {
+            if (newStep >= 0 && newStep < song.bars && newPitch >= 0 && newPitch <= 83) {
                 // 重なるノートを削除するかどうかだが、PixelGameKitの仕様としては重ねてOKまたは上書き
                 // 単音トラックなら上書きすべきだが、データ構造的には重複許容
                 // ここでは既存の同じ位置・ピッチのノートがあれば削除して上書き

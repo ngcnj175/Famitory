@@ -3,7 +3,7 @@
  */
 
 class BgmRenderer {
-    static MAX_PITCH = 71; // C1(0) 〜 B6(71)
+    static MAX_PITCH = 83; // C1(0) 〜 B7(83)
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -75,7 +75,7 @@ class BgmRenderer {
         const { cellSize, scrollY } = vc;
         this.ctx.strokeStyle = '#fff';
         this.ctx.lineWidth = 1;
-        for (let octave = 1; octave <= 6; octave++) {
+        for (let octave = 1; octave <= 7; octave++) {
             const cPitch = (octave - 1) * 12;
             const y = (BgmRenderer.MAX_PITCH - cPitch + 1) * cellSize - scrollY;
             if (y >= 0 && y <= this.canvas.height) {

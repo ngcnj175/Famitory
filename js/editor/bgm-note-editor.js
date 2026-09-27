@@ -589,10 +589,10 @@ class NoteEditor {
     _getStepPitch(pos) {
         const o        = this._o;
         const scrollY  = o.scrollY || 0;
-        const maxPitch = 71;
+        const maxPitch = 83;
         const step     = Math.floor((pos.x + o.scrollX) / o.cellSize);
         const row      = Math.floor((pos.y + scrollY)   / o.cellSize);
-        const pitch    = Math.max(0, Math.min(71, maxPitch - row));
+        const pitch    = Math.max(0, Math.min(83, maxPitch - row));
         return { step, pitch };
     }
 

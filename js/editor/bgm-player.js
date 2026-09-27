@@ -22,7 +22,7 @@ class BgmPlayer {
         this.currentKeyOsc = null;
         this.currentKeyGain = null;
 
-        // 音階定義（5オクターブ = C1-B5）
+        // 音階定義（7オクターブ = C1-B7）
         this.noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     }
 
@@ -86,7 +86,7 @@ class BgmPlayer {
     }
 
     noteToPitch(note, octave) {
-        // C1 = 0, B5 = 59
+        // C1 = 0, B7 = 83
         const noteIdx = this.noteNames.indexOf(note);
         return (octave - 1) * 12 + noteIdx;
     }
@@ -494,13 +494,18 @@ class BgmPlayer {
                 useShortNoise = false; pitchEnvDown = false;
                 attackTime = 0.001; holdTime = 0.00; isRoll = false; break;
             case 6: // Noise Roll
-            default:
                 filterType = 'bandpass'; filterFreq = 3000; filterQ = 0.8;
                 drumVol = 0.3 * volume;
                 isRoll = (duration > 0.15);
                 decayTime = isRoll ? duration : 0.15;
                 useShortNoise = false; pitchEnvDown = false;
                 attackTime = 0.005; holdTime = 0.00; break;
+            case 7: // Cymbal (シャリ〜ンと持続するノイズ)
+            default:
+                filterType = 'highpass'; filterFreq = 6000; filterQ = 0.4;
+                drumVol = 0.28 * volume; decayTime = 0.6;
+                useShortNoise = false; pitchEnvDown = false;
+                attackTime = 0.002; holdTime = 0.02; isRoll = false; break;
         }
 
         const noteInOct = pitch % 12;
