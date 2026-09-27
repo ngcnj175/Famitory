@@ -1226,6 +1226,11 @@ input, textarea, select, button {
     padding-bottom: calc(6px + var(--safe-area-bottom));
 }
 
+/* タイル0個の時でも高さが変わらないよう、1個ある時の高さで最小高さを固定 */
+#tile-list {
+    min-height: 48px;
+}
+
 /* 繧ｿ繧､繝ｫ繝ｪ繧ｹ繝� */
 #tile-list {
     display: flex;
