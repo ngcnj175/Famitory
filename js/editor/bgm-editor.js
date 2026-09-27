@@ -377,7 +377,7 @@ const SoundEditor = {
                     if (!hasDraggedBar) this.pushHistory();
                     hasDraggedBar = true;
                     const song = this.getCurrentSong();
-                    song.bars = Math.max(1, Math.min(256, startValueBar + delta));
+                    song.bars = Math.max(1, Math.min(2048, startValueBar + delta));
                     this.updateConsoleDisplay();
                     this.render();
                 }
@@ -2440,9 +2440,9 @@ const SoundEditor = {
 
         // ドラッグ数値操作（3つの要素に適用）
         const song = this.getCurrentSong();
-        this._setupNumCopyDrag('numcopy-from', 1, 256);
-        this._setupNumCopyDrag('numcopy-to', 1, 256);
-        this._setupNumCopyDrag('numcopy-paste-at', 1, 256);
+        this._setupNumCopyDrag('numcopy-from', 1, 2048);
+        this._setupNumCopyDrag('numcopy-to', 1, 2048);
+        this._setupNumCopyDrag('numcopy-paste-at', 1, 2048);
 
         // 実行ボタン
         document.getElementById('numcopy-exec').onclick = () => this.execNumCopy();
@@ -2563,9 +2563,9 @@ const SoundEditor = {
             });
         });
 
-        // STEP数(bars)を超える場合は自動拡張
+        // STEP数(bars)を超える場合は自動拡張（上限2048）
         if (maxPastedStep > song.bars) {
-            song.bars = maxPastedStep;
+            song.bars = Math.min(2048, maxPastedStep);
             this.updateConsoleDisplay();
         }
 
