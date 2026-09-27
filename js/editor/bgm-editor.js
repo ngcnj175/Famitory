@@ -523,7 +523,10 @@ const SoundEditor = {
         if (!song) return;
         const barEl = document.getElementById('bar-display');
         if (!barEl) return;
-        barEl.textContent = `${(this.currentStep || 0) + 1}/${song.bars}`;
+        const cur = (this.currentStep || 0) + 1;
+        barEl.textContent = `${cur}/${song.bars}`;
+        // 4桁を含む場合のみ文字サイズを縮小
+        barEl.classList.toggle('compact', cur >= 1000 || song.bars >= 1000);
     },
 
     renderSongDropdown() {
