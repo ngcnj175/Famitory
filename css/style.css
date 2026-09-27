@@ -4344,12 +4344,15 @@ input, textarea, select, button {
 
 #bar-display.value-lcd {
     width: 5.5ch;
+    /* 縦幅を固定してcompact切替時の変動を防ぐ（SPEED欄との縦バランス維持） */
+    line-height: 16px;
 }
 
-/* 4桁になったら文字サイズを縮小して枠内に収める */
+/* 4桁になったら文字サイズを縮小＋横幅拡張で枠内に収める */
 #bar-display.value-lcd.compact {
     font-size: 0.65em;
     letter-spacing: -0.5px;
+    width: 9ch;
 }
 
 .value-lcd:active {
