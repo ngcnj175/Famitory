@@ -522,7 +522,11 @@ const SoundEditor = {
         const song = this.getCurrentSong();
         if (!song) return;
         const barEl = document.getElementById('bar-display');
-        if (barEl) barEl.textContent = `${(this.currentStep || 0) + 1}/${song.bars}`;
+        if (!barEl) return;
+        const cur = (this.currentStep || 0) + 1;
+        barEl.textContent = `${cur}/${song.bars}`;
+        // 4桁以上のSTEPが含まれる場合は文字サイズを縮小して枠内に収める
+        barEl.classList.toggle('compact', cur >= 1000 || song.bars >= 1000);
     },
 
     renderSongDropdown() {

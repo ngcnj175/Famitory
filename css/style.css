@@ -4343,7 +4343,13 @@ input, textarea, select, button {
 }
 
 #bar-display.value-lcd {
-    width: 9.5ch;
+    width: 5.5ch;
+}
+
+/* 4桁になったら文字サイズを縮小して枠内に収める */
+#bar-display.value-lcd.compact {
+    font-size: 0.65em;
+    letter-spacing: -0.5px;
 }
 
 .value-lcd:active {
