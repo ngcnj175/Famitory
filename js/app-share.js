@@ -4,13 +4,30 @@
 
 const AppShare = {
 
-    // 共有ダイアログの公開ステータスバッジと「非公開に戻す」ボタンを更新
+    // 共有ダイアログの公開ステータス・CTAボタンを状態に応じて更新
     updateShareStatus() {
         const badge = document.getElementById('share-status');
         const unpublishBtn = document.getElementById('share-unpublish-btn');
+        const publishBtn = document.getElementById('publish-main-btn');
+        const openLinksBtn = document.getElementById('open-share-links-btn');
         const hasShareId = !!(App.projectData?.meta?.shareId);
         if (badge) badge.classList.toggle('hidden', !hasShareId);
         if (unpublishBtn) unpublishBtn.classList.toggle('hidden', !hasShareId);
+        if (openLinksBtn) openLinksBtn.classList.toggle('hidden', !hasShareId);
+        if (publishBtn) {
+            // 未公開=「この作品を公開する」 / 公開中=「更新する」
+            const key = hasShareId ? 'U547' : 'U542';
+            publishBtn.textContent = AppI18N.t(key);
+            publishBtn.setAttribute('data-i18n', key);
+        }
+    },
+
+    // ARCADE情報エリアの表示切替（「ARCADEに登録」チェック連動）
+    updateArcadeInfoVisibility() {
+        const arcadeInfo = document.getElementById('share-arcade-info');
+        const cb = document.getElementById('share-arcade-on');
+        if (!arcadeInfo || !cb) return;
+        arcadeInfo.classList.toggle('hidden-slot', !cb.checked);
     },
 
     // 公開確認ダイアログを表示し、OKされたら onConfirm を呼ぶ
@@ -46,7 +63,7 @@ const AppShare = {
     // 公開確認→actionFn(url)→Firebase保存 の順で実行するヘルパー
     // iOS Safari ではユーザージェスチャー直後でないとクリップボードAPIが使えないため、
     // Firebase保存（ネットワーク通信）より先に actionFn を実行する
-    async publishAndShare(actionFn) {
+    async publishAndShare(actionFn, onSuccess) {
         if (this._shareLoading) {
             App.showToast(AppI18N.t('U377'));
             return;
@@ -78,10 +95,10 @@ const AppShare = {
                     App.projectData.meta.remixOK = remixOkCheckbox.checked;
                 }
 
-                // ARCADE 登録OFFフラグの永続化
-                const arcadeOffCheckboxForSave = document.getElementById('share-arcade-off');
-                if (arcadeOffCheckboxForSave) {
-                    App.projectData.meta.arcadeOff = arcadeOffCheckboxForSave.checked;
+                // ARCADE 登録フラグの永続化（UIは「登録する」ON→内部は arcadeOff=false）
+                const arcadeOnCheckbox = document.getElementById('share-arcade-on');
+                if (arcadeOnCheckbox) {
+                    App.projectData.meta.arcadeOff = !arcadeOnCheckbox.checked;
                 }
 
                 // ARCADE設定パネルの入力値を meta.arcade に確定
@@ -103,8 +120,8 @@ const AppShare = {
                 }
 
                 // ARCADE 登録 / 解除
-                const arcadeOffCheckbox = document.getElementById('share-arcade-off');
-                const arcadeOff = !!(arcadeOffCheckbox && arcadeOffCheckbox.checked);
+                const arcadeOnCheckboxForReg = document.getElementById('share-arcade-on');
+                const arcadeOff = !(arcadeOnCheckboxForReg && arcadeOnCheckboxForReg.checked);
                 if (typeof ShareArcade !== 'undefined' && typeof AppArcadePanel !== 'undefined') {
                     if (arcadeOff) {
                         await ShareArcade.unpublish(id);
@@ -125,6 +142,8 @@ const AppShare = {
                         : AppI18N.t('U531');
                     AppDialogs.showAlert(AppI18N.t('U530'), sub);
                 }
+
+                if (typeof onSuccess === 'function') onSuccess(url);
             } catch (e) {
                 console.error('[Share] publishAndShare error:', e);
                 App.showToast(AppI18N.t('U382'));
@@ -210,28 +229,58 @@ const AppShare = {
         return success;
     },
 
+    // 共有リンクモーダルを開く（公開後の URL/X/Discord ボタン群）
+    openShareLinksDialog() {
+        const dialog = document.getElementById('share-links-dialog');
+        if (!dialog) return;
+        // メイン公開モーダルは閉じる
+        document.getElementById('share-dialog')?.classList.add('hidden');
+        dialog.classList.remove('hidden');
+    },
+
     // シェアモーダル簡易版イベント
     bindShareSimpleEvents() {
         const copyUrlBtn = document.getElementById('copy-url-btn');
         const xBtn = document.getElementById('share-x-btn');
         const discordBtn = document.getElementById('share-discord-btn');
-        const exportBtn = document.getElementById('export-btn');
-        const importBtn = document.getElementById('import-btn');
-        const fileInput = document.getElementById('import-file-input');
         const closeBtn = document.getElementById('share-close-btn');
+        const shareLinksCloseBtn = document.getElementById('share-links-close-btn');
+        const publishMainBtn = document.getElementById('publish-main-btn');
+        const openShareLinksBtn = document.getElementById('open-share-links-btn');
+        const arcadeOnCheckbox = document.getElementById('share-arcade-on');
 
         const scoreCopyUrlBtn = document.getElementById('score-copy-url-btn');
         const scoreXBtn = document.getElementById('score-share-x-btn');
         const scoreDiscordBtn = document.getElementById('score-share-discord-btn');
         const scoreCloseBtn = document.getElementById('score-share-close-btn');
 
-        // URLコピー → 公開確認 → コピー実行 (メインシェア用)
-        copyUrlBtn.onclick = () => {
-            this.publishAndShare(async (url) => {
+        // 公開/更新 主要CTA → 公開確認 → 成功後に共有リンクモーダルへ遷移
+        if (publishMainBtn) {
+            publishMainBtn.onclick = () => {
+                this.publishAndShare(async (url) => {
+                    // ユーザージェスチャー内で行う処理は特になし（クリップボード等は共有モーダルで行う）
+                }, () => {
+                    // 保存完了後に共有リンクダイアログを開く
+                    this.openShareLinksDialog();
+                });
+            };
+        }
+
+        // 「共有する」ボタン → 共有リンクモーダルを開く（公開済み専用）
+        if (openShareLinksBtn) {
+            openShareLinksBtn.onclick = () => this.openShareLinksDialog();
+        }
+
+        // URLコピー（共有リンクモーダル内・公開済み前提）
+        if (copyUrlBtn) {
+            copyUrlBtn.onclick = async () => {
+                const shareId = App.projectData?.meta?.shareId;
+                if (!shareId) return;
+                const url = Share.createShortUrl(shareId);
                 const success = await this.copyToClipboard(url);
                 App.showToast(AppI18N.t(success ? 'U383' : 'U384'));
-            });
-        };
+            };
+        }
 
         // スコア共有用: URLのみコピー
         if (scoreCopyUrlBtn) {
@@ -252,9 +301,12 @@ const AppShare = {
             };
         }
 
-        // X に投稿 → 公開確認 → Twitter URL へ遷移
-        xBtn.onclick = () => {
-            this.publishAndShare((url) => {
+        // X に投稿（共有リンクモーダル・公開済み前提）
+        if (xBtn) {
+            xBtn.onclick = () => {
+                const shareId = App.projectData?.meta?.shareId;
+                if (!shareId) return;
+                const url = Share.createShortUrl(shareId);
                 const gameName = App.projectData.meta.name || 'Game';
                 let twitterUrl;
                 if (App.isPlayOnlyMode) {
@@ -266,8 +318,8 @@ const AppShare = {
                     twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                 }
                 window.open(twitterUrl, '_blank');
-            });
-        };
+            };
+        }
 
         // 非公開に戻す
         const unpublishBtn = document.getElementById('share-unpublish-btn');
@@ -275,9 +327,12 @@ const AppShare = {
             unpublishBtn.onclick = () => this.unpublishGame();
         }
 
-        // Discord → 公開確認 → テキスト+URLをクリップボードへ
-        discordBtn.onclick = () => {
-            this.publishAndShare(async (url) => {
+        // Discord（共有リンクモーダル・公開済み前提）
+        if (discordBtn) {
+            discordBtn.onclick = async () => {
+                const shareId = App.projectData?.meta?.shareId;
+                if (!shareId) return;
+                const url = Share.createShortUrl(shareId);
                 const gameName = App.projectData.meta.name || 'Game';
                 let text;
                 if (App.isPlayOnlyMode) {
@@ -288,14 +343,8 @@ const AppShare = {
                 }
                 const success = await this.copyToClipboard(text);
                 App.showToast(AppI18N.t(success ? 'U388' : 'U384'));
-            });
-        };
-
-        // 書き出し
-        exportBtn.onclick = () => {
-            const name = App.currentProjectName || App.projectData.meta.name || 'MyGame';
-            AppProject.exportProject(name);
-        };
+            };
+        }
 
         // スコア共有用: Xに投稿
         if (scoreXBtn) {
@@ -342,19 +391,21 @@ const AppShare = {
             });
         }
 
-        // 読み込み
-        importBtn.onclick = () => fileInput.click();
+        // ARCADEに登録チェックボックス変更 → ARCADE情報エリア表示切替
+        if (arcadeOnCheckbox) {
+            arcadeOnCheckbox.addEventListener('change', () => this.updateArcadeInfoVisibility());
+        }
 
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) AppProject.importProject(file);
-            e.target.value = '';
+        const closeShareDialog = () => document.getElementById('share-dialog').classList.add('hidden');
+        if (closeBtn) closeBtn.onclick = closeShareDialog;
+        document.getElementById('share-dialog').onclick = (e) => {
+            if (e.target === document.getElementById('share-dialog')) closeShareDialog();
         };
 
-        const close = () => document.getElementById('share-dialog').classList.add('hidden');
-        closeBtn.onclick = close;
-        document.getElementById('share-dialog').onclick = (e) => {
-            if (e.target === document.getElementById('share-dialog')) close();
+        const closeShareLinksDialog = () => document.getElementById('share-links-dialog').classList.add('hidden');
+        if (shareLinksCloseBtn) shareLinksCloseBtn.onclick = closeShareLinksDialog;
+        document.getElementById('share-links-dialog').onclick = (e) => {
+            if (e.target === document.getElementById('share-links-dialog')) closeShareLinksDialog();
         };
     },
 };

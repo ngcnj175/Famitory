@@ -5481,6 +5481,71 @@ input, textarea, select, button {
     box-shadow: none;
 }
 
+.share-simple-btn.primary {
+    background: #4a90e2;
+    box-shadow: 0 3px 0 #2d5aa0;
+}
+
+.share-simple-btn.primary:hover {
+    background: #5aa0f2;
+}
+
+/* SHAREモーダル内 ARCADE情報エリア（展開時） */
+.share-arcade-info {
+    margin: 4px 24px 12px;
+    padding: 12px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.share-arcade-info.hidden-slot {
+    display: none;
+}
+
+/* SHAREモーダル内ではサムネプレビュー＋ボタンを縦積みに（横幅が狭い前提） */
+.share-arcade-info .arcade-thumb-row {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.share-arcade-info #arcade-thumb-preview-wrap {
+    align-self: center;
+}
+
+.share-arcade-info .arcade-thumb-btns {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.share-arcade-info .arcade-thumb-btns .setting-save-btn {
+    flex: 1 1 45%;
+}
+
+.share-arcade-info textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+.share-arcade-info label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+/* 保存/エクスポート統合モーダル */
+.save-as-hint {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    text-align: center;
+}
+
 .share-divider {
     border: none;
     border-top: 2px dashed #ccc;

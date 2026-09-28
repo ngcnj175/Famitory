@@ -88,5 +88,5 @@
 | ユーティリティ | `js/utils/firebase-config.js` | Firebase初期化・設定 |
 | ARCADE画面 (New) | `js/screen/arcade.js` | 公開ゲーム一覧・検索・ソート・クリエイタ絞込・コメント全文モーダル |
 | ARCADEデータ層 (New) | `js/utils/share-arcade.js` | Firebase publish/unpublish・一覧取得・5分TTLキャッシュ |
-| ARCADE設定パネル (New) | `js/app-arcade-panel.js` | ゲーム設定パネル内「ARCADE情報」（コメント/サムネ）の入出力 |
+| ARCADE設定パネル (New) | `js/app-arcade-panel.js` | 公開モーダル内「ARCADE情報」（コメント/サムネ）の入出力 |
 | サムネイル生成 (New) | `js/app-thumbnail.js` | ゲーム画面自動キャプチャ（プレイ画面から取得専用） |

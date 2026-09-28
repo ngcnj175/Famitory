@@ -360,6 +360,16 @@ const AppI18N = {
         'U529': { JPN: 'このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。', ENG: 'This key is required to edit or publish this game. Please save it.' },
         'U530': { JPN: 'エディットキーを控えてください', ENG: 'Save your edit key' },
         'U531': { JPN: '今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。', ENG: 'You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen.' },
+        // ---- 公開/共有モーダル 改装 ----
+        'U540': { JPN: 'ゲームを公開',             ENG: 'Publish Game' },
+        'U541': { JPN: 'ARCADEに登録',             ENG: 'Register to ARCADE' },
+        'U542': { JPN: 'この作品を公開する',       ENG: 'Publish this game' },
+        'U543': { JPN: '共有する',                 ENG: 'Share' },
+        'U547': { JPN: '更新する',                 ENG: 'Update' },
+        // ---- 保存/エクスポート統合モーダル ----
+        'U544': { JPN: '保存 / エクスポート',      ENG: 'Save / Export' },
+        'U545': { JPN: '同名のときは上書き保存されます', ENG: 'Same name will overwrite the existing project' },
+        'U546': { JPN: '.json ファイルとしてエクスポート', ENG: 'Export as .json file' },
     },
 
     t(id, vars = {}) {

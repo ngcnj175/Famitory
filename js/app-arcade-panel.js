@@ -1,6 +1,6 @@
 /**
- * PixelGameKit - ARCADE 登録情報パネル制御
- * ゲーム設定パネル内の「ARCADE情報」セクションの入出力を担当。
+ * PixelGameKit - ARCADE 登録情報制御
+ * 公開モーダル（SHARE）内の「ARCADE情報」セクションの入出力を担当。
  * projectData.meta.arcade = { comment, thumbnail } に保存する。
  */
 
@@ -8,43 +8,17 @@ const AppArcadePanel = {
 
     init() {
         this.bindEvents();
-        // ゲーム設定パネル開閉時に値を読み込ませるため MutationObserver 的な代替として
-        // 「設定を保存」ボタンで書き戻し、パネルを開いた時に読み込むフックを設ける
-        this.installPanelHooks();
     },
 
     bindEvents() {
         const captureBtn = document.getElementById('arcade-thumb-capture-btn');
         const clearBtn = document.getElementById('arcade-thumb-clear-btn');
-        const saveBtn = document.getElementById('stage-settings-save');
-        const groupHeader = document.querySelector('#arcade-settings-group .setting-group-header');
 
         if (captureBtn) {
             captureBtn.addEventListener('click', () => this.onCapture());
         }
         if (clearBtn) {
             clearBtn.addEventListener('click', () => this.setThumbnail(''));
-        }
-        if (saveBtn) {
-            // stage-settings.js の既存保存処理と並列に走らせる（別リスナー）
-            saveBtn.addEventListener('click', () => this.saveToProject());
-        }
-        if (groupHeader) {
-            // 折りたたみ開閉と読み込み（既存の setting-group-header の共通ハンドラを利用しつつ値を反映）
-            groupHeader.addEventListener('click', () => {
-                // クリック直後は collapsed の切り替わりが完了しているとは限らないので少し遅延
-                setTimeout(() => this.loadFromProject(), 0);
-            });
-        }
-    },
-
-    installPanelHooks() {
-        // ゲーム設定パネル自体を開いた時にも読み込み
-        const panelHeader = document.getElementById('stage-settings-header');
-        if (panelHeader) {
-            panelHeader.addEventListener('click', () => {
-                setTimeout(() => this.loadFromProject(), 0);
-            });
         }
     },
 

@@ -515,3 +515,11 @@
 | U529 | このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。 | This key is required to edit or publish this game. Please save it. | HTML text node (プレイ画面 エディットキー欄の案内文) | index.html | ✓ |
 | U530 | エディットキーを控えてください | Save your edit key | JS message/literal (初回公開成功アラート 見出し) | app-share.js | ✓ |
 | U531 | 今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。 | You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen. | JS message/literal (初回公開成功アラート 本文) | app-share.js | ✓ |
+| U540 | ゲームを公開 | Publish Game | HTML text node (公開モーダル タイトル) | index.html | ✓ |
+| U541 | ARCADEに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
+| U542 | この作品を公開する | Publish this game | HTML text node (公開モーダル 未公開時の主要CTA) | index.html | ✓ |
+| U543 | 共有する | Share | HTML text node (公開モーダル 公開済み時 共有リンクへ遷移) | index.html | ✓ |
+| U544 | 保存 / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVE長押し) | index.html | ✓ |
+| U545 | 同名のときは上書き保存されます | Same name will overwrite the existing project | HTML text node (保存モーダル 入力欄下の説明) | index.html | ✓ |
+| U546 | .json ファイルとしてエクスポート | Export as .json file | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
+| U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |

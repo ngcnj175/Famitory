@@ -505,32 +505,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- ARCADE 登録情報（折りたたみ可・既定=閉） -->
-                    <div class="setting-row setting-row-vertical setting-group collapsed" id="arcade-settings-group">
-                        <div class="setting-group-header" data-target="arcade-settings-body">
-                            <span class="setting-group-toggle">▶</span>
-                            <span class="setting-group-label" data-i18n="U500">ARCADE情報</span>
-                        </div>
-                        <div class="setting-group-body" id="arcade-settings-body">
-                            <div class="setting-row setting-row-vertical">
-                                <label data-i18n="U501">コメント</label>
-                                <textarea id="arcade-comment-input" rows="3" maxlength="500" placeholder=""></textarea>
-                            </div>
-                            <div class="setting-row setting-row-vertical">
-                                <label data-i18n="U502">サムネイル</label>
-                                <div class="arcade-thumb-row">
-                                    <div id="arcade-thumb-preview-wrap">
-                                        <img id="arcade-thumb-preview" alt="thumbnail">
-                                        <div id="arcade-thumb-placeholder" data-i18n="U503">サムネイル未設定</div>
-                                    </div>
-                                    <div class="arcade-thumb-btns">
-                                        <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
-                                        <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <!-- 保存ボタン -->
                     <div class="setting-row setting-row-center">
                         <button id="stage-settings-save" class="setting-save-btn" data-i18n="U065">設定を保存</button>
@@ -1376,10 +1350,16 @@
         </div>
     </div>
 
-    <!-- 共有ダイアログ -->
+    <!-- 公開ダイアログ -->
     <div id="share-dialog" class="modal-overlay hidden">
         <div class="modal-content share-modal-content">
-            <h3 class="modal-title-simple" data-i18n="U140">ゲームを共有</h3>
+            <h3 class="modal-title-simple" data-i18n="U540">ゲームを公開</h3>
+
+            <!-- 公開ステータスバッジ（公開済みのとき表示） -->
+            <div id="share-status" class="share-status hidden">
+                <span class="share-status-dot"></span>
+                <span class="share-status-text" data-i18n="U142">公開中</span>
+            </div>
 
             <div class="setting-row" style="margin: 12px 24px; justify-content: center; gap: 8px;">
                 <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
@@ -1387,16 +1367,58 @@
             </div>
 
             <div class="setting-row" style="margin: 4px 24px 12px; justify-content: center; gap: 8px;">
-                <input type="checkbox" id="share-arcade-off" style="width: 16px; height: 16px;">
-                <label for="share-arcade-off" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U508">ARCADEに登録しない</label>
+                <input type="checkbox" id="share-arcade-on" style="width: 16px; height: 16px;">
+                <label for="share-arcade-on" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U541">ARCADEに登録</label>
             </div>
 
-            <!-- 公開ステータスバッジ（公開済みのとき表示） -->
-            <div id="share-status" class="share-status hidden">
+            <!-- ARCADE情報（ARCADEに登録ONで表示） -->
+            <div id="share-arcade-info" class="share-arcade-info">
+                <div class="setting-row setting-row-vertical">
+                    <label data-i18n="U501">コメント</label>
+                    <textarea id="arcade-comment-input" rows="3" maxlength="500" placeholder=""></textarea>
+                </div>
+                <div class="setting-row setting-row-vertical">
+                    <label data-i18n="U502">サムネイル</label>
+                    <div class="arcade-thumb-row">
+                        <div id="arcade-thumb-preview-wrap">
+                            <img id="arcade-thumb-preview" alt="thumbnail">
+                            <div id="arcade-thumb-placeholder" data-i18n="U503">サムネイル未設定</div>
+                        </div>
+                        <div class="arcade-thumb-btns">
+                            <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
+                            <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 公開/更新 主要CTA -->
+            <div class="share-simple-list">
+                <button id="publish-main-btn" class="share-simple-btn primary" data-i18n="U542">
+                    この作品を公開する
+                </button>
+                <button id="open-share-links-btn" class="share-simple-btn hidden" data-i18n="U543">
+                    共有する
+                </button>
+            </div>
+
+            <button id="share-unpublish-btn" class="share-unpublish-btn hidden" type="button" data-i18n="U524">非公開に戻す</button>
+
+            <div class="modal-footer-simple">
+                <button id="share-close-btn" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 共有リンクダイアログ（公開後） -->
+    <div id="share-links-dialog" class="modal-overlay hidden">
+        <div class="modal-content share-modal-content">
+            <h3 class="modal-title-simple" data-i18n="U140">ゲームを共有</h3>
+
+            <div class="share-status">
                 <span class="share-status-dot"></span>
                 <span class="share-status-text" data-i18n="U142">公開中</span>
             </div>
-            <button id="share-unpublish-btn" class="share-unpublish-btn hidden" type="button" data-i18n="U524">非公開に戻す</button>
 
             <div class="share-simple-list">
                 <button id="copy-url-btn" class="share-simple-btn" data-i18n="U420">
@@ -1412,21 +1434,8 @@
                 </button>
             </div>
 
-            <hr class="share-divider">
-
-            <h3 class="modal-title-simple sub" data-i18n="U144">データを移動</h3>
-            <div class="share-simple-list">
-                <button id="export-btn" class="share-simple-btn">
-                    <span data-i18n="U401">エクスポート</span>
-                </button>
-                <button id="import-btn" class="share-simple-btn">
-                    <span data-i18n="U402">インポート</span>
-                </button>
-                <input type="file" id="import-file-input" accept=".json,.pgk" style="display:none">
-            </div>
-
             <div class="modal-footer-simple">
-                <button id="share-close-btn" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
+                <button id="share-links-close-btn" class="modal-action-btn cancel" data-i18n="U145">もどる</button>
             </div>
         </div>
     </div>
@@ -1473,8 +1482,10 @@
                 <button class="modal-action-btn" id="project-open-btn" disabled data-i18n="U147">ひらく</button>
                 <button class="modal-action-btn" id="project-copy-btn" disabled data-i18n="U419">コピー</button>
                 <button class="modal-action-btn" id="project-delete-btn" disabled data-i18n="U148">けす</button>
+                <button class="modal-action-btn" id="project-import-btn" data-i18n="U402">インポート</button>
                 <button class="modal-action-btn cancel" id="project-list-close" data-i18n="U149">やめる</button>
             </div>
+            <input type="file" id="import-file-input" accept=".json,.pgk" style="display:none">
         </div>
     </div>
 
@@ -1598,13 +1609,18 @@
         </div>
     </div>
 
+    <!-- 保存 / エクスポート 統合モーダル（SAVE長押し） -->
     <div id="save-as-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple" data-i18n="U170">なまえをつけてセーブ</div>
+            <div class="modal-header-simple" data-i18n="U544">保存 / エクスポート</div>
             <div class="modal-body">
                 <div class="input-group">
                     <label data-i18n="U403">ゲームタイトル</label>
                     <input type="text" id="save-as-name-input" class="simple-input" placeholder="Project Name">
+                    <div class="save-as-hint" data-i18n="U545">同名のときは上書き保存されます</div>
+                </div>
+                <div class="input-group">
+                    <button class="modal-action-btn" id="save-as-export-btn" data-i18n="U546">.json ファイルとしてエクスポート</button>
                 </div>
             </div>
             <div class="modal-footer-actions">

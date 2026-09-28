@@ -557,14 +557,20 @@ const App = {
                 remixOkCheckbox.checked = !!this.projectData?.meta?.remixOK;
             }
 
-            // ARCADE登録OFFのチェック状態復元（未設定はデフォルトOFF＝登録する）
-            const arcadeOffCheckbox = document.getElementById('share-arcade-off');
-            if (arcadeOffCheckbox) {
-                arcadeOffCheckbox.checked = !!this.projectData?.meta?.arcadeOff;
+            // ARCADE登録の復元（UIはON=登録する。arcadeOff未設定はデフォルトOFF＝登録する）
+            const arcadeOnCheckbox = document.getElementById('share-arcade-on');
+            if (arcadeOnCheckbox) {
+                arcadeOnCheckbox.checked = !this.projectData?.meta?.arcadeOff;
+            }
+
+            // ARCADE情報（コメント・サムネ）を projectData から読み込む
+            if (typeof AppArcadePanel !== 'undefined') {
+                AppArcadePanel.loadFromProject();
             }
 
             document.getElementById('share-dialog').classList.remove('hidden');
             AppShare.updateShareStatus();
+            AppShare.updateArcadeInfoVisibility();
         });
 
         // ARCADEボタン → ARCADE画面へ遷移

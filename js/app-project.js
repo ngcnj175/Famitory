@@ -475,7 +475,7 @@ const AppProject = {
                 const msg = (AppI18N.I18N['U365']?.[AppI18N.currentLang] || '「${importName}」としてインポートしました。\n今すぐ開きますか？').replace('${importName}', importName);
                 AppDialogs.showConfirm(msg, '', () => {
                     this.loadProject(importName);
-                    document.getElementById('share-dialog').classList.add('hidden');
+                    document.getElementById('project-list-modal')?.classList.add('hidden');
                 }, () => {
                     alert(AppI18N.I18N['U366']?.[AppI18N.currentLang] || 'インポートしました。「開く」メニューから選択できます。');
                 });
@@ -725,6 +725,18 @@ const AppProject = {
             renderList();
         };
 
+        // インポート（.jsonファイル読み込み）
+        const importBtn = document.getElementById('project-import-btn');
+        const fileInput = document.getElementById('import-file-input');
+        if (importBtn && fileInput) {
+            importBtn.onclick = () => fileInput.click();
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) this.importProject(file);
+                e.target.value = '';
+            };
+        }
+
         modal.onclick = (e) => { if (e.target === modal) close(); };
     },
 
@@ -732,6 +744,7 @@ const AppProject = {
         const modal = document.getElementById('save-as-modal');
         const okBtn = document.getElementById('save-as-ok-btn');
         const cancelBtn = document.getElementById('save-as-cancel-btn');
+        const exportBtn = document.getElementById('save-as-export-btn');
         const input = document.getElementById('save-as-name-input');
 
         if (!modal) return;
@@ -740,15 +753,29 @@ const AppProject = {
 
         okBtn.addEventListener('click', () => {
             const newName = input.value.trim();
-            if (newName) {
-                this.saveProjectAs(newName);
-                close();
-            } else {
+            if (!newName) {
                 alert('プロジェクト名を入力してください');
+                return;
             }
+            // 同名は現在の作品名として上書き保存（そのままセーブ）
+            const currentName = (App.currentProjectName || '').replace(/​/g, '');
+            if (newName === currentName) {
+                this.saveProject();
+                close();
+                return;
+            }
+            this.saveProjectAs(newName);
+            close();
         });
 
         cancelBtn.addEventListener('click', close);
+
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const name = (input.value.trim()) || App.currentProjectName || App.projectData.meta.name || 'MyGame';
+                this.exportProject(name);
+            });
+        }
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) close();
