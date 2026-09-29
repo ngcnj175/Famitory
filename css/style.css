@@ -5587,6 +5587,30 @@ input, textarea, select, button {
     text-align: center;
 }
 
+.save-as-export-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.save-as-export-link {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    color: #8888aa;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.save-as-export-link:hover {
+    color: #b0b0d0;
+}
+
+.save-as-export-link:active {
+    color: #ffffff;
+}
+
 .share-divider {
     border: none;
     border-top: 2px dashed #ccc;
