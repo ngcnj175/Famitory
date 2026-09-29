@@ -524,3 +524,4 @@
 | U546 | .json ファイルとしてエクスポート | Export as .json file | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
+| U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |

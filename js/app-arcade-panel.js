@@ -24,37 +24,50 @@ const AppArcadePanel = {
             clearBtn.addEventListener('click', () => this.setThumbnail(''));
         }
         if (commentInput) {
-            // IME確定前は超過チェックせず、通常入力と確定タイミングでチェック
-            commentInput.addEventListener('input', (e) => {
+            // Enter単独入力を禁止（IME確定のEnterは変換確定なので compositionend で除外される）
+            commentInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !commentInput._composing) {
+                    e.preventDefault();
+                    this._showLimitToast('U549');
+                }
+            });
+            commentInput.addEventListener('input', () => {
                 if (commentInput._composing) return;
-                this.enforceCommentLimit();
+                this.sanitizeComment();
                 this.autoGrowComment();
             });
             commentInput.addEventListener('compositionstart', () => { commentInput._composing = true; });
             commentInput.addEventListener('compositionend', () => {
                 commentInput._composing = false;
-                this.enforceCommentLimit();
+                this.sanitizeComment();
                 this.autoGrowComment();
             });
         }
     },
 
-    // 文字数上限を超えたらトリム＋トースト（連打時は間引き）
-    enforceCommentLimit() {
+    // 改行除去＋文字数上限適用（貼り付け・IME確定後などをカバー）
+    sanitizeComment() {
         const el = document.getElementById('arcade-comment-input');
         if (!el) return;
-        if ([...el.value].length <= COMMENT_MAX_LENGTH) return;
-        el.value = [...el.value].slice(0, COMMENT_MAX_LENGTH).join('');
+        let v = el.value;
+        const hadNewline = /[\r\n]/.test(v);
+        if (hadNewline) v = v.replace(/[\r\n]+/g, ' ');
+        const overflow = [...v].length > COMMENT_MAX_LENGTH;
+        if (overflow) v = [...v].slice(0, COMMENT_MAX_LENGTH).join('');
+        if (v !== el.value) el.value = v;
+        if (overflow) this._showLimitToast('U548');
+        else if (hadNewline) this._showLimitToast('U549');
+    },
+
+    // トースト（連打時は1.5秒に1回に間引き）
+    _showLimitToast(i18nId) {
         const now = Date.now();
-        if (!this._lastLimitToastAt || now - this._lastLimitToastAt > 1500) {
-            this._lastLimitToastAt = now;
-            const msg = (typeof AppI18N !== 'undefined')
-                ? AppI18N.t('U548').replace('{n}', COMMENT_MAX_LENGTH)
-                : `コメントは${COMMENT_MAX_LENGTH}文字までです`;
-            if (typeof App !== 'undefined' && App.showToast) {
-                App.showToast(msg);
-            }
-        }
+        if (this._lastLimitToastAt && now - this._lastLimitToastAt < 1500) return;
+        this._lastLimitToastAt = now;
+        const raw = (typeof AppI18N !== 'undefined')
+            ? AppI18N.t(i18nId).replace('{n}', COMMENT_MAX_LENGTH)
+            : (i18nId === 'U549' ? '改行は使えません' : `コメントは${COMMENT_MAX_LENGTH}文字までです`);
+        if (typeof App !== 'undefined' && App.showToast) App.showToast(raw);
     },
 
     autoGrowComment() {
