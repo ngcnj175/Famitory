@@ -923,38 +923,6 @@
             </div>
         </div>
 
-        <!-- ゲーム詳細モーダル -->
-        <div id="arcade-detail-modal" class="modal-overlay hidden">
-            <div class="modal-content modal-small">
-                <button id="arcade-detail-close" class="arcade-detail-close-x" type="button" aria-label="Close">×</button>
-                <div class="modal-body" id="arcade-detail-body">
-                    <img id="arcade-detail-thumb" alt="thumbnail">
-                    <div id="arcade-detail-title"></div>
-                    <div id="arcade-detail-creator"></div>
-                    <div id="arcade-detail-remix-source" class="hidden">
-                        <span class="arcade-detail-remix-label">Remix of:</span>
-                        <span id="arcade-detail-remix-title"></span>
-                        <span class="arcade-detail-remix-sep">/</span>
-                        <span id="arcade-detail-remix-author"></span>
-                    </div>
-                    <span id="arcade-detail-remixtag" class="arcade-remixtag hidden">
-                        <span>Remix OK</span>
-                    </span>
-                    <div id="arcade-detail-likes">
-                        <img src="images/like_icon.svg" alt="like">
-                        <span id="arcade-detail-likes-count">0</span>
-                    </div>
-                    <div id="arcade-detail-comment"></div>
-                    <div id="arcade-detail-actions">
-                        <button id="arcade-detail-play" class="arcade-play-btn arcade-play-btn-large" type="button">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            <span>PLAY</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- フッター（アイコンバー） -->
         <header id="header">
             <div id="toolbar-left">
@@ -1041,6 +1009,38 @@
     </div>
 
     <!-- ========== モーダル ========== -->
+
+    <!-- ARCADE ゲーム詳細モーダル -->
+    <div id="arcade-detail-modal" class="modal-overlay hidden">
+        <div class="modal-content modal-small">
+            <button id="arcade-detail-close" class="arcade-detail-close-x" type="button" aria-label="Close">×</button>
+            <div class="modal-body" id="arcade-detail-body">
+                <img id="arcade-detail-thumb" alt="thumbnail">
+                <div id="arcade-detail-title"></div>
+                <div id="arcade-detail-creator"></div>
+                <div id="arcade-detail-remix-source" class="hidden">
+                    <span class="arcade-detail-remix-label">Remix of:</span>
+                    <span id="arcade-detail-remix-title"></span>
+                    <span class="arcade-detail-remix-sep">/</span>
+                    <span id="arcade-detail-remix-author"></span>
+                </div>
+                <span id="arcade-detail-remixtag" class="arcade-remixtag hidden">
+                    <span>Remix OK</span>
+                </span>
+                <div id="arcade-detail-likes">
+                    <img src="images/like_icon.svg" alt="like">
+                    <span id="arcade-detail-likes-count">0</span>
+                </div>
+                <div id="arcade-detail-comment"></div>
+                <div id="arcade-detail-actions">
+                    <button id="arcade-detail-play" class="arcade-play-btn arcade-play-btn-large" type="button">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        <span>PLAY</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 種別選択モーダル -->
     <div id="type-select-modal" class="modal-overlay hidden">
