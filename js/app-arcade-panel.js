@@ -4,6 +4,8 @@
  * projectData.meta.arcade = { comment, thumbnail } に保存する。
  */
 
+const COMMENT_MAX_LENGTH = 80;
+
 const AppArcadePanel = {
 
     init() {
@@ -22,8 +24,36 @@ const AppArcadePanel = {
             clearBtn.addEventListener('click', () => this.setThumbnail(''));
         }
         if (commentInput) {
-            // 2行を超えたら1行ずつ広がる自動グロー
-            commentInput.addEventListener('input', () => this.autoGrowComment());
+            // IME確定前は超過チェックせず、通常入力と確定タイミングでチェック
+            commentInput.addEventListener('input', (e) => {
+                if (commentInput._composing) return;
+                this.enforceCommentLimit();
+                this.autoGrowComment();
+            });
+            commentInput.addEventListener('compositionstart', () => { commentInput._composing = true; });
+            commentInput.addEventListener('compositionend', () => {
+                commentInput._composing = false;
+                this.enforceCommentLimit();
+                this.autoGrowComment();
+            });
+        }
+    },
+
+    // 文字数上限を超えたらトリム＋トースト（連打時は間引き）
+    enforceCommentLimit() {
+        const el = document.getElementById('arcade-comment-input');
+        if (!el) return;
+        if ([...el.value].length <= COMMENT_MAX_LENGTH) return;
+        el.value = [...el.value].slice(0, COMMENT_MAX_LENGTH).join('');
+        const now = Date.now();
+        if (!this._lastLimitToastAt || now - this._lastLimitToastAt > 1500) {
+            this._lastLimitToastAt = now;
+            const msg = (typeof AppI18N !== 'undefined')
+                ? AppI18N.t('U548').replace('{n}', COMMENT_MAX_LENGTH)
+                : `コメントは${COMMENT_MAX_LENGTH}文字までです`;
+            if (typeof App !== 'undefined' && App.showToast) {
+                App.showToast(msg);
+            }
         }
     },
 

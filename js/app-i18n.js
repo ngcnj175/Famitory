@@ -370,6 +370,7 @@ const AppI18N = {
         'U544': { JPN: '保存 / エクスポート',      ENG: 'Save / Export' },
         'U545': { JPN: '同名のときは上書き保存されます', ENG: 'Same name will overwrite the existing project' },
         'U546': { JPN: '.json ファイルとしてエクスポート', ENG: 'Export as .json file' },
+        'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
     },
 
     t(id, vars = {}) {

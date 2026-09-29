@@ -523,3 +523,4 @@
 | U545 | 同名のときは上書き保存されます | Same name will overwrite the existing project | HTML text node (保存モーダル 入力欄下の説明) | index.html | ✓ |
 | U546 | .json ファイルとしてエクスポート | Export as .json file | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
+| U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
