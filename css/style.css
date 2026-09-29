@@ -5596,11 +5596,18 @@ input, textarea, select, button {
 .save-as-export-link {
     background: none;
     border: none;
-    padding: 6px 8px;
+    padding: 8px 10px;
     color: #8888aa;
-    font-size: 12px;
+    font-size: 14px;
     text-decoration: underline;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.save-as-export-icon {
+    flex-shrink: 0;
 }
 
 .save-as-export-link:hover {
