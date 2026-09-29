@@ -519,9 +519,10 @@
 | U541 | ARCADEに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
 | U542 | この作品を公開する | Publish this game | HTML text node (公開モーダル 未公開時の主要CTA) | index.html | ✓ |
 | U543 | 共有する | Share | HTML text node (公開モーダル 公開済み時 共有リンクへ遷移) | index.html | ✓ |
-| U544 | 保存 / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVE長押し) | index.html | ✓ |
+| U544 | セーブ / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVE長押し) | index.html | ✓ |
 | U545 | 同名のときは上書き保存されます | Same name will overwrite the existing project | HTML text node (保存モーダル 入力欄下の説明) | index.html | ✓ |
-| U546 | .json ファイルとしてエクスポート | Export as .json file | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
+| U546 | エクスポート | Export | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
+| U550 | ゲームデータ | Game Data | HTML text node (保存モーダル 入力欄ラベル) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |
