@@ -13,6 +13,7 @@ const AppArcadePanel = {
     bindEvents() {
         const captureBtn = document.getElementById('arcade-thumb-capture-btn');
         const clearBtn = document.getElementById('arcade-thumb-clear-btn');
+        const commentInput = document.getElementById('arcade-comment-input');
 
         if (captureBtn) {
             captureBtn.addEventListener('click', () => this.onCapture());
@@ -20,6 +21,17 @@ const AppArcadePanel = {
         if (clearBtn) {
             clearBtn.addEventListener('click', () => this.setThumbnail(''));
         }
+        if (commentInput) {
+            // 2行を超えたら1行ずつ広がる自動グロー
+            commentInput.addEventListener('input', () => this.autoGrowComment());
+        }
+    },
+
+    autoGrowComment() {
+        const el = document.getElementById('arcade-comment-input');
+        if (!el) return;
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
     },
 
     onCapture() {
@@ -58,7 +70,11 @@ const AppArcadePanel = {
         if (typeof App === 'undefined' || !App.projectData) return;
         const arcade = (App.projectData.meta && App.projectData.meta.arcade) || {};
         const commentInput = document.getElementById('arcade-comment-input');
-        if (commentInput) commentInput.value = arcade.comment || '';
+        if (commentInput) {
+            commentInput.value = arcade.comment || '';
+            // reflow: 表示後に auto-grow を反映
+            requestAnimationFrame(() => this.autoGrowComment());
+        }
         this.setThumbnail(arcade.thumbnail || '');
     },
 

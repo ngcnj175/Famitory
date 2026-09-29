@@ -30,6 +30,20 @@ const AppShare = {
         arcadeInfo.classList.toggle('hidden-slot', !cb.checked);
     },
 
+    // 公開モーダルの入力値を projectData に確定 + ローカル保存（モーダル閉じる時に呼ぶ）
+    persistShareDialogState() {
+        if (!App.projectData || !App.projectData.meta) return;
+        const remixCb = document.getElementById('share-remix-ok');
+        const arcadeOnCb = document.getElementById('share-arcade-on');
+        if (remixCb)   App.projectData.meta.remixOK  = remixCb.checked;
+        if (arcadeOnCb) App.projectData.meta.arcadeOff = !arcadeOnCb.checked;
+        if (typeof AppArcadePanel !== 'undefined') AppArcadePanel.saveToProject();
+        if (App.currentProjectName) {
+            Storage.saveProject(App.currentProjectName, App.projectData);
+            Storage.save('currentProject', App.projectData);
+        }
+    },
+
     // 公開確認ダイアログを表示し、OKされたら onConfirm を呼ぶ
     showPublishConfirm(isFirstTime, onConfirm) {
         const modal = document.getElementById('publish-confirm-modal');
@@ -233,7 +247,8 @@ const AppShare = {
     openShareLinksDialog() {
         const dialog = document.getElementById('share-links-dialog');
         if (!dialog) return;
-        // メイン公開モーダルは閉じる
+        // メイン公開モーダルは閉じる（入力値を永続化）
+        this.persistShareDialogState();
         document.getElementById('share-dialog')?.classList.add('hidden');
         dialog.classList.remove('hidden');
     },
@@ -396,7 +411,10 @@ const AppShare = {
             arcadeOnCheckbox.addEventListener('change', () => this.updateArcadeInfoVisibility());
         }
 
-        const closeShareDialog = () => document.getElementById('share-dialog').classList.add('hidden');
+        const closeShareDialog = () => {
+            this.persistShareDialogState();
+            document.getElementById('share-dialog').classList.add('hidden');
+        };
         if (closeBtn) closeBtn.onclick = closeShareDialog;
         document.getElementById('share-dialog').onclick = (e) => {
             if (e.target === document.getElementById('share-dialog')) closeShareDialog();
