@@ -48,6 +48,31 @@ const DEFAULT_STAGE_SE = {
 
 const AppProject = {
 
+    // 絵文字（ピクトグラフ・国旗・ZWJシーケンス・異体字セレクタ）を除去
+    stripEmoji(str) {
+        if (!str) return str;
+        return str
+            .replace(/\p{Extended_Pictographic}(‍\p{Extended_Pictographic})*️?/gu, '')
+            .replace(/\p{Regional_Indicator}{1,2}/gu, '')
+            .replace(/[‍️]/g, '');
+    },
+
+    // 入力欄に絵文字自動除去ハンドラを装着（返り値はデタッチ関数）
+    attachEmojiFilter(input) {
+        if (!input) return () => {};
+        const handler = () => {
+            const before = input.value;
+            const after = this.stripEmoji(before);
+            if (before !== after) {
+                const pos = Math.max(0, input.selectionStart - (before.length - after.length));
+                input.value = after;
+                try { input.setSelectionRange(pos, pos); } catch (_) {}
+            }
+        };
+        input.addEventListener('input', handler);
+        return () => input.removeEventListener('input', handler);
+    },
+
     // エディットキー生成（8文字英数字）
     generateEditKey() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -510,11 +535,14 @@ const AppProject = {
             createBtn.setAttribute('data-i18n', submitKey);
         }
 
-        nameInput.value = initialTitle ?? 'NEW GAME';
-        authorInput.value = initialAuthor ?? 'You';
+        nameInput.value = this.stripEmoji(initialTitle ?? 'NEW GAME');
+        authorInput.value = this.stripEmoji(initialAuthor ?? 'You');
         modal.classList.remove('hidden');
         nameInput.focus();
         nameInput.select();
+
+        const detachName = this.attachEmojiFilter(nameInput);
+        const detachAuthor = this.attachEmojiFilter(authorInput);
 
         const close = () => {
             modal.classList.add('hidden');
@@ -522,11 +550,13 @@ const AppProject = {
             authorInput.onkeydown = null;
             createBtn.onclick = null;
             cancelBtn.onclick = null;
+            detachName();
+            detachAuthor();
         };
 
         const submit = () => {
-            const name = nameInput.value.trim();
-            const author = authorInput.value.trim() || 'You';
+            const name = this.stripEmoji(nameInput.value).trim();
+            const author = this.stripEmoji(authorInput.value).trim() || 'You';
             if (!name) return;
 
             if (validateTitleUnique && Storage.projectExists(name)) {
@@ -753,10 +783,12 @@ const AppProject = {
 
         if (!modal) return;
 
+        this.attachEmojiFilter(input);
+
         const close = () => modal.classList.add('hidden');
 
         okBtn.addEventListener('click', () => {
-            const newName = input.value.trim();
+            const newName = this.stripEmoji(input.value).trim();
             if (!newName) {
                 alert('プロジェクト名を入力してください');
                 return;
@@ -776,7 +808,7 @@ const AppProject = {
 
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
-                const name = (input.value.trim()) || App.currentProjectName || App.projectData.meta.name || 'MyGame';
+                const name = this.stripEmoji((input.value.trim()) || App.currentProjectName || App.projectData.meta.name || 'MyGame');
                 this.exportProject(name);
             });
         }
@@ -791,7 +823,7 @@ const AppProject = {
         const input = document.getElementById('save-as-name-input');
         if (modal && input) {
             let initialName = App.currentProjectName || 'MyGame';
-            input.value = initialName.replace(/\u200B/g, '');
+            input.value = this.stripEmoji(initialName.replace(/\u200B/g, ''));
             modal.classList.remove('hidden');
             input.focus();
         }
