@@ -154,7 +154,7 @@
 | U143 | ✓ コピーしました | ✓ Copied | HTML text node | index.html | ✓ |
 | U144 | データを移動 | Transfer Data | HTML text node (heading) | index.html | ✓ |
 | U145 | もどる | Back | HTML text node (button) | index.html | ✓ |
-| U146 | データをえらぶ | Select Data | HTML text node | index.html | ✓ |
+| U146 | ゲームをひらく | Select Data | HTML text node (開くモーダル 見出し) | index.html | ✓ |
 | U147 | ひらく | Open | HTML text node (button) | index.html | ✓ |
 | U148 | けす | Delete | HTML text node (button) | index.html | ✓ |
 | U149 | やめる | Cancel | HTML text node (button) | index.html | ✓ |
@@ -519,12 +519,13 @@
 | U541 | ARCADEに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
 | U542 | この作品を公開する | Publish this game | HTML text node (公開モーダル 未公開時の主要CTA) | index.html | ✓ |
 | U543 | 共有する | Share | HTML text node (公開モーダル 公開済み時 共有リンクへ遷移) | index.html | ✓ |
-| U544 | セーブ / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVEタップ) | index.html | ✓ |
+| U544 | ゲームをセーブする | Save Game | HTML text node (保存/エクスポート統合モーダル タイトル SAVEタップ) | index.html | ✓ |
 | U545 | 同名のときは上書き保存されます | Same name will overwrite the existing project | HTML text node (保存モーダル 入力欄下の説明) | index.html | ✓ |
 | U546 | エクスポート | Export | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
 | U550 | ゲームデータ | Game Data | HTML text node (保存モーダル 入力欄ラベル) | index.html | ✓ |
 | U551 | 「${name}」をけしますか？ | Delete "${name}"? | JS message/literal (開くモーダル 削除確認ダイアログ 見出し) | app-project.js | ✓ |
 | U552 | この操作は取り消せません。 | This action cannot be undone. | JS message/literal (開くモーダル 削除確認ダイアログ 本文) | app-project.js | ✓ |
+| U553 | ▼データをえらぶ | ▼ Select Data | HTML text node (開くモーダル 本文) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |

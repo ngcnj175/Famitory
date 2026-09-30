@@ -62,7 +62,7 @@ const AppI18N = {
         'U402': { JPN: 'インポート',           ENG: 'Import' },
         // ---- プロジェクトリストモーダル ----
         'U145': { JPN: 'もどる',              ENG: 'Back' },
-        'U146': { JPN: 'データをえらぶ',       ENG: 'Select Data' },
+        'U146': { JPN: 'ゲームをひらく',       ENG: 'Open Game' },
         'U147': { JPN: 'ひらく',              ENG: 'Open' },
         'U148': { JPN: 'けす',               ENG: 'Delete' },
         'U149': { JPN: 'やめる',              ENG: 'Cancel' },
@@ -367,12 +367,13 @@ const AppI18N = {
         'U543': { JPN: '共有する',                 ENG: 'Share' },
         'U547': { JPN: '更新する',                 ENG: 'Update' },
         // ---- 保存/エクスポート統合モーダル ----
-        'U544': { JPN: 'セーブ / エクスポート',    ENG: 'Save / Export' },
+        'U544': { JPN: 'ゲームをセーブする',       ENG: 'Save Game' },
         'U545': { JPN: '同名のときは上書き保存されます', ENG: 'Same name will overwrite the existing project' },
         'U546': { JPN: 'エクスポート',             ENG: 'Export' },
         'U550': { JPN: 'ゲームデータ',             ENG: 'Game Data' },
         'U551': { JPN: '「${name}」をけしますか？', ENG: 'Delete "${name}"?' },
         'U552': { JPN: 'この操作は取り消せません。', ENG: 'This action cannot be undone.' },
+        'U553': { JPN: '▼データをえらぶ',         ENG: '▼ Select Data' },
         'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
     },
