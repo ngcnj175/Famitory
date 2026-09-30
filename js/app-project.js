@@ -717,10 +717,16 @@ const AppProject = {
 
         deleteBtn.onclick = () => {
             if (!selectedName) return;
-            Storage.deleteProject(selectedName);
-            if (App.currentProjectName === selectedName) App.currentProjectName = null;
-            selectedName = null;
-            renderList();
+            const targetName = selectedName;
+            const displayName = targetName.replace(/​/g, '');
+            const msg = (AppI18N.I18N['U551']?.[AppI18N.currentLang] || '「${name}」をけしますか？').replace('${name}', displayName);
+            const sub = AppI18N.I18N['U552']?.[AppI18N.currentLang] || 'この操作は取り消せません。';
+            AppDialogs.showConfirm(msg, sub, () => {
+                Storage.deleteProject(targetName);
+                if (App.currentProjectName === targetName) App.currentProjectName = null;
+                if (selectedName === targetName) selectedName = null;
+                renderList();
+            });
         };
 
         // インポート（.jsonファイル読み込み）

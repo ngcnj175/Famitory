@@ -371,6 +371,8 @@ const AppI18N = {
         'U545': { JPN: '同名のときは上書き保存されます', ENG: 'Same name will overwrite the existing project' },
         'U546': { JPN: 'エクスポート',             ENG: 'Export' },
         'U550': { JPN: 'ゲームデータ',             ENG: 'Game Data' },
+        'U551': { JPN: '「${name}」をけしますか？', ENG: 'Delete "${name}"?' },
+        'U552': { JPN: 'この操作は取り消せません。', ENG: 'This action cannot be undone.' },
         'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
     },
