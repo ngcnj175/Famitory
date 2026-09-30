@@ -519,7 +519,7 @@
 | U541 | ARCADEに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
 | U542 | この作品を公開する | Publish this game | HTML text node (公開モーダル 未公開時の主要CTA) | index.html | ✓ |
 | U543 | 共有する | Share | HTML text node (公開モーダル 公開済み時 共有リンクへ遷移) | index.html | ✓ |
-| U544 | セーブ / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVE長押し) | index.html | ✓ |
+| U544 | セーブ / エクスポート | Save / Export | HTML text node (保存/エクスポート統合モーダル タイトル SAVEタップ) | index.html | ✓ |
 | U545 | 同名のときは上書き保存されます | Same name will overwrite the existing project | HTML text node (保存モーダル 入力欄下の説明) | index.html | ✓ |
 | U546 | エクスポート | Export | HTML text node (保存モーダル エクスポートボタン) | index.html | ✓ |
 | U550 | ゲームデータ | Game Data | HTML text node (保存モーダル 入力欄ラベル) | index.html | ✓ |

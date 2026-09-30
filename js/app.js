@@ -476,7 +476,7 @@ const App = {
             AppProject.showSimpleProjectList();
         });
 
-        // 保存（SAVE） - 長押し対応（プレイヤーモードではエディットキー入力モーダルを表示）
+        // 保存（SAVE） - タップ:モーダル / 長押し:上書き保存（プレイヤーモードではエディットキー入力モーダルを表示）
         const saveBtn = document.getElementById('save-icon-btn');
         if (saveBtn) {
             let pressTimer;
@@ -488,8 +488,8 @@ const App = {
 
                 pressTimer = setTimeout(() => {
                     pressTimer = null;
-                    // 長押しイベント発生
-                    AppProject.showSaveAsModal();
+                    // 長押しイベント発生 → 上書き保存
+                    AppProject.saveProject();
                 }, 800); // 800ms長押し
             };
 
@@ -511,10 +511,10 @@ const App = {
                     return;
                 }
                 if (pressTimer) {
-                    // タイマーが残っている＝短押し
+                    // タイマーが残っている＝短押し → セーブ/エクスポートモーダル
                     clearTimeout(pressTimer);
                     pressTimer = null;
-                    AppProject.saveProject(); // 通常保存
+                    AppProject.showSaveAsModal();
                 }
             };
 
