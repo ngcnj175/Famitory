@@ -5345,10 +5345,10 @@ input, textarea, select, button {
     font-family: inherit;
 }
 
-/* SHAREモーダルはARCADE詳細と同等の広さに拡張（ARCADE情報の余裕確保） */
+/* SHAREモーダルは開くモーダルと同じ幅に統一 */
 .share-modal-content {
-    width: 440px;
-    max-width: 92vw;
+    width: 320px;
+    max-width: 90%;
 }
 
 .modal-header-simple,

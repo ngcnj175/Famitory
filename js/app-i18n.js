@@ -330,7 +330,7 @@ const AppI18N = {
 
         // ---- ARCADE ----
         'U500': { JPN: 'ARCADE情報',              ENG: 'ARCADE Info' },
-        'U501': { JPN: 'コメント',                 ENG: 'Comment' },
+        'U501': { JPN: '▼コメント',               ENG: '▼ Comment' },
         'U502': { JPN: 'サムネイル',               ENG: 'Thumbnail' },
         'U503': { JPN: 'サムネイル未設定',         ENG: 'No thumbnail' },
         'U504': { JPN: 'プレイ画面から取得',       ENG: 'Capture from Play' },
@@ -361,7 +361,7 @@ const AppI18N = {
         'U530': { JPN: 'エディットキーを控えてください', ENG: 'Save your edit key' },
         'U531': { JPN: '今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。', ENG: 'You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen.' },
         // ---- 公開/共有モーダル 改装 ----
-        'U540': { JPN: 'ゲームを公開',             ENG: 'Publish Game' },
+        'U540': { JPN: 'ゲームを公開する',         ENG: 'Publish Game' },
         'U541': { JPN: 'ARCADEに登録',             ENG: 'Register to ARCADE' },
         'U542': { JPN: 'この作品を公開する',       ENG: 'Publish this game' },
         'U543': { JPN: '共有する',                 ENG: 'Share' },
