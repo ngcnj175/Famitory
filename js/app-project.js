@@ -482,7 +482,7 @@ const AppProject = {
                     return;
                 }
 
-                let baseName = file.name.replace(/\.(json|pgk)$/i, '');
+                let baseName = this.stripEmoji(file.name.replace(/\.(json|pgk)$/i, '')).trim() || 'Imported';
                 let importName = baseName;
                 let counter = 1;
 
@@ -491,6 +491,8 @@ const AppProject = {
                     counter++;
                 }
 
+                if (data.meta.name) data.meta.name = this.stripEmoji(data.meta.name);
+                if (data.meta.author) data.meta.author = this.stripEmoji(data.meta.author);
                 if (!data.meta.name) {
                     data.meta.name = importName;
                 }
@@ -555,8 +557,8 @@ const AppProject = {
         };
 
         const submit = () => {
-            const name = this.stripEmoji(nameInput.value).trim();
-            const author = this.stripEmoji(authorInput.value).trim() || 'You';
+            const name = nameInput.value.trim();
+            const author = authorInput.value.trim() || 'You';
             if (!name) return;
 
             if (validateTitleUnique && Storage.projectExists(name)) {
@@ -788,7 +790,7 @@ const AppProject = {
         const close = () => modal.classList.add('hidden');
 
         okBtn.addEventListener('click', () => {
-            const newName = this.stripEmoji(input.value).trim();
+            const newName = input.value.trim();
             if (!newName) {
                 alert('プロジェクト名を入力してください');
                 return;
@@ -808,7 +810,7 @@ const AppProject = {
 
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
-                const name = this.stripEmoji((input.value.trim()) || App.currentProjectName || App.projectData.meta.name || 'MyGame');
+                const name = (input.value.trim()) || App.currentProjectName || App.projectData.meta.name || 'MyGame';
                 this.exportProject(name);
             });
         }
