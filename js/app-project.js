@@ -627,8 +627,6 @@ const AppProject = {
             listContainer.querySelectorAll('.list-item').forEach(el => {
                 const isSelected = el.dataset.name === name;
                 el.classList.toggle('selected', isSelected);
-                const arrow = el.querySelector('.list-item-arrow');
-                if (arrow) arrow.textContent = isSelected ? '▶' : '';
                 const nameEl = el.querySelector('.list-item-name');
                 const wrapper = el.querySelector('.list-item-name-wrapper');
                 if (nameEl && wrapper) {
@@ -662,7 +660,6 @@ const AppProject = {
                 const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${('0' + d.getMinutes()).slice(-2)}`;
 
                 item.innerHTML = `
-                    <div class="list-item-arrow">${p.name === selectedName ? '▶' : ''}</div>
                     <div class="list-item-content">
                         <div class="list-item-name-wrapper">
                             <span class="list-item-name">${p.name.replace(/\u200B/g, '')}</span>

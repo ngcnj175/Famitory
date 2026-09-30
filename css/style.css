@@ -5795,16 +5795,6 @@ input, textarea, select, button {
     color: #333 !important;
 }
 
-#project-list .list-item .list-item-arrow {
-    width: 24px;
-    text-align: center;
-    font-size: 14px;
-    color: #333 !important;
-    flex-shrink: 0;
-    margin-right: 8px;
-    font-weight: bold;
-}
-
 #project-list .list-item .list-item-content {
     flex: 1;
     display: flex;
@@ -5884,7 +5874,8 @@ input, textarea, select, button {
 #project-list .list-item .list-item-date {
     font-size: 11px !important;
     color: #666 !important;
-    margin-top: 4px;
+    margin-top: 0;
+    line-height: 1.2;
     font-family: monospace;
     font-weight: normal !important;
     text-align: left;
