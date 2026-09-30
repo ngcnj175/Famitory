@@ -3648,8 +3648,7 @@ input, textarea, select, button {
 
 .share-modal-content h3 {
     margin: 0 0 8px;
-    font-size: 18px;
-    /* color removed - use .modal-title-simple styling */
+    /* font-size/color removed - use .modal-title-simple styling */
 }
 
 .share-description {
@@ -7226,7 +7225,7 @@ body.dark-mode {
     width: 100%;
     box-sizing: border-box;
     resize: vertical;
-    min-height: 60px;
+    min-height: 44px;
     font-size: 12px;
     padding: 4px 6px;
     border: 1px solid #999;
