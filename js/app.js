@@ -380,6 +380,9 @@ const App = {
     // グレーアウト解除（クリエイターモードへ移行）
     unlockCreatorMode() {
         this.isPlayOnlyMode = false;
+        if (!this.currentProjectName) {
+            this.currentProjectName = this.projectData?.meta?.name || 'MyGame';
+        }
         // 全ボタンの locked を解除
         document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
             btn.classList.remove('locked');
