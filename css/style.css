@@ -5412,6 +5412,18 @@ input, textarea, select, button {
     flex-wrap: wrap;
 }
 
+.modal-footer-actions.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    justify-items: stretch;
+}
+
+.modal-footer-actions.grid-2 .modal-action-btn {
+    width: 100%;
+    min-width: 0;
+}
+
 /* 共通ボタン（ダークピル型） */
 .modal-action-btn {
     padding: 12px 16px;

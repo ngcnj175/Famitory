@@ -442,7 +442,7 @@ const AppProject = {
         URL.revokeObjectURL(url);
     },
 
-    importProject(file) {
+    importProject(file, onImported) {
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
@@ -471,6 +471,7 @@ const AppProject = {
                 }
                 data.meta.createdAt = Date.now();
                 Storage.saveProject(importName, data);
+                if (typeof onImported === 'function') onImported(importName);
 
                 const msg = (AppI18N.I18N['U365']?.[AppI18N.currentLang] || '「${importName}」としてインポートしました。\n今すぐ開きますか？').replace('${importName}', importName);
                 AppDialogs.showConfirm(msg, '', () => {
@@ -729,7 +730,7 @@ const AppProject = {
             importBtn.onclick = () => fileInput.click();
             fileInput.onchange = (e) => {
                 const file = e.target.files[0];
-                if (file) this.importProject(file);
+                if (file) this.importProject(file, () => renderList());
                 e.target.value = '';
             };
         }
