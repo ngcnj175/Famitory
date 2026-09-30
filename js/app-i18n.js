@@ -373,7 +373,7 @@ const AppI18N = {
         'U550': { JPN: 'ゲームデータ',             ENG: 'Game Data' },
         'U551': { JPN: '「${name}」をけしますか？', ENG: 'Delete "${name}"?' },
         'U552': { JPN: 'この操作は取り消せません。', ENG: 'This action cannot be undone.' },
-        'U553': { JPN: '▼データをえらぶ',         ENG: '▼ Select Data' },
+        'U553': { JPN: '▼セーブデータをえらぶ',   ENG: '▼ Select Save Data' },
         'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
     },

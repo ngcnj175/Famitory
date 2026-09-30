@@ -525,7 +525,7 @@
 | U550 | ゲームデータ | Game Data | HTML text node (保存モーダル 入力欄ラベル) | index.html | ✓ |
 | U551 | 「${name}」をけしますか？ | Delete "${name}"? | JS message/literal (開くモーダル 削除確認ダイアログ 見出し) | app-project.js | ✓ |
 | U552 | この操作は取り消せません。 | This action cannot be undone. | JS message/literal (開くモーダル 削除確認ダイアログ 本文) | app-project.js | ✓ |
-| U553 | ▼データをえらぶ | ▼ Select Data | HTML text node (開くモーダル 本文) | index.html | ✓ |
+| U553 | ▼セーブデータをえらぶ | ▼ Select Save Data | HTML text node (開くモーダル 本文) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |
