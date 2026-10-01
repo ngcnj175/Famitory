@@ -455,6 +455,13 @@ const StageEditor = {
         const paramSection = document.getElementById('param-config-section');
         if (!spriteSection || !paramSection || !this.editingTemplate) return;
 
+        // 属性ラベルを更新（言語切替時にも反映されるようにここで更新）
+        const typeLabel = document.getElementById('tile-type-label');
+        if (typeLabel) {
+            const labelId = this.typeLabels[this.editingTemplate.type];
+            typeLabel.textContent = labelId ? this.t(labelId) : this.editingTemplate.type;
+        }
+
         const type = this.editingTemplate.type;
         let spriteRows = '';
 
