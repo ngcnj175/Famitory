@@ -5651,7 +5651,7 @@ input, textarea, select, button {
 .share-arcade-info .setting-row-vertical {
     align-items: center;
     gap: 2px;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
 }
 
 /* 保存/エクスポート統合モーダル */
@@ -5726,7 +5726,9 @@ input, textarea, select, button {
     font-size: 13px;
     font-weight: bold;
     color: #2e7d32;
-    margin-bottom: 16px;
+    margin: 0 auto 16px;
+    width: 50%;
+    box-sizing: border-box;
 }
 
 .share-status.hidden {
