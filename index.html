@@ -1366,8 +1366,8 @@
 
             <div class="share-panel-box">
                 <div class="setting-row" style="justify-content: flex-start; gap: 8px;">
-                    <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
-                    <label for="share-remix-ok" style="font-size: 15px; font-weight: 600; color: #666; cursor: pointer;" data-i18n="U141">リミックスOK</label>
+                    <input type="checkbox" id="share-remix-ok">
+                    <label for="share-remix-ok" data-i18n="U141">リミックスOK</label>
                 </div>
                 <div class="share-panel-desc" data-i18n="U554">このゲームを元に、
 他のユーザーが自由にアレンジできます</div>
@@ -1375,8 +1375,8 @@
 
             <div class="share-panel-box">
                 <div class="setting-row" style="justify-content: flex-start; gap: 8px;">
-                    <input type="checkbox" id="share-arcade-on" style="width: 16px; height: 16px;">
-                    <label for="share-arcade-on" style="font-size: 15px; font-weight: 600; color: #666; cursor: pointer;" data-i18n="U541">アーケードに登録</label>
+                    <input type="checkbox" id="share-arcade-on">
+                    <label for="share-arcade-on" data-i18n="U541">アーケードに登録</label>
                 </div>
                 <div class="share-panel-desc" data-i18n="U555">みんなの公開ギャラリーに表示されます</div>
 
@@ -1406,7 +1406,7 @@
             <!-- 公開/更新 主要CTA -->
             <div class="share-simple-list">
                 <button id="publish-main-btn" class="share-simple-btn primary" data-i18n="U542">
-                    この作品を公開する
+                    ゲームを公開する
                 </button>
                 <button id="open-share-links-btn" class="share-simple-btn hidden" data-i18n="U543">
                     共有する
@@ -1423,11 +1423,6 @@
     <div id="share-links-dialog" class="modal-overlay hidden">
         <div class="modal-content share-modal-content">
             <h3 class="modal-title-simple" data-i18n="U140">ゲームを共有</h3>
-
-            <div class="share-status">
-                <span class="share-status-dot"></span>
-                <span class="share-status-text" data-i18n="U142">公開中</span>
-            </div>
 
             <div class="share-simple-list">
                 <button id="copy-url-btn" class="share-simple-btn" data-i18n="U420">

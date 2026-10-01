@@ -362,7 +362,7 @@ const AppI18N = {
         // ---- 公開/共有モーダル 改装 ----
         'U540': { JPN: 'ゲームを公開する',         ENG: 'Publish Game' },
         'U541': { JPN: 'アーケードに登録',         ENG: 'Register to ARCADE' },
-        'U542': { JPN: 'この作品を公開する',       ENG: 'Publish this game' },
+        'U542': { JPN: 'ゲームを公開する',         ENG: 'Publish Game' },
         'U543': { JPN: '共有する',                 ENG: 'Share' },
         'U547': { JPN: 'ゲームを更新する',         ENG: 'Update Game' },
         // ---- 保存/エクスポート統合モーダル ----
