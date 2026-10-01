@@ -525,6 +525,8 @@
 | U551 | 「${name}」をけしますか？ | Delete "${name}"? | JS message/literal (開くモーダル 削除確認ダイアログ 見出し) | app-project.js | ✓ |
 | U552 | この操作は取り消せません。 | This action cannot be undone. | JS message/literal (開くモーダル 削除確認ダイアログ 本文) | app-project.js | ✓ |
 | U553 | ▼セーブデータをえらぶ | ▼ Select Save Data | HTML text node (開くモーダル 本文) | index.html | ✓ |
+| U554 | このゲームを元に、他のユーザーが自由にアレンジできます | Others can freely remix your game | HTML text node (SHAREモーダル リミックスOK説明) | index.html | ✓ |
+| U555 | みんなの公開ギャラリーに表示されます | Displayed in the public gallery | HTML text node (SHAREモーダル アーケード登録説明) | index.html | ✓ |
 | U547 | 更新する | Update | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |

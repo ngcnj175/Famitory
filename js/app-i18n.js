@@ -373,6 +373,8 @@ const AppI18N = {
         'U551': { JPN: '「${name}」をけしますか？', ENG: 'Delete "${name}"?' },
         'U552': { JPN: 'この操作は取り消せません。', ENG: 'This action cannot be undone.' },
         'U553': { JPN: '▼セーブデータをえらぶ',   ENG: '▼ Select Save Data' },
+        'U554': { JPN: 'このゲームを元に、他のユーザーが自由にアレンジできます', ENG: 'Others can freely remix your game' },
+        'U555': { JPN: 'みんなの公開ギャラリーに表示されます', ENG: 'Displayed in the public gallery' },
         'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
     },
