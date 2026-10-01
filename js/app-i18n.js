@@ -364,7 +364,7 @@ const AppI18N = {
         'U541': { JPN: 'アーケードに登録',         ENG: 'Register to ARCADE' },
         'U542': { JPN: 'この作品を公開する',       ENG: 'Publish this game' },
         'U543': { JPN: '共有する',                 ENG: 'Share' },
-        'U547': { JPN: '更新する',                 ENG: 'Update' },
+        'U547': { JPN: 'ゲームを更新する',         ENG: 'Update Game' },
         // ---- 保存/エクスポート統合モーダル ----
         'U544': { JPN: 'ゲームをセーブする',       ENG: 'Save Game' },
         'U545': { JPN: '同名のときは上書き保存されます', ENG: 'Same name will overwrite the existing project' },
