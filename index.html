@@ -1362,33 +1362,36 @@
             </div>
             <button id="share-unpublish-btn" class="share-unpublish-btn hidden" type="button" data-i18n="U524">非公開に戻す</button>
 
-            <div class="setting-row" style="margin: 12px 24px; justify-content: center; gap: 8px;">
-                <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
-                <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U141">リミックスOK</label>
-            </div>
-
-            <div class="setting-row" style="margin: 4px 24px 12px; justify-content: center; gap: 8px;">
-                <input type="checkbox" id="share-arcade-on" style="width: 16px; height: 16px;">
-                <label for="share-arcade-on" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U541">ARCADEに登録</label>
-            </div>
-
-            <!-- ARCADE情報（ARCADEに登録ONで表示） -->
-            <div id="share-arcade-info" class="share-arcade-info">
-                <div class="share-arcade-info-title" data-i18n="U500">ARCADE情報</div>
-                <div class="setting-row setting-row-vertical">
-                    <label data-i18n="U501" style="font-size:14px !important; font-weight:normal; color:#a0a0c0; text-align:left; padding-left:6px; margin-bottom:0;">▼コメント</label>
-                    <textarea id="arcade-comment-input" rows="2" placeholder=""></textarea>
+            <div class="share-panel-box">
+                <div class="setting-row" style="justify-content: flex-start; gap: 8px;">
+                    <input type="checkbox" id="share-remix-ok" style="width: 16px; height: 16px;">
+                    <label for="share-remix-ok" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U141">リミックスOK</label>
                 </div>
-                <div class="setting-row setting-row-vertical">
-                    <label data-i18n="U502">サムネイル</label>
-                    <div class="arcade-thumb-row">
-                        <div id="arcade-thumb-preview-wrap">
-                            <img id="arcade-thumb-preview" alt="thumbnail">
-                            <div id="arcade-thumb-placeholder" data-i18n="U503">サムネイル未設定</div>
-                        </div>
-                        <div class="arcade-thumb-btns">
-                            <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
-                            <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
+            </div>
+
+            <div class="share-panel-box">
+                <div class="setting-row" style="justify-content: flex-start; gap: 8px;">
+                    <input type="checkbox" id="share-arcade-on" style="width: 16px; height: 16px;">
+                    <label for="share-arcade-on" style="font-size: 13px; color: #a0a0c0; cursor: pointer;" data-i18n="U541">アーケードに登録</label>
+                </div>
+
+                <!-- ARCADE情報（ARCADEに登録ONで表示） -->
+                <div id="share-arcade-info" class="share-arcade-info">
+                    <div class="setting-row setting-row-vertical">
+                        <label data-i18n="U501">コメント</label>
+                        <textarea id="arcade-comment-input" rows="2" placeholder=""></textarea>
+                    </div>
+                    <div class="setting-row setting-row-vertical">
+                        <label data-i18n="U502">サムネイル</label>
+                        <div class="arcade-thumb-row">
+                            <div id="arcade-thumb-preview-wrap">
+                                <img id="arcade-thumb-preview" alt="thumbnail">
+                                <div id="arcade-thumb-placeholder" data-i18n="U503">サムネイル未設定</div>
+                            </div>
+                            <div class="arcade-thumb-btns">
+                                <button id="arcade-thumb-capture-btn" class="setting-save-btn" type="button" data-i18n="U504">プレイ画面から取得</button>
+                                <button id="arcade-thumb-clear-btn" class="setting-save-btn" type="button" data-i18n="U506">クリア</button>
+                            </div>
                         </div>
                     </div>
                 </div>

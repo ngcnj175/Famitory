@@ -486,8 +486,7 @@
 | U452 | カラーパレット | Color Palette | JS HTML template | stage-settings.js | ✓ |
 | U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal | app-share.js | ✓ |
 | U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal | app-share.js | ✓ |
-| U500 | ARCADE情報 | ARCADE Info | HTML text node (label) | index.html | ✓ |
-| U501 | ▼コメント | ▼ Comment | HTML text node (label) | index.html | ✓ |
+| U501 | コメント | Comment | HTML text node (label) | index.html | ✓ |
 | U502 | サムネイル | Thumbnail | HTML text node (label) | index.html | ✓ |
 | U503 | サムネイル未設定 | No thumbnail | HTML text node | index.html | ✓ |
 | U504 | プレイ画面から取得 | Capture from Play | HTML button label | index.html | ✓ |
@@ -516,7 +515,7 @@
 | U530 | エディットキーを控えてください | Save your edit key | JS message/literal (初回公開成功アラート 見出し) | app-share.js | ✓ |
 | U531 | 今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。 | You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen. | JS message/literal (初回公開成功アラート 本文) | app-share.js | ✓ |
 | U540 | ゲームを公開する | Publish Game | HTML text node (公開モーダル タイトル) | index.html | ✓ |
-| U541 | ARCADEに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
+| U541 | アーケードに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |
 | U542 | この作品を公開する | Publish this game | HTML text node (公開モーダル 未公開時の主要CTA) | index.html | ✓ |
 | U543 | 共有する | Share | HTML text node (公開モーダル 公開済み時 共有リンクへ遷移) | index.html | ✓ |
 | U544 | ゲームをセーブする | Save Game | HTML text node (保存/エクスポート統合モーダル タイトル SAVEタップ) | index.html | ✓ |
