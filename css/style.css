@@ -5763,9 +5763,8 @@ input, textarea, select, button {
 /* 非公開に戻すボタン（公開中バッジの右・絶対配置でバッジの中央固定を維持） */
 .share-unpublish-btn {
     position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 4px;
+    bottom: 0;
     padding: 2px 6px;
     background: transparent;
     border: none;
