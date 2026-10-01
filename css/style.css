@@ -5514,14 +5514,23 @@ input, textarea, select, button {
     border-radius: 8px;
 }
 
-/* チェック項目の説明文（1行で収める小さなテキスト） */
+/* アーケード項目内の区切り線（説明文とコメント欄の間） */
+.share-panel-divider {
+    width: 100%;
+    height: 2px;
+    margin: 10px auto;
+    border: none;
+    background: #fff;
+}
+
+/* チェック項目の説明文 */
 .share-panel-desc {
     margin-top: 4px;
     padding-left: 24px;
-    font-size: 10px;
+    font-size: 11px;
     color: #888;
     text-align: left;
-    white-space: nowrap;
+    white-space: pre-line;
     line-height: 1.3;
 }
 
@@ -5633,7 +5642,7 @@ input, textarea, select, button {
     display: block;
     width: auto;
     font-size: 12px;
-    font-weight: normal;
+    font-weight: 700;
     color: #888;
     text-align: center;
     margin-bottom: 0;
