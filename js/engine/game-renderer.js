@@ -209,7 +209,7 @@ class GameRenderer {
         // 11. UI
         this.renderUI();
 
-        // 12. イースターエッグメッセージウィンドウ
+        // 12. メッセージウィンドウ
         if (this.owner.easterMessageActive) {
             this.renderEasterWindow();
         }
@@ -472,7 +472,7 @@ class GameRenderer {
         }
     }
 
-    // ========== イースターエッグ ==========
+    // ========== メッセージウィンドウ ==========
     renderEasterWindow() {
         const ctx = this.owner.ctx;
         const w = this.owner.canvas.width;

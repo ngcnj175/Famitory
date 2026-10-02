@@ -66,7 +66,7 @@ const App = {
 
         this.registerServiceWorker();
 
-        // イースターエッグメッセージ用ピクセルフォントを先読み（Canvas描画のちらつき防止）
+        // メッセージアイテム用ピクセルフォントを先読み（Canvas描画のちらつき防止）
         if (document.fonts && document.fonts.load) {
             document.fonts.load('24px "k8x12"').catch(() => {});
         }

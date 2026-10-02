@@ -103,7 +103,7 @@ const GameEngine = {
 
     // 一時停止トグル（Startボタン用）
     togglePause() {
-        // イースターエッグメッセージ表示中はSTART無効
+        // メッセージウィンドウ表示中はSTART無効
         if (this.easterMessageActive) return;
         // クリア・ゲームオーバー・リザルト中はポーズ機能を無効化
         if (this.titleState === 'clear' || this.titleState === 'gameover' || this.titleState === 'result') {
@@ -815,14 +815,14 @@ const GameEngine = {
         this.animationId = requestAnimationFrame(() => this.gameLoop());
     },
 
-    // イースターエッグメッセージを表示
+    // メッセージウィンドウを表示（メッセージアイテム取得時）
     showEasterMessage(message) {
         this.easterMessage = message;
         this.easterMessageActive = true;
         this.isPaused = true; // ゲームを一時停止
     },
 
-    // イースターエッグメッセージを閉じる
+    // メッセージウィンドウを閉じる
     closeEasterMessage() {
         this.easterMessageActive = false;
         this.easterMessage = null;
@@ -1033,7 +1033,7 @@ const GameEngine = {
 
             // プレイヤーとの当たり判定
             if (this.player && !this.player.isDead && !item.collected) {
-                // イースターエッグウィンドウが表示中は収集しない
+                // メッセージウィンドウ表示中は他アイテムを収集しない
                 if (this.easterMessageActive) return;
 
                 // ブロックに遮られている間は取得不可（露出するまで待つ）

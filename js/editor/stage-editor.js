@@ -498,7 +498,7 @@ const StageEditor = {
         `;
     },
 
-    // イースターメッセージの文字制限（k8x12フォント対応文字のみ: ひらがな・カタカナ・英数字・基本句読点）
+    // メッセージアイテムの文字制限（k8x12フォント対応文字のみ: ひらがな・カタカナ・英数字・基本句読点）
     _filterEasterMessage(str) {
         if (!str) return str;
         return Array.from(str).filter(ch => {
@@ -995,7 +995,7 @@ const StageEditor = {
         document.querySelectorAll('.param-input').forEach(input => {
             input.addEventListener('input', () => {
                 const key = input.dataset.key;
-                // イースターメッセージは漢字不可（ピクセルフォント対応文字のみ）
+                // メッセージアイテムは漢字不可（ピクセルフォント対応文字のみ）
                 if (key === 'easterMessage') {
                     const filtered = this._filterEasterMessage(input.value);
                     if (filtered !== input.value) {

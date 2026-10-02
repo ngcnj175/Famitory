@@ -185,7 +185,7 @@ const AppI18N = {
         'U224': { JPN: 'クリア',             ENG: 'Clear' },
         'U225': { JPN: '武器',               ENG: 'Weapon' },
         'U226': { JPN: 'ボム',               ENG: 'Bomb' },
-        'U227': { JPN: 'イースターエッグ',    ENG: 'Easter Egg' },
+        'U227': { JPN: 'メッセージ',          ENG: 'Message' },
         'U228': { JPN: '武器',               ENG: 'Weapon' },
         'U229': { JPN: '近接',               ENG: 'Melee' },
         'U230': { JPN: 'ストレート',          ENG: 'Straight' },

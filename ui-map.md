@@ -236,7 +236,7 @@
 | U224 | クリア | Clear | JS HTML template | stage-editor.js | ✓ |
 | U225 | 武器 | Weapon | JS HTML template | stage-editor.js | ✓ |
 | U226 | ボム | Bomb | JS HTML template | stage-editor.js | ✓ |
-| U227 | イースターエッグ | Easter Egg | JS HTML template | stage-editor.js | ✓ |
+| U227 | メッセージ | Message | JS HTML template (アイテム種別) | stage-editor.js | ✓ |
 | U228 | 武器 | Weapon | JS message/literal | stage-editor.js | ✓ |
 | U229 | 近接 | Melee | JS HTML template | stage-editor.js | ✓ |
 | U230 | ストレート | Straight | JS HTML template | stage-editor.js | ✓ |
