@@ -35,16 +35,16 @@ const DEFAULT_SOUNDS = [
     { id: 28, name: '爆発_02',            type: 'enemyDefeat' },
     { id: 29, name: '爆発_03',            type: 'explosion_03'},
     { id: 30, name: '爆発_04',            type: 'explosion_04'},
-    { id: 31, name: 'ポーズ_01',          type: 'pause'       },
-    { id: 32, name: 'ポーズ_02',          type: 'pause_02'    },
-    { id: 33, name: '爆発_05',            type: 'explosion_05'}
+    { id: 31, name: '爆発_05',            type: 'explosion_05'},
+    { id: 32, name: 'ポーズ_01',          type: 'pause'       },
+    { id: 33, name: 'ポーズ_02',          type: 'pause_02'    }
 ];
 
 // デフォルトSE割り当て (stage.se) — 値は sounds 配列のインデックス
 const DEFAULT_STAGE_SE = {
     player: { jump: 0, attack: 5, damage: 12, enemyDefeat: 18 },
     item:   { coin: 21, powerup: 22, keyItem: 23 },
-    env:    { blockBreak: 20, doorUnlock: 23, explosion: 27, pause: 31 }
+    env:    { blockBreak: 20, doorUnlock: 23, explosion: 27, pause: 32 }
 };
 
 const AppProject = {
