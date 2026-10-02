@@ -485,13 +485,19 @@ class GameRenderer {
             lines.push(message.slice(i, i + maxCharsPerLine));
         }
 
+        // ピクセルフォントのシャープ描画:
+        //   設計サイズ16pxでオフスクリーンに描画 → 2倍拡大してメインに転写
+        //   imageSmoothingEnabled=false によりAAピクセルが鮮明なドットとして拡大される
+        const SCALE = 2;
+        const designFontPx = 16;
+        const designLineH = 20;
+        const designCharW = 16;
+        const displayLineH = designLineH * SCALE;   // 40
         const padding = 24;
-        const lineHeight = 22;
-        const charWidth = 16;
 
-        const textWidth = maxCharsPerLine * charWidth + padding * 2;
+        const textWidth = maxCharsPerLine * designCharW * SCALE + padding * 2;
         const windowWidth = Math.max(textWidth, 180);
-        const windowHeight = (lines.length * lineHeight) + padding * 2;
+        const windowHeight = (lines.length * displayLineH) + padding * 2;
         const windowX = (w - windowWidth) / 2;
         const windowY = (h - windowHeight) / 2;
 
@@ -500,13 +506,34 @@ class GameRenderer {
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '16px "DotGothic16", "BIZ UDPGothic", monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        // オフスクリーンキャンバスに原寸（16px）でテキスト描画
+        if (!this._easterOffscreen) {
+            this._easterOffscreen = document.createElement('canvas');
+        }
+        const off = this._easterOffscreen;
+        const offW = maxCharsPerLine * designCharW + 4;
+        const offH = designLineH;
+        off.width = offW;
+        off.height = offH;
+        const offCtx = off.getContext('2d');
+
+        const prevSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+
         lines.forEach((line, idx) => {
-            ctx.fillText(line, w / 2, windowY + padding + lineHeight * idx + lineHeight / 2);
+            offCtx.clearRect(0, 0, offW, offH);
+            offCtx.fillStyle = '#FFFFFF';
+            offCtx.font = `${designFontPx}px "DotGothic16", "BIZ UDPGothic", monospace`;
+            offCtx.textAlign = 'center';
+            offCtx.textBaseline = 'middle';
+            offCtx.fillText(line, offW / 2, offH / 2);
+
+            const dstX = (w - offW * SCALE) / 2;
+            const dstY = windowY + padding + displayLineH * idx;
+            ctx.drawImage(off, 0, 0, offW, offH, dstX, dstY, offW * SCALE, offH * SCALE);
         });
+
+        ctx.imageSmoothingEnabled = prevSmoothing;
     }
 
     // ========== プロジェクタイル・アイテム描画 ==========
