@@ -736,6 +736,8 @@ class GameRenderer {
         const scoreContainer = document.getElementById('result-score-container');
         const scoreVal = document.getElementById('result-score-value');
         const highVal = document.getElementById('result-highscore-value');
+        const highName = document.getElementById('result-highscore-name');
+        const highRow = highVal ? highVal.closest('.result-score-row') : null;
         const shareBtn = document.getElementById('result-share-btn');
         const title = document.getElementById('result-title');
 
@@ -750,14 +752,31 @@ class GameRenderer {
         }
 
         const showScore = App.projectData.stage.showScore !== false;
+        const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
         if (showScore && scoreContainer) {
             scoreContainer.classList.remove('hidden');
             if (scoreVal) scoreVal.textContent = this.owner.score.toString().padStart(6, '0');
-            if (highVal) highVal.textContent = this.owner.highScore.toString().padStart(6, '0');
+            // グローバルハイスコアは公開ゲーム（shareIdあり）のみ表示
+            if (highRow) {
+                if (gameId) {
+                    highRow.classList.remove('hidden');
+                    if (highVal) highVal.textContent = this.owner.highScore.toString().padStart(6, '0');
+                    if (highName) highName.textContent = this.owner.highScoreName ? ' ' + this.owner.highScoreName : '';
+                } else {
+                    highRow.classList.add('hidden');
+                }
+            }
             if (shareBtn) shareBtn.classList.remove('hidden');
         } else {
             if (scoreContainer) scoreContainer.classList.add('hidden');
             if (shareBtn) shareBtn.classList.add('hidden');
+        }
+
+        // 新記録 → ネーム入力モーダル → Firebase 送信
+        if (showScore && gameId && this.owner.newHighScore && !this.owner._highScoreSubmitted
+            && typeof ShareHighScore !== 'undefined' && this.owner.score > 0) {
+            this.owner._highScoreSubmitted = true;
+            this._promptHighScoreName(gameId, this.owner.score, highVal, highName);
         }
 
         const likeArea = document.getElementById('result-like-area');
@@ -785,6 +804,49 @@ class GameRenderer {
 
         this._updateResultGameInfo(app);
         overlay.classList.remove('hidden');
+    }
+
+    _promptHighScoreName(gameId, score, highVal, highName) {
+        const modal = document.getElementById('highscore-name-modal');
+        const input = document.getElementById('highscore-name-input');
+        const okBtn = document.getElementById('highscore-name-ok');
+        const skipBtn = document.getElementById('highscore-name-skip');
+        const scoreEl = document.getElementById('highscore-name-score');
+        if (!modal || !input || !okBtn || !skipBtn) return;
+
+        if (scoreEl) scoreEl.textContent = score.toString().padStart(6, '0');
+        input.value = ShareHighScore.recallName() || '';
+        modal.classList.remove('hidden');
+        setTimeout(() => input.focus(), 50);
+
+        const submit = async (name) => {
+            modal.classList.add('hidden');
+            okBtn.onclick = null;
+            skipBtn.onclick = null;
+            input.onkeydown = null;
+            const ok = await ShareHighScore.submit(gameId, score, name);
+            if (ok) {
+                ShareHighScore.rememberName(name);
+                const cached = ShareHighScore.getCached(gameId);
+                if (cached) {
+                    if (highVal) highVal.textContent = cached.score.toString().padStart(6, '0');
+                    if (highName) highName.textContent = cached.name ? ' ' + cached.name : '';
+                }
+            } else {
+                // 他ユーザーに抜かれていた場合でも最新値を反映
+                const cached = ShareHighScore.getCached(gameId);
+                if (cached && highVal) {
+                    highVal.textContent = cached.score.toString().padStart(6, '0');
+                    if (highName) highName.textContent = cached.name ? ' ' + cached.name : '';
+                }
+            }
+        };
+
+        okBtn.onclick = () => submit(input.value || '---');
+        skipBtn.onclick = () => submit('---');
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); okBtn.click(); }
+        };
     }
 
     _updateResultGameInfo(app) {

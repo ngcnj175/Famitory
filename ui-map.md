@@ -528,3 +528,7 @@
 | U547 | ゲームを更新する | Update Game | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |
+| U556 | NEW RECORD! | NEW RECORD! | HTML text node (ハイスコアネーム入力モーダル タイトル) | index.html | - |
+| U557 | 名前を入力（半角英数3文字） | Enter name (3 alphanumeric chars) | HTML text node (ハイスコアネーム入力モーダル 説明) | index.html | - |
+| U558 | OK | OK | HTML text node (ハイスコアネーム入力モーダル 決定ボタン) | index.html | - |
+| U559 | スキップ | Skip | HTML text node (ハイスコアネーム入力モーダル スキップボタン) | index.html | - |

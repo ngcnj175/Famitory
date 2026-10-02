@@ -119,6 +119,7 @@
                         <div class="result-score-row small">
                             <span class="result-label">HIGH SCORE</span>
                             <span id="result-highscore-value">000000</span>
+                            <span id="result-highscore-name" class="result-highscore-name"></span>
                         </div>
                     </div>
                     <div id="result-like-area" class="hidden">
@@ -1693,6 +1694,23 @@
         </div>
     </div>
 
+    <!-- ハイスコアネーム入力モーダル -->
+    <div id="highscore-name-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header-simple">NEW RECORD!</div>
+            <div class="modal-body" style="text-align:center; padding:20px 20px 10px;">
+                <div id="highscore-name-score" style="font-size:20px; color:#ffcc00; margin-bottom:12px;">000000</div>
+                <div style="font-size:12px; color:#a0a0c0; margin-bottom:8px;">名前を入力（半角英数3文字）</div>
+                <input id="highscore-name-input" type="text" maxlength="3" autocomplete="off" spellcheck="false"
+                    style="width:120px; text-align:center; font-size:28px; letter-spacing:8px; text-transform:uppercase; padding:8px; background:#222; color:#fff; border:2px solid #666; border-radius:4px;">
+            </div>
+            <div class="modal-footer-actions">
+                <button class="modal-action-btn primary" id="highscore-name-ok">OK</button>
+                <button class="modal-action-btn cancel" id="highscore-name-skip">スキップ</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 汎用確認ダイアログ -->
     <div id="generic-confirm-modal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -1708,6 +1726,7 @@
     <script src="js/utils/storage.js"></script>
     <script src="js/utils/share.js"></script>
     <script src="js/utils/share-arcade.js"></script>
+    <script src="js/utils/share-highscore.js"></script>
 
     <!-- Engine (Must load before Editors) -->
     <script src="js/engine/sprite-utils.js"></script>

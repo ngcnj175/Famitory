@@ -3972,6 +3972,14 @@ input, textarea, select, button {
     -webkit-text-stroke: 1px currentColor;
 }
 
+.result-highscore-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    font-family: 'BIZ UDPGothic', monospace;
+    letter-spacing: 1px;
+}
+
 .result-actions {
     display: flex;
     flex-direction: column;

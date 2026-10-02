@@ -407,8 +407,33 @@ const GameEngine = {
 
         // スコア初期化
         this.score = 0;
-        this.highScore = parseInt(localStorage.getItem('pgk_highscore') || '0', 10);
         this.newHighScore = false; // 今回のプレイで更新したか
+        this._highScoreSubmitted = false; // 今回のリザルトで送信済みか
+
+        // ハイスコア読み込み：
+        //   公開済み（shareId あり）→ Firebase の値（キャッシュ）
+        //   それ以外 → 表示しない（0 として扱う）
+        const gameId = (typeof App !== 'undefined') && (App._sharedGameId || App.projectData?.meta?.shareId);
+        if (gameId && typeof ShareHighScore !== 'undefined') {
+            const cached = ShareHighScore.getCached(gameId);
+            if (cached) {
+                this.highScore = cached.score;
+                this.highScoreName = cached.name;
+            } else {
+                this.highScore = 0;
+                this.highScoreName = '';
+                // バックグラウンドで取得
+                ShareHighScore.fetch(gameId).then(res => {
+                    if (res) {
+                        this.highScore = Math.max(this.highScore, res.score);
+                        this.highScoreName = res.name;
+                    }
+                });
+            }
+        } else {
+            this.highScore = 0;
+            this.highScoreName = '';
+        }
 
         // ゲームオーバー待機状態をリセット
         this.gameOverPending = false;
@@ -1504,13 +1529,15 @@ const GameEngine = {
 
     // ========== スコア管理 ==========
     addScore(points) {
+        // スコア非表示ゲームでは加算もハイスコア処理も行わない
+        if (App.projectData.stage.showScore === false) return;
+
         this.score += points;
 
-        // ハイスコア更新
+        // ハイスコア更新判定（送信はリザルト画面で行う）
         if (this.score > this.highScore) {
             this.highScore = this.score;
             this.newHighScore = true;
-            localStorage.setItem('pgk_highscore', this.highScore);
         }
     },
 
