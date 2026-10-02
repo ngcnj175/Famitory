@@ -100,15 +100,13 @@ class Player {
         const se = App.projectData?.stage?.se;
         if (!se) return;
 
-        let idx = -1;
-        if      (se.player && seKey in se.player) idx = se.player[seKey];
-        else if (se.item   && seKey in se.item)   idx = se.item[seKey];
-        else if (se.env    && seKey in se.env)    idx = se.env[seKey];
+        let seType = null;
+        if      (se.player && seKey in se.player) seType = se.player[seKey];
+        else if (se.item   && seKey in se.item)   seType = se.item[seKey];
+        else if (se.env    && seKey in se.env)    seType = se.env[seKey];
 
-        if (idx === undefined || idx < 0) return;
-        const sounds = App.projectData?.sounds || [];
-        const s = sounds[idx];
-        if (s) NesAudio.playSE(s.type);
+        if (!seType) return;
+        NesAudio.playSE(seType);
     }
 
     update(engine) {

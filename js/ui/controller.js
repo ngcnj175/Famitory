@@ -418,11 +418,8 @@ const GameController = {
 
         // SE再生（隠しコマンド発動感）: ステージの扉解錠音を使用
         if (typeof NesAudio !== 'undefined') {
-            const se = App.projectData?.stage?.se;
-            const sounds = App.projectData?.sounds || [];
-            const idx = se?.env?.doorUnlock ?? 16;
-            const s = sounds[idx];
-            if (s) NesAudio.playSE(s.type);
+            const seType = App.projectData?.stage?.se?.env?.doorUnlock || 'itemGet_03';
+            NesAudio.playSE(seType);
         }
     },
 

@@ -1244,17 +1244,17 @@ const StageEditor = {
 
         this._stageSeSelecting = { category, key };
         const sounds = App.projectData?.sounds || [];
-        const currentIdx = App.projectData?.stage?.se?.[category]?.[key];
+        const currentType = App.projectData?.stage?.se?.[category]?.[key];
 
         let html = `
-            <div class="se-select-item ${currentIdx === -1 ? 'current' : ''}" data-se-index="-1">
+            <div class="se-select-item ${!currentType ? 'current' : ''}" data-se-type="">
                 <span class="se-name">${this.t('U220') || 'なし'}</span>
             </div>
         `;
         sounds.forEach((se, idx) => {
-            const isCurrent = currentIdx === idx ? 'current' : '';
+            const isCurrent = currentType === se.type ? 'current' : '';
             html += `
-                <div class="se-select-item ${isCurrent}" data-se-index="${idx}">
+                <div class="se-select-item ${isCurrent}" data-se-type="${se.type}" data-se-index="${idx}">
                     <span class="se-name">${this.getSeName ? this.getSeName(se) : (se.name || `SE ${idx}`)}</span>
                     <button class="se-preview-btn" data-se-index="${idx}">▶</button>
                 </div>
@@ -1265,8 +1265,8 @@ const StageEditor = {
         list.querySelectorAll('.se-select-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 if (e.target.classList.contains('se-preview-btn')) return;
-                const idx = parseInt(item.dataset.seIndex);
-                this.confirmStageSeSelection(idx);
+                const type = item.dataset.seType || null;
+                this.confirmStageSeSelection(type);
             });
         });
 
@@ -1289,19 +1289,20 @@ const StageEditor = {
         popup.classList.remove('hidden');
     },
 
-    confirmStageSeSelection(idx) {
+    confirmStageSeSelection(type) {
         const sel = this._stageSeSelecting;
         if (!sel) return;
-        App.projectData.stage.se[sel.category][sel.key] = idx;
+        App.projectData.stage.se[sel.category][sel.key] = type || null;
 
         // 対応ボタンのラベルを更新
         const btn = document.querySelector(`.stage-se-btn[data-se-category="${sel.category}"][data-se-key="${sel.key}"]`);
         if (btn) {
             const sounds = App.projectData.sounds || [];
-            if (idx === -1) {
+            if (!type) {
                 btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
             } else {
-                btn.textContent = sounds[idx]?.name || `SE ${idx}`;
+                const s = sounds.find(x => x.type === type);
+                btn.textContent = s?.name || type;
             }
         }
 

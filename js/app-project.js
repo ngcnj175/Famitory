@@ -40,11 +40,11 @@ const DEFAULT_SOUNDS = [
     { id: 33, name: 'ポーズ_02',          type: 'pause_02'    }
 ];
 
-// デフォルトSE割り当て (stage.se) — 値は sounds 配列のインデックス
+// デフォルトSE割り当て (stage.se) — 値は sounds の type 文字列。null は「なし」。
 const DEFAULT_STAGE_SE = {
-    player: { jump: 0, attack: 5, damage: 12, enemyDefeat: 18 },
-    item:   { coin: 21, powerup: 22, keyItem: 23 },
-    env:    { blockBreak: 20, doorUnlock: 23, explosion: 27, pause: 32 }
+    player: { jump: 'jump_01', attack: 'attack_01', damage: 'damage_01', enemyDefeat: 'damage_07' },
+    item:   { coin: 'itemGet_01', powerup: 'itemGet_02', keyItem: 'itemGet_03' },
+    env:    { blockBreak: 'damage_09', doorUnlock: 'itemGet_03', explosion: 'other_05', pause: 'pause' }
 };
 
 const AppProject = {
@@ -344,6 +344,21 @@ const AppProject = {
             Object.keys(DEFAULT_STAGE_SE.player).forEach(k => { if (stage.se.player[k] === undefined) stage.se.player[k] = DEFAULT_STAGE_SE.player[k]; });
             Object.keys(DEFAULT_STAGE_SE.item  ).forEach(k => { if (stage.se.item[k]   === undefined) stage.se.item[k]   = DEFAULT_STAGE_SE.item[k];   });
             Object.keys(DEFAULT_STAGE_SE.env   ).forEach(k => { if (stage.se.env[k]    === undefined) stage.se.env[k]    = DEFAULT_STAGE_SE.env[k];    });
+        }
+
+        // stage.se を数値インデックス参照 → type文字列参照に正規化（旧データ・旧テンプレ経由の数値も吸収）
+        if (stage.se && App.projectData.sounds) {
+            const idxToType = {};
+            App.projectData.sounds.forEach((s, i) => { idxToType[i] = s.type; });
+            ['player', 'item', 'env'].forEach(cat => {
+                if (!stage.se[cat]) return;
+                Object.keys(stage.se[cat]).forEach(k => {
+                    const v = stage.se[cat][k];
+                    if (typeof v === 'number') {
+                        stage.se[cat][k] = (v >= 0 && idxToType[v]) ? idxToType[v] : null;
+                    }
+                });
+            });
         }
 
         // 旧プレイヤーテンプレートSEフィールドを削除

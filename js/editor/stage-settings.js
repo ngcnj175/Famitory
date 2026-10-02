@@ -274,11 +274,12 @@ class StageSettings {
         document.querySelectorAll('.stage-se-btn').forEach(btn => {
             const category = btn.dataset.seCategory;
             const key = btn.dataset.seKey;
-            const idx = se?.[category]?.[key];
-            if (idx === undefined || idx < 0 || idx >= sounds.length) {
+            const type = se?.[category]?.[key];
+            if (!type) {
                 btn.textContent = (App.currentLang === 'ENG') ? 'None' : 'なし';
             } else {
-                btn.textContent = sounds[idx]?.name || `SE ${idx}`;
+                const s = sounds.find(x => x.type === type);
+                btn.textContent = s?.name || type;
             }
         });
     }
