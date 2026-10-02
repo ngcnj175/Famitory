@@ -247,21 +247,21 @@ const AppProject = {
             });
         }
 
-        if (!map || !Array.isArray(map)) return;
-
-        for (let y = 0; y < height; y++) {
-            if (!map[y]) continue;
-            for (let x = 0; x < width; x++) {
-                const tileId = map[y][x];
-                if (tileId >= 100) {
-                    const tmplIdx = tileId - 100;
-                    const tmpl = App.projectData.templates[tmplIdx];
-                    if (tmpl && (tmpl.type === 'player' || tmpl.type === 'enemy' || tmpl.type === 'item')) {
-                        const exists = stage.entities.some(e => e.x === x && e.y === y);
-                        if (!exists) {
-                            stage.entities.push({ x, y, templateId: tmplIdx });
+        if (map && Array.isArray(map)) {
+            for (let y = 0; y < height; y++) {
+                if (!map[y]) continue;
+                for (let x = 0; x < width; x++) {
+                    const tileId = map[y][x];
+                    if (tileId >= 100) {
+                        const tmplIdx = tileId - 100;
+                        const tmpl = App.projectData.templates[tmplIdx];
+                        if (tmpl && (tmpl.type === 'player' || tmpl.type === 'enemy' || tmpl.type === 'item')) {
+                            const exists = stage.entities.some(e => e.x === x && e.y === y);
+                            if (!exists) {
+                                stage.entities.push({ x, y, templateId: tmplIdx });
+                            }
+                            map[y][x] = 0;
                         }
-                        map[y][x] = 0;
                     }
                 }
             }
