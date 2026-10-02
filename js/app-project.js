@@ -36,7 +36,8 @@ const DEFAULT_SOUNDS = [
     { id: 29, name: '爆発_03',            type: 'explosion_03'},
     { id: 30, name: '爆発_04',            type: 'explosion_04'},
     { id: 31, name: 'ポーズ_01',          type: 'pause'       },
-    { id: 32, name: 'ポーズ_02',          type: 'pause_02'    }
+    { id: 32, name: 'ポーズ_02',          type: 'pause_02'    },
+    { id: 33, name: '爆発_05',            type: 'explosion_05'}
 ];
 
 // デフォルトSE割り当て (stage.se) — 値は sounds 配列のインデックス
