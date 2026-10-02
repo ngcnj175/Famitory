@@ -715,7 +715,7 @@ const StageEditor = {
                 inner += `
                     <div class="param-row">
                         <span class="param-label">${this.t('U445')}</span>
-                        <input type="text" class="param-input easter-message-input" data-key="easterMessage"
+                        <input type="text" class="param-input" data-key="easterMessage"
                                value="${config.easterMessage || ''}"
                                maxlength="20" placeholder="${this.t('U255')}">
                     </div>
