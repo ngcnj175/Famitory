@@ -498,22 +498,18 @@ const StageEditor = {
         `;
     },
 
-    // イースターメッセージの文字制限（ピクセルフォント対応: ひらがな・カタカナ・英数字・記号のみ、漢字不可）
+    // イースターメッセージの文字制限（k8x12フォント対応文字のみ: ひらがな・カタカナ・英数字・基本句読点）
     _filterEasterMessage(str) {
         if (!str) return str;
         return Array.from(str).filter(ch => {
             const cp = ch.codePointAt(0);
             return (
-                (cp >= 0x0020 && cp <= 0x007E) ||       // ASCII printable
-                (cp >= 0x00A0 && cp <= 0x00FF) ||       // Latin-1 supplement
-                (cp >= 0x2010 && cp <= 0x204F) ||       // 一般句読点
-                (cp >= 0x2190 && cp <= 0x21FF) ||       // 矢印
-                (cp >= 0x2600 && cp <= 0x27BF) ||       // 記号・絵文字（星☆♪など）
-                (cp >= 0x3000 && cp <= 0x303F) ||       // 全角句読点・括弧
+                (cp >= 0x0020 && cp <= 0x007E) ||       // ASCII printable (英数字・基本記号)
+                (cp >= 0x3000 && cp <= 0x303F) ||       // 全角句読点・括弧（　、。「」『』【】・〜）
                 (cp >= 0x3040 && cp <= 0x309F) ||       // ひらがな
                 (cp >= 0x30A0 && cp <= 0x30FF) ||       // カタカナ
-                (cp >= 0x31F0 && cp <= 0x31FF) ||       // カタカナ拡張
-                (cp >= 0xFF00 && cp <= 0xFFEF)          // 半角カタカナ・全角英数記号
+                (cp >= 0xFF01 && cp <= 0xFF5E) ||       // 全角英数記号（！？Ａ-Ｚ０-９）
+                (cp >= 0xFF61 && cp <= 0xFF9F)          // 半角カタカナ
             );
         }).join('');
     },

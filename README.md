@@ -43,6 +43,8 @@ https://ngcnj175.github.io/Famitory/
 - **外部ライブラリ**:
   - [pako](https://github.com/nodeca/pako) - データ圧縮（MIT License）
   - [Firebase](https://firebase.google.com/) - データベース（Apache 2.0）
+- **フォント**:
+  - [k8x12](https://littlelimit.net/k8x12.htm) by num_kadoma - 8x12ドットビットマップ風フォント（Free Software: 商用利用・改変・再配布可）
 
 ## 📋 ライセンス
 
