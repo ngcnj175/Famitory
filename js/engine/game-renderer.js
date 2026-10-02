@@ -501,13 +501,15 @@ class GameRenderer {
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
-        // ピクセルフォント用: オフスクリーンに描画→二値化でAAを除去→nearest-neighborで転写
+        // ピクセルフォント: 4倍サイズでオフスクリーン描画→4x4ブロック多数決で16x16ドット再構成
+        //   高解像度で字形を取り、各設計ドットに対応する4x4領域の塗り率で白/透明を決定
+        const SS = 4;
         if (!this._easterOffscreen) {
             this._easterOffscreen = document.createElement('canvas');
         }
         const off = this._easterOffscreen;
-        const offW = maxCharsPerLine * charWidth + 8;
-        const offH = lineHeight;
+        const offW = (maxCharsPerLine * charWidth + 8) * SS;
+        const offH = lineHeight * SS;
         off.width = offW;
         off.height = offH;
         const offCtx = off.getContext('2d');
@@ -515,16 +517,36 @@ class GameRenderer {
         const prevSmoothing = ctx.imageSmoothingEnabled;
         ctx.imageSmoothingEnabled = false;
 
+        offCtx.font = `${fontPx * SS}px "DotGothic16", "BIZ UDPGothic", monospace`;
+        offCtx.textAlign = 'left';
+        offCtx.textBaseline = 'top';
+        offCtx.fillStyle = '#FFFFFF';
+
+        // 中間キャンバス: 高解像度→等倍にダウンサンプル
+        if (!this._easterOffscreenLow) {
+            this._easterOffscreenLow = document.createElement('canvas');
+        }
+        const low = this._easterOffscreenLow;
+        const lowW = maxCharsPerLine * charWidth + 8;
+        const lowH = lineHeight;
+        low.width = lowW;
+        low.height = lowH;
+        const lowCtx = low.getContext('2d');
+        lowCtx.imageSmoothingEnabled = true;
+        lowCtx.imageSmoothingQuality = 'high';
+
         lines.forEach((line, idx) => {
             offCtx.clearRect(0, 0, offW, offH);
-            offCtx.fillStyle = '#FFFFFF';
-            offCtx.font = `${fontPx}px "DotGothic16", "BIZ UDPGothic", monospace`;
-            offCtx.textAlign = 'center';
-            offCtx.textBaseline = 'middle';
-            offCtx.fillText(line, offW / 2, offH / 2);
+            const measuredW = Math.round(offCtx.measureText(line).width);
+            const drawX = Math.floor((offW - measuredW) / 2);
+            offCtx.fillText(line, drawX, 2 * SS);
 
-            // 二値化: alpha >= 128 を完全不透明の白に、未満は完全透明に
-            const imgData = offCtx.getImageData(0, 0, offW, offH);
+            // 高解像度→等倍にスムーズ縮小（4x4のエリア平均値がalphaに乗る）
+            lowCtx.clearRect(0, 0, lowW, lowH);
+            lowCtx.drawImage(off, 0, 0, offW, offH, 0, 0, lowW, lowH);
+
+            // 二値化: 平均alpha >= 128 を白、未満は透明
+            const imgData = lowCtx.getImageData(0, 0, lowW, lowH);
             const d = imgData.data;
             for (let i = 0; i < d.length; i += 4) {
                 if (d[i + 3] >= 128) {
@@ -533,11 +555,11 @@ class GameRenderer {
                     d[i + 3] = 0;
                 }
             }
-            offCtx.putImageData(imgData, 0, 0);
+            lowCtx.putImageData(imgData, 0, 0);
 
-            const dstX = (w - offW) / 2;
-            const dstY = windowY + padding + lineHeight * idx;
-            ctx.drawImage(off, dstX, dstY);
+            const dstX = Math.round((w - lowW) / 2);
+            const dstY = Math.round(windowY + padding + lineHeight * idx);
+            ctx.drawImage(low, dstX, dstY);
         });
 
         ctx.imageSmoothingEnabled = prevSmoothing;
