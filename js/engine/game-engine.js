@@ -72,22 +72,6 @@ const GameEngine = {
             this.togglePause();
         });
 
-        // イースターエッグウィンドウ用クリックハンドラ
-        this.canvas.addEventListener('click', (e) => {
-            if (this.easterMessageActive && this.easterCloseButton) {
-                const rect = this.canvas.getBoundingClientRect();
-                const scaleX = this.canvas.width / rect.width;
-                const scaleY = this.canvas.height / rect.height;
-                const x = (e.clientX - rect.left) * scaleX;
-                const y = (e.clientY - rect.top) * scaleY;
-
-                const btn = this.easterCloseButton;
-                if (x >= btn.x && x <= btn.x + btn.width &&
-                    y >= btn.y && y <= btn.y + btn.height) {
-                    this.closeEasterMessage();
-                }
-            }
-        });
     },
 
     start() {
@@ -119,6 +103,8 @@ const GameEngine = {
 
     // 一時停止トグル（Startボタン用）
     togglePause() {
+        // イースターエッグメッセージ表示中はSTART無効
+        if (this.easterMessageActive) return;
         // クリア・ゲームオーバー・リザルト中はポーズ機能を無効化
         if (this.titleState === 'clear' || this.titleState === 'gameover' || this.titleState === 'result') {
             return;
@@ -1059,8 +1045,8 @@ const GameEngine = {
                     if (item.itemType === 'easter') {
                         const message = item.template?.config?.easterMessage || 'ひみつのメッセージ';
                         this.showEasterMessage(message);
-                        // アイテムゲット音を鳴らす
-                        this.player.playSE('powerup');
+                        // キーアイテム音を鳴らす
+                        this.player.playSE('keyItem');
                         return;
                     }
 

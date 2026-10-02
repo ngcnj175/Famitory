@@ -415,7 +415,6 @@
 | U392 | 共有URL生成中... | Generating share URL... | JS message/literal | share.js | |
 | U393 | エラー：保存に失敗しました | Error: Save failed | JS message/literal | share.js | |
 | U394 | サバイバルモードでは制限時間を設定してください | Please set a time limit for Survival mode | JS message/literal | game-engine.js | |
-| U395 | とじる | Close | JS message/literal | game-engine.js | |
 | U396 | ひみつのメッセージ | Secret Message | JS message/literal | game-engine.js | |
 | U397 | STAGE CLEAR! | STAGE CLEAR! | JS dom text assign | game-engine.js | |
 | U398 | GAME OVER | GAME OVER | JS dom text assign | game-engine.js | |

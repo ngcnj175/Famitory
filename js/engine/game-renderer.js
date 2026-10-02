@@ -487,12 +487,11 @@ class GameRenderer {
 
         const padding = 24;
         const lineHeight = 22;
-        const buttonHeight = 24;
         const charWidth = 16;
 
         const textWidth = maxCharsPerLine * charWidth + padding * 2;
         const windowWidth = Math.max(textWidth, 180);
-        const windowHeight = (lines.length * lineHeight) + buttonHeight + padding * 3;
+        const windowHeight = (lines.length * lineHeight) + padding * 2;
         const windowX = (w - windowWidth) / 2;
         const windowY = (h - windowHeight) / 2;
 
@@ -508,18 +507,6 @@ class GameRenderer {
         lines.forEach((line, idx) => {
             ctx.fillText(line, w / 2, windowY + padding + lineHeight * idx + lineHeight / 2);
         });
-
-        const buttonWidth = 80;
-        const buttonX = (w - buttonWidth) / 2;
-        const buttonY = windowY + windowHeight - buttonHeight - padding;
-
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '14px "BIZ UDPGothic", monospace';
-        ctx.fillText('とじる', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
-
-        this.owner.easterCloseButton = { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
     }
 
     // ========== プロジェクタイル・アイテム描画 ==========

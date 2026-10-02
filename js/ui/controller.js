@@ -206,6 +206,8 @@ const GameController = {
     },
 
     onStartPress() {
+        // イースターエッグメッセージ表示中はSTART無効
+        if (typeof GameEngine !== 'undefined' && GameEngine.easterMessageActive) return;
         this.startPressTime = performance.now();
         this.startHolding = true;
 
@@ -356,6 +358,13 @@ const GameController = {
     konamiTimer: null,
 
     press(button) {
+        // イースターエッグメッセージ表示中はA/Bで閉じる（プレイヤー操作は抑止）
+        if ((button === 'a' || button === 'b') &&
+            typeof GameEngine !== 'undefined' && GameEngine.easterMessageActive) {
+            GameEngine.closeEasterMessage();
+            return;
+        }
+
         this.buttons[button] = true;
 
         // コナミコマンド検出（PLAY画面のみ）
