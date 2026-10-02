@@ -780,7 +780,6 @@ class GameRenderer {
         }
 
         const likeArea = document.getElementById('result-like-area');
-        const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
 
         if (likeArea) {
             if (gameId) {
