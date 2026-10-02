@@ -68,7 +68,7 @@ const App = {
 
         // イースターエッグメッセージ用ピクセルフォントを先読み（Canvas描画のちらつき防止）
         if (document.fonts && document.fonts.load) {
-            document.fonts.load('16px "DotGothic16"').catch(() => {});
+            document.fonts.load('24px "k8x12"').catch(() => {});
         }
 
         // 共有URL(?g= or #hash)か同期判定 — クリエイターUI/エディットキーの一瞬表示を防ぐ

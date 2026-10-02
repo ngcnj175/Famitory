@@ -479,90 +479,40 @@ class GameRenderer {
         const h = this.owner.canvas.height;
         const message = this.owner.easterMessage || '';
 
+        // k8x12: 設計サイズ12pxのビットマップ風フォント。整数倍サイズ(24px=2x)で描画すればピクセル完全。
+        const fontPx = 24;
+        const lineHeight = 32;
+        const charWidth = 24;
         const maxCharsPerLine = 10;
+        const padding = 20;
+
         const lines = [];
         for (let i = 0; i < message.length; i += maxCharsPerLine) {
             lines.push(message.slice(i, i + maxCharsPerLine));
         }
 
-        const padding = 24;
-        const lineHeight = 22;
-        const charWidth = 16;
-        const fontPx = 16;
-
         const textWidth = maxCharsPerLine * charWidth + padding * 2;
         const windowWidth = Math.max(textWidth, 180);
         const windowHeight = (lines.length * lineHeight) + padding * 2;
-        const windowX = (w - windowWidth) / 2;
-        const windowY = (h - windowHeight) / 2;
+        const windowX = Math.round((w - windowWidth) / 2);
+        const windowY = Math.round((h - windowHeight) / 2);
 
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(windowX - 4, windowY - 4, windowWidth + 8, windowHeight + 8);
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
-        // ピクセルフォント: 4倍サイズでオフスクリーン描画→4x4ブロック多数決で16x16ドット再構成
-        //   高解像度で字形を取り、各設計ドットに対応する4x4領域の塗り率で白/透明を決定
-        const SS = 4;
-        if (!this._easterOffscreen) {
-            this._easterOffscreen = document.createElement('canvas');
-        }
-        const off = this._easterOffscreen;
-        const offW = (maxCharsPerLine * charWidth + 8) * SS;
-        const offH = lineHeight * SS;
-        off.width = offW;
-        off.height = offH;
-        const offCtx = off.getContext('2d');
-
-        const prevSmoothing = ctx.imageSmoothingEnabled;
-        ctx.imageSmoothingEnabled = false;
-
-        offCtx.font = `${fontPx * SS}px "DotGothic16", "BIZ UDPGothic", monospace`;
-        offCtx.textAlign = 'left';
-        offCtx.textBaseline = 'top';
-        offCtx.fillStyle = '#FFFFFF';
-
-        // 中間キャンバス: 高解像度→等倍にダウンサンプル
-        if (!this._easterOffscreenLow) {
-            this._easterOffscreenLow = document.createElement('canvas');
-        }
-        const low = this._easterOffscreenLow;
-        const lowW = maxCharsPerLine * charWidth + 8;
-        const lowH = lineHeight;
-        low.width = lowW;
-        low.height = lowH;
-        const lowCtx = low.getContext('2d');
-        lowCtx.imageSmoothingEnabled = true;
-        lowCtx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `${fontPx}px "k8x12", "BIZ UDPGothic", monospace`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
 
         lines.forEach((line, idx) => {
-            offCtx.clearRect(0, 0, offW, offH);
-            const measuredW = Math.round(offCtx.measureText(line).width);
-            const drawX = Math.floor((offW - measuredW) / 2);
-            offCtx.fillText(line, drawX, 2 * SS);
-
-            // 高解像度→等倍にスムーズ縮小（4x4のエリア平均値がalphaに乗る）
-            lowCtx.clearRect(0, 0, lowW, lowH);
-            lowCtx.drawImage(off, 0, 0, offW, offH, 0, 0, lowW, lowH);
-
-            // 二値化: 平均alpha >= 128 を白、未満は透明
-            const imgData = lowCtx.getImageData(0, 0, lowW, lowH);
-            const d = imgData.data;
-            for (let i = 0; i < d.length; i += 4) {
-                if (d[i + 3] >= 128) {
-                    d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 255;
-                } else {
-                    d[i + 3] = 0;
-                }
-            }
-            lowCtx.putImageData(imgData, 0, 0);
-
-            const dstX = Math.round((w - lowW) / 2);
-            const dstY = Math.round(windowY + padding + lineHeight * idx);
-            ctx.drawImage(low, dstX, dstY);
+            const measuredW = Math.round(ctx.measureText(line).width);
+            const drawX = Math.round((w - measuredW) / 2);
+            const drawY = windowY + padding + lineHeight * idx;
+            ctx.fillText(line, drawX, drawY);
         });
-
-        ctx.imageSmoothingEnabled = prevSmoothing;
     }
 
     // ========== プロジェクタイル・アイテム描画 ==========
