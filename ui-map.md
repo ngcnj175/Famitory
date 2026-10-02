@@ -528,3 +528,4 @@
 | U547 | ゲームを更新する | Update Game | JS message/literal (公開モーダル 公開済み時の主要CTA) | app-share.js | ✓ |
 | U548 | コメントは{n}文字までです | Comment is limited to {n} characters | JS message/literal (ARCADEコメント上限超過トースト) | app-arcade-panel.js | ✓ |
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |
+| U556 | ※ひらがな・カタカナ・英数字・記号のみ（漢字不可） | *Hiragana / Katakana / alphanumeric / symbols only (no Kanji) | JS HTML template (イースターメッセージ入力ヒント) | stage-editor.js | ✓ |

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'pixel-game-kit-v3.0.0';
+const CACHE_NAME = 'pixel-game-kit-v3.1.0';
 const urlsToCache = [
     './',
     './index.html',
     './css/style.css',
+    './fonts/DotGothic16-subset.woff2',
     // ユーティリティ
     './js/utils/storage.js',
     './js/utils/share.js',

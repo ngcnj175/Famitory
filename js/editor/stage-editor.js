@@ -498,6 +498,26 @@ const StageEditor = {
         `;
     },
 
+    // イースターメッセージの文字制限（ピクセルフォント対応: ひらがな・カタカナ・英数字・記号のみ、漢字不可）
+    _filterEasterMessage(str) {
+        if (!str) return str;
+        return Array.from(str).filter(ch => {
+            const cp = ch.codePointAt(0);
+            return (
+                (cp >= 0x0020 && cp <= 0x007E) ||       // ASCII printable
+                (cp >= 0x00A0 && cp <= 0x00FF) ||       // Latin-1 supplement
+                (cp >= 0x2010 && cp <= 0x204F) ||       // 一般句読点
+                (cp >= 0x2190 && cp <= 0x21FF) ||       // 矢印
+                (cp >= 0x2600 && cp <= 0x27BF) ||       // 記号・絵文字（星☆♪など）
+                (cp >= 0x3000 && cp <= 0x303F) ||       // 全角句読点・括弧
+                (cp >= 0x3040 && cp <= 0x309F) ||       // ひらがな
+                (cp >= 0x30A0 && cp <= 0x30FF) ||       // カタカナ
+                (cp >= 0x31F0 && cp <= 0x31FF) ||       // カタカナ拡張
+                (cp >= 0xFF00 && cp <= 0xFFEF)          // 半角カタカナ・全角英数記号
+            );
+        }).join('');
+    },
+
 
     renderSpriteRow(slot) {
         const spriteData = this.editingTemplate.sprites[slot] || { frames: [], speed: 5, loop: true };
@@ -699,10 +719,11 @@ const StageEditor = {
                 inner += `
                     <div class="param-row">
                         <span class="param-label">${this.t('U445')}</span>
-                        <input type="text" class="param-input" data-key="easterMessage"
+                        <input type="text" class="param-input easter-message-input" data-key="easterMessage"
                                value="${config.easterMessage || ''}"
                                maxlength="20" placeholder="${this.t('U255')}">
                     </div>
+                    <div class="param-hint" style="font-size:11px;opacity:.7;margin-top:-6px;">${this.t('U556')}</div>
                 `;
             }
             html += this.renderCard(this.t('U471'), inner);
@@ -979,6 +1000,15 @@ const StageEditor = {
         document.querySelectorAll('.param-input').forEach(input => {
             input.addEventListener('input', () => {
                 const key = input.dataset.key;
+                // イースターメッセージは漢字不可（ピクセルフォント対応文字のみ）
+                if (key === 'easterMessage') {
+                    const filtered = this._filterEasterMessage(input.value);
+                    if (filtered !== input.value) {
+                        const pos = input.selectionStart - (input.value.length - filtered.length);
+                        input.value = filtered;
+                        try { input.setSelectionRange(pos, pos); } catch (_) {}
+                    }
+                }
                 if (key && this.editingTemplate?.config) {
                     this.editingTemplate.config[key] = input.value;
                 }

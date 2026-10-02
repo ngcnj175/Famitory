@@ -66,6 +66,11 @@ const App = {
 
         this.registerServiceWorker();
 
+        // イースターエッグメッセージ用ピクセルフォントを先読み（Canvas描画のちらつき防止）
+        if (document.fonts && document.fonts.load) {
+            document.fonts.load('16px "DotGothic16"').catch(() => {});
+        }
+
         // 共有URL(?g= or #hash)か同期判定 — クリエイターUI/エディットキーの一瞬表示を防ぐ
         const urlParams = new URLSearchParams(window.location.search);
         const hasSharedGame = !!urlParams.get('g') || !!window.location.hash.slice(1);

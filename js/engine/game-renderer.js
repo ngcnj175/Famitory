@@ -501,7 +501,7 @@ class GameRenderer {
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '16px "BIZ UDPGothic", monospace';
+        ctx.font = '16px "DotGothic16", "BIZ UDPGothic", monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         lines.forEach((line, idx) => {
