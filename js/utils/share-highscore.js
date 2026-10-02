@@ -11,6 +11,21 @@ const ShareHighScore = {
     _lastSubmitAt: 0,
     _cache: new Map(), // gameId -> { score, name }
 
+    // 不適切語ブラックリスト（3文字正規化後に完全一致でチェック）
+    BLOCKLIST: [
+        // 英語
+        'FUK', 'FUC', 'FCK', 'FUX',
+        'SEX', 'CUM', 'TIT', 'ASS',
+        'DIK', 'DIC', 'DIX', 'COK',
+        'FAG', 'HOE', 'JEW', 'NIG',
+        'JAP', 'CHK', 'KKK', 'NAZ',
+        'STD', 'GAY',
+        // 日本語ローマ字
+        'ETI', 'UNC', 'UNK', 'CHN',
+        'MNK', 'KSU', 'SIN', 'SNE',
+        'BAK', 'AHO', 'KYS'
+    ],
+
     // ハイスコア取得（Firebase から 1 回だけ読む）
     async fetch(id) {
         if (!window.firebaseDB || !id) return null;
@@ -77,10 +92,19 @@ const ShareHighScore = {
         }
     },
 
-    // 3文字 A-Z0-9 に正規化
+    // 3文字 A-Z0-9 に正規化（不適切語はデフォルト値に置換）
     _sanitizeName(name) {
         const s = (name || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-        return (s + '---').slice(0, 3);
+        const padded = (s + '---').slice(0, 3);
+        if (this.BLOCKLIST.includes(padded)) return '---';
+        return padded;
+    },
+
+    // ブラックリストチェック（送信前UI警告用）
+    isBlocked(name) {
+        const s = (name || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const padded = (s + '---').slice(0, 3);
+        return this.BLOCKLIST.includes(padded);
     },
 
     // 直近の投稿者名を localStorage に保存／取得（入力の既定値用）

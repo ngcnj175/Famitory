@@ -3996,9 +3996,9 @@ input, textarea, select, button {
 
 .highscore-score-row {
     display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     margin-bottom: 16px;
 }
 
@@ -4009,11 +4009,11 @@ input, textarea, select, button {
 }
 
 .highscore-score-value {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 700;
-    color: #ffd700;
-    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
-    letter-spacing: 2px;
+    color: #00ff66;
+    font-family: 'BIZ UDPGothic', monospace;
+    letter-spacing: 0;
     -webkit-text-stroke: 1px currentColor;
 }
 
@@ -4024,22 +4024,21 @@ input, textarea, select, button {
 }
 
 .highscore-name-input {
-    width: 140px;
+    width: 120px;
     text-align: center;
-    font-size: 32px;
-    letter-spacing: 10px;
+    font-size: 28px;
+    letter-spacing: 8px;
     text-transform: uppercase;
-    padding: 8px 8px 8px 18px;
+    padding: 8px 8px 8px 16px;
     background: #222;
     color: #fff;
     border: 2px solid #666;
     border-radius: 4px;
-    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
 }
 
 .highscore-name-input:focus {
     outline: none;
-    border-color: #ffd700;
+    border-color: #00ff66;
 }
 
 .result-actions {
