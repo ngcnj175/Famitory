@@ -410,19 +410,16 @@ const GameEngine = {
         this.newHighScore = false; // 今回のプレイで更新したか
         this._highScoreSubmitted = false; // 今回のリザルトで送信済みか
 
-        // ハイスコア読み込み：
-        //   公開済み（shareId あり）→ Firebase の値（キャッシュ）
-        //   それ以外 → 表示しない（0 として扱う）
-        const gameId = (typeof App !== 'undefined') && (App._sharedGameId || App.projectData?.meta?.shareId);
-        if (gameId && typeof ShareHighScore !== 'undefined') {
+        // ハイスコア読み込み：公開済み（shareId あり）→ Firebase の値、それ以外は 0
+        this.highScore = 0;
+        this.highScoreName = '';
+        const gameId = App._sharedGameId || App.projectData?.meta?.shareId;
+        if (gameId) {
             const cached = ShareHighScore.getCached(gameId);
             if (cached) {
                 this.highScore = cached.score;
                 this.highScoreName = cached.name;
             } else {
-                this.highScore = 0;
-                this.highScoreName = '';
-                // バックグラウンドで取得
                 ShareHighScore.fetch(gameId).then(res => {
                     if (res) {
                         this.highScore = Math.max(this.highScore, res.score);
@@ -430,9 +427,6 @@ const GameEngine = {
                     }
                 });
             }
-        } else {
-            this.highScore = 0;
-            this.highScoreName = '';
         }
 
         // ゲームオーバー待機状態をリセット

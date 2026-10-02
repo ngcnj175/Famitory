@@ -773,8 +773,7 @@ class GameRenderer {
         }
 
         // 新記録 → ネーム入力モーダル → Firebase 送信
-        if (showScore && gameId && this.owner.newHighScore && !this.owner._highScoreSubmitted
-            && typeof ShareHighScore !== 'undefined' && this.owner.score > 0) {
+        if (showScore && gameId && this.owner.newHighScore && !this.owner._highScoreSubmitted) {
             this.owner._highScoreSubmitted = true;
             this._promptHighScoreName(gameId, this.owner.score, highVal, highName);
         }
@@ -854,20 +853,12 @@ class GameRenderer {
             skipBtn.onclick = null;
             input.onkeydown = null;
             const ok = await ShareHighScore.submit(gameId, score, name);
-            if (ok) {
-                ShareHighScore.rememberName(name);
-                const cached = ShareHighScore.getCached(gameId);
-                if (cached) {
-                    if (highVal) highVal.textContent = cached.score.toString().padStart(6, '0');
-                    if (highName) highName.textContent = cached.name ? ' ' + cached.name : '';
-                }
-            } else {
-                // 他ユーザーに抜かれていた場合でも最新値を反映
-                const cached = ShareHighScore.getCached(gameId);
-                if (cached && highVal) {
-                    highVal.textContent = cached.score.toString().padStart(6, '0');
-                    if (highName) highName.textContent = cached.name ? ' ' + cached.name : '';
-                }
+            if (ok) ShareHighScore.rememberName(name);
+            // 送信可否にかかわらず最新キャッシュを UI に反映（他ユーザーに抜かれていた場合も対応）
+            const cached = ShareHighScore.getCached(gameId);
+            if (cached) {
+                if (highVal) highVal.textContent = cached.score.toString().padStart(6, '0');
+                if (highName) highName.textContent = cached.name ? ' ' + cached.name : '';
             }
         };
 

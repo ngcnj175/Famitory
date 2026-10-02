@@ -92,19 +92,21 @@ const ShareHighScore = {
         }
     },
 
-    // 3文字 A-Z0-9 に正規化（不適切語はデフォルト値に置換）
-    _sanitizeName(name) {
+    // 3文字 A-Z0-9 に正規化（記号・不足分は '-' パディング）
+    _normalize(name) {
         const s = (name || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const padded = (s + '---').slice(0, 3);
-        if (this.BLOCKLIST.includes(padded)) return '---';
-        return padded;
+        return (s + '---').slice(0, 3);
     },
 
-    // ブラックリストチェック（送信前UI警告用）
+    // 送信前の最終サニタイズ（不適切語はデフォルト値に置換・defense-in-depth）
+    _sanitizeName(name) {
+        const padded = this._normalize(name);
+        return this.BLOCKLIST.includes(padded) ? '---' : padded;
+    },
+
+    // ブラックリストチェック（UI警告用）
     isBlocked(name) {
-        const s = (name || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const padded = (s + '---').slice(0, 3);
-        return this.BLOCKLIST.includes(padded);
+        return this.BLOCKLIST.includes(this._normalize(name));
     },
 
     // 直近の投稿者名を localStorage に保存／取得（入力の既定値用）
