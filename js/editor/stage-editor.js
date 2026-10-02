@@ -719,7 +719,7 @@ const StageEditor = {
                                value="${config.easterMessage || ''}"
                                maxlength="20" placeholder="${this.t('U255')}">
                     </div>
-                    <div class="param-hint" style="font-size:11px;opacity:.7;margin-top:-6px;">${this.t('U556')}</div>
+                    <div class="param-hint" style="font-size:11px;opacity:.7;margin-top:-6px;">${this.t('U557')}</div>
                 `;
             }
             html += this.renderCard(this.t('U471'), inner);

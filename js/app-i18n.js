@@ -295,7 +295,7 @@ const AppI18N = {
         'U442': { JPN: 'もどる',          ENG: 'Back' },
         'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },
         'U445': { JPN: 'メッセージ',      ENG: 'Message' },
-        'U556': { JPN: '※ひらがな・カタカナ・英数字・記号のみ（漢字不可）', ENG: '*Hiragana / Katakana / alphanumeric / symbols only (no Kanji)' },
+        'U557': { JPN: '※ひらがな・カタカナ・英数字・記号のみ（漢字不可）', ENG: '*Hiragana / Katakana / alphanumeric / symbols only (no Kanji)' },
         'U307': { JPN: 'これ以上削除できません', ENG: 'Cannot delete anymore' },
         'U313': { JPN: '「${songName}」を削除しますか？', ENG: 'Delete "${songName}"?' },
         'U308': { JPN: 'このBGMを削除しますか？', ENG: 'Delete this BGM?' },
