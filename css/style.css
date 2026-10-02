@@ -3980,6 +3980,68 @@ input, textarea, select, button {
     letter-spacing: 1px;
 }
 
+/* ===== ハイスコアネーム入力モーダル ===== */
+.modal-header-simple.highscore-title {
+    animation: result-title-rainbow 0.6s linear infinite;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.highscore-body {
+    text-align: center;
+    padding: 20px 20px 10px;
+}
+
+.highscore-score-row {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.highscore-score-label {
+    font-size: 14px;
+    color: #a0a0c0;
+    letter-spacing: 1px;
+}
+
+.highscore-score-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffd700;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    letter-spacing: 2px;
+    -webkit-text-stroke: 1px currentColor;
+}
+
+.highscore-name-hint {
+    font-size: 12px;
+    color: #a0a0c0;
+    margin-bottom: 8px;
+}
+
+.highscore-name-input {
+    width: 140px;
+    text-align: center;
+    font-size: 32px;
+    letter-spacing: 10px;
+    text-transform: uppercase;
+    padding: 8px 8px 8px 18px;
+    background: #222;
+    color: #fff;
+    border: 2px solid #666;
+    border-radius: 4px;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+}
+
+.highscore-name-input:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
 .result-actions {
     display: flex;
     flex-direction: column;

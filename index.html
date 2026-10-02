@@ -1697,12 +1697,14 @@
     <!-- ハイスコアネーム入力モーダル -->
     <div id="highscore-name-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-header-simple">NEW RECORD!</div>
-            <div class="modal-body" style="text-align:center; padding:20px 20px 10px;">
-                <div id="highscore-name-score" style="font-size:20px; color:#ffcc00; margin-bottom:12px;">000000</div>
-                <div style="font-size:12px; color:#a0a0c0; margin-bottom:8px;">名前を入力（半角英数3文字）</div>
-                <input id="highscore-name-input" type="text" maxlength="3" autocomplete="off" spellcheck="false"
-                    style="width:120px; text-align:center; font-size:28px; letter-spacing:8px; text-transform:uppercase; padding:8px; background:#222; color:#fff; border:2px solid #666; border-radius:4px;">
+            <div class="modal-header-simple highscore-title">NEW RECORD!</div>
+            <div class="modal-body highscore-body">
+                <div class="highscore-score-row">
+                    <span class="highscore-score-label">SCORE</span>
+                    <span id="highscore-name-score" class="highscore-score-value">000000</span>
+                </div>
+                <div class="highscore-name-hint">名前を入力（半角英数3文字）</div>
+                <input id="highscore-name-input" type="text" maxlength="3" autocomplete="off" spellcheck="false" class="highscore-name-input">
             </div>
             <div class="modal-footer-actions">
                 <button class="modal-action-btn primary" id="highscore-name-ok">OK</button>
