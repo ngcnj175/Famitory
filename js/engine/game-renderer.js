@@ -485,19 +485,14 @@ class GameRenderer {
             lines.push(message.slice(i, i + maxCharsPerLine));
         }
 
-        // ピクセルフォントのシャープ描画:
-        //   設計サイズ16pxでオフスクリーンに描画 → 2倍拡大してメインに転写
-        //   imageSmoothingEnabled=false によりAAピクセルが鮮明なドットとして拡大される
-        const SCALE = 2;
-        const designFontPx = 16;
-        const designLineH = 20;
-        const designCharW = 16;
-        const displayLineH = designLineH * SCALE;   // 40
         const padding = 24;
+        const lineHeight = 22;
+        const charWidth = 16;
+        const fontPx = 16;
 
-        const textWidth = maxCharsPerLine * designCharW * SCALE + padding * 2;
+        const textWidth = maxCharsPerLine * charWidth + padding * 2;
         const windowWidth = Math.max(textWidth, 180);
-        const windowHeight = (lines.length * displayLineH) + padding * 2;
+        const windowHeight = (lines.length * lineHeight) + padding * 2;
         const windowX = (w - windowWidth) / 2;
         const windowY = (h - windowHeight) / 2;
 
@@ -506,13 +501,13 @@ class GameRenderer {
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
-        // オフスクリーンキャンバスに原寸（16px）でテキスト描画
+        // ピクセルフォント用: オフスクリーンに描画→二値化でAAを除去→nearest-neighborで転写
         if (!this._easterOffscreen) {
             this._easterOffscreen = document.createElement('canvas');
         }
         const off = this._easterOffscreen;
-        const offW = maxCharsPerLine * designCharW + 4;
-        const offH = designLineH;
+        const offW = maxCharsPerLine * charWidth + 8;
+        const offH = lineHeight;
         off.width = offW;
         off.height = offH;
         const offCtx = off.getContext('2d');
@@ -523,14 +518,26 @@ class GameRenderer {
         lines.forEach((line, idx) => {
             offCtx.clearRect(0, 0, offW, offH);
             offCtx.fillStyle = '#FFFFFF';
-            offCtx.font = `${designFontPx}px "DotGothic16", "BIZ UDPGothic", monospace`;
+            offCtx.font = `${fontPx}px "DotGothic16", "BIZ UDPGothic", monospace`;
             offCtx.textAlign = 'center';
             offCtx.textBaseline = 'middle';
             offCtx.fillText(line, offW / 2, offH / 2);
 
-            const dstX = (w - offW * SCALE) / 2;
-            const dstY = windowY + padding + displayLineH * idx;
-            ctx.drawImage(off, 0, 0, offW, offH, dstX, dstY, offW * SCALE, offH * SCALE);
+            // 二値化: alpha >= 128 を完全不透明の白に、未満は完全透明に
+            const imgData = offCtx.getImageData(0, 0, offW, offH);
+            const d = imgData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                if (d[i + 3] >= 128) {
+                    d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 255;
+                } else {
+                    d[i + 3] = 0;
+                }
+            }
+            offCtx.putImageData(imgData, 0, 0);
+
+            const dstX = (w - offW) / 2;
+            const dstY = windowY + padding + lineHeight * idx;
+            ctx.drawImage(off, dstX, dstY);
         });
 
         ctx.imageSmoothingEnabled = prevSmoothing;
