@@ -435,6 +435,7 @@ const AppProject = {
 
             App.projectData = data;
             App.currentProjectName = name;
+            this.migrateProjectData();
 
             App._sharedGameId = null;
             App._likesCount = 0;
