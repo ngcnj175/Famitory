@@ -5506,6 +5506,58 @@ input, textarea, select, button {
     background: #5aa0f2;
 }
 
+/* SHARE画面のアイコンボタン（3カラムグリッド） */
+.share-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.share-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 6px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    color: #374151;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: background 0.15s, transform 0.05s;
+}
+
+.share-icon-btn:hover {
+    background: #f3f4f6;
+}
+
+.share-icon-btn:active {
+    transform: translateY(1px);
+}
+
+.share-icon-shape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #111827;
+}
+
+.share-icon-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4b5563;
+    line-height: 1.3;
+    text-align: center;
+    word-break: keep-all;
+}
+
 /* SHAREモーダル オプションごとのライトグレー背景エリア */
 .share-panel-box {
     margin: 8px 0;
@@ -6922,6 +6974,25 @@ body.dark-mode .share-modal-content {
 }
 
 body.dark-mode .share-modal-content h3 {
+    color: #b0b8d0;
+}
+
+body.dark-mode .share-icon-btn {
+    background: #1e1e38;
+    border-color: #303050;
+    color: #d0d4e8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .share-icon-btn:hover {
+    background: #272748;
+}
+
+body.dark-mode .share-icon-shape {
+    color: #e8eaf6;
+}
+
+body.dark-mode .share-icon-label {
     color: #b0b8d0;
 }
 

@@ -441,8 +441,8 @@
 | U418 | なし | None | JS message/literal | stage-editor.js | |
 | U419 | コピー | Copy | HTML text node (button) | index.html | |
 | U420 | URLをコピー | Copy URL | HTML text node (button) | index.html | ✓ |
-| U421 | Xにとうこう | Post on X | HTML text node (button) | index.html | ✓ |
-| U422 | Discordにとうこう | Post on Discord | HTML text node (button) | index.html | ✓ |
+| U421 | Xに投稿 | Post on X | HTML text node (button) | index.html | ✓ |
+| U422 | Discordに投稿 | Post on Discord | HTML text node (button) | index.html | ✓ |
 | U423 | はじめから使える | Available from start | JS HTML template | stage-editor.js | ✓ |
 | U424 | てきの動き | Move Type | JS HTML template | stage-editor.js | ✓ |
 | U425 | ドロップ | Drop Item | JS HTML template | stage-editor.js | ✓ |
