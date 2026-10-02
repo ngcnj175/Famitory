@@ -811,12 +811,42 @@ class GameRenderer {
         const okBtn = document.getElementById('highscore-name-ok');
         const skipBtn = document.getElementById('highscore-name-skip');
         const scoreEl = document.getElementById('highscore-name-score');
+        const noBadge = document.getElementById('highscore-no-badge');
         if (!modal || !input || !okBtn || !skipBtn) return;
 
         if (scoreEl) scoreEl.textContent = score.toString().padStart(6, '0');
         input.value = ShareHighScore.recallName() || '';
+        if (noBadge) noBadge.classList.add('hidden');
+        input.classList.remove('shake');
         modal.classList.remove('hidden');
         setTimeout(() => input.focus(), 50);
+
+        const rejectBlocked = () => {
+            // ブザー音
+            if (typeof NesAudio !== 'undefined' && NesAudio.playUnifiedSE) {
+                NesAudio.playUnifiedSE({
+                    waveType: 'square',
+                    envelopeMode: 'legacy4step',
+                    frequencyStart: 180,
+                    frequencySlide: -40,
+                    sustainTime: 0.08,
+                    decayTime: 0.15,
+                    masterVolume: 0.35,
+                    repeatCount: 2
+                });
+            }
+            // NO! バッジを再表示（アニメーション再始動のため一度消す）
+            if (noBadge) {
+                noBadge.classList.add('hidden');
+                void noBadge.offsetWidth;
+                noBadge.classList.remove('hidden');
+            }
+            // 入力欄シェイク
+            input.classList.remove('shake');
+            void input.offsetWidth;
+            input.classList.add('shake');
+            input.select();
+        };
 
         const submit = async (name) => {
             modal.classList.add('hidden');
@@ -841,7 +871,14 @@ class GameRenderer {
             }
         };
 
-        okBtn.onclick = () => submit(input.value || '---');
+        okBtn.onclick = () => {
+            const val = input.value || '';
+            if (ShareHighScore.isBlocked(val)) {
+                rejectBlocked();
+                return;
+            }
+            submit(val || '---');
+        };
         skipBtn.onclick = () => submit('---');
         input.onkeydown = (e) => {
             if (e.key === 'Enter') { e.preventDefault(); okBtn.click(); }

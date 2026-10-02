@@ -530,6 +530,7 @@
 | U549 | 改行は使えません | Line breaks are not allowed | JS message/literal (ARCADEコメント改行入力時トースト) | app-arcade-panel.js | ✓ |
 | U556 | NEW RECORD! | NEW RECORD! | HTML text node (ハイスコアネーム入力モーダル タイトル・レインボー点滅) | index.html | - |
 | U560 | SCORE | SCORE | HTML text node (ハイスコアネーム入力モーダル スコアラベル) | index.html | - |
+| U561 | NO! | NO! | HTML text node (ハイスコアネーム入力 不適切語検知バッジ) | index.html | - |
 | U557 | 名前を入力（半角英数3文字） | Enter name (3 alphanumeric chars) | HTML text node (ハイスコアネーム入力モーダル 説明) | index.html | - |
 | U558 | OK | OK | HTML text node (ハイスコアネーム入力モーダル 決定ボタン) | index.html | - |
 | U559 | スキップ | Skip | HTML text node (ハイスコアネーム入力モーダル スキップボタン) | index.html | - |
