@@ -8217,13 +8217,15 @@ body.dark-mode .modal-content.retro-modal {
     50%, 100% { opacity: 0; }
 }
 
-/* 入力欄本体は透明化してスロットの上に重ねる（フォーカス可能・キーボード受付） */
+/* 入力欄本体はスロットの上に重ねる（iOS で auto-focus を有効にするため opacity:0 は使わず
+   color/caret/background のみ透明化し、要素自体は「見える」状態にする） */
 .retro-modal .highscore-name-input {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
+    opacity: 1;
+    color: transparent;
     background: transparent;
     border: none;
     outline: none;
@@ -8233,6 +8235,8 @@ body.dark-mode .modal-content.retro-modal {
     padding: 0;
     letter-spacing: 18px;
     text-transform: uppercase;
+    -webkit-text-fill-color: transparent;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .retro-modal .highscore-name-input.shake + .highscore-slots,
