@@ -7949,14 +7949,14 @@ body.dark-mode {
 #app.dark-mode .result-container {
     background: #000;
     color: #fff;
-    border: 4px solid #fff;
+    border: 3px solid #fff;
     border-radius: 0;
-    box-shadow: 0 0 0 2px #000, 0 0 0 6px #fff, 0 0 0 8px #000;
+    box-shadow: none;
     image-rendering: pixelated;
     padding: 18px 16px;
     gap: 12px;
-    width: 86%;
-    max-width: 300px;
+    width: 88%;
+    max-width: 320px;
     font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
     letter-spacing: 0;
 }
@@ -7999,8 +7999,8 @@ body.dark-mode {
 #app.dark-mode .result-like-btn,
 .result-like-btn {
     background: transparent;
-    border: 2px solid #fff;
-    color: #fff;
+    border: 2px solid #888;
+    color: #aaa;
     border-radius: 999px;
     padding: 4px 14px;
     font-family: 'BIZ UDPGothic', sans-serif;
@@ -8015,12 +8015,15 @@ body.dark-mode {
 .like-icon-result {
     width: 16px;
     height: 16px;
+    filter: brightness(0) saturate(100%) invert(70%);
+}
+.result-like-btn.liked .like-icon-result {
     filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(500%) hue-rotate(100deg);
 }
 .result-like-count {
     display: inline-block;
     line-height: 1;
-    transform: translateY(2px);
+    transform: translateY(1px);
 }
 
 /* タイトル (GAME OVER / STAGE CLEAR) */
@@ -8056,7 +8059,7 @@ body.dark-mode {
 }
 
 .result-label { font-size: 11px; color: #cfcfcf; font-weight: 400; }
-#result-score-value { font-size: 22px; font-weight: 400; }
+#result-score-value { font-size: 22px; font-weight: 400; margin-top: 2px; }
 
 /* HiSCORE は 1 行で横並び（ラベル / 値 / ネーム） */
 .result-score-row.hiscore-row {
@@ -8083,14 +8086,14 @@ body.dark-mode {
 
 .result-btn,
 #app.dark-mode .result-btn {
-    width: 220px;
-    padding: 9px 0;
+    width: 260px;
+    padding: 12px 0;
     border-radius: 999px;
     border: 2px solid #fff;
     background: #000;
     color: #fff;
     font-family: 'BIZ UDPGothic', 'Press Start 2P', sans-serif;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 1px;
     display: flex;
@@ -8120,5 +8123,5 @@ body.dark-mode {
 #app.landscape-play #result-highscore-value,
 #app.landscape-play .result-score-row.hiscore-row .result-label,
 #app.landscape-play .result-score-row.hiscore-row .result-highscore-name { font-size: 10px; }
-#app.landscape-play .result-btn { width: 190px; padding: 7px 0; font-size: 11px; }
+#app.landscape-play .result-btn { width: 230px; padding: 9px 0; font-size: 13px; }
 
