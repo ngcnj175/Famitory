@@ -7936,3 +7936,176 @@ body.dark-mode {
     background: #f3f4f6;
     color: #4b5563;
 }
+
+/* ============================================================
+   リザルト画面: レトロゲーム風ウィンドウ
+   背景黒 / 白ピクセル枠 / Press Start 2P フォント統一
+   ============================================================ */
+#result-overlay {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.result-container,
+#app.dark-mode .result-container {
+    background: #000;
+    color: #fff;
+    border: 4px solid #fff;
+    border-radius: 0;
+    box-shadow: 0 0 0 2px #000, 0 0 0 6px #fff, 0 0 0 8px #000;
+    image-rendering: pixelated;
+    padding: 18px 16px;
+    gap: 12px;
+    width: 86%;
+    max-width: 300px;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    letter-spacing: 0;
+}
+
+/* 上部: ゲーム情報ブロック（タイトル / 作者 / Remix / いいね） */
+#result-game-info {
+    border-bottom: 2px dashed #fff;
+    margin-bottom: 2px;
+    padding-bottom: 10px;
+    color: #fff;
+}
+
+#result-game-title {
+    font-family: 'BIZ UDPGothic', 'Press Start 2P', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+#result-game-author {
+    font-family: 'BIZ UDPGothic', sans-serif;
+    font-size: 11px;
+    color: #cfcfcf;
+    margin-bottom: 4px;
+}
+
+#result-remix-info,
+#result-remix-info .remix-link {
+    font-family: 'BIZ UDPGothic', sans-serif;
+    font-size: 10px;
+    color: #a0a0a0;
+}
+
+#result-remix-info .remix-link { text-decoration: underline; }
+
+/* いいねボタン（情報ブロック内） */
+#result-like-area { margin: 8px 0 0; }
+#app.dark-mode .result-like-btn,
+.result-like-btn {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-family: 'BIZ UDPGothic', sans-serif;
+    font-size: 12px;
+}
+.result-like-btn.liked,
+#app.dark-mode .result-like-btn.liked {
+    background: #1a3a1a;
+    border-color: #4caf50;
+    color: #7ed47e;
+}
+.like-icon-result { width: 16px; height: 16px; filter: invert(1); }
+.result-like-btn.liked .like-icon-result { filter: none; }
+
+/* タイトル (GAME OVER / STAGE CLEAR) */
+#result-title {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: 1px;
+    margin: 4px 0 0;
+    text-shadow: 2px 2px 0 #000;
+}
+#result-title.rainbow { font-size: 20px; padding-left: 0; }
+
+/* スコアブロック: SCORE / 値 / HiSCORE行 すべて同じピクセルフォント */
+#result-score-container { gap: 6px; }
+
+.result-score-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.result-score-row.small { opacity: 1; transform: none; }
+
+.result-label,
+#result-score-value,
+#result-highscore-value,
+.result-highscore-name {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    color: #fff;
+    -webkit-text-stroke: 0;
+    letter-spacing: 1px;
+}
+
+.result-label { font-size: 11px; color: #cfcfcf; font-weight: 400; }
+#result-score-value { font-size: 22px; font-weight: 400; }
+
+/* HiSCORE は 1 行で横並び（ラベル / 値 / ネーム） */
+.result-score-row.hiscore-row {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    opacity: 0.9;
+}
+.result-score-row.hiscore-row .result-label,
+.result-score-row.hiscore-row #result-highscore-value,
+.result-score-row.hiscore-row .result-highscore-name {
+    font-size: 12px;
+}
+
+/* アクションボタン: カプセル型・固定サイズ */
+.result-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.result-btn,
+#app.dark-mode .result-btn {
+    width: 220px;
+    padding: 9px 0;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    background: #000;
+    color: #fff;
+    font-family: 'BIZ UDPGothic', 'Press Start 2P', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+.result-btn:active,
+#app.dark-mode .result-btn:active {
+    background: #fff;
+    color: #000;
+    transform: scale(0.97);
+}
+
+/* 横向きプレイ時の縮小 */
+#app.landscape-play .result-container {
+    padding: 10px 12px;
+    gap: 6px;
+}
+#app.landscape-play #result-title { font-size: 16px; }
+#app.landscape-play #result-score-value { font-size: 18px; }
+#app.landscape-play #result-highscore-value,
+#app.landscape-play .result-score-row.hiscore-row .result-label,
+#app.landscape-play .result-score-row.hiscore-row .result-highscore-name { font-size: 10px; }
+#app.landscape-play .result-btn { width: 190px; padding: 7px 0; font-size: 11px; }
+
