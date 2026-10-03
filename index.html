@@ -1679,15 +1679,22 @@
 
     <!-- ハイスコアネーム入力モーダル -->
     <div id="highscore-name-modal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content retro-modal">
             <div class="modal-header-simple highscore-title">NEW RECORD!</div>
             <div class="modal-body highscore-body">
                 <div class="highscore-score-row">
                     <span class="highscore-score-label">SCORE</span>
                     <span id="highscore-name-score" class="highscore-score-value">000000</span>
                 </div>
-                <div class="highscore-name-hint">名前を入力（半角英数3文字）</div>
-                <input id="highscore-name-input" type="text" maxlength="3" autocomplete="off" spellcheck="false" class="highscore-name-input">
+                <div class="highscore-name-hint">NAME</div>
+                <div class="highscore-name-wrap">
+                    <div class="highscore-slots" id="highscore-slots">
+                        <span class="slot blink" data-i="0">_</span>
+                        <span class="slot" data-i="1">_</span>
+                        <span class="slot" data-i="2">_</span>
+                    </div>
+                    <input id="highscore-name-input" type="text" maxlength="3" autocomplete="off" spellcheck="false" class="highscore-name-input">
+                </div>
                 <div id="highscore-no-badge" class="highscore-no-badge hidden">NO!</div>
             </div>
             <div class="modal-footer-actions">

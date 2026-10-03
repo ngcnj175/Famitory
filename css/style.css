@@ -8125,3 +8125,171 @@ body.dark-mode {
 #app.landscape-play .result-score-row.hiscore-row .result-highscore-name { font-size: 10px; }
 #app.landscape-play .result-btn { width: 230px; padding: 9px 0; font-size: 13px; }
 
+/* ============================================================
+   NEW RECORD モーダル: レトロゲーム風
+   ============================================================ */
+.modal-content.retro-modal,
+body.dark-mode .modal-content.retro-modal {
+    background: #000;
+    color: #fff;
+    border: 3px solid #fff;
+    border-radius: 12px;
+    box-shadow: none;
+    padding: 20px 18px;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    max-width: 320px;
+    width: 88%;
+}
+
+.retro-modal .highscore-title,
+.retro-modal.modal-content .modal-header-simple.highscore-title {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+    animation: none;
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 14px;
+}
+
+.retro-modal .highscore-body {
+    padding: 4px 0 10px;
+}
+
+.retro-modal .highscore-score-row {
+    gap: 2px;
+    margin-bottom: 20px;
+}
+
+.retro-modal .highscore-score-label {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 11px;
+    color: #cfcfcf;
+    letter-spacing: 1px;
+}
+
+.retro-modal .highscore-score-value {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 22px;
+    color: #fff;
+    -webkit-text-stroke: 0;
+    margin-top: 2px;
+}
+
+.retro-modal .highscore-name-hint {
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 11px;
+    color: #cfcfcf;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+/* 3スロット表示 + 透明input重ね */
+.retro-modal .highscore-name-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.retro-modal .highscore-slots {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 28px;
+    color: #fff;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
+.retro-modal .highscore-slots .slot {
+    width: 24px;
+    text-align: center;
+    display: inline-block;
+}
+
+.retro-modal .highscore-slots .slot.blink {
+    animation: hiscore-slot-blink 0.6s steps(1) infinite;
+}
+
+@keyframes hiscore-slot-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+/* 入力欄本体は透明化してスロットの上に重ねる（フォーカス可能・キーボード受付） */
+.retro-modal .highscore-name-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 28px;
+    caret-color: transparent;
+    padding: 0;
+    letter-spacing: 18px;
+    text-transform: uppercase;
+}
+
+.retro-modal .highscore-name-input.shake + .highscore-slots,
+.retro-modal .highscore-name-wrap:has(.highscore-name-input.shake) .highscore-slots {
+    animation: hiscore-slot-shake 0.3s linear;
+}
+
+@keyframes hiscore-slot-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+.retro-modal .highscore-no-badge {
+    background: transparent;
+    color: #ff5566;
+    font-family: 'Press Start 2P', 'BIZ UDPGothic', monospace;
+    font-size: 18px;
+    border: 2px solid #ff5566;
+    padding: 4px 12px;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+/* フッタ: OK / スキップをカプセル型（リザルトの .result-btn と同コンセプト） */
+.retro-modal .modal-footer-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.retro-modal .modal-action-btn,
+body.dark-mode .retro-modal .modal-action-btn {
+    width: 220px;
+    min-width: 0;
+    padding: 11px 0;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    background: #000;
+    color: #fff;
+    font-family: 'BIZ UDPGothic', 'Press Start 2P', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: none;
+    letter-spacing: 1px;
+}
+.retro-modal .modal-action-btn:hover {
+    background: #2a2a2a;
+}
+.retro-modal .modal-action-btn:active {
+    transform: scale(0.97);
+    background: #fff;
+    color: #000;
+    box-shadow: none;
+}
+

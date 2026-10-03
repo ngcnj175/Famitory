@@ -820,6 +820,20 @@ class GameRenderer {
         modal.classList.remove('hidden');
         setTimeout(() => input.focus(), 50);
 
+        const slotsEl = document.getElementById('highscore-slots');
+        const syncSlots = () => {
+            if (!slotsEl) return;
+            const v = (input.value || '').toUpperCase();
+            const slots = slotsEl.querySelectorAll('.slot');
+            slots.forEach((s, i) => {
+                s.textContent = v[i] || '_';
+                s.classList.toggle('blink', i === v.length && i < 3);
+                s.classList.toggle('filled', !!v[i]);
+            });
+        };
+        syncSlots();
+        input.oninput = syncSlots;
+
         const rejectBlocked = () => {
             // ブザー音
             if (typeof NesAudio !== 'undefined' && NesAudio.playUnifiedSE) {
@@ -852,6 +866,7 @@ class GameRenderer {
             okBtn.onclick = null;
             skipBtn.onclick = null;
             input.onkeydown = null;
+            input.oninput = null;
             const ok = await ShareHighScore.submit(gameId, score, name);
             if (ok) ShareHighScore.rememberName(name);
             // 送信可否にかかわらず最新キャッシュを UI に反映（他ユーザーに抜かれていた場合も対応）
