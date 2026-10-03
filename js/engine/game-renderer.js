@@ -355,7 +355,7 @@ class GameRenderer {
     // ========== ローディング画面 ==========
     renderLoading() {
         const ctx = this.owner.ctx;
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
         ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
         ctx.textAlign = 'center';
@@ -367,7 +367,7 @@ class GameRenderer {
     // ========== タイトル・ワイプ演出 ==========
     renderTitleScreen() {
         const ctx = this.owner.ctx;
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
 
         this.owner.titleBlinkTimer++;
@@ -394,7 +394,7 @@ class GameRenderer {
             document.getElementById('push-start-ui')?.classList.add('hidden');
         }
 
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
 
         const maxSize = Math.max(this.owner.canvas.width, this.owner.canvas.height);
@@ -421,7 +421,7 @@ class GameRenderer {
         const x = Math.floor((this.owner.canvas.width - size) / 2);
         const y = Math.floor((this.owner.canvas.height - size) / 2);
 
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.owner.canvas.width, y + 1);
         ctx.fillRect(0, y + size - 1, this.owner.canvas.width, this.owner.canvas.height - y - size + 2);
         ctx.fillRect(0, y, x + 1, size);
@@ -432,7 +432,7 @@ class GameRenderer {
     renderGameOverText() {
         const ctx = this.owner.ctx;
         const gameOverText = AppI18N.I18N['U398'][AppI18N.currentLang] || 'GAME OVER';
-        ctx.fillStyle = '#333333';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.owner.canvas.width, this.owner.canvas.height);
         ctx.font = '16px "Press Start 2P", "BIZ UDPGothic", Arial';
         ctx.textAlign = 'center';
@@ -454,7 +454,7 @@ class GameRenderer {
         if (this.owner.clearTimer > 120) {
             const wipeProgress = Math.min((this.owner.clearTimer - 120) / 30, 1);
             const darkHeight = (h / 2) * wipeProgress;
-            ctx.fillStyle = '#333333';
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, w, darkHeight);
             ctx.fillRect(0, h - darkHeight, w, darkHeight);
         }

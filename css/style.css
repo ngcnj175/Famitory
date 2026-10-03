@@ -515,7 +515,7 @@ input, textarea, select, button {
 }
 
 #game-canvas {
-    background: var(--bg-screen);
+    background: #000000;
     border: none;
     border-radius: 0;
     image-rendering: pixelated;
