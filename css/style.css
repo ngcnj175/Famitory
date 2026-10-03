@@ -8065,14 +8065,14 @@ body.dark-mode {
 .result-score-row.hiscore-row {
     flex-direction: row;
     justify-content: center;
-    gap: 10px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 9px;
     opacity: 0.9;
 }
 .result-score-row.hiscore-row .result-label,
 .result-score-row.hiscore-row #result-highscore-value,
 .result-score-row.hiscore-row .result-highscore-name {
-    font-size: 12px;
+    font-size: 9px;
 }
 
 /* アクションボタン: カプセル型・固定サイズ */
