@@ -827,7 +827,9 @@ class GameRenderer {
         };
 
         if (scoreEl) scoreEl.textContent = score.toString().padStart(6, '0');
-        input.value = ShareHighScore.recallName() || '';
+        // 前回スキップ時に保存された '---' はプレースホルダ扱いとして空に戻す
+        const recalled = ShareHighScore.recallName() || '';
+        input.value = (recalled === '---') ? '' : recalled;
         if (noBadge) noBadge.classList.add('hidden');
         if (slotsEl) slotsEl.classList.remove('shake');
         modal.classList.remove('hidden');
@@ -879,7 +881,8 @@ class GameRenderer {
             input.oninput = null;
             modal.removeEventListener('pointerdown', openKeyboard);
             const ok = await ShareHighScore.submit(gameId, score, name);
-            if (ok) ShareHighScore.rememberName(name);
+            // '---' はスキップ用プレースホルダなので記憶しない
+            if (ok && name !== '---') ShareHighScore.rememberName(name);
             // 送信可否にかかわらず最新キャッシュを UI に反映（他ユーザーに抜かれていた場合も対応）
             const cached = ShareHighScore.getCached(gameId);
             if (cached) {

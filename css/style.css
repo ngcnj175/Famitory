@@ -8119,6 +8119,8 @@ body.dark-mode .modal-content.retro-modal {
     animation: none;
     text-shadow: 2px 2px 0 #000;
     margin-bottom: 14px;
+    white-space: nowrap;
+    word-spacing: 0.25em;
 }
 
 .retro-modal .highscore-body {
