@@ -8012,8 +8012,16 @@ body.dark-mode {
     border-color: #4caf50;
     color: #7ed47e;
 }
-.like-icon-result { width: 16px; height: 16px; filter: invert(1); }
-.result-like-btn.liked .like-icon-result { filter: none; }
+.like-icon-result {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(500%) hue-rotate(100deg);
+}
+.result-like-count {
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(2px);
+}
 
 /* タイトル (GAME OVER / STAGE CLEAR) */
 #result-title {
@@ -8089,6 +8097,11 @@ body.dark-mode {
     align-items: center;
     justify-content: center;
     gap: 0;
+}
+.result-btn:hover,
+#app.dark-mode .result-btn:hover {
+    background: #2a2a2a;
+    color: #fff;
 }
 .result-btn:active,
 #app.dark-mode .result-btn:active {
