@@ -4023,37 +4023,6 @@ input, textarea, select, button {
     margin-bottom: 8px;
 }
 
-.highscore-name-input {
-    width: 120px;
-    text-align: center;
-    font-size: 28px;
-    letter-spacing: 8px;
-    text-transform: uppercase;
-    padding: 8px 8px 8px 16px;
-    background: #222;
-    color: #fff;
-    border: 2px solid #666;
-    border-radius: 4px;
-}
-
-.highscore-name-input:focus {
-    outline: none;
-    border-color: #00ff66;
-}
-
-.highscore-name-input.shake {
-    animation: highscore-shake 0.3s linear;
-    border-color: #ff3344 !important;
-}
-
-@keyframes highscore-shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-}
-
 .highscore-no-badge {
     display: inline-block;
     margin-top: 10px;
@@ -8239,8 +8208,7 @@ body.dark-mode .modal-content.retro-modal {
     -webkit-tap-highlight-color: transparent;
 }
 
-.retro-modal .highscore-name-input.shake + .highscore-slots,
-.retro-modal .highscore-name-wrap:has(.highscore-name-input.shake) .highscore-slots {
+.retro-modal .highscore-slots.shake {
     animation: hiscore-slot-shake 0.3s linear;
 }
 

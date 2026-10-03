@@ -813,33 +813,34 @@ class GameRenderer {
         const noBadge = document.getElementById('highscore-no-badge');
         if (!modal || !input || !okBtn || !skipBtn) return;
 
-        if (scoreEl) scoreEl.textContent = score.toString().padStart(6, '0');
-        input.value = ShareHighScore.recallName() || '';
-        if (noBadge) noBadge.classList.add('hidden');
-        input.classList.remove('shake');
-        modal.classList.remove('hidden');
-        // 可能な限り最初からキーボードを開く(非iOS系は確実に効く)
-        setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); } }, 50);
-        // iOS では自動フォーカスでキーボードが開かないため、最初のタップで必ずフォーカスを当てる
-        const openKeyboard = (e) => {
-            if (e.target.closest('#highscore-name-ok, #highscore-name-skip')) return;
+        const slotsEl = document.getElementById('highscore-slots');
+        const focusInput = () => {
             try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); }
         };
-        modal.addEventListener('pointerdown', openKeyboard);
-
-        const slotsEl = document.getElementById('highscore-slots');
         const syncSlots = () => {
             if (!slotsEl) return;
             const v = (input.value || '').toUpperCase();
-            const slots = slotsEl.querySelectorAll('.slot');
-            slots.forEach((s, i) => {
+            slotsEl.querySelectorAll('.slot').forEach((s, i) => {
                 s.textContent = v[i] || '_';
                 s.classList.toggle('blink', i === v.length && i < 3);
-                s.classList.toggle('filled', !!v[i]);
             });
         };
+
+        if (scoreEl) scoreEl.textContent = score.toString().padStart(6, '0');
+        input.value = ShareHighScore.recallName() || '';
+        if (noBadge) noBadge.classList.add('hidden');
+        if (slotsEl) slotsEl.classList.remove('shake');
+        modal.classList.remove('hidden');
         syncSlots();
         input.oninput = syncSlots;
+        // 可能な限り最初からキーボードを開く(非iOS系は確実に効く)
+        setTimeout(focusInput, 50);
+        // iOS では自動フォーカスが効かないため、モーダル初回タップで必ずフォーカスを当てる
+        const openKeyboard = (e) => {
+            if (e.target.closest('#highscore-name-ok, #highscore-name-skip')) return;
+            focusInput();
+        };
+        modal.addEventListener('pointerdown', openKeyboard);
 
         const rejectBlocked = () => {
             // ブザー音
@@ -861,10 +862,12 @@ class GameRenderer {
                 void noBadge.offsetWidth;
                 noBadge.classList.remove('hidden');
             }
-            // 入力欄シェイク
-            input.classList.remove('shake');
-            void input.offsetWidth;
-            input.classList.add('shake');
+            // スロットシェイク
+            if (slotsEl) {
+                slotsEl.classList.remove('shake');
+                void slotsEl.offsetWidth;
+                slotsEl.classList.add('shake');
+            }
             input.select();
         };
 
@@ -887,10 +890,10 @@ class GameRenderer {
 
         okBtn.onclick = () => {
             const val = input.value || '';
-            // iOS 等でキーボード未起動の状態で OK をタップした場合、スキップ扱いになるのを避け
-            // 1 回目はフォーカスだけ当てる(= 入力モードへ移行)
+            // iOS 等でキーボード未起動のまま OK をタップした場合、スキップ扱いを避けて
+            // まずフォーカスだけ当てる(= 入力モードへ移行)
             if (!val && document.activeElement !== input) {
-                try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); }
+                focusInput();
                 return;
             }
             if (ShareHighScore.isBlocked(val)) {
