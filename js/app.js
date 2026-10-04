@@ -962,6 +962,7 @@ function initLogoManualTrigger() {
     let tapCount = 0;
     let tapTimer = null;
     const TAP_WINDOW_MS = 800;
+    logo.style.pointerEvents = 'auto';
     logo.style.cursor = 'pointer';
     logo.addEventListener('click', () => {
         tapCount++;
