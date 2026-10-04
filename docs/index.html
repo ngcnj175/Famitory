@@ -13,66 +13,106 @@
     <style>
         :root {
             --theme-color: #3498db;
+            --topbar-bg: #3498db;
+            --topbar-fg: #ffffff;
+            --topbar-h: 48px;
         }
         body, .sidebar, .markdown-section, .search input {
             font-family: 'BIZ UDPGothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        /* 全ページ固定のトップバー */
+
+        /* ============ トップバー ============ */
         #topbar {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 48px;
-            background: #fff;
-            border-bottom: 1px solid #eaecef;
+            height: var(--topbar-h);
+            background: var(--topbar-bg);
+            color: var(--topbar-fg);
             display: flex;
             align-items: center;
-            padding: 0 12px;
+            padding: 0 8px;
             z-index: 100;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
         }
-        #topbar-toggle {
+        #topbar-toggle,
+        #topbar-search-btn {
             background: none;
             border: none;
             cursor: pointer;
-            padding: 8px;
-            margin-right: 8px;
+            padding: 10px;
             display: flex;
             align-items: center;
-            color: var(--theme-color);
+            color: var(--topbar-fg);
         }
-        #topbar-toggle:hover { opacity: 0.75; }
+        #topbar-toggle:hover,
+        #topbar-search-btn:hover { opacity: 0.8; }
         #topbar-title {
             font-weight: bold;
-            font-size: 1.1em;
-            color: #364149;
+            font-size: 1.15em;
+            color: var(--topbar-fg);
+            cursor: pointer;
+            margin-left: 4px;
         }
-        /* サイドバー・本文をトップバー分だけ下げる */
-        .sidebar { top: 48px !important; }
-        .content { top: 48px !important; }
-        /* Docsify既定のハンバーガーとサイト名は非表示（トップバーに統合） */
+        #topbar-spacer { flex: 1; }
+        #topbar-search {
+            display: none;
+            align-items: center;
+            margin-right: 6px;
+        }
+        #topbar-search.open { display: flex; }
+        #topbar-search input {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            width: 220px;
+            outline: none;
+            font-family: inherit;
+            color: #333;
+        }
+        @media (max-width: 480px) {
+            #topbar-search input { width: 150px; }
+        }
+
+        /* ============ サイドバー・本文のオフセット ============ */
+        .sidebar {
+            top: var(--topbar-h) !important;
+            transition: left 250ms ease-out;
+        }
+        .content { top: var(--topbar-h) !important; }
+
+        /* Docsify既定のハンバーガー・サイト名は非表示（トップバーに統合） */
         .sidebar-toggle { display: none !important; }
         .sidebar .app-name { display: none !important; }
-        .markdown-section {
-            max-width: 900px;
+        /* サイドバー検索の入力欄だけ非表示にし、結果パネルは残す */
+        .sidebar .search .input-wrap { display: none !important; }
+        .sidebar .search { padding: 0 !important; margin: 0 !important; border: none !important; }
+        .sidebar .search .results-panel { display: block; }
+
+        /* モバイル時のオーバーレイ（開閉自体はJSで制御） */
+        @media (max-width: 768px) {
+            body.sb-open::after {
+                content: '';
+                position: fixed;
+                top: var(--topbar-h); left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.35);
+                z-index: 15;
+            }
         }
-        /* 見出しサイズ（PC） */
-        .markdown-section h1 { font-size: 2em; }
+
+        /* ============ 本文スタイル ============ */
+        .markdown-section { max-width: 900px; }
+        .markdown-section h1 { font-size: 2em; padding-bottom: 10px; border-bottom: 2px solid #eaecef; }
         .markdown-section h2 { font-size: 1.5em; }
         .markdown-section h3 { font-size: 1.2em; }
         .markdown-section h4 { font-size: 1.05em; }
-        /* 見出しサイズ（スマホ: 768px以下） */
         @media (max-width: 768px) {
             .markdown-section h1 { font-size: 1.5em; }
             .markdown-section h2 { font-size: 1.2em; }
             .markdown-section h3 { font-size: 1.1em; }
             .markdown-section h4 { font-size: 1em; }
         }
-        /* メインエリアのページタイトル（h1）に仕切り線 */
-        .markdown-section h1 {
-            padding-bottom: 14px;
-            border-bottom: 2px solid #364149;
-        }
-        /* 見出し内アンカーのホバー下線を無効化 */
         .markdown-section h1 a:hover,
         .markdown-section h2 a:hover,
         .markdown-section h3 a:hover,
@@ -86,14 +126,8 @@
             border-radius: 4px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
-        .markdown-section table {
-            display: table;
-            width: 100%;
-        }
-        .sidebar-nav > ul > li > p {
-            font-weight: bold;
-            color: #666;
-        }
+        .markdown-section table { display: table; width: 100%; }
+        .sidebar-nav > ul > li > p { font-weight: bold; color: #666; }
     </style>
 </head>
 <body>
@@ -106,6 +140,16 @@
             </svg>
         </button>
         <span id="topbar-title">FAMITORY マニュアル</span>
+        <div id="topbar-spacer"></div>
+        <div id="topbar-search">
+            <input type="search" id="topbar-search-input" placeholder="マニュアル内を検索" aria-label="検索">
+        </div>
+        <button id="topbar-search-btn" aria-label="検索を開閉">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"/>
+                <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+            </svg>
+        </button>
     </div>
     <div id="app">読み込み中...</div>
     <script>
@@ -134,14 +178,69 @@
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
     <script>
-        // トップバーのハンバーガーでサイドバー開閉（Docsify既定の挙動を利用）
+        // サイドバー開閉（leftインラインスタイルで直接制御）
+        const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+        const sidebar = () => document.querySelector('.sidebar');
+        let sbOpen = !isMobile(); // 既定: PC=開、モバイル=閉
+        function applySidebar() {
+            const sb = sidebar();
+            if (!sb) return;
+            sb.style.setProperty('left', sbOpen ? '0px' : '-320px', 'important');
+            document.body.classList.toggle('sb-open', isMobile() && sbOpen);
+            document.body.classList.toggle('sb-closed', !isMobile() && !sbOpen);
+        }
+        // 初期適用（Docsifyサイドバー描画後）
+        const applyLoop = setInterval(() => {
+            if (sidebar()) {
+                applySidebar();
+                clearInterval(applyLoop);
+            }
+        }, 50);
         document.getElementById('topbar-toggle').addEventListener('click', () => {
-            document.body.classList.toggle('close');
+            sbOpen = !sbOpen;
+            applySidebar();
         });
-        // トップバーのタイトルクリックでトップページへ
-        document.getElementById('topbar-title').style.cursor = 'pointer';
+        // 画面サイズ変更時に既定状態へ戻す
+        let wasMobile = isMobile();
+        window.addEventListener('resize', () => {
+            const nowMobile = isMobile();
+            if (nowMobile !== wasMobile) {
+                sbOpen = !nowMobile;
+                applySidebar();
+                wasMobile = nowMobile;
+            }
+        });
+        // モバイルでオーバーレイ領域をタップすると閉じる
+        document.addEventListener('click', (e) => {
+            if (!isMobile() || !sbOpen) return;
+            if (e.target.closest('.sidebar') || e.target.closest('#topbar')) return;
+            sbOpen = false;
+            applySidebar();
+        });
+        // タイトルクリックでトップへ
         document.getElementById('topbar-title').addEventListener('click', () => {
             location.hash = '#/';
+        });
+        // 検索アイコンで入力欄をトグル。入力はDocsify内蔵検索のinputへ中継
+        const sBtn = document.getElementById('topbar-search-btn');
+        const sWrap = document.getElementById('topbar-search');
+        const sInput = document.getElementById('topbar-search-input');
+        sBtn.addEventListener('click', () => {
+            sWrap.classList.toggle('open');
+            if (sWrap.classList.contains('open')) {
+                setTimeout(() => sInput.focus(), 50);
+            }
+        });
+        sInput.addEventListener('input', () => {
+            const docsifySearch = document.querySelector('.sidebar .search input');
+            if (!docsifySearch) return;
+            docsifySearch.value = sInput.value;
+            docsifySearch.dispatchEvent(new Event('input', { bubbles: true }));
+            // 検索結果が出るようサイドバーを一時的に見えるようにする
+            if (sInput.value) {
+                if (isMobile()) document.body.classList.add('sb-open');
+                else document.body.classList.remove('sb-closed');
+            }
         });
     </script>
 </body>
