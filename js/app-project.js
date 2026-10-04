@@ -269,60 +269,31 @@ const AppProject = {
             }
         }
 
-        if (App.projectData.sounds && App.projectData.sounds.length <= 5) {
-            App.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
+        // sounds 配列の migration：
+        //   - 常に DEFAULT_SOUNDS で完全再構築（追加・削除・並び順を既存ゲームに即反映）
+        //   - stage.se は type 文字列参照（下で正規化）なので順序変更に影響されない
+        //   - 旧 numeric 値変換のため、再構築前の type マップを保持
+        const oldIdxToType = {};
+        (App.projectData.sounds || []).forEach((s, i) => { oldIdxToType[i] = s.type; });
 
-            if (App.projectData.templates) {
-                const seMap = { 0: 0, 1: 5, 2: 10, 3: 15 };
-                App.projectData.templates.forEach(tmpl => {
-                    if (tmpl.type === 'player' && tmpl.config) {
-                        ['seJump', 'seAttack', 'seDamage', 'seItemGet'].forEach(key => {
-                            const oldVal = tmpl.config[key];
-                            if (oldVal !== undefined && seMap[oldVal] !== undefined) {
-                                tmpl.config[key] = seMap[oldVal];
-                            }
-                        });
-                    }
-                });
-            }
-        }
-
-        // 旧sounds配列（other_01〜04・explosion含む）を新構造に再構築
-        if (App.projectData.sounds) {
-            const deletedTypes = new Set(['other_01','other_02','other_03','other_04','explosion']);
-            const hasOldTypes = App.projectData.sounds.some(s => deletedTypes.has(s.type));
-            if (hasOldTypes) {
-                const oldIdxToType = {};
-                App.projectData.sounds.forEach((s, i) => { oldIdxToType[i] = s.type; });
-                const newTypeToIdx = {};
-                DEFAULT_SOUNDS.forEach((s, i) => { newTypeToIdx[s.type] = i; });
-                if (stage.se) {
-                    ['player', 'item', 'env'].forEach(cat => {
-                        if (!stage.se[cat]) return;
-                        Object.keys(stage.se[cat]).forEach(k => {
-                            const oldIdx = stage.se[cat][k];
-                            const type = oldIdxToType[oldIdx];
-                            if (type !== undefined && newTypeToIdx[type] !== undefined) {
-                                stage.se[cat][k] = newTypeToIdx[type];
-                            } else if (type !== undefined && deletedTypes.has(type)) {
-                                stage.se[cat][k] = DEFAULT_STAGE_SE[cat]?.[k] ?? -1;
-                            }
-                        });
+        // 極めて古いプロジェクト（sounds≤5）: テンプレ側 seX の index を新 index 系に変換
+        if (App.projectData.sounds && App.projectData.sounds.length <= 5 && App.projectData.templates) {
+            const seMap = { 0: 0, 1: 5, 2: 10, 3: 15 };
+            App.projectData.templates.forEach(tmpl => {
+                if (tmpl.type === 'player' && tmpl.config) {
+                    ['seJump', 'seAttack', 'seDamage', 'seItemGet'].forEach(key => {
+                        const v = tmpl.config[key];
+                        if (typeof v === 'number' && seMap[v] !== undefined) {
+                            tmpl.config[key] = seMap[v];
+                            oldIdxToType[seMap[v]] = DEFAULT_SOUNDS[seMap[v]]?.type;
+                        }
                     });
-                }
-                App.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
-            }
-        }
-
-        // 新規追加型が欠けていれば追加
-        if (App.projectData.sounds) {
-            const existingTypes = new Set(App.projectData.sounds.map(s => s.type));
-            DEFAULT_SOUNDS.forEach(defSe => {
-                if (!existingTypes.has(defSe.type)) {
-                    App.projectData.sounds.push({ ...defSe });
                 }
             });
         }
+
+        App.projectData.sounds = DEFAULT_SOUNDS.map(s => ({ ...s }));
+        const currentTypes = new Set(DEFAULT_SOUNDS.map(s => s.type));
 
         // stage.se 初期化・旧プレイヤーテンプレートSE設定からの移行
         if (!stage.se) {
@@ -348,20 +319,21 @@ const AppProject = {
             Object.keys(DEFAULT_STAGE_SE.env   ).forEach(k => { if (stage.se.env[k]    === undefined) stage.se.env[k]    = DEFAULT_STAGE_SE.env[k];    });
         }
 
-        // stage.se を数値インデックス参照 → type文字列参照に正規化（旧データ・旧テンプレ経由の数値も吸収）
-        if (stage.se && App.projectData.sounds) {
-            const idxToType = {};
-            App.projectData.sounds.forEach((s, i) => { idxToType[i] = s.type; });
-            ['player', 'item', 'env'].forEach(cat => {
-                if (!stage.se[cat]) return;
-                Object.keys(stage.se[cat]).forEach(k => {
-                    const v = stage.se[cat][k];
-                    if (typeof v === 'number') {
-                        stage.se[cat][k] = (v >= 0 && idxToType[v]) ? idxToType[v] : null;
-                    }
-                });
+        // stage.se を type文字列参照に正規化
+        //   - 数値 → 旧soundsの該当type（削除済 or 不明 → DEFAULT_STAGE_SE値）
+        //   - 文字列で削除済typeならDEFAULT_STAGE_SE値にフォールバック
+        ['player', 'item', 'env'].forEach(cat => {
+            if (!stage.se[cat]) return;
+            Object.keys(stage.se[cat]).forEach(k => {
+                const v = stage.se[cat][k];
+                if (typeof v === 'number') {
+                    const t = oldIdxToType[v];
+                    stage.se[cat][k] = (t && currentTypes.has(t)) ? t : (DEFAULT_STAGE_SE[cat]?.[k] ?? null);
+                } else if (typeof v === 'string' && !currentTypes.has(v)) {
+                    stage.se[cat][k] = DEFAULT_STAGE_SE[cat]?.[k] ?? null;
+                }
             });
-        }
+        });
 
         // 旧プレイヤーテンプレートSEフィールドを削除
         if (App.projectData.templates) {
