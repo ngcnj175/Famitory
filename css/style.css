@@ -2124,62 +2124,6 @@ input, textarea, select, button {
     image-rendering: crisp-edges;
 }
 
-/* 繧ｿ繧､繝ｫ繝�Φ繝励Ξ繝ｼ繝茨ｼ井ｸ矩Κ縲�2陦悟崋螳夲ｼ�- 繧ｫ繝ｩ繝ｼ繝代Ξ繝�ヨ縺ｨ蜷後§ */
-#tile-template-palette {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    grid-auto-flow: column;
-    gap: 6px;
-    padding: 10px;
-    padding-bottom: calc(10px + var(--safe-area-bottom));
-    background: #f7f7f7;
-    border-top: 1px solid var(--border-color);
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    touch-action: manipulation;
-}
-
-#tile-template-list {
-    display: contents;
-}
-
-.tile-template {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    background: var(--bg-screen);
-    border: 2px solid var(--border-color);
-    border-radius: 0;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-.tile-template.selected {
-    border-color: var(--color-dark);
-    transform: scale(1.09);
-    z-index: 1;
-}
-
-.tile-template canvas {
-    width: 100%;
-    height: 100%;
-    image-rendering: pixelated;
-}
-
-.tile-template .type-badge {
-    position: absolute;
-    bottom: 1px;
-    right: 1px;
-    font-size: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 0 2px;
-    border-radius: 2px;
-}
-
 /* #add-tile-btn 縺ｯ .gallery-add-btn 縺ｮ繧ｹ繧ｿ繧､繝ｫ繧剃ｽｿ逕ｨ */
 
 /* ========================================
@@ -3452,9 +3396,8 @@ input, textarea, select, button {
     opacity: 0.8;
 }
 
-/* ゲーム設定パネル・タイル設定パネルの保存ボタン: カプセル型 */
-#stage-settings-save,
-#config-save-btn {
+/* ゲーム設定パネルの保存ボタン: カプセル型（タイル設定パネル側は #tile-config-header #config-save-btn 側で設定） */
+#stage-settings-save {
     border-radius: 999px;
     padding: 10px 28px;
 }
@@ -5649,7 +5592,7 @@ input, textarea, select, button {
     word-break: keep-all;
 }
 
-/* SHAREモーダルのもどる/閉じるボタン（アイコンボタン群と統一感のあるライトグレー角丸） */
+/* SHAREモーダルのもどる: 開くモーダルと同じ 2列グリッドで右寄せ */
 .share-modal-content .modal-footer-simple {
     margin-top: 4px;
     display: grid;
@@ -5662,24 +5605,6 @@ input, textarea, select, button {
     width: 100%;
     min-width: 0;
     grid-column: 2;
-    padding: 14px 20px;
-    background: #e5e7eb;
-    color: #4b5563;
-    border: none;
-    border-radius: 30px;
-    font-size: 15px;
-    font-weight: bold;
-    box-shadow: none;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.share-modal-content .modal-footer-simple .modal-action-btn.cancel:hover {
-    background: #d1d5db;
-}
-
-.share-modal-content .modal-footer-simple .modal-action-btn.cancel:active {
-    transform: translateY(1px);
 }
 
 /* カラープリセットのフッタ: 開くモーダルと同じ 2列グリッド、とじるは右下 */
@@ -6579,11 +6504,6 @@ input, textarea, select, button {
 #app.dark-mode .config-save-btn {
     background: #2a2a45;
     color: #ffffff;
-}
-
-/* タイルテンプレートパレット */
-#app.dark-mode #tile-template-palette {
-    background: #131320;
 }
 
 /* --- SONG画面 --- */
