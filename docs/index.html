@@ -20,6 +20,18 @@
         .markdown-section {
             max-width: 900px;
         }
+        /* 見出しサイズ（PC） */
+        .markdown-section h1 { font-size: 1.8em; }
+        .markdown-section h2 { font-size: 1.5em; }
+        .markdown-section h3 { font-size: 1.2em; }
+        .markdown-section h4 { font-size: 1.05em; }
+        /* 見出しサイズ（スマホ: 768px以下） */
+        @media (max-width: 768px) {
+            .markdown-section h1 { font-size: 1.4em; }
+            .markdown-section h2 { font-size: 1.2em; }
+            .markdown-section h3 { font-size: 1.1em; }
+            .markdown-section h4 { font-size: 1em; }
+        }
         .markdown-section img {
             max-width: 100%;
             border: 1px solid #ddd;
@@ -48,7 +60,7 @@
             homepage: 'README.md',
             search: {
                 paths: 'auto',
-                placeholder: '🔍 マニュアル内を検索',
+                placeholder: 'マニュアル内を検索',
                 noData: '該当する内容が見つかりませんでした',
                 depth: 6,
                 hideOtherSidebarContent: false
