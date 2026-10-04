@@ -17,28 +17,41 @@
         body, .sidebar, .markdown-section, .search input {
             font-family: 'BIZ UDPGothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        /* サイドバー: サイト名リンクのホバー下線のみ無効化 */
-        .sidebar .app-name-link:hover,
-        .sidebar .app-name a:hover {
-            text-decoration: none !important;
-            border-bottom: none !important;
+        /* 全ページ固定のトップバー */
+        #topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 48px;
+            background: #fff;
+            border-bottom: 1px solid #eaecef;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            z-index: 100;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
-        /* ハンバーガーメニューはPCでは非表示（サイドバー常時表示のため不要） */
-        @media (min-width: 769px) {
-            .sidebar-toggle {
-                display: none !important;
-            }
+        #topbar-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            color: var(--theme-color);
         }
-        /* スマホでは本文と重ならないよう背景とアイコン色を強化 */
-        @media (max-width: 768px) {
-            .sidebar-toggle {
-                background-color: rgba(255, 255, 255, 0.95) !important;
-                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-                border-radius: 4px;
-                width: 44px !important;
-                padding: 8px !important;
-            }
+        #topbar-toggle:hover { opacity: 0.75; }
+        #topbar-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #364149;
         }
+        /* サイドバー・本文をトップバー分だけ下げる */
+        .sidebar { top: 48px !important; }
+        .content { top: 48px !important; }
+        /* Docsify既定のハンバーガーとサイト名は非表示（トップバーに統合） */
+        .sidebar-toggle { display: none !important; }
+        .sidebar .app-name { display: none !important; }
         .markdown-section {
             max-width: 900px;
         }
@@ -84,6 +97,16 @@
     </style>
 </head>
 <body>
+    <div id="topbar">
+        <button id="topbar-toggle" aria-label="メニューを開閉">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="4" y1="7" x2="20" y2="7"/>
+                <line x1="4" y1="12" x2="20" y2="12"/>
+                <line x1="4" y1="17" x2="20" y2="17"/>
+            </svg>
+        </button>
+        <span id="topbar-title">FAMITORY マニュアル</span>
+    </div>
     <div id="app">読み込み中...</div>
     <script>
         window.$docsify = {
@@ -110,5 +133,16 @@
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+    <script>
+        // トップバーのハンバーガーでサイドバー開閉（Docsify既定の挙動を利用）
+        document.getElementById('topbar-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('close');
+        });
+        // トップバーのタイトルクリックでトップページへ
+        document.getElementById('topbar-title').style.cursor = 'pointer';
+        document.getElementById('topbar-title').addEventListener('click', () => {
+            location.hash = '#/';
+        });
+    </script>
 </body>
 </html>
