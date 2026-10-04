@@ -955,7 +955,28 @@ App.loadProject       = (name)     => AppProject.loadProject(name);
 App.exportProject     = (f)        => AppProject.exportProject(f);
 App.importProject     = (file)     => AppProject.importProject(file);
 
+// ロゴ3回タップで隠しマニュアルを開く
+function initLogoManualTrigger() {
+    const logo = document.getElementById('play-logo');
+    if (!logo) return;
+    let tapCount = 0;
+    let tapTimer = null;
+    const TAP_WINDOW_MS = 800;
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', () => {
+        tapCount++;
+        clearTimeout(tapTimer);
+        if (tapCount >= 3) {
+            tapCount = 0;
+            window.open('docs/', '_blank');
+            return;
+        }
+        tapTimer = setTimeout(() => { tapCount = 0; }, TAP_WINDOW_MS);
+    });
+}
+
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
+    initLogoManualTrigger();
 });
