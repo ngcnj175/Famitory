@@ -48,10 +48,12 @@
         #topbar-search-btn:hover { opacity: 0.8; }
         #topbar-title {
             font-weight: bold;
-            font-size: 1.15em;
+            font-size: 0.95em;
+            line-height: 1.1;
             color: var(--topbar-fg);
             cursor: pointer;
             margin-left: 4px;
+            white-space: pre-line;
         }
         #topbar-spacer { flex: 1; }
         #topbar-search {
@@ -90,16 +92,8 @@
         .sidebar .search { padding: 0 !important; margin: 0 !important; border: none !important; }
         .sidebar .search .results-panel { display: block; }
 
-        /* モバイル時のオーバーレイ（開閉自体はJSで制御） */
-        @media (max-width: 768px) {
-            body.sb-open::after {
-                content: '';
-                position: fixed;
-                top: var(--topbar-h); left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.35);
-                z-index: 15;
-            }
-        }
+        /* サイドバーに不透明な背景を保証（PC/モバイル共通） */
+        .sidebar { background: #fff; }
 
         /* ============ 本文スタイル ============ */
         .markdown-section { max-width: 900px; }
@@ -139,7 +133,7 @@
                 <line x1="4" y1="17" x2="20" y2="17"/>
             </svg>
         </button>
-        <span id="topbar-title">FAMITORY マニュアル</span>
+        <span id="topbar-title">FAMITORY<br>マニュアル</span>
         <div id="topbar-spacer"></div>
         <div id="topbar-search">
             <input type="search" id="topbar-search-input" placeholder="マニュアル内を検索" aria-label="検索">
