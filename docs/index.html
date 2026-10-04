@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>FAMITORY マニュアル</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <meta name="description" content="FAMITORY（ファミトリー）のつかいかたマニュアル">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+    <style>
+        :root {
+            --theme-color: #e74c3c;
+        }
+        .markdown-section {
+            max-width: 900px;
+        }
+        .markdown-section img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .markdown-section table {
+            display: table;
+            width: 100%;
+        }
+        .sidebar-nav > ul > li > p {
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">読み込み中...</div>
+    <script>
+        window.$docsify = {
+            name: 'FAMITORY マニュアル',
+            repo: '',
+            loadSidebar: true,
+            subMaxLevel: 2,
+            auto2top: true,
+            homepage: 'README.md',
+            search: {
+                paths: 'auto',
+                placeholder: '🔍 マニュアル内を検索',
+                noData: '該当する内容が見つかりませんでした',
+                depth: 6,
+                hideOtherSidebarContent: false
+            },
+            pagination: {
+                previousText: '← 前の章',
+                nextText: '次の章 →',
+                crossChapter: true
+            }
+        }
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+</body>
+</html>
