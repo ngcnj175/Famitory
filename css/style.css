@@ -1113,6 +1113,13 @@ input, textarea, select, button {
     overflow-x: hidden;
     max-height: 320px;
     align-self: flex-start;
+    scrollbar-width: none; /* Firefox */
+}
+
+#paint-tools::-webkit-scrollbar,
+#stage-tools::-webkit-scrollbar,
+.paint-tools::-webkit-scrollbar {
+    display: none; /* PCブラウザのスクロールバーで横幅が削られてボタンが切れるのを防止 */
 }
 
 .paint-tool-btn {
@@ -1134,21 +1141,6 @@ input, textarea, select, button {
 .paint-tool-btn svg {
     width: 100%;
     height: 100%;
-}
-
-.hand-tool-icon {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: currentColor;
-    -webkit-mask-image: url('../images/hand_icon.svg');
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
-    mask-image: url('../images/hand_icon.svg');
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
 }
 
 .paint-tool-btn:hover {
