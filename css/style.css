@@ -1345,7 +1345,7 @@ input, textarea, select, button {
 ======================================== */
 #tile-config-panel {
     display: none;
-    background: #eef1f5;
+    background: #f7f7f7;
     border-top: 2px solid var(--border-color);
     padding: 8px 10px 12px;
     padding-top: 4px;
@@ -1363,7 +1363,7 @@ input, textarea, select, button {
     position: sticky;
     top: -4px; /* パネル padding-top:4px を打ち消し、スクロール時に隙間を出さない */
     z-index: 2;
-    background: inherit;
+    background: #f7f7f7;
     margin: -4px -10px 8px;
     padding: 4px 0 6px;
     cursor: grab;
@@ -1411,9 +1411,9 @@ input, textarea, select, button {
 /* ヘッダー内の保存ボタン：ゲーム設定の「設定を保存」と同シェイプ */
 #tile-config-header #config-save-btn {
     touch-action: manipulation;
-    padding: 6px 18px;
+    padding: 6px 22px;
     border: none;
-    border-radius: 6px;
+    border-radius: 999px;
     background: var(--color-dark);
     color: #fff;
     font-size: 12px;
@@ -2140,7 +2140,7 @@ input, textarea, select, button {
     gap: 6px;
     padding: 10px;
     padding-bottom: calc(10px + var(--safe-area-bottom));
-    background: rgba(0, 0, 0, 0.03);
+    background: #f7f7f7;
     border-top: 1px solid var(--border-color);
     overflow-x: auto;
     overflow-y: hidden;
@@ -3458,6 +3458,13 @@ input, textarea, select, button {
 
 .setting-save-btn:active {
     opacity: 0.8;
+}
+
+/* ゲーム設定パネル・タイル設定パネルの保存ボタン: カプセル型 */
+#stage-settings-save,
+#config-save-btn {
+    border-radius: 999px;
+    padding: 10px 28px;
 }
 
 /* 繧ｹ繝��繧ｸ繧ｿ繧､繝医Ν繝ｩ繝吶Ν蟷�ｪｿ謨ｴ */
@@ -5653,11 +5660,16 @@ input, textarea, select, button {
 /* SHAREモーダルのもどる/閉じるボタン（アイコンボタン群と統一感のあるライトグレー角丸） */
 .share-modal-content .modal-footer-simple {
     margin-top: 4px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    justify-items: stretch;
 }
 
 .share-modal-content .modal-footer-simple .modal-action-btn.cancel {
-    display: block;
     width: 100%;
+    min-width: 0;
+    grid-column: 2;
     padding: 14px 20px;
     background: #e5e7eb;
     color: #4b5563;
@@ -5676,6 +5688,23 @@ input, textarea, select, button {
 
 .share-modal-content .modal-footer-simple .modal-action-btn.cancel:active {
     transform: translateY(1px);
+}
+
+/* カラープリセットのフッタ: 開くモーダルと同じ 2列グリッド、とじるは右下 */
+.palette-preset-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    justify-items: stretch;
+}
+
+.palette-preset-footer .modal-action-btn {
+    width: 100%;
+    min-width: 0;
+}
+
+.palette-preset-footer #preset-close-btn {
+    grid-column: 2;
 }
 
 /* SHAREモーダル オプションごとのライトグレー背景エリア */
@@ -6507,11 +6536,12 @@ input, textarea, select, button {
 
 /* タイル設定パネル */
 #app.dark-mode #tile-config-panel {
-    background: #12122a;
+    background: #131320;
     border-top-color: #252540;
 }
 
 #app.dark-mode #tile-config-header {
+    background: #131320;
     border-bottom-color: #252540;
 }
 
@@ -6558,7 +6588,7 @@ input, textarea, select, button {
 
 /* タイルテンプレートパレット */
 #app.dark-mode #tile-template-palette {
-    background: rgba(255, 255, 255, 0.02);
+    background: #131320;
 }
 
 /* --- SONG画面 --- */
