@@ -353,7 +353,11 @@ const StageEditor = {
             const dy = endY - startY;
             startY = null;
             if (dy <= -THRESHOLD) this.expandConfigPanel();
-            else if (dy >= THRESHOLD) this.collapseConfigPanel();
+            else if (dy >= THRESHOLD) {
+                // 「小」状態で下スワイプした場合はパネルを閉じる（✕ボタンと同じ挙動）
+                if (this.isConfigExpanded) this.collapseConfigPanel();
+                else this.closeConfigPanel();
+            }
         };
 
         header.addEventListener('touchstart', (e) => {

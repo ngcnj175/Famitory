@@ -1236,6 +1236,7 @@ input, textarea, select, button {
 #color-area,
 #tile-area {
     padding-bottom: calc(6px + var(--safe-area-bottom));
+    border-bottom: 2px solid var(--border-color);
 }
 
 /* 繧ｿ繧､繝ｫ繝ｪ繧ｹ繝� */
@@ -1345,10 +1346,9 @@ input, textarea, select, button {
 ======================================== */
 #tile-config-panel {
     display: none;
-    background: #f7f7f7;
-    border-top: 2px solid var(--border-color);
-    padding: 8px 10px 12px;
-    padding-top: 4px;
+    background: #f5f5f5;
+    border-top: none;
+    padding: 0 10px 12px;
     max-height: 300px;
     overflow-y: auto;
     position: relative;
@@ -1361,11 +1361,11 @@ input, textarea, select, button {
 /* ヘッダー（グラバー+属性ラベル+保存+閉じるボタン、スクロールに追従せず上端に固定） */
 #tile-config-header {
     position: sticky;
-    top: -4px; /* パネル padding-top:4px を打ち消し、スクロール時に隙間を出さない */
+    top: -2px; /* sub-pixel 描画による1px隙間を上側で吸収 */
     z-index: 2;
-    background: #f7f7f7;
-    margin: -4px -10px 8px;
-    padding: 4px 0 6px;
+    background: #f5f5f5;
+    margin: 0 -10px 8px;
+    padding: 12px 0 6px;
     cursor: grab;
     touch-action: none;
     user-select: none;
@@ -6536,12 +6536,15 @@ input, textarea, select, button {
 
 /* タイル設定パネル */
 #app.dark-mode #tile-config-panel {
-    background: #131320;
-    border-top-color: #252540;
+    background: #12122a;
 }
 
 #app.dark-mode #tile-config-header {
-    background: #131320;
+    background: #12122a;
+    border-bottom-color: #252540;
+}
+
+#app.dark-mode #tile-area {
     border-bottom-color: #252540;
 }
 
