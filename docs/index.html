@@ -38,16 +38,29 @@
             max-width: 900px;
         }
         /* 見出しサイズ（PC） */
-        .markdown-section h1 { font-size: 1.8em; }
+        .markdown-section h1 { font-size: 2em; }
         .markdown-section h2 { font-size: 1.5em; }
         .markdown-section h3 { font-size: 1.2em; }
         .markdown-section h4 { font-size: 1.05em; }
         /* 見出しサイズ（スマホ: 768px以下） */
         @media (max-width: 768px) {
-            .markdown-section h1 { font-size: 1.4em; }
+            .markdown-section h1 { font-size: 1.5em; }
             .markdown-section h2 { font-size: 1.2em; }
             .markdown-section h3 { font-size: 1.1em; }
             .markdown-section h4 { font-size: 1em; }
+        }
+        /* メインエリアのページタイトル（h1）に仕切り線 */
+        .markdown-section h1 {
+            padding-bottom: 14px;
+            border-bottom: 2px solid #364149;
+        }
+        /* 見出し内アンカーのホバー下線を無効化 */
+        .markdown-section h1 a:hover,
+        .markdown-section h2 a:hover,
+        .markdown-section h3 a:hover,
+        .markdown-section h4 a:hover {
+            text-decoration: none;
+            border-bottom: none;
         }
         .markdown-section img {
             max-width: 100%;
