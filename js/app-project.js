@@ -31,13 +31,15 @@ const DEFAULT_SOUNDS = [
     { id: 24, name: 'ゲット_04',          type: 'itemGet_04'},
     { id: 25, name: 'ゲット_05',          type: 'itemGet_05'},
     { id: 26, name: 'ゲット_06',          type: 'itemGet_06'},
-    { id: 27, name: '爆発_01',            type: 'other_05'    },
-    { id: 28, name: '爆発_02',            type: 'enemyDefeat' },
-    { id: 29, name: '爆発_03',            type: 'explosion_03'},
-    { id: 30, name: '爆発_04',            type: 'explosion_04'},
-    { id: 31, name: '爆発_05',            type: 'explosion_05'},
-    { id: 32, name: 'ポーズ_01',          type: 'pause'       },
-    { id: 33, name: 'ポーズ_02',          type: 'pause_02'    }
+    { id: 27, name: 'ゲット_07',          type: 'itemGet_07'},
+    { id: 28, name: 'ゲット_08',          type: 'itemGet_08'},
+    { id: 29, name: '爆発_01',            type: 'other_05'    },
+    { id: 30, name: '爆発_02',            type: 'enemyDefeat' },
+    { id: 31, name: '爆発_03',            type: 'explosion_03'},
+    { id: 32, name: '爆発_04',            type: 'explosion_04'},
+    { id: 33, name: '爆発_05',            type: 'explosion_05'},
+    { id: 34, name: 'ポーズ_01',          type: 'pause'       },
+    { id: 35, name: 'ポーズ_02',          type: 'pause_02'    }
 ];
 
 // デフォルトSE割り当て (stage.se) — 値は sounds の type 文字列。null は「なし」。

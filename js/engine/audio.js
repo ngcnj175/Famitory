@@ -416,6 +416,8 @@ const NesAudio = {
     playSE_itemGet_04() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.165, decayTime: 0.055, masterVolume: 0.29, frequencyStart: 461, duty: 0.5, frequencySlide: 2073, pitchJump1Amount: 570, pitchJump1Onset: 0.56, pitchJump2Amount: -340, pitchJump2Onset: 0.26, repeatCount: 2 }); },
     playSE_itemGet_05() { this.playUnifiedSE({ waveType: 'square', sustainTime: 0.15, decayTime: 0.195, masterVolume: 0.36, frequencyStart: 85, duty: 0.25, frequencySlide: 3000, vibratoDepth: 13, vibratoSpeed: 17, pitchJump1Amount: 480, pitchJump1Onset: 0.42, pitchJump2Amount: 800, pitchJump2Onset: 0.28, repeatCount: 2 }); },
     playSE_itemGet_06() { this.playUnifiedSE({ waveType: 'square', envelopeMode: 'adsr', sustainTime: 0.095, decayTime: 0.275, masterVolume: 0.08, frequencyStart: 472, frequencySlide: 815, vibratoDepth: 138, vibratoSpeed: 19.5, repeatCount: 3 }); },
+    playSE_itemGet_07() { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'adsr', sustainTime: 0.21, decayTime: 0.285, masterVolume: 0.82, frequencyStart: 2550, duty: 0.125, frequencySlide: 178, vibratoDepth: 28, vibratoSpeed: 29, pitchJump1Amount: 440, pitchJump1Onset: 0.12 }); },
+    playSE_itemGet_08() { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'legacy4step', sustainTime: 0.07, decayTime: 0.22, masterVolume: 0.19, frequencyStart: 1320, frequencySlide: 37, pitchJump1Amount: 370, pitchJump1Onset: 0.2, pitchJump2Amount: 240, pitchJump2Onset: 0.58, repeatCount: 5 }); },
 
     // ========== 爆発・特殊系 ==========
     playSE_other_05()     { this.playUnifiedSE({ waveType: 'sawtooth', envelopeMode: 'adsr', sustainTime: 0.145, decayTime: 0.305, masterVolume: 0.15, frequencyStart: 267, frequencySlide: -1033, repeatCount: 2 }); },
