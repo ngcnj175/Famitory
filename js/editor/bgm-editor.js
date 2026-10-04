@@ -478,9 +478,9 @@ const SoundEditor = {
     // BAR入力ダイアログ
     openBarInput() {
         const current = this.getCurrentSong().bars;
-        this.openNumberInput('STEP (1-256)', current, (val) => {
+        this.openNumberInput('STEP (1-2048)', current, (val) => {
             const value = parseInt(val);
-            if (!isNaN(value) && value >= 1 && value <= 256) {
+            if (!isNaN(value) && value >= 1 && value <= 2048) {
                 // Restart scheduler if size changed (though less critical for bars)
                 const wasPlaying = this.player.isPlaying;
                 if (wasPlaying) this.stop();
