@@ -5508,25 +5508,30 @@ input, textarea, select, button {
     min-width: 0;
 }
 
-/* 共通ボタン（ダークピル型） */
+/* 共通ボタン（ライトグレー角丸・フラット） */
 .modal-action-btn {
-    padding: 12px 16px;
+    padding: 14px 20px;
     border: none;
     border-radius: 30px;
-    background: #666;
-    color: white;
-    font-size: 16px;
+    background: #e5e7eb;
+    color: #4b5563;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
     min-width: 80px;
     white-space: nowrap;
-    box-shadow: 0 4px 0 #444;
-    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: none;
+    transition: background 0.15s, transform 0.1s;
     text-align: center;
+    font-family: inherit;
 }
 
-.modal-action-btn:active {
-    transform: translateY(4px);
+.modal-action-btn:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.modal-action-btn:active:not(:disabled) {
+    transform: translateY(1px);
     box-shadow: none;
 }
 
@@ -5534,18 +5539,14 @@ input, textarea, select, button {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
-    transform: translateY(4px);
+    transform: none;
 }
 
-.modal-action-btn.primary {
-    background: #666;
-    box-shadow: 0 4px 0 #444;
-}
-
+.modal-action-btn.primary,
 .modal-action-btn.cancel {
-    background: #666;
-    color: white;
-    box-shadow: 0 4px 0 #444;
+    background: #e5e7eb;
+    color: #4b5563;
+    box-shadow: none;
 }
 
 /* SHARE画面のボタンリスト */
@@ -7105,12 +7106,14 @@ body.dark-mode .share-icon-btn:hover {
     background: #272748;
 }
 
-body.dark-mode .share-modal-content .modal-footer-simple .modal-action-btn.cancel {
+body.dark-mode .modal-action-btn,
+body.dark-mode .modal-action-btn.primary,
+body.dark-mode .modal-action-btn.cancel {
     background: #272748;
     color: #b0b8d0;
 }
 
-body.dark-mode .share-modal-content .modal-footer-simple .modal-action-btn.cancel:hover {
+body.dark-mode .modal-action-btn:hover:not(:disabled) {
     background: #303050;
 }
 
