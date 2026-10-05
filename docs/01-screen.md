@@ -3,24 +3,19 @@
 まずは「どこに何があるか」を覚えよう。
 くわしい操作のやり方は、次の章から順番に説明していくよ。
 
+<img src="assets/screenshots/画面全体.png" alt="画面全体" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
+
 ---
 
-## 画面ぜんたい
+## 真ん中の広いところ
 
-FAMITORYの画面は、おおきく3つのエリアに分かれているよ。
-
-<div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; margin:16px 0;">
-  <img src="assets/screenshots/画面全体.png" alt="画面全体" style="width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
-  <div style="flex:1; min-width:220px;">
-    <p><strong>①真ん中の広いところ</strong><br>絵をかいたり、ステージを作ったり、できたゲームをあそぶ場所。作業もプレイもここで行うよ。</p>
-    <p><strong>②左下のバー</strong><br>ゲームデータの出し入れをするボタン（新しく作る・ひらく・保存・シェア）と、言語の切り替え。</p>
-    <p><strong>③右下のバー</strong><br>ボタンを押すと、真ん中の画面がガラッと切り替わるよ。「今から何をするか」を選ぶバー（遊ぶ・絵・ステージ・音・ARCADE）。</p>
-  </div>
-</div>
+絵をかいたり、ステージを作ったり、できたゲームをあそぶ場所。作業もプレイもここで行うよ。
 
 ---
 
 ## 左下のバー（ゲーム全体の操作）
+
+ゲームデータの出し入れをするボタン（新しく作る・ひらく・保存・シェア）と、言語の切り替え。
 
 ![左下のバー](assets/screenshots/左下のバー.png)
 
@@ -40,8 +35,7 @@ FAMITORYの画面は、おおきく3つのエリアに分かれているよ。
 
 ## 右下のバー（作るモードの切り替え）
 
-ここで「今から何をするか」を切り替えるよ。
-押すと、真ん中の作業スペースの中身がガラッと変わる。
+ボタンを押すと、真ん中の画面がガラッと切り替わるよ。「今から何をするか」を選ぶバー（遊ぶ・絵・ステージ・音・ARCADE）。
 
 ![右下のバー](assets/screenshots/右下のバー.png)
 
