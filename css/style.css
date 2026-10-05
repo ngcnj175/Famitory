@@ -1238,6 +1238,13 @@ input, textarea, select, button {
     padding: 2px 8px;
 }
 
+/* タイル0個時のみ、カラーパレット帯と同じ高さ(68px)を保つための補正。
+   .gallery-scroll に水平スクロールバーが出た際の実高さ(=list 48 + scrollbar ≈6 = 54)に合わせる。
+   1個以上の時は :empty が外れるので従来通り。 */
+#tile-list:empty {
+    min-height: 54px;
+}
+
 .tile-item {
     flex-shrink: 0;
     width: 44px;
