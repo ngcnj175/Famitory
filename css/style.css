@@ -1046,6 +1046,13 @@ input, textarea, select, button {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    /* PCのクラシックスクロールバーで帯の縦幅が変動するのを防ぐ(iOSはオーバーレイで元々非表示)。
+       スクロール機能自体は保持(マウスドラッグ/トラックパッド/タッチ)。 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.gallery-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 /* 繧ｹ繝励Λ繧､繝医Μ繧ｹ繝� */
@@ -1238,11 +1245,11 @@ input, textarea, select, button {
     padding: 2px 8px;
 }
 
-/* タイル0個時のみ、カラーパレット帯と同じ高さ(68px)を保つための補正。
-   .gallery-scroll に水平スクロールバーが出た際の実高さ(=list 48 + scrollbar ≈6 = 54)に合わせる。
-   1個以上の時は :empty が外れるので従来通り。 */
-#tile-list:empty {
-    min-height: 54px;
+/* タイル帯はタイル数・プラットフォームに関わらずカラー帯と同じ高さ(62px)で固定。
+   .gallery-scroll のスクロールバーを非表示化したことでカラー帯は常に62pxとなり、
+   それに合わせて #tile-area にのみ min-height を効かせる(他のgallery-rowには影響しない)。 */
+#tile-area {
+    min-height: 62px;
 }
 
 .tile-item {
