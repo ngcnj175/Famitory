@@ -10,7 +10,7 @@
 FAMITORYの画面は、おおきく3つのエリアに分かれているよ。
 
 <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; margin:16px 0;">
-  <img src="assets/screenshots/画面全体2.png" alt="画面全体" style="width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+  <img src="assets/screenshots/画面全体3.png" alt="画面全体" style="width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
   <div style="flex:1; min-width:220px;">
     <p><strong>①真ん中の広いところ</strong><br>絵をかいたり、ステージを作ったり、できたゲームをあそぶ場所。作業もプレイもここで行うよ。</p>
     <p><strong>②左下のバー</strong><br>ゲームデータの出し入れをするボタン（新しく作る・ひらく・保存・シェア）と、言語の切り替え。</p>
