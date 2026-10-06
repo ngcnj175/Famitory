@@ -91,3 +91,4 @@
 | グローバルハイスコア (New) | `js/utils/share-highscore.js` | Firebase `games/{id}/highscore` の取得・送信（公開ゲームのみ、トランザクション、名前3文字） |
 | ARCADE設定パネル (New) | `js/app-arcade-panel.js` | 公開モーダル内「ARCADE情報」（コメント/サムネ）の入出力 |
 | サムネイル生成 (New) | `js/app-thumbnail.js` | ゲーム画面自動キャプチャ（プレイ画面から取得専用） |
+| マニュアル (New) | `docs/index.html` + `docs/ja/*.md` + `docs/en/*.md` | Docsifyベース・日本語/英語切替対応（トップバーの地球アイコンでトグル、既定: 日本語、`localStorage.famitory_manual_lang` に保存） |

@@ -3,7 +3,7 @@
 まずは「どこに何があるか」を覚えよう。
 くわしい操作のやり方は、次の章から順番に説明していくよ。
 
-<img src="assets/screenshots/画面全体.png" alt="画面全体" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
+<img src="../assets/screenshots/画面全体.png" alt="画面全体" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
 
 ---
 
@@ -17,7 +17,7 @@
 
 ゲームデータの出し入れをするボタン（新しく作る・ひらく・保存・シェア）と、言語の切り替え。
 
-![左下のバー](assets/screenshots/左下のバー.png)
+![左下のバー](../assets/screenshots/左下のバー.png)
 
 | ボタン | なにをする？ |
 |---|---|
@@ -37,7 +37,7 @@
 
 ボタンを押すと、真ん中の画面がガラッと切り替わるよ。「今から何をするか」を選ぶバー（遊ぶ・絵・ステージ・音・ARCADE）。
 
-![右下のバー](assets/screenshots/右下のバー.png)
+![右下のバー](../assets/screenshots/右下のバー.png)
 
 | ボタン | なにをする場所？ |
 |---|---|

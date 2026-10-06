@@ -2,9 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>FAMITORY マニュアル</title>
+    <title>FAMITORY Manual</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
-    <meta name="description" content="FAMITORY（ファミトリー）のつかいかたマニュアル">
+    <meta name="description" content="FAMITORY user manual">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,8 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.15);
         }
         #topbar-toggle,
-        #topbar-search-btn {
+        #topbar-search-btn,
+        #topbar-lang-btn {
             background: none;
             border: none;
             cursor: pointer;
@@ -45,7 +46,19 @@
             color: var(--topbar-fg);
         }
         #topbar-toggle:hover,
-        #topbar-search-btn:hover { opacity: 0.8; }
+        #topbar-search-btn:hover,
+        #topbar-lang-btn:hover { opacity: 0.8; }
+        #topbar-lang-btn {
+            flex-direction: column;
+            padding: 4px 8px;
+            gap: 1px;
+            line-height: 1;
+        }
+        #topbar-lang-btn .lang-label {
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
         #topbar-title {
             font-weight: bold;
             font-size: 0.95em;
@@ -200,11 +213,73 @@
                 <line x1="21" y1="21" x2="16.5" y2="16.5"/>
             </svg>
         </button>
+        <button id="topbar-lang-btn" title="言語切替" aria-label="言語切替">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+            </svg>
+            <span class="lang-label" id="topbar-lang-label">JPN</span>
+        </button>
     </div>
-    <div id="app">読み込み中...</div>
+    <div id="app"></div>
     <script>
+        // ===== 言語設定（既定: 日本語） =====
+        const LANG_KEY = 'famitory_manual_lang';
+        const SUPPORTED_LANGS = ['ja', 'en'];
+        const currentLang = (function () {
+            const saved = localStorage.getItem(LANG_KEY);
+            return SUPPORTED_LANGS.includes(saved) ? saved : 'ja';
+        })();
+        const I18N = {
+            ja: {
+                htmlLang: 'ja',
+                title: 'FAMITORY マニュアル',
+                topbarTitle: 'FAMITORY<br>マニュアル',
+                loading: '読み込み中...',
+                searchPlaceholder: 'マニュアル内を検索',
+                searchNoData: '該当する内容が見つかりませんでした',
+                prev: '← 前の章',
+                next: '次の章 →',
+                menuAria: 'メニューを開閉',
+                searchAria: '検索を開閉',
+                langTitle: '言語切替',
+                langLabel: 'JPN',
+                noNumHeadings: ['まとめ']
+            },
+            en: {
+                htmlLang: 'en',
+                title: 'FAMITORY Manual',
+                topbarTitle: 'FAMITORY<br>Manual',
+                loading: 'Loading...',
+                searchPlaceholder: 'Search the manual',
+                searchNoData: 'No matching content found',
+                prev: '← Previous',
+                next: 'Next →',
+                menuAria: 'Toggle menu',
+                searchAria: 'Toggle search',
+                langTitle: 'Switch language',
+                langLabel: 'ENG',
+                noNumHeadings: ['Summary']
+            }
+        };
+        const t = I18N[currentLang];
+
+        // ページメタをロケール化
+        document.documentElement.lang = t.htmlLang;
+        document.title = t.title;
+        document.getElementById('app').textContent = t.loading;
+        document.getElementById('topbar-title').innerHTML = t.topbarTitle;
+        document.getElementById('topbar-search-input').placeholder = t.searchPlaceholder;
+        document.getElementById('topbar-search-input').setAttribute('aria-label', t.searchPlaceholder);
+        document.getElementById('topbar-toggle').setAttribute('aria-label', t.menuAria);
+        document.getElementById('topbar-search-btn').setAttribute('aria-label', t.searchAria);
+        const langBtn = document.getElementById('topbar-lang-btn');
+        langBtn.title = t.langTitle;
+        langBtn.setAttribute('aria-label', t.langTitle);
+        document.getElementById('topbar-lang-label').textContent = t.langLabel;
+
         window.$docsify = {
-            name: 'FAMITORY マニュアル',
+            basePath: currentLang + '/',
+            name: t.title,
             repo: '',
             loadSidebar: true,
             subMaxLevel: 2,
@@ -212,20 +287,21 @@
             homepage: 'README.md',
             search: {
                 paths: 'auto',
-                placeholder: 'マニュアル内を検索',
-                noData: '該当する内容が見つかりませんでした',
+                placeholder: t.searchPlaceholder,
+                noData: t.searchNoData,
                 depth: 6,
-                hideOtherSidebarContent: false
+                hideOtherSidebarContent: false,
+                namespace: 'famitory-manual-' + currentLang
             },
             pagination: {
-                previousText: '← 前の章',
-                nextText: '次の章 →',
+                previousText: t.prev,
+                nextText: t.next,
                 crossChapter: true
             },
             // 「まとめ」等の見出しは番号バッジを付けない
             plugins: [
                 function (hook) {
-                    const NO_NUM_HEADINGS = ['まとめ'];
+                    const NO_NUM_HEADINGS = t.noNumHeadings;
                     hook.doneEach(function () {
                         document.querySelectorAll('.markdown-section h2').forEach(function (h2) {
                             const txt = (h2.textContent || '').trim();
@@ -323,6 +399,12 @@
             if (document.body.classList.contains('topbar-search-active')) {
                 document.body.classList.remove('topbar-search-active');
             }
+        });
+        // 言語切替：日本語⇔英語をトグルし、同じアンカーのまま再読み込み
+        document.getElementById('topbar-lang-btn').addEventListener('click', () => {
+            const next = currentLang === 'ja' ? 'en' : 'ja';
+            localStorage.setItem(LANG_KEY, next);
+            location.reload();
         });
     </script>
 </body>
