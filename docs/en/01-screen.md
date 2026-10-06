@@ -47,17 +47,6 @@ Pressing these buttons swaps the main area completely. They decide "what you're 
 | **BGM** | The place to make **music and sound effects**.<br>Place notes on a grid to compose a song. |
 | **ARCADE** | The place to **see and play** games other people have published. |
 
-The glowing button shows which mode you're currently in.
-
----
-
-## Game settings (title & author)
-
-Near the PLAY screen there are fields for the **game title** and **author name**.
-Setting them early makes sharing easier!
-
-> *Screenshot coming soon*
-
 ---
 
 ## Summary
@@ -66,4 +55,4 @@ Setting them early makes sharing easier!
 - **Bottom-left** = file operations, **bottom-right** = mode switch
 - Before you start working, pick a mode from the bottom-right bar first
 
-In the next chapter, let's actually try **PIXEL (drawing)**!
+In the next chapter, let's set the **game title and author name**.

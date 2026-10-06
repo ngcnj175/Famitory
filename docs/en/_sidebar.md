@@ -2,12 +2,13 @@
 
 - **Getting Started**
   - [1. Screen & Buttons](01-screen.md)
+  - [2. Game Settings (Title & Author)](02-game-settings.md)
 
 - **Let's Create**
-  - [2. Draw Pictures (PIXEL)](02-pixel.md)
-  - [3. Build Stages (STAGE)](03-stage.md)
-  - [4. Add Sound (BGM)](04-bgm.md)
+  - [3. Draw Pictures (PIXEL)](03-pixel.md)
+  - [4. Build Stages (STAGE)](04-stage.md)
+  - [5. Add Sound (BGM)](05-bgm.md)
 
 - **Finishing Up**
-  - [5. Play, Save & Share](05-play-save-share.md)
-  - [6. Troubleshooting](06-help.md)
+  - [6. Play, Save & Share](06-play-save-share.md)
+  - [7. Troubleshooting](07-help.md)
