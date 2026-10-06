@@ -17,7 +17,7 @@ Where you draw, build stages, and play the game you made. All of your work and p
 
 Buttons for handling game data (new / open / save / share) and the language toggle.
 
-![Bottom-left bar](assets/screenshots/左下のバー.png)
+![Bottom-left bar](../assets/screenshots/左下のバー.png)
 
 | Button | What it does |
 |---|---|
@@ -37,7 +37,7 @@ Buttons for handling game data (new / open / save / share) and the language togg
 
 Pressing these buttons swaps the main area completely. They decide "what you're doing right now" (play / draw / stage / sound / arcade).
 
-![Bottom-right bar](assets/screenshots/右下のバー.png)
+![Bottom-right bar](../assets/screenshots/右下のバー.png)
 
 | Button | What is this place for? |
 |---|---|
