@@ -191,6 +191,34 @@
         }
         .markdown-section table { display: table; width: 100%; }
         .sidebar-nav > ul > li > p { font-weight: bold; color: #666; }
+
+        /* ============ ワンポイント（Tipカード） ============ */
+        .markdown-section p.tip {
+            position: relative;
+            background: #fffbea;
+            border: 1px solid #f1d97a;
+            border-left: 6px solid #f6c343;
+            border-radius: 6px;
+            padding: 14px 16px 14px 56px;
+            margin: 18px 0;
+            color: #4a3a00;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .markdown-section p.tip::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: #f6c343;
+            border-radius: 50%;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 18px 18px;
+        }
     </style>
 </head>
 <body>
