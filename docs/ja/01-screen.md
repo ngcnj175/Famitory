@@ -24,7 +24,7 @@
 | **NEW**<br><small>（新規）</small> | 新しいゲームを作りはじめる |
 | **OPEN**<br><small>（読込み）</small> | 前に保存したゲームをひらく |
 | **SAVE**<br><small>（保存）</small> | いま作っているゲームを保存する |
-| **SHARE**<br><small>（共有）</small> | ゲームをURLにして人に送る／ARCADEにのせる |
+| **SHARE**<br><small>（共有）</small> | ゲームをURLにして人に送る／アーケードにのせる |
 | **JPN / ENG** | 日本語⇔英語の切り替え |
 
 > **ワンポイント**
