@@ -3,7 +3,7 @@
 First, let's learn "what is where."
 Detailed instructions come in later chapters.
 
-<img src="../assets/screenshots/画面全体.png" alt="Whole screen" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
+<img src="assets/screenshots/画面全体.png" alt="Whole screen" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
 
 ---
 
@@ -17,7 +17,7 @@ Where you draw, build stages, and play the game you made. All of your work and p
 
 Buttons for handling game data (new / open / save / share) and the language toggle.
 
-![Bottom-left bar](../assets/screenshots/左下のバー.png)
+![Bottom-left bar](assets/screenshots/左下のバー.png)
 
 | Button | What it does |
 |---|---|
@@ -37,7 +37,7 @@ Buttons for handling game data (new / open / save / share) and the language togg
 
 Pressing these buttons swaps the main area completely. They decide "what you're doing right now" (play / draw / stage / sound / arcade).
 
-![Bottom-right bar](../assets/screenshots/右下のバー.png)
+![Bottom-right bar](assets/screenshots/右下のバー.png)
 
 | Button | What is this place for? |
 |---|---|
