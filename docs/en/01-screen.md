@@ -1,4 +1,4 @@
-# &lt;Chapter 1&gt; Screen & Buttons
+# 1. Screen & Buttons
 
 First, let's learn "what is where."
 Detailed instructions come in later chapters.

@@ -1,4 +1,4 @@
-# &lt;Chapter 2&gt; Set Your Game Info
+# 2. Set Your Game Info
 
 Before you start making a game, decide the **title**, **author name**, and **edit key**.
 Setting them early makes saving and sharing easier!
