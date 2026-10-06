@@ -1565,6 +1565,15 @@ const GameEngine = {
             retryBtn.addEventListener('click', () => this._retryFromResult());
         }
 
+        const newBtn = document.getElementById('result-new-btn');
+        if (newBtn) {
+            newBtn.addEventListener('click', () => {
+                if (overlay) overlay.classList.add('hidden');
+                this.stop();
+                AppProject.showNewGameModal();
+            });
+        }
+
         document.addEventListener('keydown', (e) => {
             if (this.titleState !== 'result') return;
             if (e.key === 'Enter' || e.key === ' ') {
