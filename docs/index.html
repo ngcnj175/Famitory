@@ -91,10 +91,32 @@
         /* Docsify既定のハンバーガー・サイト名は非表示（トップバーに統合） */
         .sidebar-toggle { display: none !important; }
         .sidebar .app-name { display: none !important; }
-        /* サイドバー検索の入力欄だけ非表示にし、結果パネルは残す */
+        /* サイドバー検索の入力欄だけ非表示にし、結果パネルも隠す（通常時） */
         .sidebar .search .input-wrap { display: none !important; }
         .sidebar .search { padding: 0 !important; margin: 0 !important; border: none !important; }
-        .sidebar .search .results-panel { display: block; }
+        .sidebar .search .results-panel { display: none !important; }
+        /* トップバー検索が開いているとき、結果パネルをドロップダウンとして表示 */
+        body.topbar-search-active .sidebar .search .results-panel.show {
+            display: block !important;
+            position: fixed;
+            top: calc(var(--topbar-h) + 4px);
+            right: 8px;
+            width: min(420px, calc(100vw - 16px));
+            max-height: calc(100vh - var(--topbar-h) - 20px);
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            z-index: 90;
+            padding: 10px 14px;
+        }
+        /* ドロップダウン内のマッチ項目 */
+        body.topbar-search-active .sidebar .search .matching-post { padding: 6px 0; }
+        body.topbar-search-active .sidebar .search .matching-post a { color: #333; }
+        body.topbar-search-active .sidebar .search h2 { font-size: 0.95em !important; margin: 4px 0 !important; color: #333; display: block !important; }
+        body.topbar-search-active .sidebar .search h2::before { content: none !important; }
+        body.topbar-search-active .sidebar .search .search-keyword { background: #ffeb8f; padding: 0 2px; border-radius: 2px; font-style: normal; }
 
         /* サイドバーに不透明な背景を保証（PC/モバイル共通） */
         .sidebar { background: #fff; }
@@ -264,10 +286,28 @@
             if (!docsifySearch) return;
             docsifySearch.value = sInput.value;
             docsifySearch.dispatchEvent(new Event('input', { bubbles: true }));
-            // 検索結果が出るようサイドバーを一時的に見えるようにする
-            if (sInput.value) {
-                if (isMobile()) document.body.classList.add('sb-open');
-                else document.body.classList.remove('sb-closed');
+            // 入力があれば結果ドロップダウンを表示（body classで制御）
+            document.body.classList.toggle('topbar-search-active', !!sInput.value.trim());
+        });
+        // 検索結果のリンクをタップしたらドロップダウンを閉じて検索欄も閉じる
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('.sidebar .search .results-panel a');
+            if (!link) return;
+            document.body.classList.remove('topbar-search-active');
+            sWrap.classList.remove('open');
+            sInput.value = '';
+            const docsifySearch = document.querySelector('.sidebar .search input');
+            if (docsifySearch) {
+                docsifySearch.value = '';
+                docsifySearch.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+        // 検索欄・ドロップダウン・検索ボタン以外をクリックしたら閉じる
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#topbar-search') || e.target.closest('#topbar-search-btn')) return;
+            if (e.target.closest('.sidebar .search .results-panel')) return;
+            if (document.body.classList.contains('topbar-search-active')) {
+                document.body.classList.remove('topbar-search-active');
             }
         });
     </script>
