@@ -2,9 +2,9 @@
 
 - **はじめに**
   - [1. 画面とボタンの見方](01-screen.md)
-  - [2. ゲーム設定（タイトル・名前）](02-game-settings.md)
 
 - **作ってみよう**
+  - [2. ゲーム情報を決めよう](02-game-settings.md)
   - [3. 絵をかく（PIXEL）](03-pixel.md)
   - [4. ステージを作る（STAGE）](04-stage.md)
   - [5. 音をつける（BGM）](05-bgm.md)

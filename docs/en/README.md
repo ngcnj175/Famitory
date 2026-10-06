@@ -18,7 +18,7 @@ Works on PC, smartphone, and tablet — you can both play and create on any of t
 ## Contents
 
 1. [Screen & Buttons](01-screen.md)
-2. [Game Settings (Title & Author)](02-game-settings.md)
+2. [Set Your Game Info](02-game-settings.md)
 3. [Draw Pictures (PIXEL)](03-pixel.md)
 4. [Build Stages (STAGE)](04-stage.md)
 5. [Add Sound (BGM)](05-bgm.md)

@@ -55,4 +55,4 @@ Pressing these buttons swaps the main area completely. They decide "what you're 
 - **Bottom-left** = file operations, **bottom-right** = mode switch
 - Before you start working, pick a mode from the bottom-right bar first
 
-In the next chapter, let's set the **game title and author name**.
+In the next chapter, let's set the **game title, author name, and edit key**.
