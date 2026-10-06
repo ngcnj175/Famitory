@@ -221,7 +221,21 @@
                 previousText: '← 前の章',
                 nextText: '次の章 →',
                 crossChapter: true
-            }
+            },
+            // 「まとめ」等の見出しは番号バッジを付けない
+            plugins: [
+                function (hook) {
+                    const NO_NUM_HEADINGS = ['まとめ'];
+                    hook.doneEach(function () {
+                        document.querySelectorAll('.markdown-section h2').forEach(function (h2) {
+                            const txt = (h2.textContent || '').trim();
+                            if (NO_NUM_HEADINGS.includes(txt)) {
+                                h2.classList.add('no-num');
+                            }
+                        });
+                    });
+                }
+            ]
         }
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
