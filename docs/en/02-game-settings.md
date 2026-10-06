@@ -3,7 +3,7 @@
 Before you start making a game, decide the **title**, **author name**, and **edit key**.
 Setting them early makes saving and sharing easier!
 
-> *Screenshot coming soon*
+<img src="assets/screenshots/タイトル画面.png" alt="Title screen" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
 
 ---
 

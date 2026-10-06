@@ -3,7 +3,7 @@
 ゲームを作りはじめる前に、まず **タイトル**・**作った人の名前**・**エディットキー** を決めよう。
 最初に設定しておくと、保存やシェアのときに便利！
 
-> *スクリーンショット準備中*
+<img src="assets/screenshots/タイトル画面.png" alt="タイトル画面" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
 
 ---
 
