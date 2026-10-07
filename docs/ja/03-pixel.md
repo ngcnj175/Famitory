@@ -2,7 +2,7 @@
 
 PIXEL は、ゲームに出てくるキャラクターやブロック、背景などの絵をかく画面だよ。
 
-<img src="assets/screenshots/PIXEL画面.png" alt="PIXEL画面" style="max-width:50%; min-width:260px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
+<img src="assets/screenshots/PIXEL画面.png" alt="PIXEL画面" style="max-width:60%; min-width:312px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
 **画面の見方**
 
