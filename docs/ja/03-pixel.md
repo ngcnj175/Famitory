@@ -4,15 +4,13 @@ PIXEL は、ゲームに出てくるキャラクターやブロック、背景�
 
 <img src="assets/screenshots/PIXEL画面.png" alt="PIXEL画面" style="max-width:60%; min-width:312px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
-❶ **ピクセルパレット** … 作った絵の一覧。
-
-❷ **ツールバー** … えんぴつ・けしごむなどの道具。
-
-❸ **カラーパレット** … 使う色をえらぶところ。
-
-❹ **キャンバス** … ここに絵をかくよ。
-
-❺ **プレビュー** … 絵の動きを確認できるよ。
+<ul style="list-style:none; padding-left:0;">
+<li>❶ <strong>ピクセルパレット</strong> … 作った絵の一覧。</li>
+<li>❷ <strong>ツールバー</strong> … えんぴつ・けしごむなどの道具。</li>
+<li>❸ <strong>カラーパレット</strong> … 使う色をえらぶところ。</li>
+<li>❹ <strong>キャンバス</strong> … ここに絵をかくよ。</li>
+<li>❺ <strong>プレビュー</strong> … 絵の動きを確認できるよ。</li>
+</ul>
 
 ---
 
