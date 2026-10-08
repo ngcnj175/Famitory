@@ -78,11 +78,9 @@ PIXEL は、ゲームに出てくるキャラクターやブロック、背景�
 ## プレビューの使い方
 
 プレビューは、かいた絵を**動かして確認**できるところだよ。
+<img src="assets/screenshots/プレビュー画面.png" alt="プレビュー画面" style="max-width:60%; min-width:312px; display:block; margin:4px 0 16px; border:none; box-shadow:none; border-radius:0;">
 
-<img src="assets/screenshots/プレビュー画面.png" alt="プレビュー画面" style="max-width:60%; min-width:312px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
-
-- **ひらく／とじる** … プレビューバーをタップすると、ひらいたりとじたりできるよ。
-- **絵をならべる** … 下のピクセルパレットから、動かしたい絵をドラッグ＆ドロップでプレビューに入れよう。
-- **動きを見る** … 複数の絵をならべて `▶` を押すと、ならべた順にパラパラと動いて見えるよ。
-- **スピードを変える** … スピードゲージで、動きの速さを調節できるよ。
-- **タイルモード** … オンにすると、絵をタイルのようにならべて表示して、**ピクセルの繋がり**（背景やブロックが自然につながるか）を確認できるよ。
+- **動きを見る** … 複数の絵をならべて <span style="display:inline-block; border:1px solid currentColor; border-radius:3px; padding:0 6px; line-height:1.2;">▶</span> を押すと、パラパラと動いて見えるよ。
+- **スピードを変える** … スピードゲージでアニメーションの速さを調節できるよ。
+- **タイルモード** … オンにすると、絵をタイルのようにならべて表示して、**ピクセルの繋がり**を確認できるよ。
+<img src="assets/screenshots/タイルモード.png" alt="タイルモード" style="max-width:60%; min-width:312px; display:block; margin:4px 0 16px; border:none; box-shadow:none; border-radius:0;">
