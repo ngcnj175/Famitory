@@ -219,14 +219,9 @@
             background-position: center;
             background-size: 18px 18px;
         }
-        /* ページ下部ナビ（docsify-pagination）: タイトル上・<<>>下（大きめ） */
-        .docsify-pagination-container { font-size: 0.8em; }
-        .docsify-pagination-container .pagination-item a { display: flex; flex-direction: column; }
-        .docsify-pagination-container .pagination-item-label { order: 2; font-size: 1.6em; line-height: 1; margin-top: 2px; }
+        /* ページ下部ナビ（docsify-pagination）: ラベル上・タイトル下、縮小 */
+        .docsify-pagination-container { font-size: 0.85em; }
         .docsify-pagination-container .pagination-item-label svg { display: none; }
-        .docsify-pagination-container .pagination-item-label span { font-size: inherit; }
-        .docsify-pagination-container .pagination-item-title { order: 1; font-size: 1em; }
-        .docsify-pagination-container .pagination-item--next a { align-items: flex-end; }
     </style>
 </head>
 <body>
@@ -273,8 +268,8 @@
                 loading: '読み込み中...',
                 searchPlaceholder: 'マニュアル内を検索',
                 searchNoData: '該当する内容が見つかりませんでした',
-                prev: '<<',
-                next: '>>',
+                prev: '<<前のページ',
+                next: '次のページ>>',
                 menuAria: 'メニューを開閉',
                 searchAria: '検索を開閉',
                 langTitle: '言語切替',
@@ -288,8 +283,8 @@
                 loading: 'Loading...',
                 searchPlaceholder: 'Search the manual',
                 searchNoData: 'No matching content found',
-                prev: '<<',
-                next: '>>',
+                prev: '<<Previous',
+                next: 'Next>>',
                 menuAria: 'Toggle menu',
                 searchAria: 'Toggle search',
                 langTitle: 'Switch language',
