@@ -219,6 +219,12 @@
             background-position: center;
             background-size: 18px 18px;
         }
+        /* ページ下部ナビ（docsify-pagination）: ラベル削除・<<>>追加・縮小 */
+        .docsify-pagination-container { font-size: 0.8em; }
+        .docsify-pagination-container .pagination-item-label { display: none !important; }
+        .docsify-pagination-container .pagination-item-title { font-size: 1em; }
+        .docsify-pagination-container .pagination-item--previous .pagination-item-title::before { content: '<< '; }
+        .docsify-pagination-container .pagination-item--next .pagination-item-title::after { content: ' >>'; }
     </style>
 </head>
 <body>
