@@ -108,7 +108,7 @@ const AppProject = {
                 author: '',
                 locked: false,
                 createdAt: Date.now(),
-                editKey: this.generateEditKey()
+                editKey: ''
             },
             palette: App.nesPalette.slice(0, 16),
             sprites: [this.createEmptySprite()],
@@ -222,10 +222,6 @@ const AppProject = {
     },
 
     migrateProjectData() {
-        if (App.projectData.meta && !App.projectData.meta.editKey) {
-            App.projectData.meta.editKey = this.generateEditKey();
-        }
-
         const stage = App.projectData.stage;
         if (!stage) return;
 

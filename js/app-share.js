@@ -120,6 +120,11 @@ const AppShare = {
                     AppArcadePanel.saveToProject();
                 }
 
+                // 初回公開時にエディットキーを発行（未発行なら）
+                if (isFirstTime && !App.projectData.meta.editKey) {
+                    App.projectData.meta.editKey = App.generateEditKey();
+                }
+
                 const id = await Share.saveOrUpdateGame(shareId, App.projectData, !isFirstTime);
 
                 if (!id) {

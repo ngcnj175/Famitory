@@ -1615,8 +1615,8 @@ const GameEngine = {
                         App._likesCount = 0;
                         App._hasLikedThisSession = false;
 
-                        // 新しいエディットキーを発行
-                        App.projectData.meta.editKey = App.generateEditKey();
+                        // エディットキーはリセット（公開時に新規発行）
+                        App.projectData.meta.editKey = '';
 
                         // UIロック解除と画面更新（リミックス後はまずPLAY画面を表示）
                         App.unlockCreatorMode();
