@@ -642,8 +642,11 @@ const SoundEditor = {
 
             // トラック選択イベント（長押しで音色変更）
             let longPressTimer;
+            let longPressFired = false;
             const startLongPress = (e) => {
+                longPressFired = false;
                 longPressTimer = setTimeout(() => {
+                    longPressFired = true;
                     this.showToneSelectMenu(idx);
                 }, 600);
             };
@@ -661,6 +664,11 @@ const SoundEditor = {
             trackInfo.addEventListener('click', (e) => {
                 // ノブ操作時はトラック切り替えしない
                 if (e.target.closest('.knob-wrap')) return;
+                // 長押しで音色メニューを開いた直後はミュート/選択切替を発火させない
+                if (longPressFired) {
+                    longPressFired = false;
+                    return;
+                }
 
                 if (this.mutedTracks[idx]) {
                     // ミュート中 → 解除して選択
@@ -688,6 +696,13 @@ const SoundEditor = {
         const song = this.getCurrentSong();
         const track = song.tracks[trackIdx];
         const trackType = ['square', 'square', 'triangle', 'noise'][trackIdx];
+
+        // 長押し対象トラックを選択状態に合わせる（レイアウト依存の挙動を排除）
+        if (this.currentTrack !== trackIdx) {
+            this.currentTrack = trackIdx;
+            this.updateChannelStripUI();
+            this.render();
+        }
 
         // 既存のメニューがあれば削除
         const existing = document.getElementById('tone-select-menu');
