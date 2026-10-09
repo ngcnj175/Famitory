@@ -706,11 +706,11 @@ const SoundEditor = {
         if (trackType === 'square') {
             options = [
                 { val: 0, id: 'U296', fallback: 'ノーマル' },
-                { val: 1, id: 'U297', fallback: 'ノーマル（単音）' },
+                { val: 1, id: 'U297', fallback: 'ノーマル（短音）' },
                 { val: 2, id: 'U298', fallback: 'ノーマル（フェードイン）' },
                 { val: 7, id: 'U532', fallback: 'ノーマル（スライド）' },
                 { val: 3, id: 'U299', fallback: 'ビビッド' },
-                { val: 4, id: 'U300', fallback: 'ビビッド（単音）' },
+                { val: 4, id: 'U300', fallback: 'ビビッド（短音）' },
                 { val: 5, id: 'U301', fallback: 'ビビッド（フェードイン）' },
                 { val: 8, id: 'U533', fallback: 'ビビッド（スライド）' },
                 { val: 6, id: 'U302', fallback: '高速トレモロ' }

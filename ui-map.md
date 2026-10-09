@@ -310,10 +310,10 @@
 | U294 | 制限時間 | Time Limit | JS message/literal | stage-editor.js | |
 | U295 | 音色を選択 | Select Tone | JS message/literal | bgm-editor.js | |
 | U296 | ノーマル | Normal | JS object config | bgm-editor.js | |
-| U297 | ノーマル（単音） | Normal (Short) | JS object config | bgm-editor.js | |
+| U297 | ノーマル（短音） | Normal (Short) | JS object config | bgm-editor.js | |
 | U298 | ノーマル（フェードイン） | Normal (Fade In) | JS object config | bgm-editor.js | |
 | U299 | ビビッド | Vivid | JS object config | bgm-editor.js | |
-| U300 | ビビッド（単音） | Vivid (Short) | JS object config | bgm-editor.js | |
+| U300 | ビビッド（短音） | Vivid (Short) | JS object config | bgm-editor.js | |
 | U301 | ビビッド（フェードイン） | Vivid (Fade In) | JS object config | bgm-editor.js | |
 | U302 | 高速トレモロ | Fast Tremolo | JS message/literal | bgm-editor.js | |
 | U532 | ノーマル（スライド） | Normal (Slide) | JS object config | bgm-editor.js | |
