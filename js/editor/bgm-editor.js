@@ -705,27 +705,27 @@ const SoundEditor = {
         let options = [];
         if (trackType === 'square') {
             options = [
-                { val: 0, id: 'U296', fallback: 'Standard' },
-                { val: 1, id: 'U297', fallback: 'Standard (Short)' },
-                { val: 2, id: 'U298', fallback: 'Standard (FadeIn)' },
-                { val: 7, id: 'U532', fallback: 'Standard (Slide)' },
-                { val: 3, id: 'U299', fallback: 'Sharp' },
-                { val: 4, id: 'U300', fallback: 'Sharp (Short)' },
-                { val: 5, id: 'U301', fallback: 'Sharp (FadeIn)' },
-                { val: 8, id: 'U533', fallback: 'Sharp (Slide)' },
-                { val: 6, id: 'U302', fallback: 'Tremolo (高速)' }
+                { val: 0, id: 'U296', fallback: 'ノーマル' },
+                { val: 1, id: 'U297', fallback: 'ノーマル（単音）' },
+                { val: 2, id: 'U298', fallback: 'ノーマル（フェードイン）' },
+                { val: 7, id: 'U532', fallback: 'ノーマル（スライド）' },
+                { val: 3, id: 'U299', fallback: 'ビビッド' },
+                { val: 4, id: 'U300', fallback: 'ビビッド（単音）' },
+                { val: 5, id: 'U301', fallback: 'ビビッド（フェードイン）' },
+                { val: 8, id: 'U533', fallback: 'ビビッド（スライド）' },
+                { val: 6, id: 'U302', fallback: '高速トレモロ' }
             ];
         } else if (trackType === 'triangle') {
             options = [
-                { val: 0, id: 'U296', fallback: 'Standard' },
-                { val: 1, id: 'U303', fallback: 'Soft (Sine)' },
-                { val: 2, id: 'U304', fallback: 'Power (Saw)' },
-                { val: 3, id: 'U305', fallback: 'Kick (ピッチ下降)' }
+                { val: 0, id: 'U296', fallback: 'ノーマル' },
+                { val: 1, id: 'U303', fallback: 'ソフト' },
+                { val: 2, id: 'U304', fallback: 'ハード' },
+                { val: 3, id: 'U305', fallback: 'キック' }
             ];
         } else if (trackType === 'noise') {
             options = [
-                { val: 0, id: 'U399', fallback: 'Noise (ピッチ)' },
-                { val: 1, id: 'U400', fallback: 'Drum Kit' }
+                { val: 0, id: 'U399', fallback: 'ノイズ' },
+                { val: 1, id: 'U400', fallback: 'ドラム' }
             ];
         }
 

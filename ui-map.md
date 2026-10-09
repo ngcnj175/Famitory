@@ -309,18 +309,18 @@
 | U293 | サバイバル時間 | Survival Time | JS message/literal | stage-editor.js | |
 | U294 | 制限時間 | Time Limit | JS message/literal | stage-editor.js | |
 | U295 | 音色を選択 | Select Tone | JS message/literal | bgm-editor.js | |
-| U296 | Standard | Standard | JS object config | bgm-editor.js | |
-| U297 | Standard (Short) | Standard (Short) | JS object config | bgm-editor.js | |
-| U298 | Standard (FadeIn) | Standard (FadeIn) | JS object config | bgm-editor.js | |
-| U299 | Sharp | Sharp | JS object config | bgm-editor.js | |
-| U300 | Sharp (Short) | Sharp (Short) | JS object config | bgm-editor.js | |
-| U301 | Sharp (FadeIn) | Sharp (FadeIn) | JS object config | bgm-editor.js | |
-| U302 | Tremolo (高速) | Tremolo (Fast) | JS message/literal | bgm-editor.js | |
-| U532 | Standard (Slide) | Standard (Slide) | JS object config | bgm-editor.js | |
-| U533 | Sharp (Slide) | Sharp (Slide) | JS object config | bgm-editor.js | |
-| U303 | Soft (Sine) | Soft (Sine) | JS object config | bgm-editor.js | |
-| U304 | Power (Saw) | Power (Saw) | JS object config | bgm-editor.js | |
-| U305 | Kick (ピッチ下降) | Kick (Pitch Down) | JS message/literal | bgm-editor.js | |
+| U296 | ノーマル | Normal | JS object config | bgm-editor.js | |
+| U297 | ノーマル（単音） | Normal (Short) | JS object config | bgm-editor.js | |
+| U298 | ノーマル（フェードイン） | Normal (Fade In) | JS object config | bgm-editor.js | |
+| U299 | ビビッド | Vivid | JS object config | bgm-editor.js | |
+| U300 | ビビッド（単音） | Vivid (Short) | JS object config | bgm-editor.js | |
+| U301 | ビビッド（フェードイン） | Vivid (Fade In) | JS object config | bgm-editor.js | |
+| U302 | 高速トレモロ | Fast Tremolo | JS message/literal | bgm-editor.js | |
+| U532 | ノーマル（スライド） | Normal (Slide) | JS object config | bgm-editor.js | |
+| U533 | ビビッド（スライド） | Vivid (Slide) | JS object config | bgm-editor.js | |
+| U303 | ソフト | Soft | JS object config | bgm-editor.js | |
+| U304 | ハード | Hard | JS object config | bgm-editor.js | |
+| U305 | キック | Kick | JS message/literal | bgm-editor.js | |
 | U306 | 閉じる | Close | JS message/literal | bgm-editor.js | |
 | U307 | 最後のBGMは削除できません | Cannot delete the last BGM | JS message/literal | bgm-editor.js | |
 | U308 | を削除しますか？ | Delete this BGM? | JS message/literal | bgm-editor.js | |
@@ -418,8 +418,8 @@
 | U396 | ひみつのメッセージ | Secret Message | JS message/literal | game-engine.js | |
 | U397 | STAGE CLEAR! | STAGE CLEAR! | JS dom text assign | game-engine.js | |
 | U398 | GAME OVER | GAME OVER | JS dom text assign | game-engine.js | |
-| U399 | Noise (ピッチ) | Noise (Pitch) | JS dom text assign | bgm-editor.js | |
-| U400 | Drum Kit | Drum Kit | JS dom text assign | bgm-editor.js | |
+| U399 | ノイズ | Noise | JS dom text assign | bgm-editor.js | |
+| U400 | ドラム | Drum | JS dom text assign | bgm-editor.js | |
 | U401 | エクスポート | Export | HTML text node | index.html | ✓ |
 | U402 | インポート | Import | HTML text node | index.html | ✓ |
 | U403 | ゲームタイトル | Game Title | HTML text node (label) | index.html | ✓ |
