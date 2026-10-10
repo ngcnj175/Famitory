@@ -534,4 +534,4 @@
 | U557 | NAME | NAME | HTML text node (ハイスコアネーム入力モーダル 説明) | index.html | - |
 | U558 | OK | OK | HTML text node (ハイスコアネーム入力モーダル 決定ボタン) | index.html | - |
 | U559 | スキップ | Skip | HTML text node (ハイスコアネーム入力モーダル スキップボタン) | index.html | - |
-| U570 | 元のゲームをもとに、きみ独自のバージョンを作れるよ | Create your own version based on this game | HTML text node (リザルト画面 リミックスボタン補足説明) | index.html | ✓ |
+| U570 | このゲームをもとに、きみのバージョンをつくれる | Create your own version based on this game | HTML text node (リザルト画面 リミックスボタン補足説明) | index.html | ✓ |

@@ -771,7 +771,7 @@ input, textarea, select, button {
     position: absolute;
     font-size: 10px;
     color: #a8a8a8;
-    opacity: 0.7;
+    opacity: 0.75;
     font-weight: 400;
     pointer-events: none;
     line-height: 1;
@@ -783,27 +783,47 @@ body.pc-env .key-hint {
     display: block;
 }
 
-.dpad-btn .key-hint {
+/* 十字キー: 矢印の反対側（ボタン外周寄り）に配置 */
+#btn-up .key-hint {
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#btn-down .key-hint {
     bottom: 3px;
-    right: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#btn-left .key-hint {
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#btn-right .key-hint {
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
+/* A/B: ボタン下・水平中央 */
 .action-btn .key-hint {
-    bottom: 10px;
-    right: 12px;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2px;
     font-size: 11px;
 }
 
+/* START: ボタン下・水平中央（本体テキストはそのまま） */
+#btn-start {
+    position: relative;
+}
 #btn-start .key-hint {
-    position: static;
-    margin-left: 6px;
-    font-size: 11px;
-    opacity: 0.7;
-    vertical-align: middle;
-}
-
-body.pc-env #btn-start .key-hint {
-    display: inline;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 3px;
+    font-size: 10px;
 }
 
 /* --- リザルト画面 リミックスボタンとその補足説明 --- */
