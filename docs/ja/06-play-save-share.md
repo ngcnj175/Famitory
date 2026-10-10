@@ -11,12 +11,6 @@
 
 <img src="assets/screenshots/PLAY画面.png" alt="PLAY画面" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
 
-- **STARTボタン** を押すとゲームスタート
-- **スマホ・タブレット** は画面の十字キー・A/Bボタン・STARTボタンをタップして遊ぶ
-- クリアやゲームオーバーで結果画面が出る。もう一度あそぶなら STARTボタンをもう一度
-
-### パソコンのキー操作
-
 キーボードでもスマホと同じ操作ができるよ。1つのボタンに複数のキーが割り当ててあるので、使いやすいキーで遊ぼう。
 
 | ボタン | キー | 動作 |
