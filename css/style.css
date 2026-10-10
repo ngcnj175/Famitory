@@ -786,12 +786,12 @@ body.pc-env .key-hint {
 /* 十字キー: 矢印の反対側（ボタン外周寄り、ほんの少し内側へ） */
 #btn-up .key-hint {
     top: 6px;
-    left: calc(50% + 2px);
+    left: calc(50% + 1px);
     transform: translateX(-50%);
 }
 #btn-down .key-hint {
     bottom: 6px;
-    left: calc(50% + 2px);
+    left: calc(50% + 1px);
     transform: translateX(-50%);
 }
 #btn-left .key-hint {
