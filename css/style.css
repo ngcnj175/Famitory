@@ -811,7 +811,8 @@ body.pc-env .key-hint {
     left: 50%;
     transform: translateX(-50%);
     margin-top: 5px;
-    font-size: 11px;
+    font-size: 9px;
+    white-space: nowrap;
 }
 
 /* START: ボタン下・水平中央（本体テキストはそのまま） */
