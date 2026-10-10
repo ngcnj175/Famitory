@@ -38,7 +38,7 @@
 **SHARE** ボタンを押すと、ゲームのURLを作れるよ。
 そのURLを公開すれば、誰でもあなたのゲームを遊べる！
 
-<img src="assets/screenshots/シェアモーダル.png" alt="シェアモーダル" style="max-width:50%; min-width:260px; border:1px solid #ddd; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.1); display:block; margin:16px 0;">
+<img src="assets/screenshots/シェアモーダル.png" alt="シェアモーダル" style="max-width:50%; min-width:260px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
 ### はじめて公開する
 
