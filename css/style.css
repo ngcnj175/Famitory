@@ -276,13 +276,6 @@ input, textarea, select, button {
     text-align: left;
 }
 
-/* --- Creatorモード: タイトル〜エディットキー注意文までを上方向にシフト --- */
-#push-start-ui.creator-mode #game-title-block {
-    bottom: 72%;
-}
-#push-start-ui.creator-mode #game-author-block {
-    top: 30%;
-}
 #game-title {
     width: 100%;
     text-align: center;
