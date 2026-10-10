@@ -397,75 +397,6 @@ input, textarea, select, button {
     font-style: italic;
 }
 
-/* --- EDIT KEY (SHAREモーダル内) --- */
-.share-editkey-display {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-
-.share-editkey-display.hidden {
-    display: none;
-}
-
-.share-editkey-display .editkey-label {
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    color: #777;
-}
-
-.share-editkey-display .editkey-box {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-
-.share-editkey-display .editkey-note {
-    font-size: 11px;
-    line-height: 1.4;
-    color: #cfcfcf;
-    margin-top: 2px;
-}
-
-#share-editkey-value {
-    font-family: inherit;
-    font-size: 18px;
-    letter-spacing: 0.05em;
-    color: #dcdcdc;
-    -webkit-user-select: all;
-    user-select: all;
-}
-
-#share-editkey-copy {
-    background: transparent;
-    border: 1px solid #3a3a3a;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #cfcfcf;
-    cursor: pointer;
-    padding: 0;
-    border-radius: 3px;
-    flex-shrink: 0;
-}
-
-#share-editkey-copy svg {
-    width: 60%;
-    height: 60%;
-}
-
-#share-editkey-copy:hover {
-    color: #ffffff;
-    border-color: #666;
-}
-
 /* --- いいね (Player) --- */
 #game-likes-display {
     position: absolute;
@@ -5638,6 +5569,92 @@ input, textarea, select, button {
     border-radius: 8px;
 }
 
+/* SHAREモーダル エディットキー欄 */
+.share-editkey-box.hidden {
+    display: none;
+}
+
+.share-editkey-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.share-editkey-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.share-editkey-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #dcdfe3;
+    border-radius: 6px;
+    padding: 4px 4px 4px 10px;
+}
+
+#share-editkey-value {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #333;
+    -webkit-user-select: all;
+    user-select: all;
+}
+
+.share-editkey-copy-btn {
+    background: transparent;
+    border: none;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.share-editkey-copy-btn svg {
+    width: 60%;
+    height: 60%;
+}
+
+.share-editkey-copy-btn:hover {
+    color: #333;
+    background: #f1f3f5;
+}
+
+body.dark-mode .share-editkey-label {
+    color: #ccc;
+}
+
+body.dark-mode .share-editkey-field {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+body.dark-mode #share-editkey-value {
+    color: #e8e8e8;
+}
+
+body.dark-mode .share-editkey-copy-btn {
+    color: #bbb;
+}
+
+body.dark-mode .share-editkey-copy-btn:hover {
+    color: #fff;
+    background: #3a3a3a;
+}
+
 .share-panel-box input[type="checkbox"] {
     width: 16px;
     height: 16px;
@@ -5834,22 +5851,21 @@ input, textarea, select, button {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .share-status {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     background: #e8f5e9;
     border: 2px solid #66bb6a;
     border-radius: 20px;
-    padding: 7px 18px;
-    font-size: 13px;
+    padding: 4px 14px;
+    font-size: 12px;
     font-weight: bold;
     color: #2e7d32;
-    width: 40%;
     box-sizing: border-box;
 }
 
