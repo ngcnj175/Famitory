@@ -78,6 +78,22 @@ const Share = {
         }
     },
 
+    // Firebase の公開データのみ削除（games/{id}/data を消す）
+    // いいね数・ハイスコアは残すので、同じ ID で再公開するとそれらが引き継がれる
+    async clearGameData(id) {
+        if (!window.firebaseDB || !id) return false;
+        try {
+            await window.firebaseDB.ref('games/' + id).update({
+                data: null,
+                updatedAt: Date.now()
+            });
+            return true;
+        } catch (e) {
+            console.error('Failed to clear game data:', e);
+            return false;
+        }
+    },
+
     // Firebase から公開ゲームを完全削除（games/{id} ノードごと削除）
     async deleteGame(id) {
         if (!window.firebaseDB || !id) return false;

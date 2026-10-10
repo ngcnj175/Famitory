@@ -12,13 +12,14 @@ const AppShare = {
         const openLinksBtn = document.getElementById('open-share-links-btn');
         const editKeyDisplay = document.getElementById('share-editkey-display');
         const editKeyValue = document.getElementById('share-editkey-value');
-        const hasShareId = !!(App.projectData?.meta?.shareId);
-        const editKey = App.projectData?.meta?.editKey || '';
-        if (badge) badge.classList.toggle('hidden', !hasShareId);
-        if (unpublishBtn) unpublishBtn.classList.toggle('hidden', !hasShareId);
-        if (openLinksBtn) openLinksBtn.classList.toggle('hidden', !hasShareId);
+        const meta = App.projectData?.meta || {};
+        const isPublished = !!meta.shareId && !meta.unpublished;
+        const editKey = meta.editKey || '';
+        if (badge) badge.classList.toggle('hidden', !isPublished);
+        if (unpublishBtn) unpublishBtn.classList.toggle('hidden', !isPublished);
+        if (openLinksBtn) openLinksBtn.classList.toggle('hidden', !isPublished);
         if (editKeyDisplay && editKeyValue) {
-            if (hasShareId && editKey) {
+            if (isPublished && editKey) {
                 editKeyValue.textContent = editKey;
                 editKeyDisplay.classList.remove('hidden');
                 this._bindEditKeyCopy();
@@ -27,8 +28,8 @@ const AppShare = {
             }
         }
         if (publishBtn) {
-            // 未公開=「この作品を公開する」 / 公開中=「更新する」
-            const key = hasShareId ? 'U547' : 'U542';
+            // 公開中=「更新する」 / 未公開（初回・非公開どちらも）=「この作品を公開する」
+            const key = isPublished ? 'U547' : 'U542';
             publishBtn.textContent = AppI18N.t(key);
             publishBtn.setAttribute('data-i18n', key);
         }
@@ -119,13 +120,20 @@ const AppShare = {
             return;
         }
 
-        const isFirstTime = !App.projectData?.meta?.shareId;
+        // 状態判定：
+        //   wasPublished    … 現状「公開中」か（＝確認ダイアログで「更新しますか？」文言を使うか）
+        //   hadShareId      … 一度でも公開されたことがあるか（＝Firebase上にノードがあるか）
+        //   isNewPublication … 公開操作ダイアログ・ARCADE再登録・unpublishedフラグ解除の対象か
+        const meta = App.projectData?.meta || {};
+        const wasPublished = !!meta.shareId && !meta.unpublished;
+        const hadShareId   = !!meta.shareId;
+        const isNewPublication = !wasPublished;
 
-        // URLを事前に確定（初回はIDを先に生成、2回目以降は既存IDを使い回す）
-        const shareId = App.projectData.meta?.shareId || Share.generateShortId();
+        // URLを事前に確定（初回のみIDを生成、既存ある場合は使い回し）
+        const shareId = meta.shareId || Share.generateShortId();
         const url = Share.createShortUrl(shareId);
 
-        this.showPublishConfirm(isFirstTime, async () => {
+        this.showPublishConfirm(isNewPublication, async () => {
             // --- ユーザージェスチャー直後（「はい」タップ） ---
             // クリップボードコピーや window.open はここで実行しないとiOSで失敗する
             await actionFn(url);
@@ -157,11 +165,12 @@ const AppShare = {
                 }
 
                 // 初回公開時にエディットキーを発行（未発行なら）
-                if (isFirstTime && !App.projectData.meta.editKey) {
+                if (!hadShareId && !App.projectData.meta.editKey) {
                     App.projectData.meta.editKey = App.generateEditKey();
                 }
 
-                const id = await Share.saveOrUpdateGame(shareId, App.projectData, !isFirstTime);
+                // Firebase: ノード既存なら update()、新規なら set()
+                const id = await Share.saveOrUpdateGame(shareId, App.projectData, hadShareId);
 
                 if (!id) {
                     App.showToast(AppI18N.t('U379'));
@@ -170,6 +179,8 @@ const AppShare = {
                 }
 
                 App.projectData.meta.shareId = id;
+                // 「非公開」状態を解除
+                App.projectData.meta.unpublished = false;
                 if (App.currentProjectName) {
                     Storage.saveProject(App.currentProjectName, App.projectData);
                 }
@@ -187,10 +198,10 @@ const AppShare = {
 
                 App._shareUrl = url;
                 this.updateShareStatus();
-                App.showToast(AppI18N.t(isFirstTime ? 'U380' : 'U381'));
+                App.showToast(AppI18N.t(isNewPublication ? 'U380' : 'U381'));
 
-                // 初回公開時はエディットキーの保管を促す
-                if (isFirstTime) {
+                // 真の初回公開時のみエディットキーの保管を促す
+                if (!hadShareId) {
                     const key = App.projectData?.meta?.editKey || '';
                     const sub = key
                         ? `${AppI18N.t('U522')}: ${key}\n${AppI18N.t('U531')}`
@@ -208,7 +219,8 @@ const AppShare = {
         });
     },
 
-    // ゲームを非公開に戻す（Firebase の games/{id} を完全削除 + ARCADE 登録も解除）
+    // ゲームを非公開にする（Firebase games/{id}/data を消す + ARCADE 登録解除）
+    // shareId・いいね・ハイスコアは残すので、再公開すると同じURLで記録ごと復活する
     async unpublishGame() {
         if (this._shareLoading) {
             App.showToast(AppI18N.t('U377'));
@@ -226,12 +238,14 @@ const AppShare = {
                     return;
                 }
                 this._shareLoading = true;
-                const ok = await Share.deleteGame(id);
+                const ok = await Share.clearGameData(id);
                 if (ok) {
                     if (typeof ShareArcade !== 'undefined') {
+                        await ShareArcade.unpublish(id);
                         ShareArcade.invalidateCache();
                     }
-                    App.projectData.meta.shareId = '';
+                    // shareId は保持し、unpublished フラグを立てる
+                    App.projectData.meta.unpublished = true;
                     if (App.currentProjectName) {
                         Storage.saveProject(App.currentProjectName, App.projectData);
                     }
