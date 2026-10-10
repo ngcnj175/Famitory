@@ -795,9 +795,9 @@ class GameRenderer {
             }
         }
 
-        const remixBtn = document.getElementById('result-remix-btn');
-        if (remixBtn) {
-            remixBtn.classList.toggle('hidden', !(App.isPlayOnlyMode && App.projectData?.meta?.remixOK));
+        const remixWrapper = document.getElementById('result-remix-wrapper');
+        if (remixWrapper) {
+            remixWrapper.classList.toggle('hidden', !(App.isPlayOnlyMode && App.projectData?.meta?.remixOK));
         }
 
         this._updateResultGameInfo(app);

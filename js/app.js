@@ -59,6 +59,13 @@ const App = {
     init() {
         console.log('FAMITORY initializing...');
 
+        // PC環境判定（マウスホバー＆精密ポインタ）: キーラベル表示などの切替に使う
+        try {
+            if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                document.body.classList.add('pc-env');
+            }
+        } catch (_) {}
+
         // デフォルトパレットをファミトリーに設定
         if (!this.nesPalette) {
             this.nesPalette = this.PALETTE_PRESETS.famitory.colors.slice();

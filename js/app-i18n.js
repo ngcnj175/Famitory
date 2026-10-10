@@ -377,6 +377,7 @@ const AppI18N = {
         'U548': { JPN: 'コメントは{n}文字までです', ENG: 'Comment is limited to {n} characters' },
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
         'U556': { JPN: 'とじる',                 ENG: 'Close' },
+        'U570': { JPN: '元のゲームをもとに、きみ独自のバージョンを作れるよ', ENG: 'Create your own version based on this game' },
     },
 
     t(id, vars = {}) {

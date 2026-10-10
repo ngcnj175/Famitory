@@ -765,6 +765,67 @@ input, textarea, select, button {
     box-shadow: none;
 }
 
+/* --- PC環境でのみ表示されるキーラベル --- */
+.key-hint {
+    display: none;
+    position: absolute;
+    font-size: 10px;
+    color: #a8a8a8;
+    opacity: 0.7;
+    font-weight: 400;
+    pointer-events: none;
+    line-height: 1;
+    letter-spacing: 0;
+    font-family: inherit;
+}
+
+body.pc-env .key-hint {
+    display: block;
+}
+
+.dpad-btn .key-hint {
+    bottom: 3px;
+    right: 5px;
+}
+
+.action-btn .key-hint {
+    bottom: 10px;
+    right: 12px;
+    font-size: 11px;
+}
+
+#btn-start .key-hint {
+    position: static;
+    margin-left: 6px;
+    font-size: 11px;
+    opacity: 0.7;
+    vertical-align: middle;
+}
+
+body.pc-env #btn-start .key-hint {
+    display: inline;
+}
+
+/* --- リザルト画面 リミックスボタンとその補足説明 --- */
+.result-remix-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.result-remix-wrapper.hidden {
+    display: none;
+}
+
+.result-remix-hint {
+    margin: 0;
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    line-height: 1.4;
+}
+
 /* ========================================
    繝壹う繝ｳ繝育判髱｢
    ======================================== */

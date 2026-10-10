@@ -69,23 +69,23 @@
                     <!-- 十字キー -->
                     <div id="dpad-container">
                         <div id="dpad">
-                            <button id="btn-up" class="dpad-btn" data-dir="up"></button>
-                            <button id="btn-down" class="dpad-btn" data-dir="down"></button>
-                            <button id="btn-left" class="dpad-btn" data-dir="left"></button>
-                            <button id="btn-right" class="dpad-btn" data-dir="right"></button>
+                            <button id="btn-up" class="dpad-btn" data-dir="up"><span class="key-hint">W</span></button>
+                            <button id="btn-down" class="dpad-btn" data-dir="down"><span class="key-hint">S</span></button>
+                            <button id="btn-left" class="dpad-btn" data-dir="left"><span class="key-hint">A</span></button>
+                            <button id="btn-right" class="dpad-btn" data-dir="right"><span class="key-hint">D</span></button>
                         </div>
                     </div>
 
                     <!-- アクションボタン（B左上・A右下の対角配置） -->
                     <div id="action-btns-container">
-                        <button id="btn-b" class="action-btn">B</button>
-                        <button id="btn-a" class="action-btn">A</button>
+                        <button id="btn-b" class="action-btn">B<span class="key-hint">X</span></button>
+                        <button id="btn-a" class="action-btn">A<span class="key-hint">Space</span></button>
                     </div>
                 </div>
 
                 <!-- STARTボタン：controller-area基準で水平中央・独立配置 -->
                 <div id="start-btn-container">
-                    <button id="btn-start" class="system-btn">START</button>
+                    <button id="btn-start" class="system-btn">START<span class="key-hint">Enter</span></button>
                 </div>
             </div>
             <!-- リザルト画面オーバーレイ -->
@@ -120,8 +120,11 @@
                     <div class="result-actions">
                         <button id="result-retry-btn" class="result-btn retry-btn" data-i18n="U438">コンティニュー</button>
                         <button id="result-share-btn" class="result-btn share-btn" data-i18n="U437">スコアをシェアする</button>
-                        <button id="result-remix-btn" class="result-btn edit-btn hidden" data-i18n="U439">このゲームをリミックスする</button>
                         <button id="result-new-btn" class="result-btn edit-btn" data-i18n="U150">新しくゲームをつくる</button>
+                        <div id="result-remix-wrapper" class="result-remix-wrapper hidden">
+                            <button id="result-remix-btn" class="result-btn edit-btn" data-i18n="U439">このゲームをリミックスする</button>
+                            <p class="result-remix-hint" data-i18n="U570">元のゲームをもとに、きみ独自のバージョンを作れるよ</p>
+                        </div>
                     </div>
                 </div>
             </div>
