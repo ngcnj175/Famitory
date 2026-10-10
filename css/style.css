@@ -204,6 +204,30 @@ input, textarea, select, button {
     display: none !important;
 }
 
+/* --- 使い方ガイドリンク（クリエーターモードのタイトル画面のみ表示） --- */
+#manual-link {
+    display: none;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: calc(var(--canvas-css-w, 375px) * 0.034);
+    color: #9a9a9a;
+    text-decoration: underline;
+    text-decoration-color: #555;
+    text-underline-offset: 3px;
+    pointer-events: auto;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+#push-start-ui.creator-mode #manual-link {
+    display: block;
+}
+#manual-link:hover {
+    color: #cfcfcf;
+    text-decoration-color: #888;
+}
+
 /* --- REMIX OF: 上部固定 --- */
 #game-remix-info {
     position: absolute;

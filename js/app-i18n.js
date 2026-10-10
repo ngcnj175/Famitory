@@ -378,6 +378,7 @@ const AppI18N = {
         'U549': { JPN: '改行は使えません',         ENG: 'Line breaks are not allowed' },
         'U556': { JPN: 'とじる',                 ENG: 'Close' },
         'U570': { JPN: '▲このゲームをもとにゲームをつくる', ENG: '▲ Create a new game based on this one' },
+        'U580': { JPN: '使い方ガイド',             ENG: 'How to Use' },
     },
 
     t(id, vars = {}) {
