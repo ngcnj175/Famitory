@@ -5585,6 +5585,7 @@ input, textarea, select, button {
     font-size: 15px;
     font-weight: 600;
     color: #666;
+    cursor: default;
     flex-shrink: 0;
 }
 
@@ -5599,10 +5600,10 @@ input, textarea, select, button {
 }
 
 #share-editkey-value {
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     color: #333;
     -webkit-user-select: all;
     user-select: all;
