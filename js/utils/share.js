@@ -94,18 +94,6 @@ const Share = {
         }
     },
 
-    // Firebase から公開ゲームを完全削除（games/{id} ノードごと削除）
-    async deleteGame(id) {
-        if (!window.firebaseDB || !id) return false;
-        try {
-            await window.firebaseDB.ref('games/' + id).remove();
-            return true;
-        } catch (e) {
-            console.error('Failed to delete game:', e);
-            return false;
-        }
-    },
-
     // プロジェクトデータをURLエンコード
     encode(data) {
         try {

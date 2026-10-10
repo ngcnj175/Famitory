@@ -358,7 +358,7 @@ const AppI18N = {
         'U528': { JPN: '非公開化に失敗しました',   ENG: 'Failed to unpublish' },
         'U529': { JPN: 'このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。', ENG: 'This key is required to edit or publish this game. Please save it.' },
         'U530': { JPN: 'エディットキーを控えてください', ENG: 'Save your edit key' },
-        'U531': { JPN: '今後の編集・非公開化に必要です。プレイ画面のエディットキー欄からいつでも確認できます。', ENG: 'You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field on the play screen.' },
+        'U531': { JPN: '今後の編集・非公開化に必要です。SHAREモーダルのエディットキー欄からいつでも確認できます。', ENG: 'You will need it to edit or unpublish this game later. You can view it any time in the Edit Key field inside the SHARE modal.' },
         // ---- 公開/共有モーダル 改装 ----
         'U540': { JPN: 'ゲームを公開する',         ENG: 'Publish Game' },
         'U541': { JPN: 'アーケードに登録',         ENG: 'Register to ARCADE' },

@@ -156,7 +156,6 @@ const AppProject = {
         App.projectData = this.createDefaultProject();
         App.projectData.meta.name = '';
         App.projectData.meta.author = '';
-        App.projectData.meta.editKey = '';
     },
 
     loadOrCreateProject() {
