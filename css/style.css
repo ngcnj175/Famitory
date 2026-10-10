@@ -783,34 +783,34 @@ body.pc-env .key-hint {
     display: block;
 }
 
-/* 十字キー: 矢印の反対側（ボタン外周寄り）に配置 */
+/* 十字キー: 矢印の反対側（ボタン外周寄り、ほんの少し内側へ） */
 #btn-up .key-hint {
-    top: 3px;
-    left: 50%;
+    top: 6px;
+    left: calc(50% + 2px);
     transform: translateX(-50%);
 }
 #btn-down .key-hint {
-    bottom: 3px;
-    left: 50%;
+    bottom: 6px;
+    left: calc(50% + 2px);
     transform: translateX(-50%);
 }
 #btn-left .key-hint {
-    left: 4px;
+    left: 7px;
     top: 50%;
     transform: translateY(-50%);
 }
 #btn-right .key-hint {
-    right: 4px;
+    right: 7px;
     top: 50%;
     transform: translateY(-50%);
 }
 
-/* A/B: ボタン下・水平中央 */
+/* A/B: ボタン下・水平中央（ボタンとの距離を少し空ける） */
 .action-btn .key-hint {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-top: 2px;
+    margin-top: 5px;
     font-size: 11px;
 }
 
