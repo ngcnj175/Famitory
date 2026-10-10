@@ -283,10 +283,6 @@ input, textarea, select, button {
 #push-start-ui.creator-mode #game-author-block {
     top: 30%;
 }
-#push-start-ui.creator-mode #game-editkey-display {
-    top: 50%;
-}
-
 #game-title {
     width: 100%;
     text-align: center;
@@ -401,59 +397,55 @@ input, textarea, select, button {
     font-style: italic;
 }
 
-/* --- EDIT KEY (Creator): 下部62% 位置 --- */
-#game-editkey-display {
-    position: absolute;
-    left: 4.5%;
-    right: 4.5%;
-    top: 62%;
+/* --- EDIT KEY (SHAREモーダル内) --- */
+.share-editkey-display {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    pointer-events: auto;
+    gap: 4px;
+    margin-bottom: 12px;
 }
 
-#game-editkey-display.hidden {
+.share-editkey-display.hidden {
     display: none;
 }
 
-#game-editkey-display .editkey-label {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.028);
+.share-editkey-display .editkey-label {
+    font-size: 12px;
     letter-spacing: 0.05em;
     color: #777;
 }
 
-#game-editkey-display .editkey-box {
+.share-editkey-display .editkey-box {
     background: #1a1a1a;
     border: 1px solid #2a2a2a;
-    padding: 5px 8px;
+    padding: 6px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
 }
 
-#game-editkey-display .editkey-note {
-    font-size: calc(var(--canvas-css-w, 375px) * 0.024);
-    line-height: 1.35;
-    color: #ffffff;
-    margin-top: 3px;
+.share-editkey-display .editkey-note {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #cfcfcf;
+    margin-top: 2px;
 }
 
-#game-editkey-value {
+#share-editkey-value {
     font-family: inherit;
-    font-size: calc(var(--canvas-css-w, 375px) * 0.048);
+    font-size: 18px;
     letter-spacing: 0.05em;
     color: #dcdcdc;
     -webkit-user-select: all;
     user-select: all;
 }
 
-#game-editkey-copy {
+#share-editkey-copy {
     background: transparent;
     border: 1px solid #3a3a3a;
-    width: calc(var(--canvas-css-w, 375px) * 0.075);
-    height: calc(var(--canvas-css-w, 375px) * 0.075);
+    width: 28px;
+    height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -464,17 +456,17 @@ input, textarea, select, button {
     flex-shrink: 0;
 }
 
-#game-editkey-copy svg {
+#share-editkey-copy svg {
     width: 60%;
     height: 60%;
 }
 
-#game-editkey-copy:hover {
+#share-editkey-copy:hover {
     color: #ffffff;
     border-color: #666;
 }
 
-/* --- いいね (Player): EDIT KEYと同じY --- */
+/* --- いいね (Player) --- */
 #game-likes-display {
     position: absolute;
     left: 0;

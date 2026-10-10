@@ -10,16 +10,52 @@ const AppShare = {
         const unpublishBtn = document.getElementById('share-unpublish-btn');
         const publishBtn = document.getElementById('publish-main-btn');
         const openLinksBtn = document.getElementById('open-share-links-btn');
+        const editKeyDisplay = document.getElementById('share-editkey-display');
+        const editKeyValue = document.getElementById('share-editkey-value');
         const hasShareId = !!(App.projectData?.meta?.shareId);
+        const editKey = App.projectData?.meta?.editKey || '';
         if (badge) badge.classList.toggle('hidden', !hasShareId);
         if (unpublishBtn) unpublishBtn.classList.toggle('hidden', !hasShareId);
         if (openLinksBtn) openLinksBtn.classList.toggle('hidden', !hasShareId);
+        if (editKeyDisplay && editKeyValue) {
+            if (hasShareId && editKey) {
+                editKeyValue.textContent = editKey;
+                editKeyDisplay.classList.remove('hidden');
+                this._bindEditKeyCopy();
+            } else {
+                editKeyDisplay.classList.add('hidden');
+            }
+        }
         if (publishBtn) {
             // 未公開=「この作品を公開する」 / 公開中=「更新する」
             const key = hasShareId ? 'U547' : 'U542';
             publishBtn.textContent = AppI18N.t(key);
             publishBtn.setAttribute('data-i18n', key);
         }
+    },
+
+    // エディットキーのコピーボタン（1度だけバインド）
+    _bindEditKeyCopy() {
+        const copyBtn = document.getElementById('share-editkey-copy');
+        if (!copyBtn || copyBtn._bound) return;
+        copyBtn._bound = true;
+        copyBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const value = document.getElementById('share-editkey-value')?.textContent || '';
+            if (!value) return;
+            const toast = AppI18N.I18N['U436']?.[AppI18N.currentLang] || 'エディットキーをコピーしました';
+            try {
+                await navigator.clipboard.writeText(value);
+            } catch {
+                const tmp = document.createElement('textarea');
+                tmp.value = value;
+                document.body.appendChild(tmp);
+                tmp.select();
+                document.execCommand('copy');
+                document.body.removeChild(tmp);
+            }
+            App.showToast(toast);
+        });
     },
 
     // ARCADE情報エリアの表示切替（「ARCADEに登録」チェック連動）

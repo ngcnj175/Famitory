@@ -669,20 +669,6 @@ const App = {
             this.updateLikesDisplay(0);
         }
 
-        // エディットキーはクリエイターモード時のみ表示
-        const editKeyDisplay = document.getElementById('game-editkey-display');
-        const editKeyValue = document.getElementById('game-editkey-value');
-        const editKey = this.projectData?.meta?.editKey || '';
-        if (editKeyDisplay && editKeyValue) {
-            if (isCreator && editKey) {
-                editKeyValue.textContent = editKey;
-                editKeyDisplay.classList.remove('hidden');
-                this._bindEditKeyCopy();
-            } else {
-                editKeyDisplay.classList.add('hidden');
-            }
-        }
-
         // リミックス元（原作者）情報の表示（リミックス元がない場合は非表示、原作の行は空欄）
         const remixInfoDisplay = document.getElementById('game-remix-info');
         const origTitle = document.getElementById('game-original-title');
@@ -707,30 +693,6 @@ const App = {
         } else if (remixInfoDisplay) {
             remixInfoDisplay.classList.add('hidden');
         }
-    },
-
-    // エディットキーのコピーボタン（1度だけバインド）
-    _bindEditKeyCopy() {
-        const copyBtn = document.getElementById('game-editkey-copy');
-        if (!copyBtn || copyBtn._bound) return;
-        copyBtn._bound = true;
-        copyBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const value = document.getElementById('game-editkey-value')?.textContent || '';
-            if (!value) return;
-            const toast = AppI18N.I18N['U436']?.[AppI18N.currentLang] || 'エディットキーをコピーしました';
-            try {
-                await navigator.clipboard.writeText(value);
-            } catch {
-                const tmp = document.createElement('textarea');
-                tmp.value = value;
-                document.body.appendChild(tmp);
-                tmp.select();
-                document.execCommand('copy');
-                document.body.removeChild(tmp);
-            }
-            this.showToast(toast);
-        });
     },
 
     // PLAY画面Canvasのタイトル/クリエイター名インライン編集（クリエイターモードのみ）

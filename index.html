@@ -52,20 +52,7 @@
                         <span class="author-prefix">by</span>
                         <input type="text" id="game-author" maxlength="20" value="You" placeholder="なまえ" readonly>
                     </div>
-                    <!-- 下部: いいね (Player) / エディットキー (Creator) -->
-                    <div id="game-editkey-display" class="hidden">
-                        <div class="editkey-label" data-i18n="U522">エディットキー</div>
-                        <div class="editkey-box">
-                            <span id="game-editkey-value"></span>
-                            <button id="game-editkey-copy" title="コピー">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="editkey-note" data-i18n="U529">このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。</div>
-                    </div>
+                    <!-- 下部: いいね (Player) -->
                     <div id="game-likes-display" class="hidden">
                         <img src="images/like_icon.svg" alt="like" class="like-icon-small">
                         <span id="game-likes-count">0</span>
@@ -1353,6 +1340,20 @@
                     <span class="share-status-text" data-i18n="U142">公開中</span>
                 </div>
                 <button id="share-unpublish-btn" class="share-unpublish-btn hidden" type="button"><span data-i18n="U524">非公開に戻す</span></button>
+            </div>
+
+            <!-- エディットキー表示（公開済みのとき表示） -->
+            <div id="share-editkey-display" class="share-editkey-display hidden">
+                <div class="editkey-label" data-i18n="U522">エディットキー</div>
+                <div class="editkey-box">
+                    <span id="share-editkey-value"></span>
+                    <button id="share-editkey-copy" title="コピー" type="button">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="editkey-note" data-i18n="U529">このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。</div>
             </div>
 
             <div class="share-panel-box">
