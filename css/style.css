@@ -5574,6 +5574,10 @@ input, textarea, select, button {
     display: none;
 }
 
+.share-editkey-box .share-panel-desc {
+    padding-left: 0;
+}
+
 .share-editkey-row {
     display: flex;
     align-items: center;
@@ -5581,12 +5585,9 @@ input, textarea, select, button {
     gap: 12px;
 }
 
-.share-editkey-label {
-    font-size: 15px;
-    font-weight: 600;
-    color: #666;
-    cursor: default;
+.share-editkey-box label[for="share-editkey-value"] {
     flex-shrink: 0;
+    cursor: default;
 }
 
 .share-editkey-field {
