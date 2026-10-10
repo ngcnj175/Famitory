@@ -9,5 +9,7 @@
   - [6. 音をつける（BGM）](05-bgm.md)
 
 - **仕上げ**
-  - [7. 遊ぶ・保存・シェアする](06-play-save-share.md)
-  - [8. 困ったとき](07-help.md)
+  - [7. 遊ぶ（PLAY）](06-play.md)
+  - [8. 保存・開く（SAVE・OPEN）](07-save-open.md)
+  - [9. 公開する（SHARE）](08-share.md)
+  - [10. 困ったとき](09-help.md)

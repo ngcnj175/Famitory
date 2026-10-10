@@ -9,5 +9,7 @@
   - [6. Add Sound (BGM)](05-bgm.md)
 
 - **Finishing Up**
-  - [7. Play, Save & Share](06-play-save-share.md)
-  - [8. Troubleshooting](07-help.md)
+  - [7. Play (PLAY)](06-play.md)
+  - [8. Save & Open (SAVE & OPEN)](07-save-open.md)
+  - [9. Share (SHARE)](08-share.md)
+  - [10. Troubleshooting](09-help.md)
