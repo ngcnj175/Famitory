@@ -7366,6 +7366,19 @@ body.dark-mode {
     aspect-ratio: 1 / 1;
 }
 
+/* タイトル画面 UI: キャンバスと同じ正方形エリアに収める
+   （縦向き時は #game-viewport = canvas だが、横向きは左右にコントローラー用のpaddingが入るため
+   そのまま inset:0 だとUIが左右に広がり、remix情報などが canvas から外れる） */
+#app.landscape-play #push-start-ui {
+    top: 10px;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    transform: translateX(-50%);
+}
+
 /* コントローラーエリア: 全体オーバーレイに変換 */
 #app.landscape-play #controller-area {
     position: absolute;
