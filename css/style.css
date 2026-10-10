@@ -5577,8 +5577,8 @@ input, textarea, select, button {
 .share-editkey-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
 }
 
 .share-editkey-label {
@@ -5592,16 +5592,16 @@ input, textarea, select, button {
 .share-editkey-field {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     background: #fff;
     border: 1px solid #dcdfe3;
     border-radius: 6px;
-    padding: 4px 4px 4px 10px;
+    padding: 2px 2px 2px 8px;
 }
 
 #share-editkey-value {
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.05em;
     color: #333;
@@ -5612,8 +5612,8 @@ input, textarea, select, button {
 .share-editkey-copy-btn {
     background: transparent;
     border: none;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
