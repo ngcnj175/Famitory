@@ -61,12 +61,6 @@ The Canvas is where you place notes to compose your BGM. The vertical axis is pi
 
 The tools next to the canvas let you switch how you place notes.
 
-<style>
-.tool-table td svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
-.tool-table td:first-child { text-align: center; width: 48px; }
-.tool-table td:nth-child(2) { white-space: nowrap; }
-</style>
-
 <table class="tool-table">
 <thead><tr><th></th><th>Name</th><th>What it does</th></tr></thead>
 <tbody>

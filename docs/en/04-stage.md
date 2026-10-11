@@ -42,12 +42,6 @@ The Tile Settings panel is where you set the sprite, movement, and parameters of
 
 The tools on the left of the canvas let you switch how you place tiles.
 
-<style>
-.tool-table td svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
-.tool-table td:first-child { text-align: center; width: 48px; }
-.tool-table td:nth-child(2) { white-space: nowrap; }
-</style>
-
 <table class="tool-table">
 <thead><tr><th></th><th>Name</th><th>What it does</th></tr></thead>
 <tbody>

@@ -17,12 +17,6 @@
 
 ゲームデータの出し入れや、言語の切り替え。
 
-<style>
-.tool-table td svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
-.tool-table td:first-child { text-align: center; width: 48px; }
-.tool-table td:nth-child(2) { white-space: nowrap; }
-</style>
-
 <table class="tool-table">
 <thead><tr><th></th><th>ボタン</th><th>なにをする？</th></tr></thead>
 <tbody>

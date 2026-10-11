@@ -28,12 +28,6 @@ The Pixel Palette lists every picture you've drawn. From here you pick a picture
 
 The tools on the left of the canvas let you switch how you draw.
 
-<style>
-.tool-table td svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
-.tool-table td:first-child { text-align: center; width: 48px; }
-.tool-table td:nth-child(2) { white-space: nowrap; }
-</style>
-
 <table class="tool-table">
 <thead><tr><th></th><th>Name</th><th>What it does</th></tr></thead>
 <tbody>

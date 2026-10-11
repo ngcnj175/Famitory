@@ -28,12 +28,6 @@ PIXEL は、ゲームに出てくるキャラクターやブロック、背景�
 
 キャンバスの左にならんでいる道具で、絵のかき方を切りかえられるよ。
 
-<style>
-.tool-table td svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
-.tool-table td:first-child { text-align: center; width: 48px; }
-.tool-table td:nth-child(2) { white-space: nowrap; }
-</style>
-
 <table class="tool-table">
 <thead><tr><th></th><th>名前</th><th>はたらき</th></tr></thead>
 <tbody>
