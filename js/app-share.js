@@ -215,16 +215,9 @@ const AppShare = {
                 this.updateShareStatus();
                 App.showToast(AppI18N.t(isNewPublication ? 'U380' : 'U381'));
 
-                // 真の初回公開時のみエディットキーの保管を促す
-                if (!hadShareId) {
-                    const key = App.projectData?.meta?.editKey || '';
-                    AppDialogs.showAlert(AppI18N.t('U522'), AppI18N.t('U531'));
-                    const keyEl = document.getElementById('generic-confirm-key');
-                    if (keyEl && key) {
-                        keyEl.textContent = key;
-                        keyEl.classList.remove('hidden');
-                    }
-                }
+                // 真の初回公開時は、共有リンクモーダル閉じ後にエディットキー案内→SHARE画面再表示の
+                // フローへ繋げるためフラグを立てる（実際の表示は closeShareLinksDialog で行う）
+                this._pendingFirstPublishEditKey = !hadShareId;
 
                 if (typeof onSuccess === 'function') onSuccess(url);
             } catch (e) {
@@ -323,6 +316,20 @@ const AppShare = {
         this.persistShareDialogState();
         document.getElementById('share-dialog')?.classList.add('hidden');
         dialog.classList.remove('hidden');
+    },
+
+    // 初回公開時: エディットキー案内モーダルを表示 → OKでSHARE画面を再表示
+    _showEditKeyAlertThenReopenShareDialog() {
+        const key = App.projectData?.meta?.editKey || '';
+        AppDialogs.showAlert(AppI18N.t('U522'), AppI18N.t('U531'), () => {
+            // SHARE画面を再表示（既に updateShareStatus 済みのためエディットキー欄が可視）
+            document.getElementById('share-dialog')?.classList.remove('hidden');
+        });
+        const keyEl = document.getElementById('generic-confirm-key');
+        if (keyEl && key) {
+            keyEl.textContent = key;
+            keyEl.classList.remove('hidden');
+        }
     },
 
     // シェアモーダル簡易版イベント
@@ -492,7 +499,14 @@ const AppShare = {
             if (e.target === document.getElementById('share-dialog')) closeShareDialog();
         };
 
-        const closeShareLinksDialog = () => document.getElementById('share-links-dialog').classList.add('hidden');
+        const closeShareLinksDialog = () => {
+            document.getElementById('share-links-dialog').classList.add('hidden');
+            // 初回公開直後のみ：エディットキー案内→SHARE画面再表示
+            if (this._pendingFirstPublishEditKey) {
+                this._pendingFirstPublishEditKey = false;
+                this._showEditKeyAlertThenReopenShareDialog();
+            }
+        };
         if (shareLinksCloseBtn) shareLinksCloseBtn.onclick = closeShareLinksDialog;
         document.getElementById('share-links-dialog').onclick = (e) => {
             if (e.target === document.getElementById('share-links-dialog')) closeShareLinksDialog();
