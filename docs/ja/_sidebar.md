@@ -3,7 +3,7 @@
   - [2. 画面とボタンの見方](01-screen.md)
 
 - **作ってみよう**
-  - [3. ゲームを作る（NEW）](02-game-settings.md)
+  - [3. 作りはじめ（NEW）](02-game-settings.md)
   - [4. 絵をかく（PIXEL）](03-pixel.md)
   - [5. ステージを作る（STAGE）](04-stage.md)
   - [6. 音をつける（BGM）](05-bgm.md)
