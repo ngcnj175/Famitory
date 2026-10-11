@@ -1,4 +1,4 @@
-# 6. Add Sound (BGM)
+# 6. Add Music (BGM)
 
 BGM is where you compose the music that plays in your game. Make your tracks here, then assign them in Game Settings to scenes like the stage, clear jingle, or game over.
 

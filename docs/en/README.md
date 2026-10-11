@@ -2,15 +2,19 @@
 
 ## What is FAMITORY?
 
-A retro game maker that runs in your browser.
+A retro game maker that runs right in your browser.
 
-## What can you do?
+---
 
-- Draw characters and backgrounds with pixel art
-- Place blocks and enemies to build your own stages
-- Create your own BGM and sound effects
-- Share the games you make with friends through a URL
+## What can you do with it?
 
-## Supported devices
+- Draw characters and backgrounds in pixel art
+- Place blocks and enemies to build your very own stages
+- Compose BGM and sound effects yourself
+- Send the game you made to friends with a URL
 
-Works on PC, smartphone, and tablet — you can both play and create on any of them.
+---
+
+## Where it runs
+
+PC, smartphone, tablet — you can play and create on any of them.

@@ -1,4 +1,4 @@
-# 3. Getting Started (NEW)
+# 3. First Steps (NEW)
 
 ## How to begin
 
