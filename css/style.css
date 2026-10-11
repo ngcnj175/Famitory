@@ -845,6 +845,11 @@ body.pc-env .key-hint {
     font-size: 9px;
     white-space: nowrap;
 }
+/* 押下時はボタンがtranslateY(3px)するので、キーラベルは逆方向にずらして位置を維持 */
+.action-btn:active .key-hint,
+.action-btn.pressed .key-hint {
+    transform: translate(-50%, -3px);
+}
 
 /* START: ボタン下・水平中央（本体テキストはそのまま） */
 #btn-start {
@@ -856,6 +861,11 @@ body.pc-env .key-hint {
     transform: translateX(-50%);
     margin-top: 3px;
     font-size: 10px;
+}
+/* 押下時はボタンがtranslateY(2px)するので、キーラベルは逆方向にずらして位置を維持 */
+#btn-start:active .key-hint,
+#btn-start.pressed .key-hint {
+    transform: translate(-50%, -2px);
 }
 
 /* --- リザルト画面 リミックスボタンとその補足説明 --- */
