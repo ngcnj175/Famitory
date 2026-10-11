@@ -121,7 +121,7 @@ const AppShare = {
         }
 
         // デフォルト値のまま公開しようとした場合は警告（両方デフォルト時のみ）
-        const title = (App.projectData?.name || '').trim();
+        const title = (App.projectData?.meta?.name || '').trim();
         const author = (App.projectData?.meta?.author || '').trim();
         if (title === 'NEW GAME' && author === 'You') {
             AppDialogs.showConfirm(
