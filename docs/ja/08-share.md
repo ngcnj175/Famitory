@@ -53,12 +53,3 @@ PLAY画面にタイトルとクリエイター名が入っているか確認し�
 <img src="assets/screenshots/エディットキー.png" alt="エディットキー" style="max-width:50%; min-width:260px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
 !> 忘れてもSHAREモーダルを開けばいつでも確認できるよ。
-
----
-
-## まとめ
-
-- **PLAY** であそぶ、**SAVE** で保存、**OPEN** でひらく、**SHARE** で公開
-- 公開のときに出る **エディットキーは必ずメモ**
-
-次の章では、困ったときの対処法を見ていこう。
