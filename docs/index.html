@@ -348,6 +348,15 @@
                             }
                         });
                     });
+                },
+                // ページ遷移後にページ先頭へスクロール（アンカー指定時を除く）
+                function (hook) {
+                    hook.doneEach(function () {
+                        if (location.hash.indexOf('?id=') !== -1) return;
+                        window.scrollTo(0, 0);
+                        const content = document.querySelector('.content');
+                        if (content) content.scrollTop = 0;
+                    });
                 }
             ]
         }
