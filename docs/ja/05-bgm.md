@@ -99,12 +99,12 @@ BGM は、ゲームの中で流れる音楽（BGM）を作る画面だよ。BGM�
 <table class="tool-table">
 <thead><tr><th></th><th>名前</th><th>はたらき</th></tr></thead>
 <tbody>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></td><td>PLAY / STOP</td><td>BGMを再生・停止する</td></tr>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg></td><td>STEP REC</td><td>ステップ録音のオン/オフを切りかえる。オンのあいだは、鍵盤で押した音がキャンバスに記録されて、1ステップずつ進む</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></td><td>再生/停止</td><td>BGMを再生・停止する（2回押すと最初から再生）</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg></td><td>録音</td><td>鍵盤で押した音がキャンバスに記録される（停止中は1ステップずつ記録）</td></tr>
 <tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 21 L12 3 L19 21 Z"/><circle cx="17.5" cy="7" r="2.2"/></svg></td><td>メトロノーム</td><td>オンにすると、再生・録音のあいだ拍子に合わせて音が鳴る</td></tr>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="10"/><path d="M3 17 h12 v-3 l6 5 -6 5 v-3 h-12 z"/></svg></td><td>TIE（タイ）</td><td>いまの位置の音を1ステップのばす。長い音を入れるのに便利</td></tr>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10 h8 v-3 l6 5 -6 5 v-3 h-8 z"/><rect x="20" y="2" width="3" height="20"/></svg></td><td>REST（休符）</td><td>いまの位置に休み（音なし）を入れて、1ステップ進む</td></tr>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor" style="transform: scaleX(-1);"><path d="M4 10 h8 v-3 l6 5 -6 5 v-3 h-8 z"/><rect x="20" y="2" width="3" height="20"/></svg></td><td>戻る</td><td>再生位置を1ステップ前にもどす。ステップ録音でまちがえたときに便利</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="10"/><path d="M3 17 h12 v-3 l6 5 -6 5 v-3 h-12 z"/></svg></td><td>のばす</td><td>再生位置にある音を1ステップのばす。長い音を入れるのに便利</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10 h8 v-3 l6 5 -6 5 v-3 h-8 z"/><rect x="20" y="2" width="3" height="20"/></svg></td><td>すすむ</td><td>再生位置が1ステップ進む</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor" style="transform: scaleX(-1);"><path d="M4 10 h8 v-3 l6 5 -6 5 v-3 h-8 z"/><rect x="20" y="2" width="3" height="20"/></svg></td><td>もどる</td><td>再生位置が1ステップ戻る</td></tr>
 </tbody>
 </table>
 
