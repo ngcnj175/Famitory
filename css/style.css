@@ -5482,6 +5482,54 @@ body.pc-env .key-hint {
     background: #ccc;
 }
 
+/* エディットキー認証モーダル */
+.editkey-hint {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    white-space: pre-line;
+    line-height: 1.5;
+}
+.editkey-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    width: 100%;
+}
+.editkey-input-row .editkey-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    letter-spacing: 4px;
+}
+.editkey-paste-btn {
+    flex: 0 0 auto;
+    width: 48px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: #d4d4d4;
+    color: #333;
+    cursor: pointer;
+}
+.editkey-paste-btn:hover {
+    background: #ccc;
+}
+.editkey-paste-btn:active {
+    background: #bbb;
+}
+.editkey-paste-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.editkey-error {
+    color: #d14343;
+    font-size: 12px;
+    text-align: center;
+}
+
 /* フッターボタンエリア */
 .modal-footer-actions {
     display: flex;
