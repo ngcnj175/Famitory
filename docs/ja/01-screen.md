@@ -45,10 +45,10 @@
 <table class="tool-table">
 <thead><tr><th></th><th>ボタン</th><th>なにをする場所？</th></tr></thead>
 <tbody>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="20" height="12" rx="3"/><rect x="5.5" y="12" width="5" height="1.5" rx="0.3"/><rect x="7.25" y="10" width="1.5" height="5.5" rx="0.3"/><circle cx="16" cy="12.75" r="1.3"/><circle cx="19" cy="12.75" r="1.3"/></svg></td><td><strong>PLAY</strong><br><small>（プレイ）</small></td><td>作ったゲームを実際に遊ぶ画面</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="20" height="12" rx="3"/><rect x="5.5" y="12" width="5" height="1.5" rx="0.3" fill="#fff"/><rect x="7.25" y="10" width="1.5" height="5.5" rx="0.3" fill="#fff"/><circle cx="16" cy="12.75" r="1.3" fill="#fff"/><circle cx="19" cy="12.75" r="1.3" fill="#fff"/></svg></td><td><strong>PLAY</strong><br><small>（プレイ）</small></td><td>作ったゲームを実際に遊ぶ画面</td></tr>
 <tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg></td><td><strong>PIXEL</strong><br><small>（ピクセル）</small></td><td>キャラや背景の絵をかく画面</td></tr>
 <tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z"/></svg></td><td><strong>STAGE</strong><br><small>（ステージ）</small></td><td>ブロックや敵をならべて面作りをする画面</td></tr>
 <tr><td><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></td><td><strong>BGM</strong><br><small>（サウンド）</small></td><td>音楽を作る画面</td></tr>
-<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="18" height="6" rx="1"/><rect x="4" y="9" width="16" height="4" rx="1"/><rect x="5" y="5" width="14" height="3" rx="1"/><rect x="7" y="16" width="3" height="2" rx="0.3"/></svg></td><td><strong>ARCADE</strong><br><small>（アーケード）</small></td><td>みんなが公開したゲームを見て･遊ぶところ</td></tr>
+<tr><td><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="18" height="6" rx="1"/><rect x="4" y="9" width="16" height="4" rx="1"/><rect x="5" y="5" width="14" height="3" rx="1"/><rect x="7" y="16" width="3" height="2" rx="0.3" fill="#fff"/></svg></td><td><strong>ARCADE</strong><br><small>（アーケード）</small></td><td>みんなが公開したゲームを見て･遊ぶところ</td></tr>
 </tbody>
 </table>
