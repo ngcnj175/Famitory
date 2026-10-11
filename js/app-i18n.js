@@ -379,6 +379,8 @@ const AppI18N = {
         'U556': { JPN: 'とじる',                 ENG: 'Close' },
         'U570': { JPN: '▲このゲームをもとにゲームをつくる', ENG: '▲ Create a new game based on this one' },
         'U580': { JPN: '使い方ガイド',             ENG: 'How to Use' },
+        'U581': { JPN: 'タイトルとクリエーター名がデフォルトのままです', ENG: 'Title and creator name are still default' },
+        'U582': { JPN: 'このまま公開してもよろしいですか？', ENG: 'Publish anyway?' },
     },
 
     t(id, vars = {}) {

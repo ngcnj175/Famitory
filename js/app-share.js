@@ -120,6 +120,21 @@ const AppShare = {
             return;
         }
 
+        // デフォルト値のまま公開しようとした場合は警告（両方デフォルト時のみ）
+        const title = (App.projectData?.name || '').trim();
+        const author = (App.projectData?.meta?.author || '').trim();
+        if (title === 'NEW GAME' && author === 'You') {
+            AppDialogs.showConfirm(
+                AppI18N.t('U581'),
+                AppI18N.t('U582'),
+                () => this._doPublishAndShare(actionFn, onSuccess)
+            );
+            return;
+        }
+        this._doPublishAndShare(actionFn, onSuccess);
+    },
+
+    _doPublishAndShare(actionFn, onSuccess) {
         // 状態判定：
         //   wasPublished    … 現状「公開中」か（＝確認ダイアログで「更新しますか？」文言を使うか）
         //   hadShareId      … 一度でも公開されたことがあるか（＝Firebase上にノードがあるか）

@@ -536,3 +536,5 @@
 | U559 | スキップ | Skip | HTML text node (ハイスコアネーム入力モーダル スキップボタン) | index.html | - |
 | U570 | ▲このゲームをもとにゲームをつくる | ▲ Create a new game based on this one | HTML text node (リザルト画面 リミックスボタン補足説明) | index.html | ✓ |
 | U580 | 使い方ガイド | How to Use | HTML text node (PLAY画面タイトル クリエイターモード マニュアルリンク) | index.html | ✓ |
+| U581 | タイトルとクリエーター名がデフォルトのままです | Title and creator name are still default | JS (SHAREモーダル デフォルト値警告 メイン) | app-share.js | - |
+| U582 | このまま公開してもよろしいですか？ | Publish anyway? | JS (SHAREモーダル デフォルト値警告 サブ) | app-share.js | - |
