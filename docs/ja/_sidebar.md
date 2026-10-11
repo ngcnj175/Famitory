@@ -12,4 +12,3 @@
   - [7. 遊ぶ（PLAY）](06-play.md)
   - [8. 保存・開く（SAVE・OPEN）](07-save-open.md)
   - [9. 公開する（SHARE）](08-share.md)
-  - [10. 困ったとき](09-help.md)

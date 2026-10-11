@@ -511,7 +511,6 @@
 | U527 | 非公開にしました | Unpublished | JS message/literal (非公開化成功トースト) | app-share.js | ✓ |
 | U528 | 非公開化に失敗しました | Failed to unpublish | JS message/literal (非公開化失敗トースト) | app-share.js | ✓ |
 | U529 | このキーはゲームの編集・公開に必要です。忘れずに控えておいてください。 | This key is required to edit or publish this game. Please save it. | HTML text node (SHAREモーダル エディットキー欄の案内文) | index.html | ✓ |
-| U530 | エディットキーを控えてください | Save your edit key | JS message/literal (初回公開成功アラート 見出し) | app-share.js | ✓ |
 | U531 | このキーは、ゲームを編集したり\n公開を取り消すときに必要です。\n\nSHARE画面からも確認できるので\n忘れずに控えておいてください。 | This key is required to edit this game\nor to unpublish it.\n\nYou can also find it in the SHARE screen,\nso please keep it in a safe place. | JS message/literal (初回公開成功アラート 本文、改行あり) | app-share.js | ✓ |
 | U540 | ゲームを公開する | Publish Game | HTML text node (公開モーダル タイトル) | index.html | ✓ |
 | U541 | アーケードに登録 | Register to ARCADE | HTML text node (公開モーダル チェックボックスラベル) | index.html | ✓ |

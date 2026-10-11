@@ -12,4 +12,3 @@
   - [7. Play (PLAY)](06-play.md)
   - [8. Save & Open (SAVE & OPEN)](07-save-open.md)
   - [9. Share (SHARE)](08-share.md)
-  - [10. Troubleshooting](09-help.md)
