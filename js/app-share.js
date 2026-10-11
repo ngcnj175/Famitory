@@ -218,10 +218,10 @@ const AppShare = {
                 // 真の初回公開時のみエディットキーの保管を促す
                 if (!hadShareId) {
                     const key = App.projectData?.meta?.editKey || '';
-                    const sub = key
-                        ? `${AppI18N.t('U522')}: ${key}\n${AppI18N.t('U531')}`
-                        : AppI18N.t('U531');
-                    AppDialogs.showAlert(AppI18N.t('U530'), sub);
+                    const heading = key
+                        ? `${AppI18N.t('U522')}：${key}`
+                        : AppI18N.t('U530');
+                    AppDialogs.showAlert(heading, AppI18N.t('U531'));
                 }
 
                 if (typeof onSuccess === 'function') onSuccess(url);
