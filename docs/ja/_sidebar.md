@@ -8,7 +8,7 @@
   - [5. ステージを作る（STAGE）](04-stage.md)
   - [6. 音をつける（BGM）](05-bgm.md)
 
-- **仕上げ**
+- **ゲームができたら**
   - [7. 遊ぶ（PLAY）](06-play.md)
   - [8. 保存・開く（SAVE・OPEN）](07-save-open.md)
   - [9. 公開する（SHARE）](08-share.md)
