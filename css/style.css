@@ -5529,6 +5529,10 @@ body.pc-env .key-hint {
     font-size: 12px;
     text-align: center;
 }
+/* 認証ボタンの横幅をキャンセルに揃える */
+.editkey-footer .modal-action-btn {
+    min-width: 120px;
+}
 
 /* フッターボタンエリア */
 .modal-footer-actions {
