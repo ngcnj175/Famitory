@@ -25,22 +25,22 @@
 
 ## ゲームを公開する
 
-### ＜公開する前にチェック＞
+### 公開する前にチェック
 PLAY画面にタイトルとクリエイター名が入っているか確認しよう。その情報で公開されるよ。
 
-### ＜シェアの仕方＞
+### シェアの仕方
 公開が終わったら共有画面から好きな方法でシェアしよう！
 
 - **URLをコピー** … LINE・メール・DMにはりつけて送れる
 - **Xに投稿** … X（旧Twitter）の投稿画面を開く（定型文が自動で入るよ）
 - **Discordに投稿** … Discordの投稿用に定型文がコピーされる
 
-### ＜エディットキー＞
+### エディットキー
 公開した瞬間、ゲームごとに1つだけの8桁の合言葉 **エディットキー** が発行されるよ。**別のスマホ・パソコンから編集するとき** に必要なので、必ずメモしておこう。
 
 <img src="assets/screenshots/エディットキー.png" alt="エディットキー" style="max-width:40%; min-width:208px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
-### ＜ゲームの更新／非公開＞
+### ゲームの更新／非公開
 公開後は「公開中ラベル」が表示されるよ。
 
 <img src="assets/screenshots/公開中ラベル.png" alt="公開中ラベル" style="max-width:40%; min-width:208px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
