@@ -96,6 +96,12 @@ const AppDialogs = {
 
         msgEl.textContent = message;
         subEl.textContent = subMessage || '';
+        // 専用のキー表示欄は毎回リセット（呼び出し側で必要時のみ表示する）
+        const keyEl = document.getElementById('generic-confirm-key');
+        if (keyEl) {
+            keyEl.textContent = '';
+            keyEl.classList.add('hidden');
+        }
         modal.classList.remove('hidden');
 
         AppI18N.applyLang();

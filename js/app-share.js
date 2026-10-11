@@ -218,10 +218,12 @@ const AppShare = {
                 // 真の初回公開時のみエディットキーの保管を促す
                 if (!hadShareId) {
                     const key = App.projectData?.meta?.editKey || '';
-                    const heading = key
-                        ? `${AppI18N.t('U522')}：${key}`
-                        : AppI18N.t('U530');
-                    AppDialogs.showAlert(heading, AppI18N.t('U531'));
+                    AppDialogs.showAlert(AppI18N.t('U522'), AppI18N.t('U531'));
+                    const keyEl = document.getElementById('generic-confirm-key');
+                    if (keyEl && key) {
+                        keyEl.textContent = key;
+                        keyEl.classList.remove('hidden');
+                    }
                 }
 
                 if (typeof onSuccess === 'function') onSuccess(url);

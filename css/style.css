@@ -5534,6 +5534,20 @@ body.pc-env .key-hint {
     min-width: 120px;
 }
 
+/* 共通確認モーダル内のエディットキー表示 */
+.generic-confirm-key {
+    margin: 12px 20px;
+    padding: 10px 12px;
+    background: #e5e7eb;
+    color: #333;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    word-break: break-all;
+}
+
 /* フッターボタンエリア */
 .modal-footer-actions {
     display: flex;
