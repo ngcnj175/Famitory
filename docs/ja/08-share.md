@@ -40,8 +40,6 @@ PLAY画面にタイトルとクリエイター名が入っているか確認し�
 
 <img src="assets/screenshots/エディットキー.png" alt="エディットキー" style="max-width:40%; min-width:208px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
 
-!> 忘れてもSHAREモーダルを開けばいつでも確認できるよ。
-
 ### ＜ゲームの更新／非公開＞
 公開後は「公開中ラベル」が表示されるよ。
 
