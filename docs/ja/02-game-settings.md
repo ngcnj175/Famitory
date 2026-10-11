@@ -21,6 +21,8 @@
 
 まずはタイトルとクリエーター名を決めるよ。最初に決めてもいいし、あとでPLAY画面から変えることもできるよ。
 
+<img src="assets/screenshots/ゲーム情報.png" alt="ゲーム情報" style="max-width:40%; min-width:208px; display:block; margin:16px 0; border:none; box-shadow:none; border-radius:0;">
+
 ### ゲームタイトル
 
 ゲームの名前。
