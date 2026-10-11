@@ -347,7 +347,7 @@ const AppI18N = {
         'U517': { JPN: '読み込み中…',              ENG: 'Loading…' },
         'U518': { JPN: 'プレビュー',               ENG: 'Preview' },
         'U519': { JPN: 'タイルモード',             ENG: 'Tile Mode' },
-        'U520': { JPN: 'タイトル',                 ENG: 'Title' },
+        'U520': { JPN: 'ゲームタイトル',           ENG: 'Game Title' },
         'U521': { JPN: 'クリエーター',             ENG: 'Creator' },
         'U522': { JPN: 'エディットキー',           ENG: 'Edit Key' },
         'U523': { JPN: 'フレーム',                 ENG: 'Frame' },

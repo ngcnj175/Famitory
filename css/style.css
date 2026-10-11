@@ -246,7 +246,7 @@ input, textarea, select, button {
 
 #game-remix-info .remix-label {
     font-size: calc(var(--canvas-css-w, 375px) * 0.024);
-    letter-spacing: 0.22em;
+    letter-spacing: 0.05em;
     color: #6a6a6a;
 }
 
@@ -274,9 +274,16 @@ input, textarea, select, button {
     color: #6fd3ff;
     margin-bottom: 3px;
     display: none;
+    align-items: center;
+    gap: 4px;
+}
+.edit-label .edit-pen-icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
 }
 #push-start-ui.creator-mode .edit-label {
-    display: block;
+    display: flex;
 }
 #push-start-ui.creator-mode .author-prefix {
     display: none;
