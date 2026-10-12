@@ -344,6 +344,7 @@
 | U326 | ジャンプ_03 | Jump_03 | JS message/literal | app.js | |
 | U327 | ジャンプ_04 | Jump_04 | JS message/literal | app.js | |
 | U328 | ジャンプ_05 | Jump_05 | JS message/literal | app.js | |
+| U583 | ジャンプ_06 | Jump_06 | JS message/literal | app.js | |
 | U329 | 攻撃_01 | Attack_01 | JS message/literal | app.js | |
 | U330 | 攻撃_02 | Attack_02 | JS message/literal | app.js | |
 | U331 | 攻撃_03 | Attack_03 | JS message/literal | app.js | |

@@ -219,6 +219,7 @@ const AppI18N = {
         'U258': { JPN: 'ジャンプ_03',         ENG: 'Jump_03' },
         'U259': { JPN: 'ジャンプ_04',         ENG: 'Jump_04' },
         'U260': { JPN: 'ジャンプ_05',         ENG: 'Jump_05' },
+        'U583': { JPN: 'ジャンプ_06',         ENG: 'Jump_06' },
         'U261': { JPN: '攻撃_01',            ENG: 'Attack_01' },
         'U262': { JPN: '攻撃_02',            ENG: 'Attack_02' },
         'U263': { JPN: '攻撃_03',            ENG: 'Attack_03' },
