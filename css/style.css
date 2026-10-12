@@ -3610,7 +3610,7 @@ body.pc-env .key-hint {
     gap: 6px;
     cursor: pointer;
     user-select: none;
-    padding: 2px 0;
+    padding: 8px 0;
 }
 
 .se-subgroup-toggle {
