@@ -368,6 +368,7 @@ const AppProject = {
     },
 
     loadProject(name) {
+        try { // [DIAG] loadProject全体をtry/catchで囲んで例外を可視化
         const data = Storage.loadProject(name);
         if (data) {
             // ゲームループを確実に停止（isRunning=true でも showPreview が呼ばれるよう）
@@ -430,6 +431,13 @@ const AppProject = {
         } else {
             const failMsg = AppI18N.I18N['U364']?.[AppI18N.currentLang] || 'プロジェクトの読み込みに失敗しました';
             AppDialogs.showAlert(failMsg);
+        }
+        } catch (e) { // [DIAG] 例外内容をiPhone上で見えるようalert表示
+            const info = '[loadProject例外]\n'
+                + 'msg: ' + (e && e.message ? e.message : String(e)) + '\n'
+                + 'stack: ' + (e && e.stack ? String(e.stack).split('\n').slice(0,4).join(' | ') : 'none');
+            try { alert(info); } catch (_) {}
+            console.error('[DIAG loadProject]', e);
         }
     },
 
@@ -723,8 +731,13 @@ const AppProject = {
 
         openBtn.onclick = () => {
             if (!selectedName) return;
-            this.loadProject(selectedName);
-            close();
+            try { // [DIAG] openBtnクリックハンドラ全体を保護
+                this.loadProject(selectedName);
+                close();
+            } catch (e) {
+                try { alert('[openBtn例外] ' + (e && e.message ? e.message : String(e))); } catch (_) {}
+                console.error('[DIAG openBtn]', e);
+            }
         };
 
         copyBtn.onclick = () => {
