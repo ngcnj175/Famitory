@@ -624,28 +624,46 @@ const AppProject = {
         if (!diagLog) {
             diagLog = document.createElement('div');
             diagLog.id = 'diag-log-overlay';
-            diagLog.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(255,0,0,0.85);color:#fff;font-size:11px;font-family:monospace;padding:4px 6px;z-index:99999;max-height:40vh;overflow-y:auto;white-space:pre-wrap;pointer-events:auto;';
+            // pointer-events:none で絶対にタップを吸収しない構造
+            diagLog.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(255,0,0,0.75);color:#fff;font-size:9px;font-family:monospace;padding:2px 4px;z-index:99999;height:22vh;overflow:hidden;white-space:pre;pointer-events:none;line-height:1.1;';
             document.body.appendChild(diagLog);
             const diagPush = (s) => {
                 const t = new Date();
-                const ts = `${t.getMinutes()}:${('0'+t.getSeconds()).slice(-2)}.${('00'+t.getMilliseconds()).slice(-3)}`;
+                const ts = `${('0'+t.getMinutes()).slice(-2)}:${('0'+t.getSeconds()).slice(-2)}.${('00'+t.getMilliseconds()).slice(-3)}`;
                 diagLog.textContent = `[${ts}] ${s}\n` + diagLog.textContent;
-                if (diagLog.textContent.length > 2000) diagLog.textContent = diagLog.textContent.slice(0,2000);
+                if (diagLog.textContent.length > 1500) diagLog.textContent = diagLog.textContent.slice(0,1500);
             };
             window._diagPush = diagPush;
-            diagLog.ondblclick = () => { diagLog.remove(); window._diagPush = null; };
-            // タップで消せるタップエリア（ダブルタップ）
-            // 全イベントログ
+            // 全イベントログ: 真のターゲット＋その上に重なってる要素も記録
             ['touchstart','touchend','click','pointerdown','pointerup'].forEach(ev => {
                 document.addEventListener(ev, (e) => {
                     const t = e.target;
-                    const id = t?.id || t?.className || t?.tagName || '?';
-                    diagPush(`${ev} <- ${String(id).slice(0,40)}`);
-                }, true); // capture phase
+                    const id = t?.id || (t?.className && typeof t.className === 'string' ? t.className : '') || t?.tagName || '?';
+                    // タップ座標直下の全要素スタック（最大4つ）を記録 → 何が被さってるか判る
+                    let stack = '';
+                    try {
+                        const x = e.touches?.[0]?.clientX ?? e.clientX;
+                        const y = e.touches?.[0]?.clientY ?? e.clientY;
+                        if (x != null && y != null) {
+                            const els = document.elementsFromPoint(x, y).slice(0, 4);
+                            stack = ' /stack:' + els.map(el => el.id || el.tagName).join('>');
+                        }
+                    } catch (_) {}
+                    diagPush(`${ev} tgt:${String(id).slice(0,20)}${stack.slice(0,60)}`);
+                }, true);
             });
             window.addEventListener('error', (e) => {
                 diagPush('ERR: ' + (e.message||'?') + ' @ ' + (e.filename||'?') + ':' + (e.lineno||'?'));
             });
+            // openBtn が本当に呼ばれたかの印
+            const origLoad = this.loadProject.bind(this);
+            if (!this._loadProjectWrapped) {
+                this._loadProjectWrapped = true;
+                this.loadProject = (name) => {
+                    diagPush('>>> loadProject CALLED name=' + name);
+                    return origLoad(name);
+                };
+            }
         }
 
         // BGM再生中に開くと setInterval 由来の render ループがモーダル操作に干渉するため停止
