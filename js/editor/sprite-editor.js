@@ -780,7 +780,7 @@ const SpriteEditor = {
         };
 
         if (needConfirm) {
-            const msg = App.I18N['U187']?.[App.currentLang] || 'このスプライトを削除しますか？\n（使用されている箇所は削除されます）';
+            const msg = App.I18N['U187']?.[App.currentLang] || 'このピクセルを削除しますか？\n（使用されている箇所は削除されます）';
             App.showConfirm(msg, '', () => {
                 executeDelete();
             });

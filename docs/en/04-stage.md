@@ -28,9 +28,9 @@ The Tile Palette lists the parts (tiles) you can place on a stage.
 
 ## Tile Settings panel
 
-The Tile Settings panel is where you set the sprite, movement, and parameters of the selected tile. **The available options depend on the tile type.**
+The Tile Settings panel is where you set the pixel, movement, and parameters of the selected tile. **The available options depend on the tile type.**
 
-- **Sprite** … Assign a picture (made in PIXEL) to the tile.
+- **Pixel** … Assign a picture (made in PIXEL) to the tile.
 - **Animation** … Set which frames play for actions like walking or jumping.
 - **Parameters** … Fine-tune things like HP, speed, or attack power — the options match the tile type.
 - **Handle (top of panel)** … Drag the handle at the top up or down to expand or shrink the panel.

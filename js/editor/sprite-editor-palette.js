@@ -151,7 +151,7 @@ const SpriteEditorPalette = {
             return;
         }
 
-        const msg = App.I18N['U181']?.[App.currentLang] || '現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。';
+        const msg = App.I18N['U181']?.[App.currentLang] || '現在のパレットをおきかえますか？\nピクセルの色が変わる可能性があります。';
         const parts = msg.split('\n');
 
         App.showConfirm(parts[0], parts[1], () => {

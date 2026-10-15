@@ -189,14 +189,14 @@
 | U178 | 削除 | Delete | JS message/literal | sprite-editor.js | ✓ |
 | U179 | キャンセル | Cancel | HTML button / JS literal | index.html / sprite-editor.js | ✓ |
 | U180 | プリセットを選択してください | Please select a preset | JS message/literal | sprite-editor.js | ✓ |
-| U181 | 現在のパレットをおきかえますか？\nスプライトの色が変わる可能性があります。 | Replace the current palette?\nSprite colors may change. | JS message/literal | sprite-editor.js | ✓ |
+| U181 | 現在のパレットをおきかえますか？\nピクセルの色が変わる可能性があります。 | Replace the current palette?\nPixel colors may change. | JS message/literal | sprite-editor.js | ✓ |
 | U182 | ▶ | ▶ | JS dom text assign | sprite-editor.js | |
 | U183 | 最低1色は必要です | At least 1 color is required | JS message/literal | sprite-editor.js | ✓ |
 | U184 | この色を削除しますか？\n（使用されているドットは透明になります） | Delete this color?\n(Dots using this color will become transparent.) | JS message/literal | sprite-editor.js | |
 | U185 | 縮小すると細かい情報が失われます。続行しますか？ | Shrinking may lose detail. Continue? | JS message/literal | sprite-editor.js | |
 | U186 | これ以上削除できません | Cannot delete any more | JS message/literal | sprite-editor.js | ✓ |
-| U187 | このスプライトを削除しますか？\n（使用されている箇所は削除されます） | Delete this sprite?\n(All usages will be removed.) | JS message/literal | sprite-editor.js | |
-| U188 | スプライトをクリアしますか？ | Clear this sprite? | JS message/literal | sprite-editor.js | |
+| U187 | このピクセルを削除しますか？\n（使用されている箇所は削除されます） | Delete this pixel?\n(All usages will be removed.) | JS message/literal | sprite-editor.js | |
+| U188 | ピクセルをクリアしますか？ | Clear this pixel? | JS message/literal | sprite-editor.js | |
 | U189 | <rect x= | <rect x= | JS dom text assign | sprite-editor.js | |
 | U190 | <path d= | <path d= | JS dom text assign | sprite-editor.js | |
 | U191 | フレーム: — / — | Frame: — / — | JS dom text assign (U523使用) | sprite-editor-preview.js | ✓ |
@@ -298,7 +298,7 @@
 | U282 | ゲット | Get | JS message/literal | stage-editor.js | ✓ |
 | U283 | ■ | ■ | JS dom text assign | stage-editor.js | |
 | U284 | ▶ | ▶ | JS dom text assign | stage-editor.js | |
-| U285 | スプライトを登録してください | Please register a sprite | JS message/literal | stage-editor.js | ✓ |
+| U285 | ピクセルを登録してください | Please register a pixel | JS message/literal | stage-editor.js | ✓ |
 | U286 | 複製 | Duplicate | JS message/literal | stage-editor.js | ✓ |
 | U287 | 削除 | Delete | JS message/literal | stage-editor.js | ✓ |
 | U288 | キャンセル | Cancel | JS message/literal | stage-editor.js | ✓ |

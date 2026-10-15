@@ -672,7 +672,7 @@ const SpriteCanvasInput = {
     },
 
     clearSprite() {
-        const msg = App.I18N['U188']?.[App.currentLang] || 'スプライトをクリアしますか？';
+        const msg = App.I18N['U188']?.[App.currentLang] || 'ピクセルをクリアしますか？';
         App.showConfirm(msg, '', () => {
             this.editor.saveHistory();
             const sprite = App.projectData.sprites[this.editor.currentSprite];
