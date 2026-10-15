@@ -610,22 +610,7 @@ const AppProject = {
         });
     },
 
-    // 壊れたプロジェクトリストエントリ（name欠落）を除去。
-    // 旧バグ（BGMエディタでソング追加/複製時にStorage.saveProject()を引数なしで呼んでいた）で
-    // {name: undefined, updatedAt: ...} のゴミエントリが projectList と
-    // 'project_undefined' キーに混入しているケースを修復する。
-    _cleanupBrokenProjectList() {
-        const list = Storage.getProjectList();
-        const cleaned = list.filter(p => p && typeof p.name === 'string' && p.name.length > 0);
-        if (cleaned.length !== list.length) {
-            Storage.save('projectList', cleaned);
-            Storage.remove('project_undefined');
-        }
-    },
-
     showSimpleProjectList() {
-        this._cleanupBrokenProjectList();
-
         // BGM再生中に開くと setInterval 由来の render ループがモーダル操作に干渉するため停止
         if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.isPlaying) {
             SoundEditor.stop();

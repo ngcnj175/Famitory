@@ -40,11 +40,24 @@ const Storage = {
     },
 
     // プロジェクトリスト管理
+    // 不正エントリ（name欠落）が混入していたら自動除去して書き戻す（自己修復）
     getProjectList() {
-        return this.load('projectList') || [];
+        const raw = this.load('projectList') || [];
+        const cleaned = raw.filter(p => p && typeof p.name === 'string' && p.name.length > 0);
+        if (cleaned.length !== raw.length) {
+            this.save('projectList', cleaned);
+            this.remove('project_undefined');
+        }
+        return cleaned;
     },
 
     saveProject(name, data) {
+        // 引数欠落・空名の呼び出しで projectList に {name: undefined} の
+        // ゴミエントリが混入する過去バグ対策（開くモーダルを fatal にする原因になった）
+        if (typeof name !== 'string' || name.length === 0) {
+            console.error('Storage.saveProject: invalid name', name);
+            return false;
+        }
         const list = this.getProjectList();
         const index = list.findIndex(p => p.name === name);
         const entry = {
@@ -60,6 +73,7 @@ const Storage = {
 
         this.save('projectList', list);
         this.save('project_' + name, data);
+        return true;
     },
 
     loadProject(name) {

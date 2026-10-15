@@ -1,4 +1,6 @@
-const CACHE_NAME = 'pixel-game-kit-v3.2.0';
+// network-first戦略のため、このバージョンはオフラインフォールバック用キャッシュの識別子のみ。
+// JS/CSS更新時に手動バンプする必要はなくなった（オンライン時は常に最新を取得）。
+const CACHE_NAME = 'pixel-game-kit-v3.2.1';
 const urlsToCache = [
     './',
     './index.html',
@@ -68,15 +70,25 @@ self.addEventListener('activate', event => {
     );
 });
 
-// フェッチ
+// フェッチ: network-first（オンライン時は常に最新、オフライン時のみキャッシュ）
+// cache-first だと CACHE_NAME を手動バンプしないと更新が iPhone に届かない運用問題があり切替。
+// 非GET・他オリジン（Firebase 等）は SW を素通し。
 self.addEventListener('fetch', event => {
+    const req = event.request;
+    if (req.method !== 'GET') return;
+    let url;
+    try { url = new URL(req.url); } catch (_) { return; }
+    if (url.origin !== self.location.origin) return;
+
     event.respondWith(
-        caches.match(event.request)
+        fetch(req)
             .then(response => {
-                if (response) {
-                    return response;
+                if (response && response.ok) {
+                    const cloned = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(req, cloned)).catch(() => {});
                 }
-                return fetch(event.request);
+                return response;
             })
+            .catch(() => caches.match(req))
     );
 });
