@@ -827,7 +827,7 @@ const AppProject = {
         const modal = document.getElementById('save-as-modal');
         const input = document.getElementById('save-as-name-input');
         if (modal && input) {
-            let initialName = App.currentProjectName || 'MyGame';
+            let initialName = App.projectData?.meta?.name || App.currentProjectName || 'MyGame';
             input.value = this.stripEmoji(initialName.replace(/\u200B/g, ''));
             modal.classList.remove('hidden');
             input.focus();

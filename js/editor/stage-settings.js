@@ -466,17 +466,17 @@ class StageSettings {
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span style="color:#ff6b6b;font-size:14px;font-weight:600;width:24px;">R</span>
                         <input type="range" id="cp-slider-r" min="0" max="255" value="${r}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#ff0000);">
-                        <span id="cp-value-r" style="color:#fff;font-size:13px;width:36px;text-align:right;">${r}</span>
+                        <input type="number" id="cp-value-r" min="0" max="255" value="${r}" inputmode="numeric" style="width:48px;padding:4px 6px;border:1px solid #444466;border-radius:6px;background:#1a1a2e;color:#fff;font-size:13px;text-align:right;-moz-appearance:textfield;">
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span style="color:#6bff6b;font-size:14px;font-weight:600;width:24px;">G</span>
                         <input type="range" id="cp-slider-g" min="0" max="255" value="${g}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#00ff00);">
-                        <span id="cp-value-g" style="color:#fff;font-size:13px;width:36px;text-align:right;">${g}</span>
+                        <input type="number" id="cp-value-g" min="0" max="255" value="${g}" inputmode="numeric" style="width:48px;padding:4px 6px;border:1px solid #444466;border-radius:6px;background:#1a1a2e;color:#fff;font-size:13px;text-align:right;-moz-appearance:textfield;">
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span style="color:#6b6bff;font-size:14px;font-weight:600;width:24px;">B</span>
                         <input type="range" id="cp-slider-b" min="0" max="255" value="${b}" style="flex:1;height:28px;border-radius:14px;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;background:linear-gradient(to right,#000,#0000ff);">
-                        <span id="cp-value-b" style="color:#fff;font-size:13px;width:36px;text-align:right;">${b}</span>
+                        <input type="number" id="cp-value-b" min="0" max="255" value="${b}" inputmode="numeric" style="width:48px;padding:4px 6px;border:1px solid #444466;border-radius:6px;background:#1a1a2e;color:#fff;font-size:13px;text-align:right;-moz-appearance:textfield;">
                     </div>
                 </div>
             </div>
@@ -527,9 +527,9 @@ class StageSettings {
             sbCursor.style.left = `${saturation}%`;
             sbCursor.style.top = `${100 - brightness}%`;
             hueCursor.style.left = `${(hue / 360) * 100}%`;
-            if (sliderR) { sliderR.value = r; valueR.textContent = r; }
-            if (sliderG) { sliderG.value = g; valueG.textContent = g; }
-            if (sliderB) { sliderB.value = b; valueB.textContent = b; }
+            if (sliderR) { sliderR.value = r; if (document.activeElement !== valueR) valueR.value = r; }
+            if (sliderG) { sliderG.value = g; if (document.activeElement !== valueG) valueG.value = g; }
+            if (sliderB) { sliderB.value = b; if (document.activeElement !== valueB) valueB.value = b; }
         };
 
         const updateFromRGB = () => {
@@ -594,16 +594,47 @@ class StageSettings {
         if (sliderG) sliderG.addEventListener('input', () => { g = parseInt(sliderG.value); updateFromRGB(); });
         if (sliderB) sliderB.addEventListener('input', () => { b = parseInt(sliderB.value); updateFromRGB(); });
 
-        // HEX入力
-        hexInput.addEventListener('change', () => {
-            const val = hexInput.value.trim();
-            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                const rgb = hexToRgb(val);
+        // RGB数値入力
+        const bindRgbNumberInput = (el, setter) => {
+            el.addEventListener('input', () => {
+                const n = parseInt(el.value, 10);
+                if (Number.isNaN(n)) return;
+                setter(Math.max(0, Math.min(255, n)));
+                updateFromRGB();
+            });
+            el.addEventListener('blur', () => {
+                const n = parseInt(el.value, 10);
+                const clamped = Number.isNaN(n) ? 0 : Math.max(0, Math.min(255, n));
+                setter(clamped);
+                el.value = clamped;
+                updateFromRGB();
+            });
+            el.addEventListener('focus', () => el.select());
+        };
+        bindRgbNumberInput(valueR, (v) => { r = v; });
+        bindRgbNumberInput(valueG, (v) => { g = v; });
+        bindRgbNumberInput(valueB, (v) => { b = v; });
+
+        // HEX入力（#なしでも受付、入力完了時に#を付与）
+        const normalizeHex = (raw) => {
+            let v = (raw || '').trim().replace(/^#/, '').toUpperCase();
+            if (/^[0-9A-F]{6}$/.test(v)) return '#' + v;
+            return null;
+        };
+        hexInput.addEventListener('input', () => {
+            const hex = normalizeHex(hexInput.value);
+            if (hex) {
+                const rgb = hexToRgb(hex);
                 r = rgb.r; g = rgb.g; b = rgb.b;
                 const hsv = rgbToHsv(r, g, b);
                 hue = hsv.h; saturation = hsv.s; brightness = hsv.v;
                 updateUI();
             }
+        });
+        hexInput.addEventListener('blur', () => {
+            const hex = normalizeHex(hexInput.value);
+            if (hex) hexInput.value = hex;
+            else hexInput.value = rgbToHex(r, g, b);
         });
 
         // カラーパレット（App.nesPalette）からスウォッチを生成
