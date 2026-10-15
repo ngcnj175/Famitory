@@ -368,7 +368,6 @@ const AppProject = {
     },
 
     loadProject(name) {
-        try { // [DIAG] loadProject全体をtry/catchで囲んで例外を可視化
         const data = Storage.loadProject(name);
         if (data) {
             // ゲームループを確実に停止（isRunning=true でも showPreview が呼ばれるよう）
@@ -431,13 +430,6 @@ const AppProject = {
         } else {
             const failMsg = AppI18N.I18N['U364']?.[AppI18N.currentLang] || 'プロジェクトの読み込みに失敗しました';
             AppDialogs.showAlert(failMsg);
-        }
-        } catch (e) { // [DIAG] 例外内容をiPhone上で見えるようalert表示
-            const info = '[loadProject例外]\n'
-                + 'msg: ' + (e && e.message ? e.message : String(e)) + '\n'
-                + 'stack: ' + (e && e.stack ? String(e.stack).split('\n').slice(0,4).join(' | ') : 'none');
-            try { alert(info); } catch (_) {}
-            console.error('[DIAG loadProject]', e);
         }
     },
 
@@ -618,53 +610,21 @@ const AppProject = {
         });
     },
 
-    showSimpleProjectList() {
-        // [DIAG] 画面上部に発火ログを表示するオーバーレイを作成
-        let diagLog = document.getElementById('diag-log-overlay');
-        if (!diagLog) {
-            diagLog = document.createElement('div');
-            diagLog.id = 'diag-log-overlay';
-            // pointer-events:none で絶対にタップを吸収しない構造
-            diagLog.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(255,0,0,0.75);color:#fff;font-size:9px;font-family:monospace;padding:2px 4px;z-index:99999;height:22vh;overflow:hidden;white-space:pre;pointer-events:none;line-height:1.1;';
-            document.body.appendChild(diagLog);
-            const diagPush = (s) => {
-                const t = new Date();
-                const ts = `${('0'+t.getMinutes()).slice(-2)}:${('0'+t.getSeconds()).slice(-2)}.${('00'+t.getMilliseconds()).slice(-3)}`;
-                diagLog.textContent = `[${ts}] ${s}\n` + diagLog.textContent;
-                if (diagLog.textContent.length > 1500) diagLog.textContent = diagLog.textContent.slice(0,1500);
-            };
-            window._diagPush = diagPush;
-            // 全イベントログ: 真のターゲット＋その上に重なってる要素も記録
-            ['touchstart','touchend','click','pointerdown','pointerup'].forEach(ev => {
-                document.addEventListener(ev, (e) => {
-                    const t = e.target;
-                    const id = t?.id || (t?.className && typeof t.className === 'string' ? t.className : '') || t?.tagName || '?';
-                    // タップ座標直下の全要素スタック（最大4つ）を記録 → 何が被さってるか判る
-                    let stack = '';
-                    try {
-                        const x = e.touches?.[0]?.clientX ?? e.clientX;
-                        const y = e.touches?.[0]?.clientY ?? e.clientY;
-                        if (x != null && y != null) {
-                            const els = document.elementsFromPoint(x, y).slice(0, 4);
-                            stack = ' /stack:' + els.map(el => el.id || el.tagName).join('>');
-                        }
-                    } catch (_) {}
-                    diagPush(`${ev} tgt:${String(id).slice(0,20)}${stack.slice(0,60)}`);
-                }, true);
-            });
-            window.addEventListener('error', (e) => {
-                diagPush('ERR: ' + (e.message||'?') + ' @ ' + (e.filename||'?') + ':' + (e.lineno||'?'));
-            });
-            // openBtn が本当に呼ばれたかの印
-            const origLoad = this.loadProject.bind(this);
-            if (!this._loadProjectWrapped) {
-                this._loadProjectWrapped = true;
-                this.loadProject = (name) => {
-                    diagPush('>>> loadProject CALLED name=' + name);
-                    return origLoad(name);
-                };
-            }
+    // 壊れたプロジェクトリストエントリ（name欠落）を除去。
+    // 旧バグ（BGMエディタでソング追加/複製時にStorage.saveProject()を引数なしで呼んでいた）で
+    // {name: undefined, updatedAt: ...} のゴミエントリが projectList と
+    // 'project_undefined' キーに混入しているケースを修復する。
+    _cleanupBrokenProjectList() {
+        const list = Storage.getProjectList();
+        const cleaned = list.filter(p => p && typeof p.name === 'string' && p.name.length > 0);
+        if (cleaned.length !== list.length) {
+            Storage.save('projectList', cleaned);
+            Storage.remove('project_undefined');
         }
+    },
+
+    showSimpleProjectList() {
+        this._cleanupBrokenProjectList();
 
         // BGM再生中に開くと setInterval 由来の render ループがモーダル操作に干渉するため停止
         if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.isPlaying) {
@@ -714,7 +674,8 @@ const AppProject = {
 
         const renderList = () => {
             listContainer.innerHTML = '';
-            const list = Storage.getProjectList();
+            // 保険: 想定外のゴミエントリ（name欠落）が万一残っていても throw しないよう除外
+            const list = Storage.getProjectList().filter(p => p && typeof p.name === 'string' && p.name.length > 0);
 
             list.sort((a, b) => b.updatedAt - a.updatedAt);
 
@@ -778,13 +739,8 @@ const AppProject = {
 
         openBtn.onclick = () => {
             if (!selectedName) return;
-            try { // [DIAG] openBtnクリックハンドラ全体を保護
-                this.loadProject(selectedName);
-                close();
-            } catch (e) {
-                try { alert('[openBtn例外] ' + (e && e.message ? e.message : String(e))); } catch (_) {}
-                console.error('[DIAG openBtn]', e);
-            }
+            this.loadProject(selectedName);
+            close();
         };
 
         copyBtn.onclick = () => {

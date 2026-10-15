@@ -1074,16 +1074,16 @@ const SoundEditor = {
         // 追加したソングへ移動
         this.selectSong(this.songManager.songs.length - 1);
 
-        // 保存
-        if (window.Storage) Storage.saveProject();
+        // 保存（Storage.saveProject(name,data) 直呼びは引数欠落でゴミエントリ混入の原因になるため AppProject 経由）
+        if (typeof AppProject !== 'undefined') AppProject.saveProject();
     },
 
     addSong() {
         this.songManager.add();
         // 追加したソングへ移動
         this.selectSong(this.songManager.currentIdx);
-        // 保存
-        if (window.Storage) Storage.saveProject();
+        // 保存（同上）
+        if (typeof AppProject !== 'undefined') AppProject.saveProject();
     },
 
     deleteSong() {
