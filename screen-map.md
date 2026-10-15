@@ -71,6 +71,7 @@
 | └─ 投射物管理 (New) | `js/engine/projectile-manager.js` | Player/Enemy 射撃ロジック統合（spread, drop, melee等7武器型） |
 | └─ 衝突判定ハンドラ (New) | `js/engine/physics-handler.js` | Player/Enemy 水平・垂直衝突判定の共有化（コールバック機構） |
 | └─ オーディオエンジン | `js/engine/audio.js` | SE生成（3ジェネレータ：周波数スイープ・マルチノート・ノイズ） |
+| 共通ユーティリティ (New) | `js/utils/color-picker.js` | カラー編集モーダル共通化（SpriteEditorPalette.editColor / StageSettings.openBgColorPicker 共有） |
 | 共通ユーティリティ (New) | `js/engine/sprite-utils.js` | スプライトピクセル描画コア（StageRenderer / GameRenderer 共有） |
 | 共通ユーティリティ (New) | `js/engine/tile-footprint.js` | 複数マス占有タイル（32x32等）の配置・消去・当たり判定原点解決（StageCanvasInput / StageEditor / GamePhysics 共有） |
 | スプライトエディタ (Pixel Editor) | `js/editor/sprite-editor.js` | 初期化・Undo/Redo・ギャラリー・描画コア (954行) |
