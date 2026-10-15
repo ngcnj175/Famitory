@@ -619,6 +619,35 @@ const AppProject = {
     },
 
     showSimpleProjectList() {
+        // [DIAG] 画面上部に発火ログを表示するオーバーレイを作成
+        let diagLog = document.getElementById('diag-log-overlay');
+        if (!diagLog) {
+            diagLog = document.createElement('div');
+            diagLog.id = 'diag-log-overlay';
+            diagLog.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(255,0,0,0.85);color:#fff;font-size:11px;font-family:monospace;padding:4px 6px;z-index:99999;max-height:40vh;overflow-y:auto;white-space:pre-wrap;pointer-events:auto;';
+            document.body.appendChild(diagLog);
+            const diagPush = (s) => {
+                const t = new Date();
+                const ts = `${t.getMinutes()}:${('0'+t.getSeconds()).slice(-2)}.${('00'+t.getMilliseconds()).slice(-3)}`;
+                diagLog.textContent = `[${ts}] ${s}\n` + diagLog.textContent;
+                if (diagLog.textContent.length > 2000) diagLog.textContent = diagLog.textContent.slice(0,2000);
+            };
+            window._diagPush = diagPush;
+            diagLog.ondblclick = () => { diagLog.remove(); window._diagPush = null; };
+            // タップで消せるタップエリア（ダブルタップ）
+            // 全イベントログ
+            ['touchstart','touchend','click','pointerdown','pointerup'].forEach(ev => {
+                document.addEventListener(ev, (e) => {
+                    const t = e.target;
+                    const id = t?.id || t?.className || t?.tagName || '?';
+                    diagPush(`${ev} <- ${String(id).slice(0,40)}`);
+                }, true); // capture phase
+            });
+            window.addEventListener('error', (e) => {
+                diagPush('ERR: ' + (e.message||'?') + ' @ ' + (e.filename||'?') + ':' + (e.lineno||'?'));
+            });
+        }
+
         // BGM再生中に開くと setInterval 由来の render ループがモーダル操作に干渉するため停止
         if (typeof SoundEditor !== 'undefined' && SoundEditor.player?.isPlaying) {
             SoundEditor.stop();
