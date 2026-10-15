@@ -674,8 +674,7 @@ const AppProject = {
 
         const renderList = () => {
             listContainer.innerHTML = '';
-            // 保険: 想定外のゴミエントリ（name欠落）が万一残っていても throw しないよう除外
-            const list = Storage.getProjectList().filter(p => p && typeof p.name === 'string' && p.name.length > 0);
+            const list = Storage.getProjectList();
 
             list.sort((a, b) => b.updatedAt - a.updatedAt);
 
