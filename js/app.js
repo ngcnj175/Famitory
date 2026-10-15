@@ -44,7 +44,7 @@ const App = {
         },
         gameboy: {
             name: 'ゲームボーイ',
-            colors: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f']
+            colors: ['#282818', '#686850', '#A0A088', '#C8C8A8']
         },
         mono: {
             name: 'モノクロ',

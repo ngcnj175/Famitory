@@ -5737,7 +5737,10 @@ body.pc-env .key-hint {
 }
 
 .palette-preset-footer #preset-close-btn {
-    grid-column: 2;
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: auto;
+    min-width: 120px;
 }
 
 /* SHAREモーダル オプションごとのライトグレー背景エリア */
