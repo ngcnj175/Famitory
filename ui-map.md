@@ -82,7 +82,7 @@
 | U066 | 配置 | Place | HTML attribute (title) | index.html | |
 | U067 | ✕ | ✕ | HTML text node | index.html | |
 | U068 | 素材 | Material | HTML text node | index.html | |
-| U069 | スプライトを選択 | Select Sprite | HTML text node | index.html | ✓ |
+| U069 | ピクセルを選択 | Select Pixel | HTML text node | index.html | ✓ |
 | U070 | × | × | HTML text node | index.html | |
 | U071 | 完了 | Done | HTML text node (button) | index.html | ✓ |
 | U072 | タイプを選択 | Select Type | HTML text node | index.html | ✓ |

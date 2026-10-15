@@ -103,7 +103,7 @@ const AppI18N = {
         'U084': { JPN: 'ペースト先',          ENG: 'Paste At' },
         'U085': { JPN: '実行',               ENG: 'Execute' },
         // ---- スプライト選択ポップアップ ----
-        'U069': { JPN: 'スプライトを選択',     ENG: 'Select Sprite' },
+        'U069': { JPN: 'ピクセルを選択',       ENG: 'Select Pixel' },
         'U071': { JPN: '完了',               ENG: 'Done' },
         // ---- 属性選択ポップアップ ----
         'U072': { JPN: 'タイプを選択',         ENG: 'Select Type' },
