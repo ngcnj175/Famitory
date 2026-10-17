@@ -727,11 +727,14 @@ class BgmPlayer {
     // ========== 再生制御 ==========
 
     /**
-     * 再生を開始する
-     * @param {Object} song - getCurrentSong() で取得したソングデータ
+     * 再生を開始する（ルックアヘッド予約スケジューリング）
+     * @param {Object} song - ソングデータ
      * @param {string[]} trackTypes - トラックの波形タイプ配列
-     * @param {number} startStep - 開始ステップ（一時停止後は resume から渡す）
+     * @param {number} startStep - 開始ステップ（pause 後の再開時に現在ステップを渡す）
      * @param {Function} onStep - ステップ更新コールバック (step) => void
+     * @param {boolean} loop - ループ再生するか
+     * @param {Function} isPausedFn - 外部からの一時停止判定関数（任意、ゲーム一時停止連動用）
+     * @param {Function} mutedTracksFn - ミュート中トラック配列を返す関数（任意）
      */
     play(song, trackTypes, startStep, onStep, loop = true, isPausedFn = null, mutedTracksFn = null) {
         if (this.isPlaying) return;
@@ -851,6 +854,7 @@ class BgmPlayer {
             clearInterval(this.playInterval);
             this.playInterval = null;
         }
+        this._cancelScheduledSources();
     }
 
     stop() {
@@ -860,7 +864,13 @@ class BgmPlayer {
             clearInterval(this.playInterval);
             this.playInterval = null;
         }
-        // ルックアヘッドで未来予約した音源をすべて停止
+        this._cancelScheduledSources();
+        // スライド用の直前音情報をリセット
+        this.lastFreq = [null, null, null, null];
+    }
+
+    // 未来予約した音源をすべて停止し、トラック状態をリセット
+    _cancelScheduledSources() {
         if (this.audioCtx) {
             const now = this.audioCtx.currentTime;
             this._scheduledSources.forEach(src => {
@@ -869,7 +879,5 @@ class BgmPlayer {
         }
         this._scheduledSources = [];
         this.activeOscillators = [null, null, null, null];
-        // スライド用の直前音情報をリセット
-        this.lastFreq = [null, null, null, null];
     }
 }

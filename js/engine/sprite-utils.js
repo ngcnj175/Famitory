@@ -49,7 +49,7 @@ const SpriteUtils = {
 
     /**
      * UIの5段階ゲージ(1-5) → sprite の speed 値(1-20) に変換。
-     * stage-editor.js:914 の計算式 round((index-1)/4 * (max-min) + min) と一致。
+     * ステージエディタ側の block-gauge クリック時マッピングと一致させる。
      * @param {number} level - 1〜5
      * @returns {number} speed 1〜20
      */

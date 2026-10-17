@@ -88,11 +88,6 @@ const GameEngine = {
         this.resize();
         this.initGame();
 
-        // 既存のループがあればキャンセル（重複防止）
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
         this._scheduleLoop();
     },
 
@@ -129,11 +124,6 @@ const GameEngine = {
             this.isPaused = false;
             if (!this.isRunning) {
                 this.isRunning = true;
-                // 既存のループがあればキャンセル（重複防止）
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                    this.animationId = null;
-                }
                 this._scheduleLoop();
             }
         } else if (this.isRunning) {
@@ -657,6 +647,11 @@ const GameEngine = {
     // 高リフレッシュレート端末（120Hz等）でも、ゲームの進行速度は 60Hz に固定される。
     _scheduleLoop() {
         if (!this.isRunning) return;
+        // 既存のrAFがあればキャンセル（二重ループ防止）
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
         // 時間計測をリセット（初回/再開時の巨大な dt を防ぐ）
         this._lastFrameTime = 0;
         this._frameAccumulator = 0;
