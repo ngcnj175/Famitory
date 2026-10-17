@@ -665,10 +665,23 @@ const GameEngine = {
         const STEP_MS = 1000 / 60;    // 1 論理フレームの長さ
         const MAX_STEPS = 3;          // 1 rAF あたりの最大ステップ数（スパイラル・オブ・デス防止）
         const MAX_DT_MS = 250;        // タブ非アクティブ復帰等の巨大 dt をクランプ
+        const SNAP_TOLERANCE_MS = 1;  // dt スナップの許容誤差
 
         if (this._lastFrameTime === 0) this._lastFrameTime = now;
-        const dt = Math.min(now - this._lastFrameTime, MAX_DT_MS);
+        let dt = Math.min(now - this._lastFrameTime, MAX_DT_MS);
         this._lastFrameTime = now;
+
+        // dt スナップ: rAF の微細な揺らぎを吸収し、2ステップ/0ステップが交互に走る
+        // ジッターを減らす（120Hz 端末での描画カクつき対策）。
+        // 既知の周期（STEP_MS の 1/4, 1/2, 1, 2, 3 倍）に ±1ms 以内なら丸める。
+        const SNAP_TARGETS = [STEP_MS / 4, STEP_MS / 2, STEP_MS, STEP_MS * 2, STEP_MS * 3];
+        for (let i = 0; i < SNAP_TARGETS.length; i++) {
+            if (Math.abs(dt - SNAP_TARGETS[i]) < SNAP_TOLERANCE_MS) {
+                dt = SNAP_TARGETS[i];
+                break;
+            }
+        }
+
         this._frameAccumulator += dt;
 
         let steps = 0;
