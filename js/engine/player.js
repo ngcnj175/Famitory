@@ -49,6 +49,9 @@ class Player {
         this._dashSpeedAtRelease = this.moveSpeed;
         // 空中制御の水平速度上限（ジャンプ離陸時に凍結）
         this._airVx = this.moveSpeed;
+        // 2段ジャンプ時の水平速度減衰タイマー（カクつき防止で緩やかに減速）
+        this._doubleJumpDecayTimer = 0;
+        this._doubleJumpStartAirVx = this.moveSpeed;
 
         // ダメージシステム
         const templateLives = template?.config?.life || 3;
@@ -292,6 +295,16 @@ class Player {
             if (leftPressed)  { this.vx = -this.dashSpeed; this.facingRight = false; }
             if (rightPressed) { this.vx =  this.dashSpeed; this.facingRight = true;  }
         } else {
+            // 2段ジャンプ時: _airVx を 15 フレームで moveSpeed まで線形減衰
+            if (this._doubleJumpDecayTimer > 0) {
+                this._doubleJumpDecayTimer--;
+                const t = this._doubleJumpDecayTimer / 15;
+                this._airVx = this.moveSpeed + (this._doubleJumpStartAirVx - this.moveSpeed) * t;
+                // vx が新 _airVx を超えていれば緩やかに下げる
+                if (Math.abs(this.vx) > this._airVx) {
+                    this.vx = Math.sign(this.vx) * this._airVx;
+                }
+            }
             // 空中: SMB風制御。_airVx が同方向の上限、逆方向は moveSpeed 上限
             const airAccel = this.moveSpeed / 15;
             const maxAir = Math.max(this._airVx, this.moveSpeed);
@@ -368,14 +381,19 @@ class Player {
 
                 this.playSE('jump');
             } else if (this.wJumpEnabled && this.canDoubleJump && !this.hasDoubleJumped) {
-                // 2段ジャンプ: ダッシュ慣性をリセット
+                // 2段ジャンプ: 水平慣性は即リセットせず15フレームで徐々に減衰
                 this.vy = this.jumpPower;
                 this.hasDoubleJumped = true;
                 this.canDoubleJump = false;
                 this.dashSpeed = this.moveSpeed;
-                this._airVx = this.moveSpeed;
-                if (Math.abs(this.vx) > this.moveSpeed) {
-                    this.vx = Math.sign(this.vx) * this.moveSpeed;
+                const currentSpeed = Math.abs(this.vx);
+                if (currentSpeed > this.moveSpeed) {
+                    this._airVx = currentSpeed;
+                    this._doubleJumpStartAirVx = currentSpeed;
+                    this._doubleJumpDecayTimer = 15;
+                } else {
+                    this._airVx = this.moveSpeed;
+                    this._doubleJumpDecayTimer = 0;
                 }
                 this.playSE('jump');
             }
