@@ -221,8 +221,8 @@ class Player {
         this.animTimer++;
         const spriteSlot = this.getSpriteSlot();
         let speed = this.template?.sprites?.[spriteSlot]?.speed ?? 4;
-        // ダッシュ中は歩きアニメを速度に合わせて加速（walk登録時のみ）
-        if (spriteSlot === 'walk' && this.onGround && this.dashSpeed > this.moveSpeed) {
+        // ダッシュ中は歩きアニメを速度に合わせて加速（walk登録時のみ、walk状態は接地時のみ成立）
+        if (spriteSlot === 'walk' && this.dashSpeed > this.moveSpeed) {
             speed *= this.dashSpeed / this.moveSpeed;
         }
         // スプライトエディターと同等のタイミング（speed = 秒間フレーム数）
