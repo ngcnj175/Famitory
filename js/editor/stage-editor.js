@@ -539,7 +539,7 @@ const StageEditor = {
                 </div>
                 <!-- 騾溷ｺｦ險ｭ螳壹ヶ繝ｭ繝・け繧ｲ繝ｼ繧ｸ (1-20 -> 5谿ｵ髫・ -->
                 <div class="block-gauge" data-type="speed" data-slot="${slot}" data-min="1" data-max="20">
-                    ${this.renderBlockGaugeItems(slot, speed, 1, 20)}
+                    ${this.renderBlockGaugeItems(slot, speed, 1, 20, true)}
                 </div>
             </div>
         `;
@@ -781,10 +781,10 @@ const StageEditor = {
         `;
     },
 
-    renderBlockGaugeItems(key, value, min, max) {
+    renderBlockGaugeItems(key, value, min, max, isSpriteSpeed = false) {
         let mappedValue;
-        // sprite 速度ゲージ (min=1, max=20) は非線形マッピング（花揺れ等の低速域を確保）
-        if (min === 1 && max === 20) {
+        // sprite 速度ゲージのみ非線形マッピング（花揺れ等の低速域を確保）
+        if (isSpriteSpeed) {
             mappedValue = SpriteUtils.speedToGaugeLevel(value);
         } else {
             const range = max - min;

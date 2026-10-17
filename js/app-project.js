@@ -126,7 +126,7 @@ const AppProject = {
                     gameover: ''
                 },
                 se: JSON.parse(JSON.stringify(DEFAULT_STAGE_SE)),
-                clearCondition: 'enemies',
+                clearCondition: 'none',
                 timeLimit: 0,
                 showScore: true,
                 layers: {
