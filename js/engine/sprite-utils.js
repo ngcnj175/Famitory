@@ -72,5 +72,27 @@ const SpriteUtils = {
             if (diff < minDiff) { minDiff = diff; nearest = i + 1; }
         }
         return nearest;
+    },
+
+    // 5段階ゲージ → jumpPower config値 の非線形マッピング。
+    // 公式 vy = -0.2 - (c/20)*0.3 と重力 0.02 の離散物理で、
+    // 各段が「ちょうど N+1 タイルをギリギリ超える」ように調整。
+    //   lv1→c=7 (h≈2.18), lv2→c=11 (h≈3.15), lv3→c=15 (h≈4.31),
+    //   lv4→c=18 (h≈5.29), lv5→c=20 (h=6.00)
+    GAUGE_TO_JUMP: [7, 11, 15, 18, 20],
+
+    gaugeLevelToJump(level) {
+        const lv = Math.max(1, Math.min(5, level));
+        return this.GAUGE_TO_JUMP[lv - 1];
+    },
+
+    jumpToGaugeLevel(jump) {
+        const j = Math.max(1, jump ?? 10);
+        let nearest = 1, minDiff = Infinity;
+        for (let i = 0; i < this.GAUGE_TO_JUMP.length; i++) {
+            const diff = Math.abs(this.GAUGE_TO_JUMP[i] - j);
+            if (diff < minDiff) { minDiff = diff; nearest = i + 1; }
+        }
+        return nearest;
     }
 };

@@ -743,6 +743,9 @@ const StageEditor = {
         if (key === 'life' && min === -1) {
             if (value === -1) mappedValue = 5; // 無限は5番目（全点灯）
             else mappedValue = Math.min(value, 5);
+        } else if (key === 'jumpPower') {
+            // jumpPower は非線形マッピング（タイル到達数で均等化）
+            mappedValue = SpriteUtils.jumpToGaugeLevel(value);
         } else {
             // 通常のマッピング: min-max を 1-5 にマッピング
             const range = max - min;
@@ -786,6 +789,9 @@ const StageEditor = {
         // sprite 速度ゲージのみ非線形マッピング（花揺れ等の低速域を確保）
         if (isSpriteSpeed) {
             mappedValue = SpriteUtils.speedToGaugeLevel(value);
+        } else if (key === 'jumpPower') {
+            // jumpPower も非線形マッピング（タイル到達数で均等化）
+            mappedValue = SpriteUtils.jumpToGaugeLevel(value);
         } else {
             const range = max - min;
             mappedValue = Math.round(((value - min) / range) * 4) + 1;
@@ -941,6 +947,9 @@ const StageEditor = {
                     if (key === 'life' && min === -1) {
                         // 特殊ケース: 5番目=無敵(-1), 1-4=1-4
                         value = index === 5 ? -1 : index;
+                    } else if (key === 'jumpPower') {
+                        // jumpPower は非線形マッピング（タイル到達数で均等化）
+                        value = SpriteUtils.gaugeLevelToJump(index);
                     } else {
                         // 通常マッピング
                         const range = max - min;
