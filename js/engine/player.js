@@ -220,9 +220,13 @@ class Player {
     updateAnimation() {
         this.animTimer++;
         const spriteSlot = this.getSpriteSlot();
-        const speed = this.template?.sprites?.[spriteSlot]?.speed ?? 4;
+        let speed = this.template?.sprites?.[spriteSlot]?.speed ?? 4;
+        // ダッシュ中は歩きアニメを速度に合わせて加速（walk登録時のみ）
+        if (spriteSlot === 'walk' && this.onGround && this.dashSpeed > this.moveSpeed) {
+            speed *= this.dashSpeed / this.moveSpeed;
+        }
         // スプライトエディターと同等のタイミング（speed = 秒間フレーム数）
-        const interval = Math.floor(60 / speed);
+        const interval = Math.max(1, Math.floor(60 / speed));
         if (this.animTimer >= interval) {
             this.animTimer = 0;
             const frames = this.template?.sprites?.[spriteSlot]?.frames || [];
