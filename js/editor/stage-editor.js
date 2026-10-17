@@ -552,13 +552,13 @@ const StageEditor = {
         if (type === 'player' || type === 'enemy') {
             // ==== 能力カード ====
             let abilityHtml = '';
-            abilityHtml += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
-
             if (type === 'player') {
+                abilityHtml += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
                 abilityHtml += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 8, 1, 20, this.t('U209'), 'wJump', config.wJump);
                 abilityHtml += this.renderSpriteRow('life');
                 abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 3, 1, 5);
             } else {
+                abilityHtml += this.renderSlider(this.t('U207'), 'speed', config.speed ?? 5, 1, 10);
                 abilityHtml += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 8, 1, 20);
                 abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 1, 1, 5);
             }
