@@ -171,7 +171,7 @@ class GamePhysics {
                         this.owner.playBgm('stage');
                     } else {
                         const clearCondition = App.projectData.stage.clearCondition || 'none';
-                        if (clearCondition === 'boss' && !this.owner.bossDefeatPhase && !this.owner.isCleared) {
+                        if (clearCondition !== 'survival' && !this.owner.bossDefeatPhase && !this.owner.isCleared) {
                             this.owner.bossEnemy = null;
                             this.owner.triggerClear();
                         } else {

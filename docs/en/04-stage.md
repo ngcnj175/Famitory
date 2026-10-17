@@ -77,7 +77,7 @@ Press **▼ Game Settings** at the top of the screen to open it. Here you can se
 
 - **Stage Size** … Change the number of cells vertically and horizontally.
 - **BG Color** … Change the background color of the stage.
-- **Clear Condition** … Pick one: None / Collect Items / Defeat Enemies / Defeat Boss / Survival.
+- **Base Rule** … Pick one: None / Defeat Enemies / Survival. If Clear Items or a Boss are placed on the stage, achieving any of them will also clear the stage (except in Survival mode, which only clears by surviving the time limit).
 - **Time Limit** … Set a limit in minutes and seconds (0 means no limit).
 - **Show Score** … Toggle the score display during play.
 - **BGM** … Assign the Stage / Invincible / Clear / Game Over / Boss BGM tracks.

@@ -248,7 +248,10 @@ class StageSettings {
         const showScoreCheck = document.getElementById('stage-show-score');
         if (!preserveFormState) {
             if (clearConditionEl) {
-                clearConditionEl.value = stage.clearCondition || 'none';
+                // 旧データ ('item'/'boss') は 'none' に正規化（配置ベースで自動判定される）
+                const legacyMap = { item: 'none', boss: 'none' };
+                const current = stage.clearCondition || 'none';
+                clearConditionEl.value = legacyMap[current] || current;
                 if (timeLimitLabel) {
                     const labelText = stage.clearCondition === 'survival'
                         ? AppI18N.I18N['U293'][AppI18N.currentLang] || 'サバイバル時間'

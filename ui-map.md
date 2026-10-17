@@ -69,10 +69,8 @@
 | U053 | クリア | Clear | HTML text node | index.html | |
 | U054 | ゲームオーバー | Game Over | HTML text node | index.html | |
 | U055 | ボス | Boss | HTML text node | index.html | |
-| U056 | クリア条件 | Clear Cond. | HTML text node (label) | index.html | ✓ |
-| U057 | アイテム取得 | Collect Items | HTML text node (option) | index.html | ✓ |
+| U056 | 基本ルール | Base Rule | HTML text node (label) | index.html | ✓ |
 | U058 | 敵ぜんめつ | Defeat Enemies | HTML text node (option) | index.html | ✓ |
-| U059 | ボス撃破 | Defeat Boss | HTML text node (option) | index.html | ✓ |
 | U060 | サバイバル | Survival | HTML text node (option) | index.html | ✓ |
 | U061 | 制限時間 | Time Limit | HTML text node (label) | index.html | ✓ |
 | U062 | 分 | min | HTML text node | index.html | ✓ |

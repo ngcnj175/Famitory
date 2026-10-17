@@ -1431,61 +1431,37 @@ const GameEngine = {
         if (!this.player) return;
 
         const stage = App.projectData.stage;
-        const clearCondition = stage.clearCondition || 'none';
+        const condition = stage.clearCondition || 'none';
 
-        switch (clearCondition) {
-            case 'item':
-                // CLEARアイテムを全て取得したらクリア
-                if (this.collectedClearItems >= this.totalClearItems && this.totalClearItems > 0) {
-                    this.triggerClear();
-                }
-                break;
+        // サバイバル: 時間経過のみでクリア（updateTimerで処理）、配置物による早期クリアはしない
+        if (condition === 'survival') return;
 
-            case 'enemies':
-                // すべての敵を倒したらクリア
-                if (this.enemies.length === 0 && this.allEnemiesSpawned) {
-                    this.triggerClear();
-                }
-                break;
+        // 基本ルール: 敵ぜんめつ
+        if (condition === 'enemies') {
+            if (this.enemies.length === 0 && this.allEnemiesSpawned) {
+                this.triggerClear();
+                return;
+            }
+        }
 
-            case 'boss':
-                // 全てのボスを倒したらクリア（複数ボス対応）
-                // 生存中のボス（isDyingでない）をカウント
-                const aliveBosses = this.enemies.filter(e =>
-                    e.template?.config?.isBoss && !e.isDying && !e.spawned
-                );
-                const dyingBosses = this.enemies.filter(e =>
-                    e.template?.config?.isBoss && e.isDying && !e.spawned
-                );
+        // 配置ベース（OR条件）: クリアアイテム全取得
+        if (this.totalClearItems > 0 && this.collectedClearItems >= this.totalClearItems) {
+            this.triggerClear();
+            return;
+        }
 
-                // ボスが全て倒された（生存ボスがいない、かつ死亡演出中のボスがいる）
-                if (aliveBosses.length === 0 && dyingBosses.length > 0 && !this.bossDefeatPhase) {
-                    // 最後のボスを撃破演出用に記録
-                    this.bossEnemy = dyingBosses[0];
-                    // ボス撃破演出開始：BGM停止→1秒無音→ボス落下→クリアBGM
-                    this.stopBgm();
-                    this.bossDefeatPhase = 'silence';
-                    this.bossDefeatTimer = 0;
-                }
-                break;
-
-            case 'survival':
-                // サバイバル時間経過でクリア（updateTimerで処理）
-                break;
-
-            case 'none':
-            default:
-                // 従来のゴールタイル方式（存在する場合）
-                const objects = App.projectData.objects;
-                const goal = objects.find(o => o.type === 'goal');
-                if (goal && this.player) {
-                    const tileX = Math.floor(this.player.x);
-                    const tileY = Math.floor(this.player.y);
-                    if (tileX === goal.x && tileY === goal.y) {
-                        this.triggerClear();
-                    }
-                }
-                break;
+        // 配置ベース（OR条件）: ボス撃破演出シーケンス
+        const aliveBosses = this.enemies.filter(e =>
+            e.template?.config?.isBoss && !e.isDying && !e.spawned
+        );
+        const dyingBosses = this.enemies.filter(e =>
+            e.template?.config?.isBoss && e.isDying && !e.spawned
+        );
+        if (aliveBosses.length === 0 && dyingBosses.length > 0 && !this.bossDefeatPhase) {
+            this.bossEnemy = dyingBosses[0];
+            this.stopBgm();
+            this.bossDefeatPhase = 'silence';
+            this.bossDefeatTimer = 0;
         }
     },
 
