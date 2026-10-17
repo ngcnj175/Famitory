@@ -313,9 +313,9 @@ const StageEditor = {
     getDefaultConfig(type) {
         switch (type) {
             case 'player':
-                return { life: 3, lifeCount: 3, speed: 5, jumpPower: 7, wJump: false, shotMaxRange: 3 };
+                return { life: 3, lifeCount: 3, speed: 5, jumpPower: 8, wJump: false, shotMaxRange: 3 };
             case 'enemy':
-                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 7, shotMaxRange: 3, move: 'patrol' };
+                return { life: 1, lifeCount: 1, speed: 3, jumpPower: 8, shotMaxRange: 3, move: 'patrol' };
             case 'material':
                 return { collision: true, life: -1 };
             case 'item':
@@ -555,11 +555,11 @@ const StageEditor = {
             abilityHtml += this.renderSliderWithCheck(this.t('U207'), 'speed', config.speed ?? 5, 1, 10, this.t('U451'), 'bDash', config.bDash);
 
             if (type === 'player') {
-                abilityHtml += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 7, 1, 20, this.t('U209'), 'wJump', config.wJump);
+                abilityHtml += this.renderSliderWithCheck(this.t('U208'), 'jumpPower', config.jumpPower ?? 8, 1, 20, this.t('U209'), 'wJump', config.wJump);
                 abilityHtml += this.renderSpriteRow('life');
                 abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 3, 1, 5);
             } else {
-                abilityHtml += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 7, 1, 20);
+                abilityHtml += this.renderSlider(this.t('U208'), 'jumpPower', config.jumpPower ?? 8, 1, 20);
                 abilityHtml += this.renderSlider(this.t('U210'), 'life', config.life ?? 1, 1, 5);
             }
             html += this.renderCard(this.t('U206'), abilityHtml);

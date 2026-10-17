@@ -31,7 +31,7 @@ class Enemy {
 
         // 物理パラメータ（config値を反映）
         const speedConfig = template?.config?.speed ?? 5;
-        const jumpConfig = template?.config?.jumpPower ?? 7;
+        const jumpConfig = template?.config?.jumpPower ?? 8;
         this.moveSpeed = 0.03 + (speedConfig / 10) * 0.05; // 敵は少し遅め
         this.jumpPower = -(0.2 + (jumpConfig / 20) * 0.3); // 1=-0.215, 10=-0.35, 20=-0.5
         this.gravity = 0.02;
