@@ -76,10 +76,10 @@ const SpriteUtils = {
 
     // 5段階ゲージ → jumpPower config値 の非線形マッピング。
     // 公式 vy = -0.2 - (c/20)*0.3 と重力 0.02 の離散物理で、
-    // 各段が「ちょうど N+1 タイルをギリギリ超える」ように調整。
-    //   lv1→c=7 (h≈2.18), lv2→c=11 (h≈3.15), lv3→c=15 (h≈4.31),
-    //   lv4→c=18 (h≈5.29), lv5→c=20 (h=6.00)
-    GAUGE_TO_JUMP: [7, 11, 15, 18, 20],
+    // 各段が「ちょうど N タイルをギリギリ超える」ように調整。
+    //   lv1→c=1 (h≈1.05), lv2→c=7 (h≈2.18), lv3→c=11 (h≈3.15),
+    //   lv4→c=14 (h=4.00), lv5→c=18 (h≈5.29)
+    GAUGE_TO_JUMP: [1, 7, 11, 14, 18],
 
     gaugeLevelToJump(level) {
         const lv = Math.max(1, Math.min(5, level));
