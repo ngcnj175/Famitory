@@ -355,6 +355,9 @@ class Player {
             }
 
             this._jumpKeyWasPressed = GameController.isPressed('a');
+            // はしご上は移動速度を50%に減速
+            this.vx *= 0.5;
+            this.vy *= 0.5;
             return; // はしご上での基本処理終了
         }
 

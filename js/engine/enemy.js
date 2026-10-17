@@ -670,6 +670,9 @@ class Enemy {
                 this._ladderPatrolV(wMinY, wMaxY);
         }
 
+        // はしご上は移動速度を50%に減速
+        this.vx *= 0.5;
+        this.vy *= 0.5;
         this.x += this.vx; this.y += this.vy;
         // はしご範囲内にクランプ（壁や当たり判定より優先）
         this.x = Math.max(wMinX, Math.min(wMaxX, this.x));
