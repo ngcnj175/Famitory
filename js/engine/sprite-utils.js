@@ -43,7 +43,7 @@ const SpriteUtils = {
      * @returns {number} ミリ秒
      */
     getFrameIntervalMs(speed) {
-        const s = Math.max(1, speed ?? 5);
+        const s = Math.max(1, speed ?? 6);
         return Math.max(1, Math.floor(60 / s)) * (1000 / 60);
     },
 

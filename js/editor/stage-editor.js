@@ -286,7 +286,7 @@ const StageEditor = {
         const spriteKeys = this.getSpriteKeysForType(type);
         const sprites = {};
         spriteKeys.forEach(key => {
-            sprites[key] = { frames: [], speed: 5, loop: true };
+            sprites[key] = { frames: [], speed: 6, loop: true };
         });
 
         return {
@@ -520,8 +520,8 @@ const StageEditor = {
 
 
     renderSpriteRow(slot) {
-        const spriteData = this.editingTemplate.sprites[slot] || { frames: [], speed: 5, loop: true };
-        const speed = spriteData.speed || 5;
+        const spriteData = this.editingTemplate.sprites[slot] || { frames: [], speed: 6, loop: true };
+        const speed = spriteData.speed ?? 6;
         const firstFrame = spriteData.frames?.[0];
 
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
@@ -1099,7 +1099,7 @@ const StageEditor = {
 
             const spriteData = this.editingTemplate?.sprites?.[slot];
             const frames = spriteData?.frames || [];
-            const speed = spriteData?.speed ?? 5;
+            const speed = spriteData?.speed ?? 6;
 
             if (frames.length === 0) return;
 
@@ -1415,7 +1415,7 @@ const StageEditor = {
     confirmSpriteSelection() {
         if (this.currentSelectingSlot && this.editingTemplate) {
             if (!this.editingTemplate.sprites[this.currentSelectingSlot]) {
-                this.editingTemplate.sprites[this.currentSelectingSlot] = { frames: [], speed: 5, loop: true };
+                this.editingTemplate.sprites[this.currentSelectingSlot] = { frames: [], speed: 6, loop: true };
             }
             this.editingTemplate.sprites[this.currentSelectingSlot].frames = [...this.selectedSpriteOrder];
             this.renderConfigContent();

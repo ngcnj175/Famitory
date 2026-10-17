@@ -166,7 +166,7 @@ class Enemy {
         // アニメーション
         this.animTimer++;
         const spriteSlot = this.getSpriteSlot();
-        const speed = this.template?.sprites?.[spriteSlot]?.speed || 5;
+        const speed = this.template?.sprites?.[spriteSlot]?.speed ?? 6;
         const interval = Math.floor(60 / speed);
         if (this.animTimer >= interval) {
             this.animTimer = 0;

@@ -59,13 +59,13 @@ class GameRenderer {
     _resolveAnimSlot(spriteSlots, preferredSlot = null) {
         if (preferredSlot) {
             const slot = spriteSlots[preferredSlot];
-            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 5 };
+            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 6 };
         }
         for (const name of _ANIM_SLOT_NAMES) {
             const slot = spriteSlots[name];
-            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 5 };
+            if (slot?.frames?.length > 0) return { frames: slot.frames, speed: slot.speed ?? 6 };
         }
-        return { frames: [], speed: 5 };
+        return { frames: [], speed: 6 };
     }
 
     // frames・speed・tick からスプライトインデックスを返す
@@ -643,7 +643,7 @@ class GameRenderer {
         if (this.owner.player && !this.owner.player.isDead) {
             const lifeSprites = this.owner.player.template?.sprites?.life;
             const frames = lifeSprites?.frames || [];
-            const speed = lifeSprites?.speed || 5;
+            const speed = lifeSprites?.speed ?? 6;
             const spriteIdx = this._getAnimSpriteIdx(frames, speed, this.owner.tileAnimationFrame);
             const sprite = spriteIdx >= 0 ? App.projectData.sprites[spriteIdx] : null;
             if (sprite) {

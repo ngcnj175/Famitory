@@ -217,7 +217,7 @@ class Player {
     updateAnimation() {
         this.animTimer++;
         const spriteSlot = this.getSpriteSlot();
-        const speed = this.template?.sprites?.[spriteSlot]?.speed || 5;
+        const speed = this.template?.sprites?.[spriteSlot]?.speed ?? 6;
         // スプライトエディターと同等のタイミング（speed = 秒間フレーム数）
         const interval = Math.floor(60 / speed);
         if (this.animTimer >= interval) {
