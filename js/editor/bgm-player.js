@@ -17,6 +17,8 @@ class BgmPlayer {
         // ポルタメント（スライド音色）用: 直前音の周波数をトラック毎に保持
         this.lastFreq = [null, null, null, null];
         this.outputNode = null; // 外部から設定可能な出力先（未設定時はaudioCtx.destination）
+        // ルックアヘッド予約済みの音源一覧（stop() で未来予約分を一斉停止するため）
+        this._scheduledSources = [];
 
         // キーボードプレビュー用
         this.currentKeyOsc = null;
@@ -243,13 +245,15 @@ class BgmPlayer {
 
     /**
      * 再生ループ用モノフォニック発音（トラックごとに同時発音1に制限）
+     * startTime を渡すと未来時刻で予約発音（ルックアヘッドスケジューリング用）。
      */
-    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track, currentStep = null) {
+    playNoteMonophonic(note, octave, duration, trackIdx, trackType, track, currentStep = null, startTime = null) {
         if (!this.audioCtx) return;
         const tone = track.tone || 0;
+        const t = startTime ?? this.audioCtx.currentTime;
 
-        // 前の音を停止（osc / noise どちらも対応）
-        this._stopActive(trackIdx);
+        // 前の音を停止（新ノート開始時刻で切る: モノフォニック）
+        this._stopActive(trackIdx, t);
 
         // スライド音色（Square: tone 7=Standard Slide, 8=Sharp Slide）
         const isSlideTone = (trackType === 'square' && (tone === 7 || tone === 8));
@@ -259,25 +263,25 @@ class BgmPlayer {
             const pitch = this.noteToPitch(note, octave);
             if (tone === 0) {
                 // PitchedNoise はモノフォニック（1トラック=1音のコンセプト）
-                const src = this.playPitchedNoise(pitch, duration, track.volume, track.pan);
+                const src = this.playPitchedNoise(pitch, duration, track.volume, track.pan, t);
                 if (src) this.activeOscillators[trackIdx] = src;
             } else {
                 // Drum系 (tone=1〜7) はファミコン準拠でポリフォニック（連打を許容）
-                this.playDrum(pitch, duration, track.volume, track.pan, tone);
+                this.playDrum(pitch, duration, track.volume, track.pan, tone, t);
             }
             return;
         }
 
         // TRIANGLE Kickトーン（モノフォニック）
         if (trackType === 'triangle' && tone === 3) {
-            const src = this.playKickTone(note, octave, track.volume, track.pan, duration);
+            const src = this.playKickTone(note, octave, track.volume, track.pan, duration, t);
             if (src) this.activeOscillators[trackIdx] = src;
             return;
         }
 
         // SQUARE Tremoloトーン（モノフォニック）
         if (trackType === 'square' && tone === 6) {
-            const src = this.playTremolo(note, octave, track.volume, track.pan, duration);
+            const src = this.playTremolo(note, octave, track.volume, track.pan, duration, t);
             if (src) this.activeOscillators[trackIdx] = src;
             return;
         }
@@ -292,8 +296,6 @@ class BgmPlayer {
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
         const volumeScale = this.setupToneWaveform(osc, trackType, tone);
-
-        const t = this.audioCtx.currentTime;
 
         // 周波数設定（スライド判定: 同じトラックで直前に鳴った音があれば距離を問わずスライド）
         const doSlide = isSlideTone
@@ -337,8 +339,9 @@ class BgmPlayer {
         }
 
         this.connectOscToGain(osc, gain, trackType, tone);
-        osc.start();
+        osc.start(t);
         osc.stop(t + duration + 0.05);
+        this._trackScheduled(osc);
 
         this.activeOscillators[trackIdx] = { osc, gain };
 
@@ -347,25 +350,39 @@ class BgmPlayer {
             this.lastFreq[trackIdx] = freq;
         }
 
-        // 停止後にクリア
+        // 停止後にクリア（未来予約時は実発音時刻を考慮）
+        const cleanupDelayMs = Math.max(0, (t - this.audioCtx.currentTime + duration) * 1000);
         setTimeout(() => {
             if (this.activeOscillators[trackIdx] && this.activeOscillators[trackIdx].osc === osc) {
                 this.activeOscillators[trackIdx] = null;
             }
-        }, duration * 1000);
+        }, cleanupDelayMs);
     }
 
-    // ========== 内部ヘルパ: トラック単位で発音中の音を即停止 ==========
-    _stopActive(trackIdx) {
+    // ========== 内部ヘルパ: トラック単位で発音中の音を停止 ==========
+    // when を渡すとその時刻に停止予約（モノフォニック切替用）。省略時は即停止。
+    _stopActive(trackIdx, when = null) {
         const prev = this.activeOscillators[trackIdx];
         if (!prev) return;
         const src = prev.osc || prev.noise;
-        if (src) { try { src.stop(); } catch (e) { } }
+        if (src) {
+            try { src.stop(when ?? this.audioCtx.currentTime); } catch (e) { }
+        }
         this.activeOscillators[trackIdx] = null;
     }
 
+    // ========== 内部ヘルパ: 予約済み音源を追跡（stop() 時に未来予約分も止めるため） ==========
+    _trackScheduled(src) {
+        if (!src) return;
+        this._scheduledSources.push(src);
+        // 一定数以上溜まったら古いものから掃除（最大200件）
+        if (this._scheduledSources.length > 400) {
+            this._scheduledSources.splice(0, 200);
+        }
+    }
+
     // ========== Kickトーン（短くピッチ下降する音） ==========
-    playKickTone(note, octave, volume, pan, duration = 0.15) {
+    playKickTone(note, octave, volume, pan, duration = 0.15, startTime = null) {
         if (!this.audioCtx) return null;
         const freq = this.getFrequency(note, octave);
         const osc = this.audioCtx.createOscillator();
@@ -376,20 +393,21 @@ class BgmPlayer {
         panner.connect(this.getOutput());
 
         osc.type = 'triangle';
-        const t = this.audioCtx.currentTime;
+        const t = startTime ?? this.audioCtx.currentTime;
         osc.frequency.setValueAtTime(freq, t);
         osc.frequency.exponentialRampToValueAtTime(freq * 0.25, t + duration);
         gain.gain.setValueAtTime(0.5 * volume, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
 
         osc.connect(gain);
-        osc.start();
+        osc.start(t);
         osc.stop(t + duration);
+        this._trackScheduled(osc);
         return { osc, gain };
     }
 
     // ========== トレモロ（1オクターブ上と交互に高速切替） ==========
-    playTremolo(note, octave, volume, pan, duration) {
+    playTremolo(note, octave, volume, pan, duration, startTime = null) {
         if (!this.audioCtx) return null;
         const freq1 = this.getFrequency(note, octave);
         const freq2 = freq1 * 2;
@@ -404,7 +422,7 @@ class BgmPlayer {
         const tremoloRate = 30;
         const numCycles = Math.ceil(duration * tremoloRate);
         const cycleTime = 1 / tremoloRate;
-        const t = this.audioCtx.currentTime;
+        const t = startTime ?? this.audioCtx.currentTime;
 
         for (let i = 0; i < numCycles; i++) {
             osc.frequency.setValueAtTime(i % 2 === 0 ? freq1 : freq2, t + i * cycleTime);
@@ -416,16 +434,17 @@ class BgmPlayer {
         gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
 
         osc.connect(gain);
-        osc.start();
+        osc.start(t);
         osc.stop(t + duration);
+        this._trackScheduled(osc);
         return { osc, gain };
     }
 
     // ========== Noise (ピッチ) - 音程対応の持続ノイズ ==========
-    playPitchedNoise(pitch, duration, volume = 1.0, pan = 0.0) {
+    playPitchedNoise(pitch, duration, volume = 1.0, pan = 0.0, startTime = null) {
         if (!this.audioCtx) return null;
         const ctx = this.audioCtx;
-        const t = ctx.currentTime;
+        const t = startTime ?? ctx.currentTime;
 
         const { note, octave } = this.pitchToNote(pitch);
         const freq = this.getFrequency(note, octave);
@@ -467,15 +486,16 @@ class BgmPlayer {
 
         noise.start(t);
         noise.stop(t + bufferDuration);
+        this._trackScheduled(noise);
 
         return { noise, gain };
     }
 
     // ========== NES APU風ドラムキット ==========
-    playDrum(pitch, duration, volume = 1.0, pan = 0.0, tone = 0) {
+    playDrum(pitch, duration, volume = 1.0, pan = 0.0, tone = 0, startTime = null) {
         if (!this.audioCtx) return null;
         const ctx = this.audioCtx;
-        const t = ctx.currentTime;
+        const t = startTime ?? ctx.currentTime;
         const octave = Math.floor(pitch / 12) + 1;
 
         let filterType, filterFreq, filterQ, drumVol, decayTime, useShortNoise, pitchEnvDown, attackTime, holdTime, isRoll;
@@ -597,6 +617,7 @@ class BgmPlayer {
 
         noise.start(t);
         noise.stop(t + actualDuration);
+        this._trackScheduled(noise);
 
         return { noise, gain };
     }
@@ -714,54 +735,93 @@ class BgmPlayer {
      */
     play(song, trackTypes, startStep, onStep, loop = true, isPausedFn = null, mutedTracksFn = null) {
         if (this.isPlaying) return;
+        if (!this.audioCtx) return;
         this.isPlaying = true;
-
-        const stepDuration = 60 / song.bpm / 4; // 16分音符
-        let step = startStep;
-        const maxSteps = song.bars;
         this.isPaused = false;
 
+        const stepDuration = 60 / song.bpm / 4; // 16分音符
+        const maxSteps = song.bars;
+        const LOOKAHEAD_MS = 25;           // スケジューラ起動間隔（ゆるい）
+        const SCHEDULE_AHEAD = 0.15;       // 現在時刻 +150ms 先までのノートを予約
+        const INITIAL_OFFSET = 0.05;       // 初回発音までの余裕
+
+        let scheduledStep = startStep;
+        let nextStepTime = this.audioCtx.currentTime + INITIAL_OFFSET;
+        let prevExternalPaused = false;    // 外部isPausedFnからの一時停止検出用
+
+        this._scheduledSources = [];
+
         this.playInterval = setInterval(() => {
-            // AudioContextがsuspendedの場合、再開を試みてこのステップをスキップ
-            if (this.audioCtx && this.audioCtx.state !== 'running') {
+            if (!this.audioCtx) return;
+            // AudioContextがsuspendedの場合、再開を試みてこのサイクルをスキップ
+            if (this.audioCtx.state !== 'running') {
                 this.audioCtx.resume().catch(() => {});
+                nextStepTime = this.audioCtx.currentTime + INITIAL_OFFSET;
                 return;
             }
-            // 一時停止中はスキップ
-            if (this.isPaused) return;
-            if (isPausedFn && isPausedFn()) return;
+
+            // 一時停止判定
+            const externalPaused = (isPausedFn && isPausedFn()) || this.isPaused;
+            if (externalPaused) {
+                prevExternalPaused = true;
+                return;
+            }
+            // 一時停止から復帰: nextStepTime を現在時刻基準に再同期
+            if (prevExternalPaused) {
+                prevExternalPaused = false;
+                nextStepTime = this.audioCtx.currentTime + INITIAL_OFFSET;
+                this.lastFreq = [null, null, null, null];
+            }
 
             const muted = mutedTracksFn ? mutedTracksFn() : null;
-            song.tracks.forEach((track, trackIdx) => {
-                if (muted && muted[trackIdx]) return;
-                track.notes.forEach(note => {
-                    if (note.step === step) {
-                        const { note: noteName, octave } = this.pitchToNote(note.pitch);
-                        this.playNoteMonophonic(
-                            noteName, octave,
-                            stepDuration * note.length,
-                            trackIdx,
-                            trackTypes[trackIdx],
-                            track,
-                            step
-                        );
-                    }
+
+            // 現在時刻 + SCHEDULE_AHEAD まで、まだ予約していないステップを一括予約
+            while (nextStepTime < this.audioCtx.currentTime + SCHEDULE_AHEAD && this.isPlaying) {
+                const step = scheduledStep;
+                const t = nextStepTime;
+
+                song.tracks.forEach((track, trackIdx) => {
+                    if (muted && muted[trackIdx]) return;
+                    track.notes.forEach(note => {
+                        if (note.step === step) {
+                            const { note: noteName, octave } = this.pitchToNote(note.pitch);
+                            this.playNoteMonophonic(
+                                noteName, octave,
+                                stepDuration * note.length,
+                                trackIdx,
+                                trackTypes[trackIdx],
+                                track,
+                                step,
+                                t
+                            );
+                        }
+                    });
                 });
-            });
 
-            if (onStep) onStep(step);
+                // UI更新は実発音時刻に合わせて遅延実行（音と視覚の同期）
+                if (onStep) {
+                    const delayMs = Math.max(0, (t - this.audioCtx.currentTime) * 1000);
+                    setTimeout(() => {
+                        if (this.isPlaying && !this.isPaused) onStep(step);
+                    }, delayMs);
+                }
 
-            step++;
-            if (step >= maxSteps) {
-                if (loop) {
-                    step = 0;
-                    // ループ先頭に戻る際はスライド用の直前音情報をリセット
-                    this.lastFreq = [null, null, null, null];
-                } else {
-                    this.stop();
+                scheduledStep++;
+                nextStepTime += stepDuration;
+
+                if (scheduledStep >= maxSteps) {
+                    if (loop) {
+                        scheduledStep = 0;
+                        this.lastFreq = [null, null, null, null];
+                    } else {
+                        // 最終ノート再生完了まで待ってから停止
+                        const stopDelayMs = Math.max(0, (t - this.audioCtx.currentTime + stepDuration) * 1000);
+                        setTimeout(() => this.stop(), stopDelayMs);
+                        return;
+                    }
                 }
             }
-        }, stepDuration * 1000);
+        }, LOOKAHEAD_MS);
     }
 
     /**
@@ -800,6 +860,15 @@ class BgmPlayer {
             clearInterval(this.playInterval);
             this.playInterval = null;
         }
+        // ルックアヘッドで未来予約した音源をすべて停止
+        if (this.audioCtx) {
+            const now = this.audioCtx.currentTime;
+            this._scheduledSources.forEach(src => {
+                try { src.stop(now); } catch (e) { }
+            });
+        }
+        this._scheduledSources = [];
+        this.activeOscillators = [null, null, null, null];
         // スライド用の直前音情報をリセット
         this.lastFreq = [null, null, null, null];
     }
