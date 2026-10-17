@@ -32,10 +32,11 @@ class Enemy {
         // 物理パラメータ（config値を反映）
         const speedConfig = template?.config?.speed ?? 5;
         const jumpConfig = template?.config?.jumpPower ?? 8;
+        // 公式: vy = -0.16 - (c/20)*0.24 で重力 0.013 と連動
         this.moveSpeed = 0.03 + (speedConfig / 10) * 0.05; // 敵は少し遅め
-        this.jumpPower = -(0.2 + (jumpConfig / 20) * 0.3); // 1=-0.215, 10=-0.35, 20=-0.5
-        this.gravity = 0.02;
-        this.maxFallSpeed = 0.4;
+        this.jumpPower = -(0.16 + (jumpConfig / 20) * 0.24); // 1=-0.172, 8=-0.256, 20=-0.4
+        this.gravity = 0.013;
+        this.maxFallSpeed = 0.32;
 
         this.lives = template?.config?.life || 1;
         this.isDying = false;
@@ -111,7 +112,7 @@ class Enemy {
                 }
                 // 点滅終了→落下開始
                 this.deathFlashPhase = false;
-                this.vy = -0.3;
+                this.vy = -0.24; // gravity 0.013 で arc 高さ約 2.2 タイル
                 this.vx = this.deathFromRight ? -0.1 : 0.1;
                 this.onGround = false;
             }

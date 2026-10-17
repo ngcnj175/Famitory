@@ -33,9 +33,9 @@ class Player {
         const speedConfig = template?.config?.speed ?? 5;
         const jumpConfig = template?.config?.jumpPower ?? 8;
         this.moveSpeed = 0.05 + (speedConfig / 10) * 0.1; // 1=0.06, 5=0.1, 10=0.15
-        this.jumpPower = -0.2 - (jumpConfig / 20) * 0.3;  // 1=-0.215, 8=-0.32, 20=-0.5
-        this.gravity = 0.02;
-        this.maxFallSpeed = 0.4;
+        this.jumpPower = -0.16 - (jumpConfig / 20) * 0.24; // 1=-0.172, 8=-0.256, 20=-0.4
+        this.gravity = 0.013;
+        this.maxFallSpeed = 0.32;
 
         // Bダッシュ
         this.bDashEnabled = template?.config?.bDash || false;
@@ -459,7 +459,7 @@ class Player {
             this.invincible = true;
             this.invincibleTimer = this.invincibleDuration;
             this.isKnockback = true; // ノックバック開始
-            this.vy = -0.25; // 強く
+            this.vy = -0.2; // 強く（gravity 0.013 で arc 高さ約 1.5 タイル）
             // 向いている方向の逆に飛ばされる
             this.vx = this.facingRight ? -0.12 : 0.12; // 強く
             this.onGround = false;
@@ -530,7 +530,7 @@ class Player {
         const speedConfig = newTemplate.config?.speed ?? 5;
         const jumpConfig = newTemplate.config?.jumpPower ?? 8;
         this.moveSpeed = 0.05 + (speedConfig / 10) * 0.1;
-        this.jumpPower = -0.2 - (jumpConfig / 20) * 0.3;
+        this.jumpPower = -0.16 - (jumpConfig / 20) * 0.24;
         this.bDashEnabled = newTemplate.config?.bDash || false;
         this.dashSpeed = this.moveSpeed;
         this._dashAccel = this.moveSpeed * 0.5 / 30;
