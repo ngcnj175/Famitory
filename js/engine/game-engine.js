@@ -36,6 +36,10 @@ const GameEngine = {
     // タイルアニメーション用フレームカウンター
     tileAnimationFrame: 0,
 
+    // 固定タイムステップ用（60Hz でゲーム進行を一定化。高リフレッシュレート端末での高速化を防ぐ）
+    _lastFrameTime: 0,
+    _frameAccumulator: 0,
+
     // BGM再生
     gameBgmPlayer: null,   // ゲームBGM再生用BgmPlayerインスタンス
     currentBgmType: null,  // 'stage', 'invincible', 'clear', 'gameover', 'boss'
@@ -89,7 +93,7 @@ const GameEngine = {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
-        this.gameLoop();
+        this._scheduleLoop();
     },
 
     stop() {
@@ -130,7 +134,7 @@ const GameEngine = {
                     cancelAnimationFrame(this.animationId);
                     this.animationId = null;
                 }
-                this.gameLoop();
+                this._scheduleLoop();
             }
         } else if (this.isRunning) {
             // PAUSE 文字が描かれる直前のフレームをサムネ用に確保する
@@ -175,7 +179,7 @@ const GameEngine = {
         this.wipeTimer = 0;
         this.isRunning = true;
         this.hasStarted = true;
-        this.gameLoop();
+        this._scheduleLoop();
     },
 
     // リスタート（Startボタン長押し用）
@@ -649,6 +653,44 @@ const GameEngine = {
 
     },
 
+    // 固定タイムステップでゲームループを駆動するエントリ。
+    // 高リフレッシュレート端末（120Hz等）でも、ゲームの進行速度は 60Hz に固定される。
+    _scheduleLoop() {
+        if (!this.isRunning) return;
+        // 時間計測をリセット（初回/再開時の巨大な dt を防ぐ）
+        this._lastFrameTime = 0;
+        this._frameAccumulator = 0;
+        this.animationId = requestAnimationFrame((now) => this._tick(now));
+    },
+
+    // rAF コールバック: 実時間を蓄積し、16.67ms ごとに gameLoop (1 論理フレーム) を実行
+    _tick(now) {
+        if (!this.isRunning) return;
+
+        const STEP_MS = 1000 / 60;    // 1 論理フレームの長さ
+        const MAX_STEPS = 3;          // 1 rAF あたりの最大ステップ数（スパイラル・オブ・デス防止）
+        const MAX_DT_MS = 250;        // タブ非アクティブ復帰等の巨大 dt をクランプ
+
+        if (this._lastFrameTime === 0) this._lastFrameTime = now;
+        const dt = Math.min(now - this._lastFrameTime, MAX_DT_MS);
+        this._lastFrameTime = now;
+        this._frameAccumulator += dt;
+
+        let steps = 0;
+        while (this._frameAccumulator >= STEP_MS && steps < MAX_STEPS && this.isRunning) {
+            this._frameAccumulator -= STEP_MS;
+            steps++;
+            this.gameLoop();
+        }
+        // ステップ上限に達した場合はアキュムレータを捨てる（取り戻し不能な遅延に追従しない）
+        if (steps >= MAX_STEPS) this._frameAccumulator = 0;
+
+        if (this.isRunning) {
+            this.animationId = requestAnimationFrame((n) => this._tick(n));
+        }
+    },
+
+    // 1 論理フレーム分の更新+描画（_tick から 60Hz で呼び出される）
     gameLoop() {
         if (!this.isRunning) return;
 
@@ -660,7 +702,6 @@ const GameEngine = {
                 this.playBgm('stage'); // ステージBGM開始
             }
             this.renderer.renderWipe();
-            this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
         }
 
@@ -702,7 +743,6 @@ const GameEngine = {
                 return;
             }
 
-            this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
         }
 
@@ -736,11 +776,9 @@ const GameEngine = {
                 this.renderer.renderResultScreen(); // DOM表示
                 // リザルト中はループ停止（またはresultステートでループ継続して描画のみ？）
                 // ここではループを継続させて、resultステート処理に任せる
-                this.animationId = requestAnimationFrame(() => this.gameLoop());
                 return;
             }
 
-            this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
         }
 
@@ -749,7 +787,6 @@ const GameEngine = {
             // ゲーム画面は静止画として描画し続ける（背景）
             this.renderer.render();
             // 特に更新処理はなし（DOMオーバーレイ操作待ち）
-            this.animationId = requestAnimationFrame(() => this.gameLoop());
             return;
         }
 
@@ -830,8 +867,6 @@ const GameEngine = {
                 this.playBgm('gameover', false); // ゲームオーバーBGM（ループなし）
             }
         }
-
-        this.animationId = requestAnimationFrame(() => this.gameLoop());
     },
 
     // メッセージウィンドウを表示（メッセージアイテム取得時）
