@@ -165,17 +165,14 @@ class GamePhysics {
                         other !== e && other.template?.config?.isBoss &&
                         !other.isDying && other.y <= App.projectData.stage.height + 5
                     );
+                    this.owner.bossEnemy = null;
                     if (remainingBosses.length > 0) {
-                        this.owner.bossEnemy  = null;
                         this.owner.bossSpawned = false;
                         this.owner.playBgm('stage');
                     } else {
                         const clearCondition = App.projectData.stage.clearCondition || 'none';
                         if (clearCondition !== 'survival' && !this.owner.bossDefeatPhase && !this.owner.isCleared) {
-                            this.owner.bossEnemy = null;
                             this.owner.triggerClear();
-                        } else {
-                            this.owner.bossEnemy = null;
                         }
                     }
                 }

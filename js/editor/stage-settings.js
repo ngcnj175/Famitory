@@ -140,26 +140,15 @@ class StageSettings {
             });
         });
 
-        // クリア条件（UI表示の切り替えのみ）
+        // 基本ルールに応じて制限時間ラベルを「サバイバル時間 / 制限時間」で切替
         const clearCondition = document.getElementById('stage-clear-condition');
-        const timeLimitRow = document.getElementById('time-limit-row');
         const timeLimitLabel = document.getElementById('time-limit-label');
 
         const updateTimeLimitLabel = () => {
-            const condition = clearCondition?.value || 'none';
-            if (condition === 'survival') {
-                if (timeLimitLabel) {
-                    const survivalTimeText = AppI18N.I18N['U293'][AppI18N.currentLang] || 'サバイバル時間';
-                    timeLimitLabel.textContent = survivalTimeText;
-                }
-                if (timeLimitRow) timeLimitRow.style.display = '';
-            } else {
-                if (timeLimitLabel) {
-                    const timeLimitText = AppI18N.I18N['U061'][AppI18N.currentLang] || '制限時間';
-                    timeLimitLabel.textContent = timeLimitText;
-                }
-                if (timeLimitRow) timeLimitRow.style.display = '';
-            }
+            if (!timeLimitLabel) return;
+            const key = clearCondition?.value === 'survival' ? 'U293' : 'U061';
+            const fallback = key === 'U293' ? 'サバイバル時間' : '制限時間';
+            timeLimitLabel.textContent = AppI18N.I18N[key]?.[AppI18N.currentLang] || fallback;
         };
 
         if (clearCondition) {
@@ -172,12 +161,12 @@ class StageSettings {
             saveBtn.addEventListener('click', () => {
                 const stage = App.projectData.stage;
 
-                // クリア条件を一度確認（フォーム値から）
+                // 基本ルールをフォーム値から保存
                 if (clearCondition) {
                     stage.clearCondition = clearCondition.value;
                 }
 
-                // 制限時間を一度確認（フォーム値から）
+                // 制限時間をフォーム値から保存
                 const timeMin = document.getElementById('stage-time-min');
                 const timeSec = document.getElementById('stage-time-sec');
                 if (timeMin && timeSec) {
@@ -242,21 +231,19 @@ class StageSettings {
         // 透明色
         if (transparentSelect) transparentSelect.value = stage.transparentIndex || 0;
 
-        // クリア条件・制限時間・スコア表示（preserveFormState時はフォームの現在値を保持）
+        // 基本ルール・制限時間・スコア表示（preserveFormState時はフォームの現在値を保持）
         const clearConditionEl = document.getElementById('stage-clear-condition');
         const timeLimitLabel = document.getElementById('time-limit-label');
         const showScoreCheck = document.getElementById('stage-show-score');
         if (!preserveFormState) {
             if (clearConditionEl) {
                 // 旧データ ('item'/'boss') は 'none' に正規化（配置ベースで自動判定される）
-                const legacyMap = { item: 'none', boss: 'none' };
                 const current = stage.clearCondition || 'none';
-                clearConditionEl.value = legacyMap[current] || current;
+                clearConditionEl.value = (current === 'item' || current === 'boss') ? 'none' : current;
                 if (timeLimitLabel) {
-                    const labelText = stage.clearCondition === 'survival'
-                        ? AppI18N.I18N['U293'][AppI18N.currentLang] || 'サバイバル時間'
-                        : AppI18N.I18N['U061'][AppI18N.currentLang] || '制限時間';
-                    timeLimitLabel.textContent = labelText;
+                    const key = current === 'survival' ? 'U293' : 'U061';
+                    const fallback = key === 'U293' ? 'サバイバル時間' : '制限時間';
+                    timeLimitLabel.textContent = AppI18N.I18N[key]?.[AppI18N.currentLang] || fallback;
                 }
             }
             const totalSec = stage.timeLimit || 0;
