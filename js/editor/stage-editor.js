@@ -286,7 +286,7 @@ const StageEditor = {
         const spriteKeys = this.getSpriteKeysForType(type);
         const sprites = {};
         spriteKeys.forEach(key => {
-            sprites[key] = { frames: [], speed: 6, loop: true };
+            sprites[key] = { frames: [], speed: 4, loop: true };
         });
 
         return {
@@ -520,8 +520,8 @@ const StageEditor = {
 
 
     renderSpriteRow(slot) {
-        const spriteData = this.editingTemplate.sprites[slot] || { frames: [], speed: 6, loop: true };
-        const speed = spriteData.speed ?? 6;
+        const spriteData = this.editingTemplate.sprites[slot] || { frames: [], speed: 4, loop: true };
+        const speed = spriteData.speed ?? 4;
         const firstFrame = spriteData.frames?.[0];
 
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
@@ -782,9 +782,15 @@ const StageEditor = {
     },
 
     renderBlockGaugeItems(key, value, min, max) {
-        const range = max - min;
-        let mappedValue = Math.round(((value - min) / range) * 4) + 1;
-        mappedValue = Math.max(1, Math.min(5, mappedValue));
+        let mappedValue;
+        // sprite 速度ゲージ (min=1, max=20) は非線形マッピング（花揺れ等の低速域を確保）
+        if (min === 1 && max === 20) {
+            mappedValue = SpriteUtils.speedToGaugeLevel(value);
+        } else {
+            const range = max - min;
+            mappedValue = Math.round(((value - min) / range) * 4) + 1;
+            mappedValue = Math.max(1, Math.min(5, mappedValue));
+        }
 
         let blocks = '';
         for (let i = 1; i <= 5; i++) {
@@ -909,9 +915,8 @@ const StageEditor = {
                 if (gaugeContainer.dataset.type === 'speed') {
                     const slot = gaugeContainer.dataset.slot;
                     if (slot && this.editingTemplate?.sprites?.[slot]) {
-                        // 速度マッピング (1-20 -> 5段階)
-                        const range = max - min;
-                        const value = Math.round(((index - 1) / 4) * range + min);
+                        // 速度マッピング (5段階 → sprite speed値、非線形)
+                        const value = SpriteUtils.gaugeLevelToSpeed(index);
 
                         this.editingTemplate.sprites[slot].speed = value;
 
@@ -1099,7 +1104,7 @@ const StageEditor = {
 
             const spriteData = this.editingTemplate?.sprites?.[slot];
             const frames = spriteData?.frames || [];
-            const speed = spriteData?.speed ?? 6;
+            const speed = spriteData?.speed ?? 4;
 
             if (frames.length === 0) return;
 
@@ -1415,7 +1420,7 @@ const StageEditor = {
     confirmSpriteSelection() {
         if (this.currentSelectingSlot && this.editingTemplate) {
             if (!this.editingTemplate.sprites[this.currentSelectingSlot]) {
-                this.editingTemplate.sprites[this.currentSelectingSlot] = { frames: [], speed: 6, loop: true };
+                this.editingTemplate.sprites[this.currentSelectingSlot] = { frames: [], speed: 4, loop: true };
             }
             this.editingTemplate.sprites[this.currentSelectingSlot].frames = [...this.selectedSpriteOrder];
             this.renderConfigContent();

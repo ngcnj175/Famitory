@@ -43,18 +43,34 @@ const SpriteUtils = {
      * @returns {number} ミリ秒
      */
     getFrameIntervalMs(speed) {
-        const s = Math.max(1, speed ?? 6);
+        const s = Math.max(1, speed ?? 4);
         return Math.max(1, Math.floor(60 / s)) * (1000 / 60);
     },
 
+    // 5段階ゲージ → sprite speed値 の非線形マッピング。
+    // 低速側（花揺れ等）と高速側の両方をカバーするため等比に近い配列を採用。
+    //   lv1=1000ms, lv2=500ms, lv3=250ms, lv4=111ms, lv5=50ms
+    GAUGE_TO_SPEED: [1, 2, 4, 9, 20],
+
     /**
-     * UIの5段階ゲージ(1-5) → sprite の speed 値(1-20) に変換。
-     * ステージエディタ側の block-gauge クリック時マッピングと一致させる。
-     * @param {number} level - 1〜5
-     * @returns {number} speed 1〜20
+     * UIの5段階ゲージ(1-5) → sprite の speed 値 に変換。
      */
     gaugeLevelToSpeed(level) {
         const lv = Math.max(1, Math.min(5, level));
-        return Math.round(((lv - 1) / 4) * 19 + 1);
+        return this.GAUGE_TO_SPEED[lv - 1];
+    },
+
+    /**
+     * sprite の speed 値 → 最も近い5段階ゲージレベル(1-5) を返す。
+     * 既存プロジェクトで保存済みの speed 値をゲージ表示するときに使う。
+     */
+    speedToGaugeLevel(speed) {
+        const s = Math.max(1, speed ?? 4);
+        let nearest = 1, minDiff = Infinity;
+        for (let i = 0; i < this.GAUGE_TO_SPEED.length; i++) {
+            const diff = Math.abs(this.GAUGE_TO_SPEED[i] - s);
+            if (diff < minDiff) { minDiff = diff; nearest = i + 1; }
+        }
+        return nearest;
     }
 };

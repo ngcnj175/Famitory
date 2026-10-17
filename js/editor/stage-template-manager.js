@@ -94,10 +94,10 @@ class StageTemplateManager {
             let frames, speed;
             if (template.type === 'player' && basePlayerIdx >= 0 && index !== basePlayerIdx) {
                 frames = template.sprites?.transformItem?.frames || template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
-                speed = template.sprites?.transformItem?.speed ?? template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 6;
+                speed = template.sprites?.transformItem?.speed ?? template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 4;
             } else {
                 frames = template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
-                speed = template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 6;
+                speed = template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 4;
             }
 
             if (frames.length > 0) {
