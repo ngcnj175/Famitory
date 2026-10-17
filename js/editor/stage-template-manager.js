@@ -94,10 +94,10 @@ class StageTemplateManager {
             let frames, speed;
             if (template.type === 'player' && basePlayerIdx >= 0 && index !== basePlayerIdx) {
                 frames = template.sprites?.transformItem?.frames || template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
-                speed = template.sprites?.transformItem?.speed || template.sprites?.idle?.speed || template.sprites?.main?.speed || 8;
+                speed = template.sprites?.transformItem?.speed ?? template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 5;
             } else {
                 frames = template.sprites?.idle?.frames || template.sprites?.main?.frames || [];
-                speed = template.sprites?.idle?.speed || template.sprites?.main?.speed || 8;
+                speed = template.sprites?.idle?.speed ?? template.sprites?.main?.speed ?? 5;
             }
 
             if (frames.length > 0) {
@@ -125,7 +125,7 @@ class StageTemplateManager {
                         if (sprite) {
                             this.owner.renderSpriteToMiniCanvas(sprite, miniCanvas, this.owner.getBackgroundColor());
                         }
-                    }, 1000 / speed);
+                    }, SpriteUtils.getFrameIntervalMs(speed));
                 }
 
                 div.appendChild(miniCanvas);

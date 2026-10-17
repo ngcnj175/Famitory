@@ -1099,7 +1099,7 @@ const StageEditor = {
 
             const spriteData = this.editingTemplate?.sprites?.[slot];
             const frames = spriteData?.frames || [];
-            const speed = spriteData?.speed || 8;
+            const speed = spriteData?.speed ?? 5;
 
             if (frames.length === 0) return;
 
@@ -1123,7 +1123,7 @@ const StageEditor = {
                     if (sprite) {
                         this.renderSpriteToMiniCanvas(sprite, canvas, this.getBackgroundColor());
                     }
-                }, 1000 / speed);
+                }, SpriteUtils.getFrameIntervalMs(speed));
                 this.configAnimationIntervals.push(animInterval);
             }
         });

@@ -32,5 +32,29 @@ const SpriteUtils = {
                 }
             }
         }
+    },
+
+    /**
+     * アニメーション1フレームの表示時間(ms)を返す。
+     * ゲームプレイ時の 60fps 計算と一致させるための共通ヘルパー。
+     * ゲーム: Math.max(1, Math.floor(60/speed)) フレーム × (1000/60)ms
+     * この1箇所を変えれば全体の基本速度を調整可能。
+     * @param {number} speed - 1〜20
+     * @returns {number} ミリ秒
+     */
+    getFrameIntervalMs(speed) {
+        const s = Math.max(1, speed ?? 5);
+        return Math.max(1, Math.floor(60 / s)) * (1000 / 60);
+    },
+
+    /**
+     * UIの5段階ゲージ(1-5) → sprite の speed 値(1-20) に変換。
+     * stage-editor.js:914 の計算式 round((index-1)/4 * (max-min) + min) と一致。
+     * @param {number} level - 1〜5
+     * @returns {number} speed 1〜20
+     */
+    gaugeLevelToSpeed(level) {
+        const lv = Math.max(1, Math.min(5, level));
+        return Math.round(((lv - 1) / 4) * 19 + 1);
     }
 };

@@ -226,8 +226,10 @@ const SpriteEditorPreview = {
             if (icon) icon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
         }
 
-        const speedMs = [500, 350, 200, 120, 60];
-        const ms = speedMs[this.previewSpeed - 1] || 200;
+        // ゲームプレイ時と速度を一致させるため、プレビュー速度(1-5)を sprite の speed 値(1-20) に変換してから
+        // 共通ヘルパーで1フレームの表示時間(ms)を取得する
+        const speedValue = SpriteUtils.gaugeLevelToSpeed(this.previewSpeed);
+        const ms = SpriteUtils.getFrameIntervalMs(speedValue);
         this.previewTimer = setInterval(() => {
             this.previewCurrentFrame = (this.previewCurrentFrame + 1) % this.previewFrames.length;
             this._updatePreviewUI();
