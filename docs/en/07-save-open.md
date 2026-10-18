@@ -6,6 +6,9 @@ You can save the games you make, open them later to keep working, and even carry
 
 Press **SAVE** to store the game you're working on inside your browser. Save often — whenever you reach a good stopping point.
 
+- **Tap SAVE** … Opens the save screen, where you can name and save your game, or export the data.
+- **Long-press SAVE** … Overwrites the game you're working on right away, without opening the save screen (shortcut).
+
 **Export**<br>
 You can also export your game as a file. Use this when you want to move it to another device, or keep a backup.
 
