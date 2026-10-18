@@ -39,6 +39,7 @@ Following the Famicom tradition, FAMITORY uses these four tracks:
 
 <br>
 
+- **Pick a track** … Tap a track to switch the canvas view and the keyboard's sound to that track.
 - **Pick a tone** … Long-press a track to choose which tone it uses.
 - **Volume** … Move the knob to change the loudness per track.
 - **Pan** … Decide whether the sound comes from the left or the right.
