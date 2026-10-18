@@ -28,12 +28,12 @@ The Tile Palette lists the parts (tiles) you can place on a stage.
 
 ## Tile Settings panel
 
-The Tile Settings panel is where you set the pixel, movement, and parameters of the selected tile. **The available options depend on the tile type.**
+The Tile Settings panel is where you set the pixel, movement, and abilities of the selected tile. **The available options depend on the tile type.**
 
 - **Pixel** … Assign a picture (made in PIXEL) to the tile.
 - **Animation** … Set which frames play for actions like walking or jumping.
-- **Parameters** … Fine-tune things like HP, speed, or attack power — the options match the tile type.
-- **Handle (top of panel)** … Drag the handle at the top up or down to expand or shrink the panel.
+- **5-step gauges** … Set animation speed and each ability's strength on a 5-step gauge.
+- **Grip (top of panel)** … Drag the grip at the top up or down to expand or shrink the panel.
 - When you're done, press **Save** at the top to confirm.
 
 ---
@@ -75,7 +75,7 @@ The Canvas is where you place tiles to build your stage.
 
 Press **▼ Game Settings** at the top of the screen to open it. Here you can set stage-wide rules and sounds all in one place.
 
-- **Stage Size** … Change the number of cells vertically and horizontally.
+- **Stage Size** … One screen = 16×16 cells. Adding more cells connects screens horizontally or vertically to build a bigger stage.
 - **BG Color** … Change the background color of the stage.
 - **Base Rule** … Pick one: None / Defeat Enemies / Survival. If Clear Items or a Boss are placed on the stage, achieving any of them will also clear the stage (except in Survival mode, which only clears by surviving the time limit).
 - **Time Limit** … Set a limit in minutes and seconds (0 means no limit).
