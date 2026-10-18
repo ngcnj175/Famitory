@@ -11,7 +11,7 @@ You can also start a new game from the screen that appears after playing another
 
 ### Remix an existing game
 
-On the screen that appears after playing someone else's game, press **"Remix this game"** to use the original as a base and freely rearrange it.
+On the screen that appears after playing someone else's game, press **"Remix this game"** to use the original as a base and freely rearrange it. (The original game stays unchanged.)
 
 !> You can only remix games whose creator marked them as "Allow Remix."
 
