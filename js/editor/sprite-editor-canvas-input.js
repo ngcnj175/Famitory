@@ -69,6 +69,19 @@ const SpriteCanvasInput = {
         this.editor.canvas = newCanvas;
         this.editor.ctx = this.editor.canvas.getContext('2d');
 
+        // PC用キーボードショートカット: Ctrl + 0 でズーム1倍リセット
+        document.addEventListener('keydown', (e) => {
+            if (App.currentScreen !== 'paint') return;
+            if (e.ctrlKey && (e.key === '0' || e.key === '0'.charCodeAt(0))) {
+                if (this.editor.zoomScale !== 1) {
+                    e.preventDefault();
+                    this.editor.viewportOffsetX = 0;
+                    this.editor.viewportOffsetY = 0;
+                    this.editor.setZoom(1);
+                }
+            }
+        });
+
         // PC用キーボードショートカット: Shift + 矢印キーでビューポートをパン
         document.addEventListener('keydown', (e) => {
             if (App.currentScreen !== 'paint') return;
@@ -208,6 +221,24 @@ const SpriteCanvasInput = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
+                // 2本指ダブルタップ検出: 直前の2本指タップから400ms以内 → ズームリセット
+                const now = Date.now();
+                if (this.lastTwoFingerTapTime && now - this.lastTwoFingerTapTime < 400 && this.editor.zoomScale !== 1) {
+                    this.lastTwoFingerTapTime = 0;
+                    this.twoFingerStartTime = 0;
+                    this.twoFingerMoved = true;  // タップ判定を無効化
+                    this.editor.viewportOffsetX = 0;
+                    this.editor.viewportOffsetY = 0;
+                    this.editor.setZoom(1);
+                    return;
+                }
+                // タップ候補として記録
+                this.twoFingerStartTime = now;
+                this.twoFingerStartCenterX = centerX;
+                this.twoFingerStartCenterY = centerY;
+                this.twoFingerStartDist = dist;
+                this.twoFingerMoved = false;
+
                 if (this.editor.guideAdjustMode && this.editor.guideImage && this.editor.getCurrentSpriteSize() !== 2) {
                     // 16x16: おてほん調整モード
                     this.pendingTouch = null;
@@ -254,6 +285,13 @@ const SpriteCanvasInput = {
                 const centerX = (touch1.clientX + touch2.clientX) / 2;
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+                // タップ判定のための移動量追跡
+                if (!this.twoFingerMoved && this.twoFingerStartTime) {
+                    const movedDist = Math.hypot(centerX - this.twoFingerStartCenterX, centerY - this.twoFingerStartCenterY);
+                    const distChange = Math.abs(dist - this.twoFingerStartDist);
+                    if (movedDist > 10 || distChange > 10) this.twoFingerMoved = true;
+                }
 
                 // おてほん調整モードの場合
                 if (this.editor.guideAdjustData) {
@@ -313,10 +351,18 @@ const SpriteCanvasInput = {
             }
         }, { passive: false });
 
-        document.addEventListener('touchend', () => {
+        document.addEventListener('touchend', (e) => {
             if (this.touchStartTimer) {
                 clearTimeout(this.touchStartTimer);
                 this.touchStartTimer = null;
+            }
+            // 2本指タップ完了判定（全指リリース時）
+            if (e.touches.length === 0 && this.twoFingerStartTime) {
+                if (!this.twoFingerMoved && Date.now() - this.twoFingerStartTime < 300) {
+                    this.lastTwoFingerTapTime = Date.now();
+                }
+                this.twoFingerStartTime = 0;
+                this.twoFingerMoved = false;
             }
             this.pendingTouch = null;
             this.isPanning = false;
