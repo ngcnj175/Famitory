@@ -32,22 +32,43 @@ class StageCanvasInput {
         let handPanClientX = 0;
         let handPanClientY = 0;
 
-        // --- PC: マウスホイールスクロール ---
+        // --- PC: マウスホイールスクロール / Ctrl+ホイールズーム ---
         o.canvas.addEventListener('wheel', (e) => {
+            if (!App.projectData?.stage) return;
+
+            // Ctrl+ホイール: ズーム（トラックパッドのピンチも ctrlKey=true で届く）
+            if (e.ctrlKey) {
+                e.preventDefault();
+                const rect = o.canvas.getBoundingClientRect();
+                const cx = (e.clientX - rect.left) * (o.canvas.width / rect.width);
+                const cy = (e.clientY - rect.top) * (o.canvas.height / rect.height);
+                const delta = e.deltaY < 0 ? 1 : -1;
+                o.setZoom(o.zoomScale + delta, cx, cy);
+                return;
+            }
+
             e.preventDefault();
-            const stage = App.projectData?.stage;
-            if (!stage) return;
-            const maxScrollX = Math.max(0, (stage.width - 16) * o.tileSize);
-            const maxScrollY = Math.max(0, (stage.height - 16) * o.tileSize);
-            if (maxScrollX === 0 && maxScrollY === 0) return;
+            const max = o.getMaxScroll();
+            if (max.x === 0 && max.y === 0) return;
 
             const speed = 0.3;
             const dx = (e.shiftKey ? e.deltaY : 0) * speed;
             const dy = (e.shiftKey ? 0 : e.deltaY) * speed;
-            o.canvasScrollX = Math.max(-maxScrollX, Math.min(0, o.canvasScrollX - dx));
-            o.canvasScrollY = Math.max(-maxScrollY, Math.min(0, o.canvasScrollY - dy));
+            o.canvasScrollX = Math.max(-max.x, Math.min(0, o.canvasScrollX - dx));
+            o.canvasScrollY = Math.max(-max.y, Math.min(0, o.canvasScrollY - dy));
             o.render();
         }, { passive: false });
+
+        // --- PC: Ctrl+0 でズームリセット ---
+        document.addEventListener('keydown', (e) => {
+            if (App.currentScreen !== 'stage') return;
+            if (e.ctrlKey && e.key === '0' && o.zoomScale !== 1) {
+                e.preventDefault();
+                o.canvasScrollX = 0;
+                o.canvasScrollY = 0;
+                o.setZoom(1);
+            }
+        });
 
         // --- PC: 中ボタンドラッグパン ---
         let isMiddlePanning = false;
@@ -397,25 +418,63 @@ class StageCanvasInput {
         let hasMoved = false;
 
         // 繧ｿ繝・メ繧､繝吶Φ繝茨ｼ・譛ｬ謖・ｼ壹ち繧､繝ｫ謫堺ｽ懊・譛ｬ謖・ｼ壹ヱ繝ｳ・・
+        // 2本指ジェスチャ用の状態
+        let pinchData = null;
+        let twoFingerStartTime = 0;
+        let twoFingerStartCenterX = 0;
+        let twoFingerStartCenterY = 0;
+        let twoFingerStartDist = 0;
+        let twoFingerMoved = false;
+        let lastTwoFingerTapTime = 0;
+
         o.canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
-                // 2譛ｬ謖・ｼ壹ヱ繝ｳ髢句ｧ・- 菫晉蕗荳ｭ縺ｮ蜈･蜉帙′縺ゅｌ縺ｰ繧ｭ繝｣繝ｳ繧ｻ繝ｫ
+                // 入力中であればキャンセル
                 if (pendingDrawTimer) {
                     clearTimeout(pendingDrawTimer);
                     pendingDrawTimer = null;
                     pendingDrawData = null;
                 }
-                isPanning = true;
                 isDrawing = false;
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
-                panStartX = (touch1.clientX + touch2.clientX) / 2;
-                panStartY = (touch1.clientY + touch2.clientY) / 2;
-                lastScrollX = o.canvasScrollX;
-                lastScrollY = o.canvasScrollY;
+                const centerX = (touch1.clientX + touch2.clientX) / 2;
+                const centerY = (touch1.clientY + touch2.clientY) / 2;
+                const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+                // 2本指ダブルタップ → ズームリセット
+                const now = Date.now();
+                if (lastTwoFingerTapTime && now - lastTwoFingerTapTime < 400 && o.zoomScale !== 1) {
+                    lastTwoFingerTapTime = 0;
+                    twoFingerStartTime = 0;
+                    twoFingerMoved = true;
+                    pinchData = null;
+                    isPanning = false;
+                    o.canvasScrollX = 0;
+                    o.canvasScrollY = 0;
+                    o.setZoom(1);
+                    e.preventDefault();
+                    return;
+                }
+
+                // タップ候補として記録
+                twoFingerStartTime = now;
+                twoFingerStartCenterX = centerX;
+                twoFingerStartCenterY = centerY;
+                twoFingerStartDist = dist;
+                twoFingerMoved = false;
+
+                // ピンチズーム＋パンの状態
+                isPanning = true;
+                pinchData = {
+                    startDist: dist,
+                    startZoomScale: o.zoomScale,
+                    lastCenterX: centerX,
+                    lastCenterY: centerY
+                };
                 e.preventDefault();
             } else if (e.touches.length === 1 && !isPanning) {
-                // 1譛ｬ謖・ｼ夐≦蟒ｶ縺励※繧ｿ繧､繝ｫ謫堺ｽ懶ｼ・譛ｬ謖・ヱ繝ｳ隱､蜈･蜉幃亟豁｢・・
+                // 1本指: 遅延してタイル操作（2本指パン誤入力防止）
                 e.preventDefault();
                 pendingDrawData = e.touches[0];
                 pendingDrawTimer = setTimeout(() => {
@@ -429,21 +488,40 @@ class StageCanvasInput {
         }, { passive: false });
 
         o.canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && isPanning) {
-                // 2譛ｬ謖・ｼ壹ヱ繝ｳ荳ｭ
+            if (e.touches.length === 2 && pinchData) {
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
-                const currentX = (touch1.clientX + touch2.clientX) / 2;
-                const currentY = (touch1.clientY + touch2.clientY) / 2;
+                const centerX = (touch1.clientX + touch2.clientX) / 2;
+                const centerY = (touch1.clientY + touch2.clientY) / 2;
+                const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                o.canvasScrollX = lastScrollX + (currentX - panStartX);
-                o.canvasScrollY = lastScrollY + (currentY - panStartY);
+                // タップ判定のための移動量追跡
+                if (!twoFingerMoved) {
+                    const movedDist = Math.hypot(centerX - twoFingerStartCenterX, centerY - twoFingerStartCenterY);
+                    const distChange = Math.abs(dist - twoFingerStartDist);
+                    if (movedDist > 10 || distChange > 10) twoFingerMoved = true;
+                }
 
-                // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ遽・峇繧貞宛髯・
-                const maxScrollX = Math.max(0, (App.projectData.stage.width - 16) * o.tileSize);
-                const maxScrollY = Math.max(0, (App.projectData.stage.height - 16) * o.tileSize);
-                o.canvasScrollX = Math.max(-maxScrollX, Math.min(0, o.canvasScrollX));
-                o.canvasScrollY = Math.max(-maxScrollY, Math.min(0, o.canvasScrollY));
+                // ピンチズーム（整数倍スナップ）
+                const scaleRatio = dist / pinchData.startDist;
+                const targetScale = Math.max(1, Math.min(4, Math.round(pinchData.startZoomScale * scaleRatio)));
+                if (targetScale !== o.zoomScale) {
+                    const rect = o.canvas.getBoundingClientRect();
+                    const cx = (centerX - rect.left) * (o.canvas.width / rect.width);
+                    const cy = (centerY - rect.top) * (o.canvas.height / rect.height);
+                    o.setZoom(targetScale, cx, cy);
+                    pinchData.startDist = dist;
+                    pinchData.startZoomScale = targetScale;
+                }
+
+                // 2本指ドラッグによるパン
+                const panDeltaX = centerX - pinchData.lastCenterX;
+                const panDeltaY = centerY - pinchData.lastCenterY;
+                const max = o.getMaxScroll();
+                o.canvasScrollX = Math.max(-max.x, Math.min(0, (o.canvasScrollX || 0) + panDeltaX));
+                o.canvasScrollY = Math.max(-max.y, Math.min(0, (o.canvasScrollY || 0) + panDeltaY));
+                pinchData.lastCenterX = centerX;
+                pinchData.lastCenterY = centerY;
 
                 o.render();
                 e.preventDefault();
@@ -456,8 +534,15 @@ class StageCanvasInput {
         o.canvas.addEventListener('touchend', (e) => {
             if (e.touches.length < 2) {
                 isPanning = false;
+                pinchData = null;
             }
             if (e.touches.length === 0) {
+                // 2本指タップ完了判定
+                if (twoFingerStartTime && !twoFingerMoved && Date.now() - twoFingerStartTime < 300) {
+                    lastTwoFingerTapTime = Date.now();
+                }
+                twoFingerStartTime = 0;
+                twoFingerMoved = false;
                 handleEnd();
             }
         });

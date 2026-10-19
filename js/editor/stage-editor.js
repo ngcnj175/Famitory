@@ -6,6 +6,11 @@ const StageEditor = {
     canvas: null,
     ctx: null,
     tileSize: 20,
+
+    // ズーム倍率（1〜4の整数倍）
+    zoomScale: 1,
+    MIN_ZOOM: 1,
+    MAX_ZOOM: 4,
     
     // 翻訳ヘルパー
     t(id) {
@@ -1535,9 +1540,9 @@ const StageEditor = {
         const container = document.getElementById('stage-canvas-area');
         if (!container || !this.canvas) return;
 
-        // キャンバスは常に16x16タイル・20px固定ビューポート
-        // ステージサイズが大きい場合は2本指パンでスクロール
-        this.tileSize = 20;
+        // キャンバスは常に16x16タイル・20px固定ビューポート（ズーム倍率を乗算）
+        const baseTileSize = 20;
+        this.tileSize = baseTileSize * (this.zoomScale || 1);
         const canvasSize = 320;
 
         this.canvas.width = canvasSize;
@@ -1545,6 +1550,42 @@ const StageEditor = {
         this.canvas.style.width = canvasSize + 'px';
         this.canvas.style.height = canvasSize + 'px';
 
+        this.render();
+    },
+
+    // 最大スクロール量 {x, y}。canvasScrollX/Y の下限 = -maxX, 上限 = 0
+    getMaxScroll() {
+        const stage = App.projectData?.stage;
+        if (!stage) return { x: 0, y: 0 };
+        return {
+            x: Math.max(0, stage.width * this.tileSize - this.canvas.width),
+            y: Math.max(0, stage.height * this.tileSize - this.canvas.height)
+        };
+    },
+
+    // ズーム適用（centerX/Yはcanvas内のスクリーン座標。省略時は中央）
+    setZoom(newScale, centerX, centerY) {
+        const clamped = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, Math.round(newScale)));
+        if (clamped === this.zoomScale) return;
+
+        const cx = (centerX ?? this.canvas.width / 2);
+        const cy = (centerY ?? this.canvas.height / 2);
+        const oldTileSize = this.tileSize;
+        const newTileSize = 20 * clamped;
+
+        if (!Number.isFinite(this.canvasScrollX)) this.canvasScrollX = 0;
+        if (!Number.isFinite(this.canvasScrollY)) this.canvasScrollY = 0;
+
+        // ズーム中心のステージ座標を固定
+        const ratio = newTileSize / oldTileSize;
+        let newScrollX = cx - (cx - this.canvasScrollX) * ratio;
+        let newScrollY = cy - (cy - this.canvasScrollY) * ratio;
+
+        this.zoomScale = clamped;
+        this.tileSize = newTileSize;
+        const max = this.getMaxScroll();
+        this.canvasScrollX = Math.max(-max.x, Math.min(0, newScrollX));
+        this.canvasScrollY = Math.max(-max.y, Math.min(0, newScrollY));
         this.render();
     },
 
