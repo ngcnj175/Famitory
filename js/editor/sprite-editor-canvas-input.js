@@ -106,6 +106,26 @@ const SpriteCanvasInput = {
         this.editor.canvas.addEventListener('wheel', (e) => {
             if (App.currentScreen !== 'paint') return;
 
+            // おてほん調整モード中（16x16）: ホイールは画像のスケール/回転に使う
+            if (this.editor.guideAdjustMode && this.editor.guideImage && this.editor.getCurrentSpriteSize() !== 2) {
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    const delta = e.deltaY < 0 ? 0.1 : -0.1;
+                    this.editor.guideScale = Math.max(0.1, Math.min(5, this.editor.guideScale + delta));
+                    this.editor.render();
+                    return;
+                }
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    const delta = e.deltaY < 0 ? -Math.PI / 36 : Math.PI / 36;  // 5度
+                    this.editor.guideRotation += delta;
+                    this.editor.render();
+                    return;
+                }
+                // 修飾なしは無効化
+                return;
+            }
+
             // Ctrl+ホイール: ズーム（16x16のみ。トラックパッドのピンチも ctrlKey=true で届く）
             if (e.ctrlKey && this.editor.getCurrentSpriteSize() !== 2) {
                 e.preventDefault();
@@ -405,6 +425,19 @@ const SpriteCanvasInput = {
         if (e.button !== undefined && e.button !== 0) return;
         this.hasMoved = false;
 
+        // おてほん調整モード中（16x16・マウス）: 画像の位置移動。描画は抑制
+        if (this.editor.guideAdjustMode && this.editor.guideImage
+            && this.editor.getCurrentSpriteSize() !== 2
+            && e.clientX !== undefined && !e.touches) {
+            this.guideDragData = {
+                startX: e.clientX,
+                startY: e.clientY,
+                startOffsetX: this.editor.guideOffsetX,
+                startOffsetY: this.editor.guideOffsetY
+            };
+            return;
+        }
+
         // ハンドツール: 左クリック/タッチドラッグでビューポートをパン（32x32のみ）
         if (this.editor.currentTool === 'hand') {
             if (this.editor.getCurrentSpriteSize() !== 2) return;
@@ -511,7 +544,19 @@ const SpriteCanvasInput = {
     },
 
     onPointerMove(e) {
-        if (!this.isDrawing || App.currentScreen !== 'paint') return;
+        if (App.currentScreen !== 'paint') return;
+
+        // おてほん調整モード中のマウスドラッグ: 画像の位置を移動（isDrawing判定より前）
+        if (this.guideDragData && e.clientX !== undefined) {
+            const dx = (e.clientX - this.guideDragData.startX) / this.editor.pixelSize;
+            const dy = (e.clientY - this.guideDragData.startY) / this.editor.pixelSize;
+            this.editor.guideOffsetX = this.guideDragData.startOffsetX + dx;
+            this.editor.guideOffsetY = this.guideDragData.startOffsetY + dy;
+            this.editor.render();
+            return;
+        }
+
+        if (!this.isDrawing) return;
 
         // 長押しスポイトタイマーをキャンセル（移動検出時）
         if (this.longPressTimer) {
@@ -627,6 +672,10 @@ const SpriteCanvasInput = {
         if (this.longPressTimer) {
             clearTimeout(this.longPressTimer);
             this.longPressTimer = null;
+        }
+        // おてほんドラッグ終了
+        if (this.guideDragData) {
+            this.guideDragData = null;
         }
         this.stopAutoScroll();
         this.lastPointerEvent = null;
