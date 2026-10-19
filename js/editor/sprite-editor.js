@@ -23,6 +23,11 @@ const SpriteEditor = {
     viewportOffsetX: 0,
     viewportOffsetY: 0,
 
+    // ズーム倍率（16x16時のみ有効。整数倍1〜4。32x32は未対応。ステップ2で統合予定）
+    zoomScale: 1,
+    MIN_ZOOM: 1,
+    MAX_ZOOM: 4,
+
     // ダブルクリック検出用
     lastSpriteClickTime: 0,
     lastSpriteClickIndex: -1,
@@ -73,9 +78,45 @@ const SpriteEditor = {
 
     resize() {
         const dimension = this.getCurrentSpriteDimension();
-        this.pixelSize = 320 / 16;  // 常に16x16分の表示サイズを維持
+        const basePixelSize = 320 / 16;  // 常に16x16分の表示サイズを維持
+        // 16x16時のみズーム適用。32x32時は既存ロジック維持
+        const zoom = (dimension === 16) ? (this.zoomScale || 1) : 1;
+        this.pixelSize = basePixelSize * zoom;
         this.canvas.width = 320;
         this.canvas.height = 320;
+        this.render();
+    },
+
+    // 最大スクロール量（canvas幅・高さを超える分）
+    getMaxScroll() {
+        const dimension = this.getCurrentSpriteDimension();
+        return Math.max(0, dimension * this.pixelSize - this.canvas.width);
+    },
+
+    // ズーム適用（centerX/Yはcanvas内のスクリーン座標。省略時は中央）
+    setZoom(newScale, centerX, centerY) {
+        const dimension = this.getCurrentSpriteDimension();
+        if (dimension !== 16) return;  // ステップ1は16x16のみ
+        const clamped = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, Math.round(newScale)));
+        if (clamped === this.zoomScale) return;
+
+        const cx = (centerX ?? this.canvas.width / 2);
+        const cy = (centerY ?? this.canvas.height / 2);
+        const oldPixelSize = this.pixelSize;
+        const newPixelSize = (320 / 16) * clamped;
+
+        // ズーム中心を固定するようにビューポートを調整
+        if (!Number.isFinite(this.viewportOffsetX)) this.viewportOffsetX = 0;
+        if (!Number.isFinite(this.viewportOffsetY)) this.viewportOffsetY = 0;
+        const ratio = newPixelSize / oldPixelSize;
+        let newOffX = (cx + this.viewportOffsetX) * ratio - cx;
+        let newOffY = (cy + this.viewportOffsetY) * ratio - cy;
+
+        this.zoomScale = clamped;
+        this.pixelSize = newPixelSize;
+        const maxScroll = this.getMaxScroll();
+        this.viewportOffsetX = Math.max(0, Math.min(maxScroll, newOffX));
+        this.viewportOffsetY = Math.max(0, Math.min(maxScroll, newOffY));
         this.render();
     },
 
@@ -314,6 +355,8 @@ const SpriteEditor = {
                         this.history = [];
                         this.viewportOffsetX = 0;
                         this.viewportOffsetY = 0;
+                        this.zoomScale = 1;
+                        this.resize();
                         this.lastSpriteClickTime = now;
                         this.lastSpriteClickIndex = index;
                         this.initSpriteGallery();
@@ -340,6 +383,8 @@ const SpriteEditor = {
                         this.history = [];
                         this.viewportOffsetX = 0;
                         this.viewportOffsetY = 0;
+                        this.zoomScale = 1;
+                        this.resize();
                         this.lastSpriteClickTime = now;
                         this.lastSpriteClickIndex = index;
                         this.initSpriteGallery();
