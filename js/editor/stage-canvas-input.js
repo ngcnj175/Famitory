@@ -528,6 +528,15 @@ class StageCanvasInput {
         }, { passive: false });
 
         o.canvas.addEventListener('touchend', (e) => {
+            // 50ms遅延待ちのタイル操作がある場合: 即座に発火→終了（残留で長押しスポイトが誤発動するのを防ぐ）
+            if (pendingDrawTimer) {
+                clearTimeout(pendingDrawTimer);
+                pendingDrawTimer = null;
+                if (pendingDrawData && !isPanning) {
+                    handleStart(pendingDrawData);
+                }
+                pendingDrawData = null;
+            }
             if (e.touches.length < 2) {
                 isPanning = false;
                 pinchData = null;
@@ -560,11 +569,9 @@ class StageCanvasInput {
             const scaleX = o.canvas.width / w;
             const scaleY = o.canvas.height / h;
 
-            // スクロールオフセットを加算してステージ座標に変換
-            const scrollOffsetX = Math.round(-(o.canvasScrollX || 0) / o.tileSize);
-            const scrollOffsetY = Math.round(-(o.canvasScrollY || 0) / o.tileSize);
-            const x = Math.floor((e.offsetX * scaleX) / o.tileSize) + scrollOffsetX;
-            const y = Math.floor((e.offsetY * scaleY) / o.tileSize) + scrollOffsetY;
+            // スクロールを含めてステージ座標に変換（Math.roundだと非整数scrollで1マスずれるため使わない）
+            const x = Math.floor((e.offsetX * scaleX - (o.canvasScrollX || 0)) / o.tileSize);
+            const y = Math.floor((e.offsetY * scaleY - (o.canvasScrollY || 0)) / o.tileSize);
             return { x, y };
         }
 
@@ -590,11 +597,9 @@ class StageCanvasInput {
         const scaleX = o.canvas.width / drawRectWidth;
         const scaleY = o.canvas.height / (rect.height - borderTop - borderBottom);
 
-        // スクロールオフセットを加算してステージ座標に変換
-        const scrollOffsetX = Math.round(-(o.canvasScrollX || 0) / o.tileSize);
-        const scrollOffsetY = Math.round(-(o.canvasScrollY || 0) / o.tileSize);
-        const x = Math.floor(((clientX - rect.left - borderLeft) * scaleX) / o.tileSize) + scrollOffsetX;
-        const y = Math.floor(((clientY - rect.top - borderTop) * scaleY) / o.tileSize) + scrollOffsetY;
+        // スクロールを含めてステージ座標に変換（Math.round非使用）
+        const x = Math.floor(((clientX - rect.left - borderLeft) * scaleX - (o.canvasScrollX || 0)) / o.tileSize);
+        const y = Math.floor(((clientY - rect.top - borderTop) * scaleY - (o.canvasScrollY || 0)) / o.tileSize);
 
         return { x, y };
     }
