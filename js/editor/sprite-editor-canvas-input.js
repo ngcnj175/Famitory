@@ -106,7 +106,7 @@ const SpriteCanvasInput = {
         this.editor.canvas.addEventListener('wheel', (e) => {
             if (App.currentScreen !== 'paint') return;
 
-            // おてほん調整モード中（16x16）: ホイールは画像のスケール/回転に使う
+            // おてほん調整モード中（16x16のみ）: ホイールは画像のスケール/回転に使う
             if (this.editor.guideAdjustMode && this.editor.guideImage && this.editor.getCurrentSpriteSize() !== 2) {
                 if (e.ctrlKey) {
                     e.preventDefault();
@@ -126,8 +126,8 @@ const SpriteCanvasInput = {
                 return;
             }
 
-            // Ctrl+ホイール: ズーム（16x16のみ。トラックパッドのピンチも ctrlKey=true で届く）
-            if (e.ctrlKey && this.editor.getCurrentSpriteSize() !== 2) {
+            // Ctrl+ホイール: ズーム（トラックパッドのピンチも ctrlKey=true で届く）
+            if (e.ctrlKey) {
                 e.preventDefault();
                 const rect = this.editor.canvas.getBoundingClientRect();
                 const cx = (e.clientX - rect.left) * (this.editor.canvas.width / rect.width);
@@ -137,9 +137,8 @@ const SpriteCanvasInput = {
                 return;
             }
 
-            // 32x32、または16x16でズーム中のみスクロール
-            const is32 = this.editor.getCurrentSpriteSize() === 2;
-            const canScroll = is32 || this.editor.zoomScale > 1;
+            // スクロール可能条件: 32x32 or ズーム中
+            const canScroll = this.editor.getMaxScroll() > 0;
             if (!canScroll) return;
             e.preventDefault();
             const maxScroll = this.editor.getMaxScroll();
@@ -159,8 +158,7 @@ const SpriteCanvasInput = {
         this.editor.canvas.addEventListener('mousedown', (e) => {
             if (e.button === 1) {
                 if (App.currentScreen !== 'paint') return;
-                const is32 = this.editor.getCurrentSpriteSize() === 2;
-                if (!is32 && this.editor.zoomScale <= 1) return;
+                if (this.editor.getMaxScroll() <= 0) return;
                 e.preventDefault();
                 isSpriteMiddlePan = true;
                 spriteMidPanX = e.clientX;
@@ -210,14 +208,8 @@ const SpriteCanvasInput = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                // 32x32の場合は常にキャンバスパン（下書きは固定・移動不可）
-                if (this.editor.getCurrentSpriteSize() === 2) {
-                    this.isPanning = true;
-                    this.pendingTouch = null;
-                    this.panStartX = centerX;
-                    this.panStartY = centerY;
-                } else if (this.editor.guideAdjustMode && this.editor.guideImage) {
-                    // 16x16以下の場合のみ下書き調整モード
+                if (this.editor.guideAdjustMode && this.editor.guideImage && this.editor.getCurrentSpriteSize() !== 2) {
+                    // 16x16: おてほん調整モード
                     this.pendingTouch = null;
                     const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX);
                     this.editor.guideAdjustData = {
@@ -231,7 +223,7 @@ const SpriteCanvasInput = {
                         startOffsetY: this.editor.guideOffsetY
                     };
                 } else {
-                    // 16x16キャンバスのピンチズーム＋パン
+                    // 16x16/32x32 共通: キャンバスのピンチズーム＋パン
                     this.pendingTouch = null;
                     this.pinchZoomData = {
                         startDist: dist,
@@ -312,29 +304,8 @@ const SpriteCanvasInput = {
                     d.lastCenterX = centerX;
                     d.lastCenterY = centerY;
                     this.editor.render();
-                } else if (this.isPanning && this.editor.getCurrentSpriteSize() === 2) {
-                    // 通常の32x32パン処理
-                    if (!Number.isFinite(this.panStartX) || !Number.isFinite(this.panStartY)) {
-                        this.panStartX = centerX;
-                        this.panStartY = centerY;
-                        return;
-                    }
-
-                    const deltaX = this.panStartX - centerX;
-                    const deltaY = this.panStartY - centerY;
-                    const maxScroll = 16 * this.editor.pixelSize;
-
-                    if (!Number.isFinite(this.editor.viewportOffsetX)) this.editor.viewportOffsetX = 0;
-                    if (!Number.isFinite(this.editor.viewportOffsetY)) this.editor.viewportOffsetY = 0;
-
-                    this.editor.viewportOffsetX = Math.max(0, Math.min(maxScroll, this.editor.viewportOffsetX + deltaX));
-                    this.editor.viewportOffsetY = Math.max(0, Math.min(maxScroll, this.editor.viewportOffsetY + deltaY));
-
-                    this.panStartX = centerX;
-                    this.panStartY = centerY;
-                    this.editor.render();
                 }
-            } else if (e.touches.length === 1 && !this.isPanning) {
+            } else if (e.touches.length === 1 && !this.pinchZoomData) {
                 // 2本指パン/調整中でなければ、描画を続行
                 if (this.isDrawing) {
                     this.onPointerMove(e.touches[0]);

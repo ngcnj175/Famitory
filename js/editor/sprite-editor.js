@@ -77,10 +77,8 @@ const SpriteEditor = {
     },
 
     resize() {
-        const dimension = this.getCurrentSpriteDimension();
         const basePixelSize = 320 / 16;  // 常に16x16分の表示サイズを維持
-        // 16x16時のみズーム適用。32x32時は既存ロジック維持
-        const zoom = (dimension === 16) ? (this.zoomScale || 1) : 1;
+        const zoom = this.zoomScale || 1;
         this.pixelSize = basePixelSize * zoom;
         this.canvas.width = 320;
         this.canvas.height = 320;
@@ -95,8 +93,6 @@ const SpriteEditor = {
 
     // ズーム適用（centerX/Yはcanvas内のスクリーン座標。省略時は中央）
     setZoom(newScale, centerX, centerY) {
-        const dimension = this.getCurrentSpriteDimension();
-        if (dimension !== 16) return;  // ステップ1は16x16のみ
         const clamped = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, Math.round(newScale)));
         if (clamped === this.zoomScale) return;
 
@@ -775,10 +771,12 @@ const SpriteEditor = {
             sprite.data = newData;
             sprite.size = newSize;
 
-            // 現在編集中のスプライトなら、オフセットをリセット
+            // 現在編集中のスプライトなら、オフセット・ズームをリセット
             if (index === this.currentSprite) {
                 this.viewportOffsetX = 0;
                 this.viewportOffsetY = 0;
+                this.zoomScale = 1;
+                this.resize();
             }
 
             this.initSpriteGallery();
