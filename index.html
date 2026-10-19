@@ -280,7 +280,14 @@
                     </div>
 
                     <!-- キャンバス -->
-                    <canvas id="paint-canvas"></canvas>
+                    <div id="paint-canvas-wrap">
+                        <canvas id="paint-canvas"></canvas>
+                        <button id="guide-adjust-done-btn" type="button" title="調整完了" style="display:none;" aria-label="おてほん調整完了">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- カラーパレットエリア（追加ボタン左固定 + スクロール可能リスト） -->

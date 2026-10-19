@@ -40,6 +40,25 @@ const SpriteCanvasInput = {
     init(parentEditor) {
         this.editor = parentEditor;
         this.initCanvasEvents();
+        this.initGuideAdjustDoneBtn();
+    },
+
+    initGuideAdjustDoneBtn() {
+        const btn = document.getElementById('guide-adjust-done-btn');
+        if (!btn) return;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.editor.guideAdjustMode = false;
+            this.editor.guideAdjustData = null;
+            this.updateGuideAdjustDoneBtn();
+        });
+    },
+
+    updateGuideAdjustDoneBtn() {
+        const btn = document.getElementById('guide-adjust-done-btn');
+        if (!btn) return;
+        const show = this.editor.guideAdjustMode && this.editor.guideImage;
+        btn.style.display = show ? 'flex' : 'none';
     },
 
     initCanvasEvents() {
@@ -1225,6 +1244,7 @@ const SpriteCanvasInput = {
                 // 調整モードON（初回読込み時のみ）
                 this.editor.guideAdjustMode = true;
                 this.updateGuideButtonState();
+                this.updateGuideAdjustDoneBtn();
                 this.editor.render();
 
                 // ObjectURLを解放
@@ -1257,6 +1277,7 @@ const SpriteCanvasInput = {
         this.editor.guideAdjustMode = false;
         this.editor.guideAdjustData = null;
         this.updateGuideButtonState();
+        this.updateGuideAdjustDoneBtn();
         this.editor.render();
     },
 
