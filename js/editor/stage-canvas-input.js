@@ -83,17 +83,14 @@ class StageCanvasInput {
         });
         window.addEventListener('mousemove', (e) => {
             if (!isMiddlePanning) return;
-            const stage = App.projectData?.stage;
-            if (!stage) return;
-            const maxScrollX = Math.max(0, (stage.width - 16) * o.tileSize);
-            const maxScrollY = Math.max(0, (stage.height - 16) * o.tileSize);
+            const max = o.getMaxScroll();
 
             const dx = e.clientX - midPanX;
             const dy = e.clientY - midPanY;
             midPanX = e.clientX;
             midPanY = e.clientY;
-            o.canvasScrollX = Math.max(-maxScrollX, Math.min(0, o.canvasScrollX + dx));
-            o.canvasScrollY = Math.max(-maxScrollY, Math.min(0, o.canvasScrollY + dy));
+            o.canvasScrollX = Math.max(-max.x, Math.min(0, o.canvasScrollX + dx));
+            o.canvasScrollY = Math.max(-max.y, Math.min(0, o.canvasScrollY + dy));
             o.render();
         });
         window.addEventListener('mouseup', (e) => {
@@ -245,18 +242,14 @@ class StageCanvasInput {
             if (isHandPanning) {
                 const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
                 const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-                const stage = App.projectData?.stage;
-                if (stage) {
-                    const maxScrollX = Math.max(0, (stage.width - 16) * o.tileSize);
-                    const maxScrollY = Math.max(0, (stage.height - 16) * o.tileSize);
-                    const dx = cx - handPanClientX;
-                    const dy = cy - handPanClientY;
-                    o.canvasScrollX = Math.max(-maxScrollX, Math.min(0, o.canvasScrollX + dx));
-                    o.canvasScrollY = Math.max(-maxScrollY, Math.min(0, o.canvasScrollY + dy));
-                    handPanClientX = cx;
-                    handPanClientY = cy;
-                    o.render();
-                }
+                const max = o.getMaxScroll();
+                const dx = cx - handPanClientX;
+                const dy = cy - handPanClientY;
+                o.canvasScrollX = Math.max(-max.x, Math.min(0, o.canvasScrollX + dx));
+                o.canvasScrollY = Math.max(-max.y, Math.min(0, o.canvasScrollY + dy));
+                handPanClientX = cx;
+                handPanClientY = cy;
+                o.render();
                 return;
             }
 
@@ -512,6 +505,9 @@ class StageCanvasInput {
                     o.setZoom(targetScale, cx, cy);
                     pinchData.startDist = dist;
                     pinchData.startZoomScale = targetScale;
+                    // ズーム適用時にパン基準をリセット（直後のパン二重適用を防止）
+                    pinchData.lastCenterX = centerX;
+                    pinchData.lastCenterY = centerY;
                 }
 
                 // 2本指ドラッグによるパン

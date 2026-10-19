@@ -364,15 +364,14 @@ class StageTemplateManager {
                     return;
                 }
 
-                const maxScrollX = Math.max(0, (stage.width - 16) * this.owner.tileSize);
-                const maxScrollY = Math.max(0, (stage.height - 16) * this.owner.tileSize);
+                const max = this.owner.getMaxScroll();
 
                 const oldX = this.owner.canvasScrollX;
                 const oldY = this.owner.canvasScrollY;
 
                 // dx, dy が正ならカーソルは右/下端にある -> 表示領域を右/下に動かす = canvasScrollX/Y は負の方向に減る
-                this.owner.canvasScrollX = Math.max(-maxScrollX, Math.min(0, this.owner.canvasScrollX - this.owner.autoScrollX));
-                this.owner.canvasScrollY = Math.max(-maxScrollY, Math.min(0, this.owner.canvasScrollY - this.owner.autoScrollY));
+                this.owner.canvasScrollX = Math.max(-max.x, Math.min(0, this.owner.canvasScrollX - this.owner.autoScrollX));
+                this.owner.canvasScrollY = Math.max(-max.y, Math.min(0, this.owner.canvasScrollY - this.owner.autoScrollY));
 
                 if (this.owner.canvasScrollX === oldX && this.owner.canvasScrollY === oldY) return;
 

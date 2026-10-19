@@ -326,9 +326,11 @@ const SpriteCanvasInput = {
                         const cx = (centerX - rect.left) * canvasScaleX;
                         const cy = (centerY - rect.top) * canvasScaleY;
                         this.editor.setZoom(targetScale, cx, cy);
-                        // ズーム段階が変わった時点でピンチ距離の基準を更新（連続操作中のスナップ防止）
+                        // ズーム段階が変わった時点でピンチ距離・パン基準を更新
                         d.startDist = dist;
                         d.startZoomScale = targetScale;
+                        d.lastCenterX = centerX;
+                        d.lastCenterY = centerY;
                     }
 
                     // 2本指ドラッグによるパン
