@@ -64,8 +64,7 @@ class StageCanvasInput {
             if (App.currentScreen !== 'stage') return;
             if (e.ctrlKey && e.key === '0' && o.zoomScale !== 1) {
                 e.preventDefault();
-                o.canvasScrollX = 0;
-                o.canvasScrollY = 0;
+                // 現在表示位置を保ったまま1倍に戻す
                 o.setZoom(1);
             }
         });
@@ -435,7 +434,7 @@ class StageCanvasInput {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                // 2本指ダブルタップ → ズームリセット
+                // 2本指ダブルタップ → 現在表示位置を保ったまま1倍に戻す
                 const now = Date.now();
                 if (lastTwoFingerTapTime && now - lastTwoFingerTapTime < 400 && o.zoomScale !== 1) {
                     lastTwoFingerTapTime = 0;
@@ -443,9 +442,10 @@ class StageCanvasInput {
                     twoFingerMoved = true;
                     pinchData = null;
                     isPanning = false;
-                    o.canvasScrollX = 0;
-                    o.canvasScrollY = 0;
-                    o.setZoom(1);
+                    const rect = o.canvas.getBoundingClientRect();
+                    const zx = (centerX - rect.left) * (o.canvas.width / rect.width);
+                    const zy = (centerY - rect.top) * (o.canvas.height / rect.height);
+                    o.setZoom(1, zx, zy);
                     e.preventDefault();
                     return;
                 }

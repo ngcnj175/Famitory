@@ -69,16 +69,12 @@ const SpriteCanvasInput = {
         this.editor.canvas = newCanvas;
         this.editor.ctx = this.editor.canvas.getContext('2d');
 
-        // PC用キーボードショートカット: Ctrl + 0 でズーム1倍リセット
+        // PC用キーボードショートカット: Ctrl + 0 でズーム1倍リセット（現在表示位置を保つ）
         document.addEventListener('keydown', (e) => {
             if (App.currentScreen !== 'paint') return;
-            if (e.ctrlKey && (e.key === '0' || e.key === '0'.charCodeAt(0))) {
-                if (this.editor.zoomScale !== 1) {
-                    e.preventDefault();
-                    this.editor.viewportOffsetX = 0;
-                    this.editor.viewportOffsetY = 0;
-                    this.editor.setZoom(1);
-                }
+            if (e.ctrlKey && e.key === '0' && this.editor.zoomScale !== 1) {
+                e.preventDefault();
+                this.editor.setZoom(1);
             }
         });
 
@@ -221,15 +217,16 @@ const SpriteCanvasInput = {
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 const dist = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-                // 2本指ダブルタップ検出: 直前の2本指タップから400ms以内 → ズームリセット
+                // 2本指ダブルタップ検出: 直前の2本指タップから400ms以内 → 現在表示位置を保ったまま1倍リセット
                 const now = Date.now();
                 if (this.lastTwoFingerTapTime && now - this.lastTwoFingerTapTime < 400 && this.editor.zoomScale !== 1) {
                     this.lastTwoFingerTapTime = 0;
                     this.twoFingerStartTime = 0;
                     this.twoFingerMoved = true;  // タップ判定を無効化
-                    this.editor.viewportOffsetX = 0;
-                    this.editor.viewportOffsetY = 0;
-                    this.editor.setZoom(1);
+                    const rect = this.editor.canvas.getBoundingClientRect();
+                    const zx = (centerX - rect.left) * (this.editor.canvas.width / rect.width);
+                    const zy = (centerY - rect.top) * (this.editor.canvas.height / rect.height);
+                    this.editor.setZoom(1, zx, zy);
                     return;
                 }
                 // タップ候補として記録
