@@ -104,10 +104,8 @@ class NoteEditor {
         if (App.currentScreen !== 'sound') return;
         if (e.ctrlKey && e.key === '0' && this._o.zoomScale !== 1) {
             e.preventDefault();
+            // 現在の表示位置を保ったまま1倍に戻す（キャンバス中心を基準）
             this._o.setZoom(1);
-            this._o.scrollX = 0;
-            this._o.scrollY = 720;
-            this._o.render();
         }
     }
 
@@ -192,7 +190,7 @@ class NoteEditor {
             const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             const dist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
 
-            // 2本指ダブルタップ → ズームリセット
+            // 2本指ダブルタップ → 現在表示位置を保ったまま1倍に戻す
             const now = Date.now();
             if (this._lastTwoFingerTapTime && now - this._lastTwoFingerTapTime < 400 && this._o.zoomScale !== 1) {
                 this._lastTwoFingerTapTime = 0;
@@ -200,10 +198,10 @@ class NoteEditor {
                 this._twoFingerMoved = true;
                 this._isTwoFingerPan = false;
                 this._pinchData = null;
-                this._o.setZoom(1);
-                this._o.scrollX = 0;
-                this._o.scrollY = 720;
-                this._o.render();
+                const rect = this._canvas.getBoundingClientRect();
+                const zx = (centerX - rect.left) * (this._canvas.width / rect.width);
+                const zy = (centerY - rect.top) * (this._canvas.height / rect.height);
+                this._o.setZoom(1, zx, zy);
                 e.preventDefault();
                 return;
             }
