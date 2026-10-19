@@ -20,14 +20,10 @@ class StageCanvasInput {
         let isDrawing = false;
         let longPressTimer = null;
 
-        // 2本指パン用の状態
+        // パン状態
         o.canvasScrollX = 0;
         o.canvasScrollY = 0;
-        let isPanning = false;
-        let panStartX = 0;
-        let panStartY = 0;
-        let lastScrollX = 0;
-        let lastScrollY = 0;
+        let isPanning = false;        // 2本指パン中（touchstart側で設定）
         let isHandPanning = false;
         let handPanClientX = 0;
         let handPanClientY = 0;
@@ -102,17 +98,6 @@ class StageCanvasInput {
             if (e.button !== undefined && e.button !== 0) return;
             if (isDrawing) return;
             hasMoved = false;
-
-            // 繧ｿ繝・メ蛻､螳夲ｼ・譛ｬ謖・ヱ繝ｳ蟇ｾ蠢懶ｼ・
-            if (e.touches && e.touches.length >= 2) {
-                isPanning = true;
-                panStartX = e.touches[0].clientX;
-                panStartY = e.touches[0].clientY;
-                lastScrollX = o.canvasScrollX;
-                lastScrollY = o.canvasScrollY;
-                isDrawing = false;
-                return;
-            }
 
             // ハンドツール: 左クリック/1本指タッチでパン開始
             if (o.currentTool === 'hand') {
@@ -227,16 +212,6 @@ class StageCanvasInput {
         };
 
         const handleMove = (e) => {
-            if (isPanning && e.touches && e.touches.length >= 2) {
-                // 2譛ｬ謖・ヱ繝ｳ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
-                const dx = e.touches[0].clientX - panStartX;
-                const dy = e.touches[0].clientY - panStartY;
-                const parent = o.canvas.parentElement;
-                parent.scrollLeft = -lastScrollX - dx;
-                parent.scrollTop = -lastScrollY - dy;
-                return;
-            }
-
             // ハンドツール: ドラッグでキャンバスをスクロール
             if (isHandPanning) {
                 const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;

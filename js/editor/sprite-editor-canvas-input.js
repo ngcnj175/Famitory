@@ -1,7 +1,7 @@
 /**
  * SpriteCanvasInput
  * キャンバスイベント・描画・選択・ガイド画像を管理
- * 固有状態: isDrawing, drawMode, lastPixel, isPanning 等
+ * 固有状態: isDrawing, drawMode, lastPixel 等
  * 共有状態: editor.xxx 経由でアクセス
  */
 const SpriteCanvasInput = {
@@ -17,9 +17,6 @@ const SpriteCanvasInput = {
     autoScrollX: 0,
     autoScrollY: 0,
     lastPointerEvent: null,
-    isPanning: false,
-    panStartX: 0,
-    panStartY: 0,
     isHandPanning: false,
     handPanClientX: 0,
     handPanClientY: 0,
@@ -264,7 +261,7 @@ const SpriteCanvasInput = {
                 // 1本指の場合、少し待ってから描画開始（2本指検出のため）
                 this.pendingTouch = e.touches[0];
                 this.touchStartTimer = setTimeout(() => {
-                    if (this.pendingTouch && !this.isPanning) {
+                    if (this.pendingTouch) {
                         this.onPointerDown(this.pendingTouch);
                     }
                     this.pendingTouch = null;
@@ -364,7 +361,6 @@ const SpriteCanvasInput = {
                 this.twoFingerMoved = false;
             }
             this.pendingTouch = null;
-            this.isPanning = false;
             this.editor.guideAdjustData = null;
             this.pinchZoomData = null;
             this.onPointerUp();
