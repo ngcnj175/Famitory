@@ -409,9 +409,9 @@ const SpriteCanvasInput = {
             return;
         }
 
-        // ハンドツール: 左クリック/タッチドラッグでビューポートをパン（32x32のみ）
+        // ハンドツール: 左クリック/タッチドラッグでビューポートをパン（スクロール可能な場合のみ）
         if (this.editor.currentTool === 'hand') {
-            if (this.editor.getCurrentSpriteSize() !== 2) return;
+            if (this.editor.getMaxScroll() <= 0) return;
             this.isHandPanning = true;
             this.handPanClientX = e.clientX ?? 0;
             this.handPanClientY = e.clientY ?? 0;
@@ -537,7 +537,7 @@ const SpriteCanvasInput = {
 
         // ハンドツール: ドラッグでビューポートをパン
         if (this.isHandPanning) {
-            const maxScroll = 16 * this.editor.pixelSize;
+            const maxScroll = this.editor.getMaxScroll();
             const clientX = e.clientX ?? 0;
             const clientY = e.clientY ?? 0;
             const dx = this.handPanClientX - clientX;
@@ -1207,6 +1207,14 @@ const SpriteCanvasInput = {
 
     // ========== おてほん（下絵ガイド） ==========
     handleGuideButtonClick() {
+        // 32x32では未対応
+        if (this.editor.getCurrentSpriteSize() === 2) {
+            const msg = (AppI18N?.currentLang === 'en')
+                ? 'Guide image is not available on 32x32 sprites'
+                : 'おてほんは32x32では使えません';
+            App.showToast(msg);
+            return;
+        }
         if (!this.editor.guideImage) {
             // 画像未読込み → 読み込みダイアログ
             this.loadGuideImage();
