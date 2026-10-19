@@ -71,6 +71,7 @@ class NoteEditor {
             touchend:       (e) => this._onTouchEnd(e),
             winMousemove:   (e) => this._onWindowMouseMove(e),
             winMouseup:     (e) => this._onWindowMouseUp(e),
+            keydown:        (e) => this._onKeyDown(e),
         };
         this._handlers = h;
 
@@ -81,6 +82,7 @@ class NoteEditor {
         this._canvas.addEventListener('touchend',   h.touchend);
         window.addEventListener('mousemove', h.winMousemove);
         window.addEventListener('mouseup',   h.winMouseup);
+        document.addEventListener('keydown', h.keydown);
     }
 
     detach() {
@@ -93,8 +95,20 @@ class NoteEditor {
         this._canvas.removeEventListener('touchend',   h.touchend);
         window.removeEventListener('mousemove', h.winMousemove);
         window.removeEventListener('mouseup',   h.winMouseup);
+        document.removeEventListener('keydown', h.keydown);
         this._stopAutoScroll();
         this._handlers = null;
+    }
+
+    _onKeyDown(e) {
+        if (App.currentScreen !== 'sound') return;
+        if (e.ctrlKey && e.key === '0' && this._o.zoomScale !== 1) {
+            e.preventDefault();
+            this._o.setZoom(1);
+            this._o.scrollX = 0;
+            this._o.scrollY = 720;
+            this._o.render();
+        }
     }
 
     // ─────────────────────────────────────────
@@ -108,6 +122,18 @@ class NoteEditor {
 
     _onWheel(e) {
         if (App.currentScreen !== 'sound') return;
+
+        // Ctrl+ホイール: ズーム
+        if (e.ctrlKey) {
+            e.preventDefault();
+            const rect = this._canvas.getBoundingClientRect();
+            const cx = (e.clientX - rect.left) * (this._canvas.width / rect.width);
+            const cy = (e.clientY - rect.top) * (this._canvas.height / rect.height);
+            const delta = e.deltaY < 0 ? 1 : -1;
+            this._o.setZoom(this._o.zoomScale + delta, cx, cy);
+            return;
+        }
+
         e.preventDefault();
         const o = this._o;
         const maxScrollY = this._maxScrollY();
@@ -161,9 +187,40 @@ class NoteEditor {
                 this._creatingNote   = null;
                 this._o.render();
             }
+
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            const dist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+
+            // 2本指ダブルタップ → ズームリセット
+            const now = Date.now();
+            if (this._lastTwoFingerTapTime && now - this._lastTwoFingerTapTime < 400 && this._o.zoomScale !== 1) {
+                this._lastTwoFingerTapTime = 0;
+                this._twoFingerStartTime = 0;
+                this._twoFingerMoved = true;
+                this._isTwoFingerPan = false;
+                this._pinchData = null;
+                this._o.setZoom(1);
+                this._o.scrollX = 0;
+                this._o.scrollY = 720;
+                this._o.render();
+                e.preventDefault();
+                return;
+            }
+
+            this._twoFingerStartTime = now;
+            this._twoFingerStartCenterX = centerX;
+            this._twoFingerStartCenterY = centerY;
+            this._twoFingerStartDist = dist;
+            this._twoFingerMoved = false;
+
             this._isTwoFingerPan = true;
-            this._lastTouchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            this._lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            this._lastTouchX = centerX;
+            this._lastTouchY = centerY;
+            this._pinchData = {
+                startDist: dist,
+                startZoomScale: this._o.zoomScale
+            };
             this._isDragging = false;
             e.preventDefault();
             return;
@@ -186,6 +243,32 @@ class NoteEditor {
         if (e.touches.length === 2 && this._isTwoFingerPan) {
             const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            const dist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+
+            // タップ判定のための移動量追跡
+            if (!this._twoFingerMoved) {
+                const movedDist = Math.hypot(cx - this._twoFingerStartCenterX, cy - this._twoFingerStartCenterY);
+                const distChange = Math.abs(dist - this._twoFingerStartDist);
+                if (movedDist > 10 || distChange > 10) this._twoFingerMoved = true;
+            }
+
+            // ピンチズーム（整数倍スナップ）
+            if (this._pinchData) {
+                const scaleRatio = dist / this._pinchData.startDist;
+                const targetScale = Math.max(1, Math.min(4, Math.round(this._pinchData.startZoomScale * scaleRatio)));
+                if (targetScale !== this._o.zoomScale) {
+                    const rect = this._canvas.getBoundingClientRect();
+                    const zx = (cx - rect.left) * (this._canvas.width / rect.width);
+                    const zy = (cy - rect.top) * (this._canvas.height / rect.height);
+                    this._o.setZoom(targetScale, zx, zy);
+                    this._pinchData.startDist = dist;
+                    this._pinchData.startZoomScale = targetScale;
+                    // パン基準を更新（ズーム直後の二重適用防止）
+                    this._lastTouchX = cx;
+                    this._lastTouchY = cy;
+                }
+            }
+
             const o  = this._o;
             const maxScrollY = this._maxScrollY();
             o.scrollX = Math.max(0, o.scrollX + (this._lastTouchX - cx));
@@ -224,6 +307,14 @@ class NoteEditor {
         if (e.touches.length === 1 && this._isTwoFingerPan) return;
 
         if (e.touches.length === 0) {
+            // 2本指タップ完了判定
+            if (this._twoFingerStartTime && !this._twoFingerMoved && Date.now() - this._twoFingerStartTime < 300) {
+                this._lastTwoFingerTapTime = Date.now();
+            }
+            this._twoFingerStartTime = 0;
+            this._twoFingerMoved = false;
+            this._pinchData = null;
+
             if (this._isHandPan) {
                 this._isHandPan = false;
                 return;

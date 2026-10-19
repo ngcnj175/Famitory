@@ -32,6 +32,11 @@ const SoundEditor = {
     scrollY: 720, // 縦スクロール位置（C4が下端に表示: (83-36)*20=940、表示領域を考慮して調整）
     highlightPitch: -1, // ハイライト中の音階
 
+    // ズーム倍率（1〜4の整数倍）
+    zoomScale: 1,
+    MIN_ZOOM: 1,
+    MAX_ZOOM: 4,
+
     // 編集ツール
     currentTool: 'pencil', // pencil, eraser, select, copy, paste
     previousTool: 'pencil',
@@ -139,17 +144,51 @@ const SoundEditor = {
     resize() {
         if (!this.canvas) return;
         // ピアノロール: 16x16グリッド（STAGE画面と同じ設定）
-        // キャンバスは常に16x16タイル（320px）固定
+        // キャンバスは常に16x16タイル（320px）固定（ズーム倍率を乗算）
         const canvasSize = 320;
+        this.cellSize = 20 * (this.zoomScale || 1);
 
         // 内部解像度（stage-editor.jsと同じ）
         this.canvas.width = canvasSize;
         this.canvas.height = canvasSize;
 
-        // CSS表示サイズはJSで設定しない
-        // style.width/heightを指定するとレスポンシブ対応時に縦長/横長になるリスクがある
-        // CSSの aspect-ratio: 1 に完全に任せる
+        this.render();
+    },
 
+    // 最大スクロール量 {x, y}
+    getMaxScroll() {
+        const song = this.getCurrentSong?.();
+        const totalPitches = 84; // C1〜B7（BgmRenderer.MAX_PITCH + 1）
+        const xTotal = song ? song.bars * 16 * this.cellSize : this.cellSize * 16;
+        return {
+            x: Math.max(0, xTotal - this.canvas.width),
+            y: Math.max(0, totalPitches * this.cellSize - this.canvas.height)
+        };
+    },
+
+    // ズーム適用（centerX/Yはcanvas内のスクリーン座標。省略時は中央）
+    setZoom(newScale, centerX, centerY) {
+        const clamped = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, Math.round(newScale)));
+        if (clamped === this.zoomScale) return;
+
+        const cx = (centerX ?? this.canvas.width / 2);
+        const cy = (centerY ?? this.canvas.height / 2);
+        const oldCellSize = this.cellSize;
+        const newCellSize = 20 * clamped;
+
+        if (!Number.isFinite(this.scrollX)) this.scrollX = 0;
+        if (!Number.isFinite(this.scrollY)) this.scrollY = 0;
+
+        // ズーム中心を固定（scrollX/Yは正値、画面に出す世界座標 = scroll + screen）
+        const ratio = newCellSize / oldCellSize;
+        let newScrollX = (this.scrollX + cx) * ratio - cx;
+        let newScrollY = (this.scrollY + cy) * ratio - cy;
+
+        this.zoomScale = clamped;
+        this.cellSize = newCellSize;
+        const max = this.getMaxScroll();
+        this.scrollX = Math.max(0, Math.min(max.x, newScrollX));
+        this.scrollY = Math.max(0, Math.min(max.y, newScrollY));
         this.render();
     },
 
