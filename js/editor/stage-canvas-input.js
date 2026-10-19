@@ -1057,9 +1057,7 @@ class StageCanvasInput {
                 break;
 
             case 'eyedropper':
-                if (this._pickTileAt(x, y)) {
-                    o.currentTool = 'pen';
-                }
+                this._pickTileAt(x, y);
                 break;
         }
 
