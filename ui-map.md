@@ -373,7 +373,7 @@
 | U436 | エディットキーをコピーしました | Edit key copied | JS message/literal | app.js | ✓ |
 | U437 | スコアをシェアする | Share Score | HTML text node (button) | index.html | ✓ |
 | U438 | コンティニュー | Continue | HTML text node (button) | index.html | ✓ |
-| U439 | このゲームをリミックスする | Remix this game | HTML text node (button) | index.html | ✓ |
+| U439 | リミックスする | Remix | HTML text node (button) | index.html | ✓ |
 | U355 | タイトル変更 | Edit Title | JS message/literal | app.js | |
 | U356 | ゲームタイトルを入力 | Enter Game Title | JS message/literal | app.js | |
 | U357 | なまえ変更 | Edit Name | JS message/literal | app.js | |
@@ -457,7 +457,7 @@
 | U436 | エディットキーをコピーしました | Edit key copied | Toast message | stage-editor.js | ✓ |
 | U437 | スコアをシェアする | Share Score | HTML text node (button) | index.html | ✓ |
 | U438 | コンティニュー | Continue | HTML text node (button) | index.html | ✓ |
-| U439 | このゲームをリミックスする | Remix this game | HTML text node (button) | index.html | ✓ |
+| U439 | リミックスする | Remix | HTML text node (button) | index.html | ✓ |
 | U441 | スコアを共有 | Share Score | HTML text node (header) | index.html | ✓ |
 | U442 | もどる | Back | HTML text node (button) | index.html | ✓ |
 | U443 | ✓ コピーしました | ✓ Copied | HTML text node | index.html | ✓ |

@@ -289,7 +289,7 @@ const AppI18N = {
         'U376': { JPN: '現在の内容で上書き保存されます', ENG: 'The current content will be overwritten' },
         'U437': { JPN: 'スコアをシェアする',    ENG: 'Share Score' },
         'U438': { JPN: 'コンティニュー',        ENG: 'Continue' },
-        'U439': { JPN: 'このゲームをリミックスする',  ENG: 'Remix this game' },
+        'U439': { JPN: 'リミックスする',  ENG: 'Remix' },
         'U441': { JPN: 'スコアを共有',    ENG: 'Share Score' },
         'U442': { JPN: 'もどる',          ENG: 'Back' },
         'U443': { JPN: '✓ コピーしました', ENG: '✓ Copied' },
