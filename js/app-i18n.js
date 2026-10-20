@@ -379,6 +379,7 @@ const AppI18N = {
         'U580': { JPN: '使い方ガイド',             ENG: 'How to Use' },
         'U581': { JPN: 'タイトルとクリエーター名がデフォルトのままです', ENG: 'Title and creator name are still default' },
         'U582': { JPN: 'このまま公開してもよろしいですか？', ENG: 'Publish anyway?' },
+        'U600': { JPN: 'ステージを縮小すると範囲外のデータが削除されます', ENG: 'Shrinking the stage will delete tiles and entities outside the new area' },
     },
 
     t(id, vars = {}) {

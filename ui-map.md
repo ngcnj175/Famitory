@@ -536,3 +536,4 @@
 | U580 | 使い方ガイド | How to Use | HTML text node (PLAY画面タイトル クリエイターモード マニュアルリンク) | index.html | ✓ |
 | U581 | タイトルとクリエーター名がデフォルトのままです | Title and creator name are still default | JS (SHAREモーダル デフォルト値警告 メイン) | app-share.js | - |
 | U582 | このまま公開してもよろしいですか？ | Publish anyway? | JS (SHAREモーダル デフォルト値警告 サブ) | app-share.js | - |
+| U600 | ステージを縮小すると範囲外のデータが削除されます | Shrinking the stage will delete tiles and entities outside the new area | JS (STAGE設定 サイズ縮小 確認ダイアログ) | stage-settings.js | ✓ |

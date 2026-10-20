@@ -196,13 +196,23 @@ class StageSettings {
                 // サイズ変更（最後に実行して再描画処理を含ませる）
                 const newWidth = this.owner.pendingAreaW * 16;
                 const newHeight = this.owner.pendingAreaH * 16;
-                if (newWidth !== stage.width || newHeight !== stage.height) {
-                    this.resizeStage(newWidth, newHeight);
-                }
+                const sizeChanged = (newWidth !== stage.width || newHeight !== stage.height);
 
-                // 設定パネルを閉じる
-                App.updateGameInfo();
-                panel.classList.add('collapsed');
+                const finalize = () => {
+                    if (sizeChanged) this.resizeStage(newWidth, newHeight);
+                    App.updateGameInfo();
+                    panel.classList.add('collapsed');
+                };
+
+                // 縮小によって範囲外のタイル/エンティティが失われる場合は確認
+                if (sizeChanged && this.countOutOfRangeData(newWidth, newHeight) > 0) {
+                    const lang = AppI18N.currentLang;
+                    const msg = AppI18N.I18N['U600']?.[lang] || 'ステージを縮小すると範囲外のデータが削除されます';
+                    const sub = AppI18N.I18N['U552']?.[lang] || 'この操作は取り消せません。';
+                    AppDialogs.showConfirm(msg, sub, finalize);
+                } else {
+                    finalize();
+                }
             });
         }
     }
@@ -292,6 +302,43 @@ class StageSettings {
                 btn.textContent = song?.name || `BGM ${idx + 1}`;
             }
         });
+    }
+
+    /**
+     * 縮小/シフトによって削除されるタイル・エンティティの数を返す
+     * resizeStage() の縮小ルール（上側シフト・右側切り捨て）と一致させる
+     */
+    countOutOfRangeData(newWidth, newHeight) {
+        const stage = App.projectData.stage;
+        const oldWidth = stage.width;
+        const oldHeight = stage.height;
+        const heightDiff = newHeight - oldHeight;
+        const srcYStart = heightDiff < 0 ? -heightDiff : 0;
+
+        let count = 0;
+        const checkLayer = (layer, empty) => {
+            if (!Array.isArray(layer)) return;
+            for (let y = 0; y < oldHeight; y++) {
+                const row = layer[y];
+                if (!Array.isArray(row)) continue;
+                for (let x = 0; x < oldWidth; x++) {
+                    if (y < srcYStart || x >= newWidth) {
+                        if (row[x] !== undefined && row[x] !== empty) count++;
+                    }
+                }
+            }
+        };
+        checkLayer(stage.layers?.fg, -1);
+        checkLayer(stage.layers?.bg, -1);
+        checkLayer(stage.layers?.collision, 0);
+
+        if (Array.isArray(stage.entities)) {
+            for (const e of stage.entities) {
+                const newY = e.y + heightDiff;
+                if (newY < 0 || newY >= newHeight || e.x < 0 || e.x >= newWidth) count++;
+            }
+        }
+        return count;
     }
 
     resizeStage(newWidth, newHeight) {
