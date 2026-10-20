@@ -43,7 +43,7 @@ The tools on the left of the canvas let you switch how you draw.
 <tr><td><svg viewBox="0 0 24 24"><path d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 20h2V1h-2v22zm8-6h2v-2h-2v2zM15 5h2V3h-2v2zm4 8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2z"/></svg></td><td>Flip H</td><td>Flip the picture left-to-right</td></tr>
 <tr><td><svg viewBox="0 0 24 24"><path d="M15.55 5.55L11 1v3.07C7.06 4.56 4 7.92 4 12s3.05 7.44 7 7.93v-2.02c-2.84-.48-5-2.94-5-5.91s2.16-5.43 5-5.91V10l4.55-4.45zM19.93 11c-.17-1.39-.72-2.73-1.62-3.89l-1.42 1.42c.54.75.88 1.6 1.02 2.47h2.02zM13 17.9v2.02c1.39-.17 2.74-.71 3.9-1.61l-1.44-1.44c-.75.54-1.59.89-2.46 1.03zm3.89-2.42l1.42 1.41c.9-1.16 1.45-2.5 1.62-3.89h-2.02c-.14.87-.48 1.72-1.02 2.48z"/></svg></td><td>Rotate</td><td>Rotate the picture clockwise (in 45° steps)</td></tr>
 <tr><td><svg viewBox="0 0 640 640"><path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 304C288 312.8 280.8 320 272 320C263.2 320 256 312.8 256 304L256 128C256 110.3 241.7 96 224 96C206.3 96 192 110.3 192 128L192 400C192 401.5 192 403.1 192.1 404.6L131.6 347C115.6 331.8 90.3 332.4 75 348.4C59.7 364.4 60.4 389.7 76.4 405L188.8 512C231.9 553.1 289.2 576 348.8 576L368 576C465.2 576 544 497.2 544 400L544 192C544 174.3 529.7 160 512 160C494.3 160 480 174.3 480 192L480 304C480 312.8 472.8 320 464 320C455.2 320 448 312.8 448 304L448 128C448 110.3 433.7 96 416 96C398.3 96 384 110.3 384 128L384 304C384 312.8 376.8 320 368 320C359.2 320 352 312.8 352 304L352 96z"/></svg></td><td>Hand</td><td>Grab the canvas with your finger to move it around</td></tr>
-<tr><td><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></td><td>Guide</td><td>Trace over a faded reference image (two-finger drag to move / zoom / rotate · press again to hide · long-press to reset)</td></tr>
+<tr><td><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></td><td>Guide</td><td>Trace over a faded reference image (loads in <strong>adjust mode</strong>; press the <strong>✓</strong> in the top-right corner to confirm · press the button again to toggle visibility · long-press to reset)</td></tr>
 </tbody>
 </table>
 
@@ -67,7 +67,20 @@ The Canvas is the grid where you draw.
 - Drag your finger on the screen to draw with the selected tool.
 - Made a mistake? Use **Undo** to step back, or the **Eraser** to clear cells.
 - Tap a picture in the pixel palette twice to switch the canvas size to **2× (32×32)**.
-- With the **Hand** tool, grab the canvas to move your view. (Two-finger drag also works.)
+- Use the **Hand** tool to grab the canvas and move your view (available while zoomed in, or on 32×32).
+
+### Zoom (Enlarge / Shrink)
+When you need to edit fine details, you can zoom into the canvas at **1×–4×** integer steps.
+
+- **Mobile** … Pinch with two fingers to zoom in or out. While zoomed, drag with two fingers to scroll. Double-tap with two fingers to return to 1×.
+- **PC** … `Ctrl` + mouse wheel zooms around the cursor. `Ctrl` + `0` returns to 1×. While zoomed, the wheel and middle-button drag also scroll.
+
+### Guide Adjust Mode
+When you load a guide image, the canvas enters **adjust mode**. While in this mode, pinch gestures and `Ctrl` + wheel operate on the image instead of the canvas.
+
+- **Mobile** … Use two fingers to move, scale, and rotate the image.
+- **PC** … Left-drag to move the image, `Ctrl` + wheel to scale, `Shift` + wheel to rotate.
+- Once the image is positioned, tap the **✓** button at the top-right of the canvas to confirm. After confirming, canvas zoom becomes available again.
 
 ---
 

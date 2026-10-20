@@ -56,6 +56,13 @@ The Canvas is where you place notes to compose your BGM. The vertical axis is pi
 - **Erase a note** … Switch to the Eraser and tap to remove it.
 - **Switch tracks** … Change the track you're editing from the Track Panel.
 
+### Scroll & Zoom
+Useful for placing notes precisely or seeing the whole song. Zoom levels are **1×–4×** integer steps.
+
+- **Scroll** … Two-finger drag (mobile) / mouse wheel for vertical, `Shift` + wheel for horizontal (PC).
+- **Zoom (Mobile)** … Pinch with two fingers to zoom in or out. Double-tap with two fingers to return to 1×.
+- **Zoom (PC)** … `Ctrl` + mouse wheel zooms around the cursor. `Ctrl` + `0` returns to 1×.
+
 ---
 
 ## Toolbar

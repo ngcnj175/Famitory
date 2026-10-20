@@ -67,7 +67,14 @@ The Canvas is where you place tiles to build your stage.
 
 - Drag your finger on the screen to place the tile you selected in the Tile Palette.
 - Made a mistake? Use **Undo** to step back, or the **Eraser** to remove tiles.
-- With the **Hand** tool, grab the canvas to move your view. (Two-finger drag also works.)
+- Use the **Hand** tool to grab the canvas and move your view.
+
+### Scroll & Zoom
+For large stages and fine placement, you can scroll and zoom. Zoom levels are **1×–4×** integer steps.
+
+- **Scroll** … Two-finger drag (mobile) / `Shift` + wheel or middle-button drag (PC).
+- **Zoom (Mobile)** … Pinch with two fingers to zoom in or out. Double-tap with two fingers to return to 1×.
+- **Zoom (PC)** … `Ctrl` + mouse wheel zooms around the cursor. `Ctrl` + `0` returns to 1×.
 
 ---
 
