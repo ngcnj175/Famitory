@@ -166,8 +166,8 @@ class StageCanvasInput {
             isDrawing = true;
             o.processPixel(e);
 
-            // ペンツール長押しスポイト（500ms無移動でスポイト発動）
-            if (o.currentTool === 'pen') {
+            // ペン/塗りつぶしツール長押しスポイト（500ms無移動でスポイト発動）
+            if (o.currentTool === 'pen' || o.currentTool === 'fill') {
                 const historySaved = o.undoHistory.length > undoLenBeforeSave;
                 const px = x, py = y;
                 longPressTimer = setTimeout(() => {

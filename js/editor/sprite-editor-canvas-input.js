@@ -540,8 +540,8 @@ const SpriteCanvasInput = {
 
         this.processPixel(pixel.x, pixel.y);
 
-        // ペンツール長押しスポイト（500ms無移動でスポイト発動）
-        if (this.editor.currentTool === 'pen') {
+        // ペン/塗りつぶしツール長押しスポイト（500ms無移動でスポイト発動）
+        if (this.editor.currentTool === 'pen' || this.editor.currentTool === 'fill') {
             const px = pixel.x, py = pixel.y;
             this.longPressTimer = setTimeout(() => {
                 this.longPressTimer = null;
