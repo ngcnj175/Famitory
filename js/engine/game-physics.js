@@ -54,6 +54,7 @@ class GamePhysics {
         const template = this.getTemplateFromTileId(tileId);
         if (!template) return 0;
         if (template.type === 'material' && template.config?.gimmick === 'ladder') return 0;
+        if (template.type === 'material' && template.config?.gimmick === 'spawner') return 0;
         if (template.type === 'material' && template.config?.gimmick === 'door') return 1;
         if (template.type === 'material' && template.config?.collision !== false) return 1;
         return 0;
