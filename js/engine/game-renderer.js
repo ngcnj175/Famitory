@@ -290,7 +290,7 @@ class GameRenderer {
                         if (template && (template.type === 'item' || template.type === 'enemy' || template.type === 'player')) continue;
 
                         if (template && template.type === 'material') {
-                            hasCollision = template.config?.collision !== false && template.config?.gimmick !== 'ladder';
+                            hasCollision = template.config?.collision !== false && template.config?.gimmick !== 'ladder' && template.config?.gimmick !== 'spawner';
                         }
 
                         const { frames, speed } = this._resolveAnimSlot(template?.sprites || {});

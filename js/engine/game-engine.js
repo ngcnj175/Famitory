@@ -1063,6 +1063,9 @@ const GameEngine = {
                 spawner.behavior,
                 spawner.enemyTemplateIdx
             );
+            // 2x2など複数タイル敵を巣穴中心に揃える
+            enemy.x -= (enemy.width - 1) / 2;
+            enemy.y -= (enemy.height - 1) / 2;
             enemy.spawned = true;
             this.enemies.push(enemy);
             spawner.spawnedEnemies.push(enemy);
