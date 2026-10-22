@@ -142,9 +142,14 @@ const GameEngine = {
     startFromTitle() {
         // プレイヤーが未配置の場合はアラートを出して開始しない
         if (!this.player) {
+            const isCreator = typeof App !== 'undefined' && !App.isPlayOnlyMode;
+            const key = isCreator ? 'U601' : 'U602';
+            const fallback = isCreator
+                ? 'プレイヤーがステージに配置されていません'
+                : 'このゲームはまだ遊べません';
             const msg = (typeof AppI18N !== 'undefined' && AppI18N.t)
-                ? AppI18N.t('U601')
-                : 'プレイヤーがステージに配置されていません';
+                ? AppI18N.t(key)
+                : fallback;
             if (typeof App !== 'undefined' && App.showToast) {
                 App.showToast(msg, 'center');
             } else if (typeof AppDialogs !== 'undefined' && AppDialogs.showAlert) {
