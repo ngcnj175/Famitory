@@ -1276,13 +1276,22 @@ class Enemy {
 
     // 非はしご敵向け: はしごタイルを壁として扱うエンジンラッパーを返す
     _getLadderAwareEngine(engine) {
-        if (this.isLadderEnemy || !engine.ladderTiles || engine.ladderTiles.size === 0) return engine;
+        const spawnerTiles = engine.spawnerTiles;
+        const hasSpawners = spawnerTiles && spawnerTiles.size > 0;
+        const ladderActive = !this.isLadderEnemy && engine.ladderTiles && engine.ladderTiles.size > 0;
+        if (!ladderActive && !hasSpawners) return engine;
         const ladderTiles = engine.ladderTiles;
         const origGet = engine.getCollision.bind(engine);
         return new Proxy(engine, {
             get(target, prop) {
                 if (prop === 'getCollision') {
-                    return (x, y) => ladderTiles.has(`${Math.floor(x)},${Math.floor(y)}`) ? 1 : origGet(x, y);
+                    return (x, y) => {
+                        const key = `${Math.floor(x)},${Math.floor(y)}`;
+                        // 敵にとって巣穴タイルは非衝突（出現時の押し出し防止）
+                        if (hasSpawners && spawnerTiles.has(key)) return 0;
+                        if (ladderActive && ladderTiles.has(key)) return 1;
+                        return origGet(x, y);
+                    };
                 }
                 const val = target[prop];
                 return typeof val === 'function' ? val.bind(target) : val;
