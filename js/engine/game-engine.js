@@ -590,8 +590,12 @@ const GameEngine = {
                             if (enemyTemplate && enemyTemplate.type === 'enemy') {
                                 const rate = tmpl.config.spawnerRate ?? 3;
                                 const interval = Math.round(300 - (rate - 1) * 50);
+                                const nestSpriteIdx = tmpl.sprites?.idle?.frames?.[0];
+                                const nestSprite = App.projectData?.sprites?.[nestSpriteIdx];
+                                const nestSize = nestSprite?.size === 2 ? 2 : 1;
                                 this.spawnerTiles.set(`${x},${y}`, {
                                     x, y,
+                                    nestSize,
                                     enemyTemplateIdx: enemyIdx,
                                     enemyTemplate,
                                     behavior: enemyTemplate.config?.move || 'idle',
@@ -1063,9 +1067,10 @@ const GameEngine = {
                 spawner.behavior,
                 spawner.enemyTemplateIdx
             );
-            // 2x2など複数タイル敵を巣穴中心に揃える
-            enemy.x -= (enemy.width - 1) / 2;
-            enemy.y -= (enemy.height - 1) / 2;
+            // 敵スプライトの中心を巣穴の中心に揃える（巣穴・敵のサイズ差を補正）
+            const nestSize = spawner.nestSize || 1;
+            enemy.x += (nestSize - enemy.width) / 2;
+            enemy.y += (nestSize - enemy.height) / 2;
             enemy.spawned = true;
             this.enemies.push(enemy);
             spawner.spawnedEnemies.push(enemy);
