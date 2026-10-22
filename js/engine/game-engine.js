@@ -140,6 +140,21 @@ const GameEngine = {
     },
 
     startFromTitle() {
+        // プレイヤーが未配置の場合はアラートを出して開始しない
+        if (!this.player) {
+            const msg = (typeof AppI18N !== 'undefined' && AppI18N.t)
+                ? AppI18N.t('U601')
+                : 'プレイヤーがステージに配置されていません';
+            if (typeof App !== 'undefined' && App.showToast) {
+                App.showToast(msg);
+            } else if (typeof AppDialogs !== 'undefined' && AppDialogs.showAlert) {
+                AppDialogs.showAlert(msg);
+            } else {
+                alert(msg);
+            }
+            return;
+        }
+
         // iOS対応: ユーザー操作中（タップ直後）にすべてのAudioContextを起動
         if (typeof NesAudio !== 'undefined') {
             NesAudio.ensureContext();
