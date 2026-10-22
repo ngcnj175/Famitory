@@ -875,7 +875,7 @@ const App = {
         }
     },
 
-    showToast(message, position = 'bottom') {
+    showToast(message, position = 'center') {
         // 特別なセーブトースト
         if (message === 'セーブしました') {
             const saveToast = document.getElementById('save-toast');
