@@ -892,24 +892,45 @@ const App = {
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'app-toast';
-            toast.style.cssText = 'position:fixed;left:50%;background:rgba(0,0,0,0.7);color:white;padding:8px 16px;border-radius:20px;font-size:12px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:9999;';
+            toast.style.cssText = 'position:fixed;left:50%;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:9999;text-align:center;';
             document.body.appendChild(toast);
         }
-        // 位置の切替（center: 画面中央、bottom: 下部）
+        // 位置とスタイルの切替（center: 画面中央・大きめ、bottom: 下部・小さめ）
         if (position === 'center') {
             toast.style.bottom = '';
             toast.style.top = '50%';
             toast.style.transform = 'translate(-50%, -50%)';
+            toast.style.background = 'rgba(200,30,30,0.92)';
+            toast.style.color = '#fff';
+            toast.style.padding = '18px 28px';
+            toast.style.borderRadius = '12px';
+            toast.style.fontSize = '18px';
+            toast.style.fontWeight = '700';
+            toast.style.minWidth = '260px';
+            toast.style.maxWidth = '80vw';
+            toast.style.boxShadow = '0 6px 24px rgba(0,0,0,0.4)';
+            toast.style.lineHeight = '1.4';
         } else {
             toast.style.top = '';
             toast.style.bottom = '80px';
             toast.style.transform = 'translateX(-50%)';
+            toast.style.background = 'rgba(0,0,0,0.7)';
+            toast.style.color = 'white';
+            toast.style.padding = '8px 16px';
+            toast.style.borderRadius = '20px';
+            toast.style.fontSize = '12px';
+            toast.style.fontWeight = '';
+            toast.style.minWidth = '';
+            toast.style.maxWidth = '';
+            toast.style.boxShadow = '';
+            toast.style.lineHeight = '';
         }
         toast.textContent = message;
         toast.style.opacity = '1';
+        const duration = position === 'center' ? 2500 : 2000;
         setTimeout(() => {
             toast.style.opacity = '0';
-        }, 2000);
+        }, duration);
     },
 
 };
