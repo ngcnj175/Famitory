@@ -146,7 +146,7 @@ const GameEngine = {
                 ? AppI18N.t('U601')
                 : 'プレイヤーがステージに配置されていません';
             if (typeof App !== 'undefined' && App.showToast) {
-                App.showToast(msg);
+                App.showToast(msg, 'center');
             } else if (typeof AppDialogs !== 'undefined' && AppDialogs.showAlert) {
                 AppDialogs.showAlert(msg);
             } else {

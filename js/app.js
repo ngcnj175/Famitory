@@ -875,7 +875,7 @@ const App = {
         }
     },
 
-    showToast(message) {
+    showToast(message, position = 'bottom') {
         // 特別なセーブトースト
         if (message === 'セーブしました') {
             const saveToast = document.getElementById('save-toast');
@@ -892,8 +892,18 @@ const App = {
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'app-toast';
-            toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:white;padding:8px 16px;border-radius:20px;font-size:12px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:9999;';
+            toast.style.cssText = 'position:fixed;left:50%;background:rgba(0,0,0,0.7);color:white;padding:8px 16px;border-radius:20px;font-size:12px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:9999;';
             document.body.appendChild(toast);
+        }
+        // 位置の切替（center: 画面中央、bottom: 下部）
+        if (position === 'center') {
+            toast.style.bottom = '';
+            toast.style.top = '50%';
+            toast.style.transform = 'translate(-50%, -50%)';
+        } else {
+            toast.style.top = '';
+            toast.style.bottom = '80px';
+            toast.style.transform = 'translateX(-50%)';
         }
         toast.textContent = message;
         toast.style.opacity = '1';
