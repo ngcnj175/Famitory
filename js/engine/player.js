@@ -446,12 +446,14 @@ class Player {
             let startY = cy - 0.5;
 
             // 武器タイプによって発射位置をずらす
+            // 水平発射系: ショットスプライトの中心がキャラの端に来るよう、キャラ幅に応じてシフト
+            // （1x1キャラでも2x2キャラでも見た目の位置を揃える）
             if (['straight', 'arc', 'boomerang', 'pinball'].includes(shotType)) {
-                startX += (this.facingRight ? 1 : -1);
+                startX += (this.facingRight ? this.width / 2 : -this.width / 2);
             } else if (shotType === 'rise') {
-                startY -= 1;
+                startY -= this.height / 2;
             } else if (shotType === 'drop') {
-                startY += 1;
+                startY += this.height / 2;
             }
 
             // ProjectileManager で統一管理
