@@ -480,18 +480,36 @@ class GameRenderer {
         const message = this.owner.easterMessage || '';
 
         // k8x12: 設計サイズ12pxのビットマップ風フォント。整数倍サイズ(24px=2x)で描画すればピクセル完全。
+        // 加重幅で折返す（全角=2単位 / 半角=1単位、1行あたり20単位）。
         const fontPx = 24;
         const lineHeight = 32;
-        const charWidth = 24;
-        const maxCharsPerLine = 10;
+        const halfUnitPx = 12;
+        const maxUnitsPerLine = 20;
         const padding = 20;
 
-        const lines = [];
-        for (let i = 0; i < message.length; i += maxCharsPerLine) {
-            lines.push(message.slice(i, i + maxCharsPerLine));
-        }
+        const isHalfWidth = (ch) => {
+            const cp = ch.codePointAt(0);
+            return (cp >= 0x0020 && cp <= 0x007E) || (cp >= 0xFF61 && cp <= 0xFF9F);
+        };
 
-        const textWidth = maxCharsPerLine * charWidth + padding * 2;
+        const lines = [];
+        let current = '';
+        let currentUnits = 0;
+        for (const ch of message) {
+            const u = isHalfWidth(ch) ? 1 : 2;
+            if (currentUnits + u > maxUnitsPerLine) {
+                lines.push(current);
+                current = ch;
+                currentUnits = u;
+            } else {
+                current += ch;
+                currentUnits += u;
+            }
+        }
+        if (current) lines.push(current);
+        if (lines.length === 0) lines.push('');
+
+        const textWidth = maxUnitsPerLine * halfUnitPx + padding * 2;
         const windowWidth = Math.max(textWidth, 180);
         const windowHeight = (lines.length * lineHeight) + padding * 2;
         const windowX = Math.round((w - windowWidth) / 2);

@@ -266,7 +266,7 @@
 | U252 | 当たり判定 | Collision | JS message/literal | stage-editor.js | ✓ |
 | U253 | 耐久性 | Durability | JS message/literal | stage-editor.js | ✓ |
 | U254 | カギ | Key | JS HTML template | stage-editor.js | ✓ |
-| U255 | 最大20文字（漢字不可） | Max 20 chars (no Kanji) | JS message/literal | stage-editor.js | ✓ |
+| U255 | 最大30字（漢字不可） | Max 60 chars (no Kanji) | JS message/literal | stage-editor.js | ✓ |
 | U256 | ジャンプ01 | Jump01 | JS message/literal | stage-editor.js | ✓ |
 | U257 | ジャンプ02 | Jump02 | JS message/literal | stage-editor.js | ✓ |
 | U258 | ジャンプ03 | Jump03 | JS message/literal | stage-editor.js | ✓ |

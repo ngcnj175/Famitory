@@ -211,7 +211,7 @@ const AppI18N = {
         'U252': { JPN: '当たり判定',          ENG: 'Collision' },
         'U253': { JPN: '耐久性',             ENG: 'Durability' },
         'U254': { JPN: 'カギ',               ENG: 'Key' },
-        'U255': { JPN: '最大20文字（漢字不可）', ENG: 'Max 20 chars (no Kanji)' },
+        'U255': { JPN: '最大30字（漢字不可）', ENG: 'Max 60 chars (no Kanji)' },
         'U256': { JPN: 'ジャンプ_01',         ENG: 'Jump_01' },
         'U257': { JPN: 'ジャンプ_02',         ENG: 'Jump_02' },
         'U258': { JPN: 'ジャンプ_03',         ENG: 'Jump_03' },

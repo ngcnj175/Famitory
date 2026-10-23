@@ -508,9 +508,10 @@ const StageEditor = {
     },
 
     // メッセージアイテムの文字制限（k8x12フォント対応文字のみ: ひらがな・カタカナ・英数字・基本句読点）
+    // 加重カウントで上限60単位（全角=2 / 半角=1 → 全角30字 or 半角60字 相当）
     _filterEasterMessage(str) {
         if (!str) return str;
-        return Array.from(str).filter(ch => {
+        const allowed = Array.from(str).filter(ch => {
             const cp = ch.codePointAt(0);
             return (
                 (cp >= 0x0020 && cp <= 0x007E) ||       // ASCII printable (英数字・基本記号)
@@ -520,7 +521,18 @@ const StageEditor = {
                 (cp >= 0xFF01 && cp <= 0xFF5E) ||       // 全角英数記号（！？Ａ-Ｚ０-９）
                 (cp >= 0xFF61 && cp <= 0xFF9F)          // 半角カタカナ
             );
-        }).join('');
+        });
+        const result = [];
+        let units = 0;
+        for (const ch of allowed) {
+            const cp = ch.codePointAt(0);
+            const half = (cp >= 0x0020 && cp <= 0x007E) || (cp >= 0xFF61 && cp <= 0xFF9F);
+            const u = half ? 1 : 2;
+            if (units + u > 60) break;
+            result.push(ch);
+            units += u;
+        }
+        return result.join('');
     },
 
 
@@ -726,7 +738,7 @@ const StageEditor = {
                         <span class="param-label">${this.t('U445')}</span>
                         <input type="text" class="param-input" data-key="easterMessage"
                                value="${config.easterMessage || ''}"
-                               maxlength="20" placeholder="${this.t('U255')}">
+                               placeholder="${this.t('U255')}">
                     </div>
                 `;
             }
