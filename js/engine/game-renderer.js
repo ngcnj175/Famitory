@@ -554,8 +554,23 @@ class GameRenderer {
         drawCorner(windowX + windowWidth, windowY + windowHeight, true, true);
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
-
+        // 内側黒の四隅にも同じ階段パターンで白を上書きし、枠と対になる形に
         ctx.fillStyle = '#FFFFFF';
+        const drawInnerCorner = (cx, cy, flipX, flipY) => {
+            for (let r = 0; r < borderDots; r++) {
+                for (let c = 0; c < borderDots; c++) {
+                    if (c + r >= borderDots - 1) continue; // 内側対角のみ塗る
+                    const dx = flipX ? (borderDots - 1 - c) : c;
+                    const dy = flipY ? (borderDots - 1 - r) : r;
+                    ctx.fillRect(cx + dx * dot, cy + dy * dot, dot, dot);
+                }
+            }
+        };
+        drawInnerCorner(windowX, windowY, false, false);
+        drawInnerCorner(windowX + windowWidth - borderPx, windowY, true, false);
+        drawInnerCorner(windowX, windowY + windowHeight - borderPx, false, true);
+        drawInnerCorner(windowX + windowWidth - borderPx, windowY + windowHeight - borderPx, true, true);
+
         ctx.font = `${fontPx}px "k8x12", "BIZ UDPGothic", monospace`;
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
