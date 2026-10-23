@@ -492,15 +492,28 @@ class GameRenderer {
             return (cp >= 0x0020 && cp <= 0x007E) || (cp >= 0xFF61 && cp <= 0xFF9F);
         };
 
+        // 行幅超過時、現在行に半角スペースがあれば最後のスペースで折返す（英文の単語境界対応）
+        const measureUnits = (s) => {
+            let n = 0;
+            for (const c of s) n += isHalfWidth(c) ? 1 : 2;
+            return n;
+        };
         const lines = [];
         let current = '';
         let currentUnits = 0;
         for (const ch of message) {
             const u = isHalfWidth(ch) ? 1 : 2;
             if (currentUnits + u > maxUnitsPerLine) {
-                lines.push(current);
-                current = ch;
-                currentUnits = u;
+                const lastSpace = current.lastIndexOf(' ');
+                if (lastSpace > 0) {
+                    lines.push(current.slice(0, lastSpace));
+                    current = current.slice(lastSpace + 1) + ch;
+                    currentUnits = measureUnits(current);
+                } else {
+                    lines.push(current);
+                    current = ch;
+                    currentUnits = u;
+                }
             } else {
                 current += ch;
                 currentUnits += u;
