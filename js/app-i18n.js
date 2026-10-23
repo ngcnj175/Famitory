@@ -325,10 +325,10 @@ const AppI18N = {
         'U393': { JPN: 'エラー：保存に失敗しました', ENG: 'Error: Save failed' },
         // ---- スコア共有テキスト（X用。ハッシュタグ付き） ----
         'U453': { JPN: '{gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'Cleared {gameName}!\nScore: {score}\nPlay it now👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
-        'U454': { JPN: '{gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: '{gameName} — GAME OVER\nScore: {score}\nCan you do better?👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+        'U454': { JPN: '{gameName} GAME OVER\nScore: {score}\nくやしい…やってみて👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: '{gameName} — GAME OVER\nScore: {score}\nSo close... give it a try👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
         // ---- スコア共有テキスト（Discord用。ハッシュタグなし） ----
         'U453D': { JPN: '{gameName} クリア！ Score: {score}\n{url}', ENG: 'Cleared {gameName}! Score: {score}\n{url}' },
-        'U454D': { JPN: '{gameName} GAME OVER / Score: {score}\nくやしい…リベンジして！\n{url}', ENG: '{gameName} — GAME OVER / Score: {score}\nCan you do better?\n{url}' },
+        'U454D': { JPN: '{gameName} GAME OVER / Score: {score}\nくやしい…やってみて！\n{url}', ENG: '{gameName} — GAME OVER / Score: {score}\nSo close... give it a try!\n{url}' },
 
         // ---- ARCADE ----
         'U501': { JPN: 'コメント',                 ENG: 'Comment' },

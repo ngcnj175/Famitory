@@ -483,8 +483,8 @@
 | U452 | カラーパレット | Color Palette | JS HTML template | stage-settings.js | ✓ |
 | U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal (Xシェア用) | app-share.js | ✓ |
 | U453D | {gameName} クリア！ Score: {score}\n{url} | Cleared {gameName}! Score: {score}\n{url} | JS message/literal (Discordシェア用) | app-share.js | ✓ |
-| U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal (Xシェア用) | app-share.js | ✓ |
-| U454D | {gameName} GAME OVER / Score: {score}\nくやしい…リベンジして！\n{url} | {gameName} — GAME OVER / Score: {score}\nCan you do better?\n{url} | JS message/literal (Discordシェア用) | app-share.js | ✓ |
+| U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…やってみて👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nSo close... give it a try👇... | JS message/literal (Xシェア用) | app-share.js | ✓ |
+| U454D | {gameName} GAME OVER / Score: {score}\nくやしい…やってみて！\n{url} | {gameName} — GAME OVER / Score: {score}\nSo close... give it a try!\n{url} | JS message/literal (Discordシェア用) | app-share.js | ✓ |
 | U501 | コメント | Comment | HTML text node (label) | index.html | ✓ |
 | U502 | サムネイル | Thumbnail | HTML text node (label) | index.html | ✓ |
 | U503 | サムネイル未設定 | No thumbnail | HTML text node | index.html | ✓ |
