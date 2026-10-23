@@ -533,43 +533,37 @@ class GameRenderer {
         const dot = 2;
         const borderDots = 3;
         const borderPx = dot * borderDots;
+        // 四隅の階段パターンを汎用描画。keepOuter=true → 外側対角を欠く（外枠用）、
+        // false → 内側対角のみ塗る（内側黒上書き用）。
+        const drawCornerTriangle = (cx, cy, flipX, flipY, keepOuter) => {
+            for (let r = 0; r < borderDots; r++) {
+                for (let c = 0; c < borderDots; c++) {
+                    const keep = keepOuter
+                        ? (c + r >= borderDots - 1)
+                        : (c + r <  borderDots - 1);
+                    if (!keep) continue;
+                    const dx = flipX ? (borderDots - 1 - c) : c;
+                    const dy = flipY ? (borderDots - 1 - r) : r;
+                    ctx.fillRect(cx + dx * dot, cy + dy * dot, dot, dot);
+                }
+            }
+        };
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(windowX, windowY - borderPx, windowWidth, borderPx);
         ctx.fillRect(windowX, windowY + windowHeight, windowWidth, borderPx);
         ctx.fillRect(windowX - borderPx, windowY, borderPx, windowHeight);
         ctx.fillRect(windowX + windowWidth, windowY, borderPx, windowHeight);
-        const drawCorner = (cx, cy, flipX, flipY) => {
-            for (let r = 0; r < borderDots; r++) {
-                for (let c = 0; c < borderDots; c++) {
-                    if (c + r < borderDots - 1) continue; // 外側対角を欠く
-                    const dx = flipX ? (borderDots - 1 - c) : c;
-                    const dy = flipY ? (borderDots - 1 - r) : r;
-                    ctx.fillRect(cx + dx * dot, cy + dy * dot, dot, dot);
-                }
-            }
-        };
-        drawCorner(windowX - borderPx, windowY - borderPx, false, false);
-        drawCorner(windowX + windowWidth, windowY - borderPx, true, false);
-        drawCorner(windowX - borderPx, windowY + windowHeight, false, true);
-        drawCorner(windowX + windowWidth, windowY + windowHeight, true, true);
+        drawCornerTriangle(windowX - borderPx, windowY - borderPx, false, false, true);
+        drawCornerTriangle(windowX + windowWidth, windowY - borderPx, true, false, true);
+        drawCornerTriangle(windowX - borderPx, windowY + windowHeight, false, true, true);
+        drawCornerTriangle(windowX + windowWidth, windowY + windowHeight, true, true, true);
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
-        // 内側黒の四隅にも同じ階段パターンで白を上書きし、枠と対になる形に
         ctx.fillStyle = '#FFFFFF';
-        const drawInnerCorner = (cx, cy, flipX, flipY) => {
-            for (let r = 0; r < borderDots; r++) {
-                for (let c = 0; c < borderDots; c++) {
-                    if (c + r >= borderDots - 1) continue; // 内側対角のみ塗る
-                    const dx = flipX ? (borderDots - 1 - c) : c;
-                    const dy = flipY ? (borderDots - 1 - r) : r;
-                    ctx.fillRect(cx + dx * dot, cy + dy * dot, dot, dot);
-                }
-            }
-        };
-        drawInnerCorner(windowX, windowY, false, false);
-        drawInnerCorner(windowX + windowWidth - borderPx, windowY, true, false);
-        drawInnerCorner(windowX, windowY + windowHeight - borderPx, false, true);
-        drawInnerCorner(windowX + windowWidth - borderPx, windowY + windowHeight - borderPx, true, true);
+        drawCornerTriangle(windowX, windowY, false, false, false);
+        drawCornerTriangle(windowX + windowWidth - borderPx, windowY, true, false, false);
+        drawCornerTriangle(windowX, windowY + windowHeight - borderPx, false, true, false);
+        drawCornerTriangle(windowX + windowWidth - borderPx, windowY + windowHeight - borderPx, true, true, false);
 
         ctx.font = `${fontPx}px "k8x12", "BIZ UDPGothic", monospace`;
         ctx.textAlign = 'left';
