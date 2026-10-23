@@ -402,15 +402,9 @@ const AppShare = {
                 if (!shareId) return;
                 const url = Share.createShortUrl(shareId);
                 const gameName = App.projectData.meta.name || 'Game';
-                let twitterUrl;
-                if (App.isPlayOnlyMode) {
-                    const text = AppI18N.t('U385', { gameName });
-                    twitterUrl = Share.createTwitterUrl(url, text);
-                } else {
-                    const hashTag = gameName.replace(/\s/g, '');
-                    const text = AppI18N.t('U386', { gameName, url, hashTag });
-                    twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-                }
+                const hashTag = gameName.replace(/\s/g, '');
+                const text = AppI18N.t('U386', { gameName, url, hashTag });
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                 window.open(twitterUrl, '_blank');
             };
         }
@@ -428,13 +422,7 @@ const AppShare = {
                 if (!shareId) return;
                 const url = Share.createShortUrl(shareId);
                 const gameName = App.projectData.meta.name || 'Game';
-                let text;
-                if (App.isPlayOnlyMode) {
-                    text = AppI18N.t('U387', { url });
-                } else {
-                    const hashTag = gameName.replace(/\s/g, '');
-                    text = AppI18N.t('U386', { gameName, url, hashTag });
-                }
+                const text = AppI18N.t('U386D', { gameName, url });
                 const success = await this.copyToClipboard(text);
                 App.showToast(AppI18N.t(success ? 'U388' : 'U384'));
             };
@@ -460,8 +448,7 @@ const AppShare = {
                 if (!sdata) return;
                 const url = sdata.url || document.getElementById('score-share-url-input').value;
                 const gameName = sdata.title || 'Game';
-                const hashTag = gameName.replace(/\s/g, '');
-                const header = AppI18N.t(sdata.isClear ? 'U453' : 'U454', { gameName, score: sdata.score, url, hashTag });
+                const header = AppI18N.t(sdata.isClear ? 'U453D' : 'U454D', { gameName, score: sdata.score, url });
                 const success = await this.copyToClipboard(header);
                 App.showToast(AppI18N.t(success ? 'U388' : 'U384'));
             };

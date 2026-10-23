@@ -404,9 +404,8 @@
 | U382 | 保存でエラーが発生しました | An error occurred while saving | JS message/literal | app.js | |
 | U383 | URLを コピーしました | Copied URL | JS message/literal | app.js | |
 | U384 | コピーに失敗しました | Copy failed | JS message/literal | app.js | |
-| U385 | 「${gameName}」であそぼう！ #FAMITORY | Play "${gameName}"! #FAMITORY | JS message/literal | app.js | |
-| U386 | ${gameName} を作りました！\nブラウザですぐ遊べます👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart | Made "${gameName}"!\nPlay in your browser👇\n${url}\n\n#${hashTag} #Famitory #indiegame #pixelart | JS message/literal | app.js | |
-| U387 | FAMITORYでゲームを作ったよ!\n${url} | I made a game on FAMITORY!\n${url} | JS message/literal | app.js | |
+| U386 | {gameName} を作りました！\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart | Made "{gameName}"!\nPlay in your browser👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart | JS message/literal (Xシェア用) | app-share.js | |
+| U386D | {gameName} を作りました！\nブラウザですぐ遊べます。\n{url} | I made a game called "{gameName}"!\nPlay it right in your browser.\n{url} | JS message/literal (Discordシェア用) | app-share.js | |
 | U388 | Discord用に コピーしました | Copied for Discord | JS message/literal | app.js | |
 | U389 | プロジェクト名を入力してください | Please enter a project name | JS message/literal | app.js | |
 | U390 | 「${newName}」として保存しました | Saved as "${newName}" | JS message/literal | app.js | |
@@ -482,8 +481,10 @@
 | U450 | PAUSE | PAUSE | JS dom text assign | game-renderer.js | ✓ |
 | U451 | Bダッシュ | B-Dash | JS message/literal | stage-editor.js | ✓ |
 | U452 | カラーパレット | Color Palette | JS HTML template | stage-settings.js | ✓ |
-| U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal | app-share.js | ✓ |
-| U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal | app-share.js | ✓ |
+| U453 | {gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag}... | Cleared {gameName}!\nScore: {score}\nPlay it now👇... | JS message/literal (Xシェア用) | app-share.js | ✓ |
+| U453D | {gameName} クリア！ Score: {score}\n{url} | Cleared {gameName}! Score: {score}\n{url} | JS message/literal (Discordシェア用) | app-share.js | ✓ |
+| U454 | {gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag}... | {gameName} — GAME OVER\nScore: {score}\nCan you do better?👇... | JS message/literal (Xシェア用) | app-share.js | ✓ |
+| U454D | {gameName} GAME OVER / Score: {score}\nくやしい…リベンジして！\n{url} | {gameName} — GAME OVER / Score: {score}\nCan you do better?\n{url} | JS message/literal (Discordシェア用) | app-share.js | ✓ |
 | U501 | コメント | Comment | HTML text node (label) | index.html | ✓ |
 | U502 | サムネイル | Thumbnail | HTML text node (label) | index.html | ✓ |
 | U503 | サムネイル未設定 | No thumbnail | HTML text node | index.html | ✓ |

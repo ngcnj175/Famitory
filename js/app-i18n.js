@@ -316,16 +316,19 @@ const AppI18N = {
         'U383': { JPN: 'URLを コピーしました', ENG: 'Copied URL' },
         'U384': { JPN: 'コピーに失敗しました', ENG: 'Copy failed' },
         'U388': { JPN: 'Discord用に コピーしました', ENG: 'Copied for Discord' },
-        // ---- 共有投稿テキスト（テンプレート） ----
-        'U385': { JPN: '「{gameName}」であそぼう！ #FAMITORY', ENG: 'Play "{gameName}"! #FAMITORY' },
+        // ---- 共有投稿テキスト（X用。ハッシュタグ付き） ----
         'U386': { JPN: '{gameName} を作りました！\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'I made a game called "{gameName}"!\nPlay it in your browser👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
-        'U387': { JPN: 'FAMITORYでゲームを作ったよ!\n{url}', ENG: 'I made a game on FAMITORY!\n{url}' },
+        // ---- 共有投稿テキスト（Discord用。ハッシュタグなし、URL自動プレビュー前提） ----
+        'U386D': { JPN: '{gameName} を作りました！\nブラウザですぐ遊べます。\n{url}', ENG: 'I made a game called "{gameName}"!\nPlay it right in your browser.\n{url}' },
         'U391': { JPN: 'FAMITORYでゲームを作ったよ！🎮\nプレイしてみてね！', ENG: 'I made a game on FAMITORY! 🎮\nGive it a try!' },
         'U392': { JPN: '共有URL生成中...', ENG: 'Generating share URL...' },
         'U393': { JPN: 'エラー：保存に失敗しました', ENG: 'Error: Save failed' },
-        // ---- スコア共有テキスト（テンプレート） ----
+        // ---- スコア共有テキスト（X用。ハッシュタグ付き） ----
         'U453': { JPN: '{gameName} クリア！\nScore: {score}\nブラウザですぐ遊べます👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: 'Cleared {gameName}!\nScore: {score}\nPlay it now👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
         'U454': { JPN: '{gameName} GAME OVER\nScore: {score}\nくやしい…リベンジして👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart', ENG: '{gameName} — GAME OVER\nScore: {score}\nCan you do better?👇\n{url}\n\n#{hashTag} #Famitory #indiegame #pixelart' },
+        // ---- スコア共有テキスト（Discord用。ハッシュタグなし） ----
+        'U453D': { JPN: '{gameName} クリア！ Score: {score}\n{url}', ENG: 'Cleared {gameName}! Score: {score}\n{url}' },
+        'U454D': { JPN: '{gameName} GAME OVER / Score: {score}\nくやしい…リベンジして！\n{url}', ENG: '{gameName} — GAME OVER / Score: {score}\nCan you do better?\n{url}' },
 
         // ---- ARCADE ----
         'U501': { JPN: 'コメント',                 ENG: 'Comment' },
