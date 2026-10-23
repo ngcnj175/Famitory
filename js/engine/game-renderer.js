@@ -528,8 +528,30 @@ class GameRenderer {
         const windowX = Math.round((w - windowWidth) / 2);
         const windowY = Math.round((h - windowHeight) / 2);
 
+        // 白外枠：4辺の帯＋4隅を階段状チャンファーで描画（ファミコン風ドット感）
+        // 1ドット=2px、枠幅=3ドット（6px）。四隅は 3x3 ドットの下三角のみ塗り。
+        const dot = 2;
+        const borderDots = 3;
+        const borderPx = dot * borderDots;
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(windowX - 4, windowY - 4, windowWidth + 8, windowHeight + 8);
+        ctx.fillRect(windowX, windowY - borderPx, windowWidth, borderPx);
+        ctx.fillRect(windowX, windowY + windowHeight, windowWidth, borderPx);
+        ctx.fillRect(windowX - borderPx, windowY, borderPx, windowHeight);
+        ctx.fillRect(windowX + windowWidth, windowY, borderPx, windowHeight);
+        const drawCorner = (cx, cy, flipX, flipY) => {
+            for (let r = 0; r < borderDots; r++) {
+                for (let c = 0; c < borderDots; c++) {
+                    if (c + r < borderDots - 1) continue; // 外側対角を欠く
+                    const dx = flipX ? (borderDots - 1 - c) : c;
+                    const dy = flipY ? (borderDots - 1 - r) : r;
+                    ctx.fillRect(cx + dx * dot, cy + dy * dot, dot, dot);
+                }
+            }
+        };
+        drawCorner(windowX - borderPx, windowY - borderPx, false, false);
+        drawCorner(windowX + windowWidth, windowY - borderPx, true, false);
+        drawCorner(windowX - borderPx, windowY + windowHeight, false, true);
+        drawCorner(windowX + windowWidth, windowY + windowHeight, true, true);
         ctx.fillStyle = '#000000';
         ctx.fillRect(windowX, windowY, windowWidth, windowHeight);
 
