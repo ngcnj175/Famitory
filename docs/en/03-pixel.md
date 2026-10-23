@@ -82,6 +82,14 @@ When you load a guide image, the canvas enters **adjust mode**. While in this mo
 - **PC** … Left-drag to move the image, `Ctrl` + wheel to scale, `Shift` + wheel to rotate.
 - Once the image is positioned, tap the **✓** button at the top-right of the canvas to confirm. After confirming, canvas zoom becomes available again.
 
+### <span style="color:#ff8c1a;">Tip: Draw characters facing right</span>
+When drawing characters, **face them right** by default. FAMITORY automatically flips the sprite to match the direction of movement, so if you draw them facing right:
+
+- **Players** … move forward in the direction they're facing.
+- **Enemies** … appear facing the player and move along their path naturally.
+
+When in doubt, draw right! Your game will animate cleanly.
+
 ---
 
 ## Preview
