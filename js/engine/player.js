@@ -241,7 +241,9 @@ class Player {
             case 'attack':
                 return this.template?.sprites?.attack?.frames?.length > 0 ? 'attack' : 'idle';
             case 'climb':
-                return this.template?.sprites?.climb?.frames?.length > 0 ? 'climb' : 'idle';
+                if (this.template?.sprites?.climb?.frames?.length > 0) return 'climb';
+                if (this.template?.sprites?.walk?.frames?.length > 0) return 'walk';
+                return 'idle';
             case 'jump':
                 return this.template?.sprites?.jump?.frames?.length > 0 ? 'jump' : 'idle';
             case 'walk':
