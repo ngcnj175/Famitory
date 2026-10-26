@@ -185,6 +185,7 @@ class Enemy {
         switch (this.behavior) {
             case 'idle':
                 this.vx = 0;
+                this.facingRight = engine.player.x > this.x;
                 break;
             case 'patrol':
                 this.patrol(engine);
@@ -192,6 +193,7 @@ class Enemy {
             case 'jump':
                 // その場ジャンプ
                 this.vx = 0;
+                this.facingRight = engine.player.x > this.x;
                 if (this.onGround && Math.random() < 0.02) {
                     this.vy = this.jumpPower;
                     this.onGround = false;
@@ -270,6 +272,7 @@ class Enemy {
                 // 空中で動かない
                 this.vx = 0;
                 this.vy = 0;
+                this.facingRight = engine.player.x > this.x;
                 break;
             case 'patrol':
                 // 空中で左右移動
@@ -279,6 +282,7 @@ class Enemy {
             case 'jump':
                 // 空中で上下移動（8タイル範囲制限、床/天井の衝突）
                 this.vx = 0;
+                this.facingRight = engine.player.x > this.x;
                 const vertMaxRange = 8;
                 const distY = this.y - this.originY;
 
