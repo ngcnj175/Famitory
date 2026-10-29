@@ -1674,6 +1674,7 @@ const GameEngine = {
                             Storage.saveProject(name, App.projectData);
                             Storage.save('currentProject', App.projectData);
                         }
+                        if (typeof AppProject !== 'undefined') AppProject._markAutosaveClean();
 
                         // 共有URL(?g= / #hash)が残っているとリロードで元の共有ゲームに戻ってしまうためクリア
                         if (window.location.search || window.location.hash) {

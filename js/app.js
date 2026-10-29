@@ -91,6 +91,7 @@ const App = {
         this.initMenu();
         if (hasSharedGame) this.applyPlayOnlyMode();
         AppProject.checkUrlData();
+        AppProject.initAutosave();
 
         // 各エディタ初期化
         if (typeof SpriteEditor !== 'undefined') SpriteEditor.init();

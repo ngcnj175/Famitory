@@ -345,8 +345,11 @@ const AppProject = {
         }
     },
 
+    // 「手動セーブ」との差分で判定（自動セーブは currentProject を更新するだけなので
+    // currentProject と比較すると未保存変更が検出できなくなるため project_<name> と比較）
     hasUnsavedChanges() {
-        const savedData = Storage.load('currentProject');
+        const name = App.currentProjectName;
+        const savedData = name ? Storage.loadProject(name) : Storage.load('currentProject');
         if (!savedData) return true;
         return JSON.stringify(savedData) !== JSON.stringify(App.projectData);
     },
@@ -363,8 +366,66 @@ const AppProject = {
 
         Storage.saveProject(App.currentProjectName, App.projectData);
         Storage.save('currentProject', App.projectData);
+        this._markAutosaveClean();
 
         App.showToast('セーブしました');
+    },
+
+    // ========== 自動セーブ（ドラフト）==========
+    // 設計:
+    //   - 編集中の作業状態を一定間隔で localStorage の currentProject に書き込む
+    //   - 手動セーブ(project_<name>) は上書きしない（OPEN から戻れる安全弁）
+    //   - 共有URLで遊んでいるとき(isPlayOnlyMode) は書き込まない（共有ゲームの汚染防止）
+    //   - 現在データのJSON文字列を保持し、差分があるときだけ書き込む（I/O削減・寿命配慮）
+    //   - visibilitychange/beforeunload で最終フラッシュ（タブ閉じ時の取りこぼし防止）
+    _autosaveLastJSON: null,
+    _autosaveIntervalMs: 3000,
+    _autosaveInited: false,
+
+    _markAutosaveClean() {
+        try {
+            this._autosaveLastJSON = JSON.stringify(App.projectData);
+        } catch (_) {
+            this._autosaveLastJSON = null;
+        }
+    },
+
+    _flushAutosaveIfDirty() {
+        if (App.isPlayOnlyMode) return;
+        if (!App.projectData) return;
+        // 共有URL由来のプレースホルダは currentProjectName が未設定になる
+        if (!App.currentProjectName) return;
+
+        let json;
+        try {
+            json = JSON.stringify(App.projectData);
+        } catch (_) {
+            return;
+        }
+        if (json === this._autosaveLastJSON) return;
+
+        try {
+            // Storage.save と同形式で直接書き込み（二重 stringify を避ける）
+            localStorage.setItem('pgk_currentProject', json);
+            this._autosaveLastJSON = json;
+        } catch (e) {
+            console.warn('Autosave failed:', e);
+        }
+    },
+
+    initAutosave() {
+        if (this._autosaveInited) return;
+        this._autosaveInited = true;
+
+        this._markAutosaveClean();
+
+        setInterval(() => this._flushAutosaveIfDirty(), this._autosaveIntervalMs);
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') this._flushAutosaveIfDirty();
+        });
+        window.addEventListener('pagehide', () => this._flushAutosaveIfDirty());
+        window.addEventListener('beforeunload', () => this._flushAutosaveIfDirty());
     },
 
     loadProject(name) {
@@ -425,6 +486,7 @@ const AppProject = {
             App.updateGameInfo();
             App.refreshCurrentScreen();
             Storage.save('currentProject', App.projectData);
+            this._markAutosaveClean();
             const msg = (AppI18N.I18N['U363']?.[AppI18N.currentLang] || '「${name}」を開きました').replace('${name}', name);
             AppDialogs.showAlert(msg);
         } else {
@@ -601,6 +663,7 @@ const AppProject = {
 
                 Storage.saveProject(name, App.projectData);
                 Storage.save('currentProject', App.projectData);
+                this._markAutosaveClean();
 
                 // 共有URL(?g= / #hash)が残っているとリロードで共有ゲームに戻ってしまうためクリア
                 if (window.location.search || window.location.hash) {
@@ -842,6 +905,7 @@ const AppProject = {
 
         Storage.saveProject(newName, newData);
         Storage.save('currentProject', newData);
+        this._markAutosaveClean();
 
         App.showToast(`「${newName}」として保存しました`);
         console.log(`Project saved as: ${newName}`);
