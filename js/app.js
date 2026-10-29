@@ -743,6 +743,7 @@ const App = {
             if (this.currentProjectName && typeof Storage !== 'undefined') {
                 Storage.saveProject(this.currentProjectName, this.projectData);
                 Storage.save('currentProject', this.projectData);
+                if (typeof AppProject !== 'undefined') AppProject._markAutosaveClean();
             }
             this.updateGameInfo();
         };

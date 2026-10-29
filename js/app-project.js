@@ -377,7 +377,8 @@ const AppProject = {
     //   - 手動セーブ(project_<name>) は上書きしない（OPEN から戻れる安全弁）
     //   - 共有URLで遊んでいるとき(isPlayOnlyMode) は書き込まない（共有ゲームの汚染防止）
     //   - 現在データのJSON文字列を保持し、差分があるときだけ書き込む（I/O削減・寿命配慮）
-    //   - visibilitychange/beforeunload で最終フラッシュ（タブ閉じ時の取りこぼし防止）
+    //   - visibilitychange(hidden)/pagehide で最終フラッシュ（タブ閉じ時の取りこぼし防止）
+    //   - beforeunload は使わない（bfcache 無効化回避。pagehide が同等の役割を担う）
     _autosaveLastJSON: null,
     _autosaveIntervalMs: 3000,
     _autosaveInited: false,
@@ -425,7 +426,6 @@ const AppProject = {
             if (document.visibilityState === 'hidden') this._flushAutosaveIfDirty();
         });
         window.addEventListener('pagehide', () => this._flushAutosaveIfDirty());
-        window.addEventListener('beforeunload', () => this._flushAutosaveIfDirty());
     },
 
     loadProject(name) {

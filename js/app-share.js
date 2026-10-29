@@ -78,6 +78,7 @@ const AppShare = {
         if (App.currentProjectName) {
             Storage.saveProject(App.currentProjectName, App.projectData);
             Storage.save('currentProject', App.projectData);
+            if (typeof AppProject !== 'undefined') AppProject._markAutosaveClean();
         }
     },
 
