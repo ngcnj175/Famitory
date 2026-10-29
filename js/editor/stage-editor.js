@@ -304,9 +304,9 @@ const StageEditor = {
     getSpriteKeysForType(type) {
         switch (type) {
             case 'player':
-                return ['idle', 'walk', 'climb', 'jump', 'attack', 'shot', 'life'];
+                return ['idle', 'walk', 'climb', 'jump', 'attack', 'damage', 'shot', 'life'];
             case 'enemy':
-                return ['idle', 'walk', 'climb', 'jump', 'attack', 'shot'];
+                return ['idle', 'walk', 'climb', 'jump', 'attack', 'damage', 'shot'];
             case 'material':
             case 'item':
                 return ['main'];
@@ -478,11 +478,18 @@ const StageEditor = {
             // スプライトセクション: 立ち・歩き・のぼる・ジャンプ・攻撃（プレイヤー変身時は変身アイテムを攻撃の下に追加）
             const basePlayerIdx = (App.projectData.templates || []).findIndex(t => t.type === 'player');
             const isBasePlayer = type === 'player' && this.editingIndex === basePlayerIdx;
-            let baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack'];
+            let baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack', 'damage'];
             if (type === 'player' && !isBasePlayer) {
-                baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack', 'transformItem'];
+                baseSprites = ['idle', 'walk', 'climb', 'jump', 'attack', 'damage', 'transformItem'];
             }
-            baseSprites.forEach(key => { spriteRows += this.renderSpriteRow(key); });
+            const cfg = this.editingTemplate.config || {};
+            baseSprites.forEach(key => {
+                spriteRows += this.renderSpriteRow(key);
+                // ダメージ行の直下に「デッドのみ」トグル（プレイヤーのみ）
+                if (key === 'damage' && type === 'player') {
+                    spriteRows += this.renderToggle(this.t('U604'), 'damageDeadOnly', cfg.damageDeadOnly);
+                }
+            });
         } else {
             // その他（material, item, goal）: 従来通り全スプライト行
             const spriteKeys = this.getSpriteKeysForType(type);
@@ -542,7 +549,8 @@ const StageEditor = {
         // 繧ｹ繝ｭ繝・ヨ陦ｨ遉ｺ蜷・
         const labels = {
             idle: this.t('U198'), walk: this.t('U199'), climb: this.t('U200'), jump: this.t('U201'),
-            attack: this.t('U202'), shot: this.t('U203'), life: this.t('U204'), main: this.t('U203'),
+            attack: this.t('U202'), damage: this.t('U603'),
+            shot: this.t('U203'), life: this.t('U204'), main: this.t('U203'),
             transformItem: this.t('U205')
         };
 
@@ -892,7 +900,7 @@ const StageEditor = {
             Object.keys(this.editingTemplate.sprites).forEach(slot => {
                 const sprite = this.editingTemplate.sprites[slot];
                 // 謾ｻ謦・い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ縺ｯ繝ｫ繝ｼ繝励＆縺帙↑縺・
-                if (slot === 'attack') {
+                if (slot === 'attack' || slot === 'damage') {
                     sprite.loop = false;
                 } else if (sprite.loop === undefined) {
                     // 莉悶・繝・ヵ繧ｩ繝ｫ繝医〒繝ｫ繝ｼ繝・

@@ -43,6 +43,13 @@ class Enemy {
         this.deathTimer = 0;
         this.damageFlashTimer = 0; // ダメージ時の白点滅
 
+        // ダメージアニメ（damageスプライト登録時に死亡演出を差し替え）
+        this.damageAnimActive = false;
+        this.damageAnimFrame = 0;
+        this.damageAnimTimer = 0;
+        this.damageAnimFinished = false;
+        this.damageAnimPostTimer = 0;
+
         // 空中モード
         this.isAerial = template?.config?.isAerial || false;
 
@@ -104,6 +111,11 @@ class Enemy {
         }
 
         if (this.isDying) {
+            // ダメージアニメによる死亡演出
+            if (this.damageAnimActive) {
+                this._updateDamageAnim();
+                return this.deathTimer > 120;
+            }
             // 死亡点滅フェーズ
             if (this.deathFlashPhase) {
                 if (this.damageFlashTimer > 0) {
@@ -1258,14 +1270,52 @@ class Enemy {
     die(fromRight) {
         this.isDying = true;
         this.frozen = false; // 死亡時は休眠解除（描画されるように）
-        this.damageFlashTimer = 10; // 死亡時も白点滅
-        this.deathFlashPhase = true; // 点滅中は落下しない
         this.deathFromRight = fromRight;
         // ドロップアイテム用に死亡時の位置を記録
         this.deathX = this.x;
         this.deathY = this.y;
         this.vy = 0;
         this.vx = 0;
+
+        const hasDamageAnim = (this.template?.sprites?.damage?.frames?.length ?? 0) > 0;
+        if (hasDamageAnim) {
+            // 位置固定でワンショット再生 → 待機後に消滅
+            this.damageAnimActive = true;
+            this.damageAnimFrame = 0;
+            this.damageAnimTimer = 0;
+            this.damageAnimFinished = false;
+            this.damageAnimPostTimer = 0;
+            this.damageFlashTimer = 0;
+            this.deathFlashPhase = false;
+        } else {
+            this.damageFlashTimer = 10; // 死亡時も白点滅
+            this.deathFlashPhase = true; // 点滅中は落下しない
+        }
+    }
+
+    _updateDamageAnim() {
+        const spr = this.template?.sprites?.damage;
+        const frames = spr?.frames || [];
+        const speed = spr?.speed ?? 4;
+        const interval = Math.max(1, Math.floor(60 / speed));
+
+        if (!this.damageAnimFinished) {
+            this.damageAnimTimer++;
+            if (this.damageAnimTimer >= interval) {
+                this.damageAnimTimer = 0;
+                if (this.damageAnimFrame < frames.length - 1) {
+                    this.damageAnimFrame++;
+                } else {
+                    this.damageAnimFinished = true;
+                }
+            }
+            return;
+        }
+        // 最終フレーム静止後、少し待ってから消滅
+        this.damageAnimPostTimer++;
+        if (this.damageAnimPostTimer >= 20) {
+            this.deathTimer = 121; // game-physics 側で除去対象になる
+        }
     }
 
     handleHorizontalCollision(engine) {
@@ -1334,10 +1384,18 @@ class Enemy {
         const hitboxCenterX = this.x + this.width / 2;
         const hitboxBottom = this.y + this.height;
 
-        const spriteSlot = this.getSpriteSlot();
-        const frames = this.template?.sprites?.[spriteSlot]?.frames || this.template?.sprites?.idle?.frames || [];
-        const spriteIdx = frames[this.animFrame] ?? frames[0];
-        const sprite = App.projectData.sprites[spriteIdx];
+        let spriteSlot, frames, spriteIdx, sprite;
+        if (this.damageAnimActive) {
+            const spr = this.template?.sprites?.damage;
+            frames = spr?.frames || [];
+            spriteIdx = frames[this.damageAnimFrame] ?? frames[0];
+            sprite = App.projectData.sprites[spriteIdx];
+        } else {
+            spriteSlot = this.getSpriteSlot();
+            frames = this.template?.sprites?.[spriteSlot]?.frames || this.template?.sprites?.idle?.frames || [];
+            spriteIdx = frames[this.animFrame] ?? frames[0];
+            sprite = App.projectData.sprites[spriteIdx];
+        }
 
         if (sprite) {
             const palette = App.nesPalette;
@@ -1357,8 +1415,8 @@ class Enemy {
             ctx.save();
             ctx.translate(centerX, centerY);
 
-            if (this.isDying) {
-                // 死亡時は上下反転
+            if (this.isDying && !this.damageAnimActive) {
+                // 死亡時は上下反転（damageアニメ中は反転しない）
                 ctx.scale(1, -1);
             } else if (this.behavior === 'clinging' && !this.clingLanding) {
                 // はりつき時は面に応じて回転
@@ -1374,8 +1432,8 @@ class Enemy {
                 for (let x = 0; x < dimension; x++) {
                     const colorIndex = sprite.data[y]?.[x];
                     if (colorIndex >= 0) {
-                        // ダメージ点滅中は白色
-                        if (this.damageFlashTimer > 0 && this.damageFlashTimer % 2 === 0) {
+                        // ダメージ点滅中は白色（damageアニメ中は白点滅しない）
+                        if (!this.damageAnimActive && this.damageFlashTimer > 0 && this.damageFlashTimer % 2 === 0) {
                             ctx.fillStyle = '#FFFFFF';
                         } else {
                             ctx.fillStyle = palette[colorIndex];

@@ -64,6 +64,14 @@ class Player {
         this.isDead = false;
         this.deathParticles = [];
 
+        // ダメージアニメ（damageスプライト登録時に演出を差し替え）
+        this.damageAnimActive = false;
+        this.damageAnimIsDeath = false;
+        this.damageAnimFrame = 0;
+        this.damageAnimTimer = 0;
+        this.damageAnimFinished = false;
+        this.damageAnimPostTimer = 0;
+
         // 状態
         this.state = 'idle';
         this.isAttacking = false;
@@ -113,6 +121,11 @@ class Player {
     }
 
     update(engine) {
+        // ダメージアニメ再生中は位置固定で演出のみ進める
+        if (this.damageAnimActive) {
+            this._updateDamageAnim();
+            return;
+        }
         if (this.isDead) {
             if (this.isDying) {
                 this.deathTimer++;
@@ -482,7 +495,17 @@ class Player {
         // SE再生
         this.playSE('damage');
 
-        if (this.lives <= 0) {
+        const willDie = this.lives <= 0;
+        const hasDamageAnim = (this.template?.sprites?.damage?.frames?.length ?? 0) > 0;
+        const deadOnly = !!this.template?.config?.damageDeadOnly;
+        const useDamageAnim = hasDamageAnim && (!deadOnly || willDie);
+
+        if (useDamageAnim) {
+            this._startDamageAnim(willDie);
+            return;
+        }
+
+        if (willDie) {
             this.die();
         } else {
             this.invincible = true;
@@ -492,6 +515,70 @@ class Player {
             // 向いている方向の逆に飛ばされる
             this.vx = this.facingRight ? -0.12 : 0.12; // 強く
             this.onGround = false;
+        }
+    }
+
+    _startDamageAnim(isDeath) {
+        this.damageAnimActive = true;
+        this.damageAnimIsDeath = isDeath;
+        this.damageAnimFrame = 0;
+        this.damageAnimTimer = 0;
+        this.damageAnimFinished = false;
+        this.damageAnimPostTimer = 0;
+        this.vx = 0;
+        this.vy = 0;
+        this.isKnockback = false;
+        if (isDeath) {
+            this.isDead = true;
+            this.isDying = true;
+            this.deathTimer = 0;
+            // 死亡アニメ中はBGMを無音に
+            if (typeof GameEngine !== 'undefined' && typeof GameEngine.stopBgm === 'function') {
+                GameEngine.stopBgm();
+            }
+        } else {
+            // 生存時はアニメ再生中〜後も無敵フレームで保護
+            this.invincible = true;
+            this.invincibleTimer = this.invincibleDuration;
+        }
+    }
+
+    _updateDamageAnim() {
+        const spr = this.template?.sprites?.damage;
+        const frames = spr?.frames || [];
+        const speed = spr?.speed ?? 4;
+        const interval = Math.max(1, Math.floor(60 / speed));
+
+        if (!this.damageAnimFinished) {
+            this.damageAnimTimer++;
+            if (this.damageAnimTimer >= interval) {
+                this.damageAnimTimer = 0;
+                if (this.damageAnimFrame < frames.length - 1) {
+                    this.damageAnimFrame++;
+                } else {
+                    this.damageAnimFinished = true;
+                }
+            }
+            return;
+        }
+
+        // 最終フレーム静止後の待機
+        this.damageAnimPostTimer++;
+        if (this.damageAnimIsDeath) {
+            // 60F（約1秒）静止してからゲームオーバー遷移
+            if (this.damageAnimPostTimer >= 60) {
+                if (typeof GameEngine !== 'undefined' && !GameEngine.gameOverPending) {
+                    GameEngine.gameOverPending = true;
+                    GameEngine.gameOverWaitTimer = 0; // 即ワイプ
+                }
+            }
+        } else {
+            // 生存時は少し待ってから通常プレイに復帰（無敵は継続）
+            if (this.damageAnimPostTimer >= 20) {
+                this.damageAnimActive = false;
+                this.damageAnimFinished = false;
+                this.damageAnimPostTimer = 0;
+            }
         }
     }
 
@@ -640,6 +727,11 @@ class Player {
     }
 
     render(ctx, tileSize, camera) {
+        // ダメージアニメ再生中：damageスプライトを位置固定で表示
+        if (this.damageAnimActive) {
+            this._renderDamageAnim(ctx, tileSize, camera);
+            return;
+        }
         // 死亡中：回転しながら落下するスプライトを表示
         if (this.isDead && this.isDying) {
             const hitboxCenterX = this.x + this.width / 2;
@@ -748,6 +840,42 @@ class Player {
 
             ctx.restore();
         }
+    }
+
+    _renderDamageAnim(ctx, tileSize, camera) {
+        if (!this.template) return;
+        const spr = this.template?.sprites?.damage;
+        const frames = spr?.frames || [];
+        if (frames.length === 0) return;
+        const spriteIdx = frames[this.damageAnimFrame] ?? frames[0];
+        const sprite = App.projectData.sprites[spriteIdx];
+        if (!sprite) return;
+
+        const palette = App.nesPalette;
+        const spriteSize = sprite.size || 1;
+        const dimension = spriteSize === 2 ? 32 : 16;
+        const tileCount = spriteSize === 2 ? 2 : 1;
+        const renderSize = tileSize * tileCount;
+        const pixelSize = renderSize / dimension;
+
+        const hitboxCenterX = this.x + this.width / 2;
+        const hitboxBottom = this.y + this.height;
+        const spriteDrawX = Math.floor((hitboxCenterX - tileCount / 2 - camera.x) * tileSize);
+        const spriteDrawY = Math.floor((hitboxBottom - tileCount - camera.y) * tileSize);
+        const flipX = !this.facingRight;
+
+        ctx.save();
+        for (let y = 0; y < dimension; y++) {
+            for (let x = 0; x < dimension; x++) {
+                const colorIndex = sprite.data[y]?.[x];
+                if (colorIndex >= 0) {
+                    ctx.fillStyle = palette[colorIndex];
+                    const drawX = flipX ? spriteDrawX + (dimension - 1 - x) * pixelSize : spriteDrawX + x * pixelSize;
+                    ctx.fillRect(drawX, spriteDrawY + y * pixelSize, pixelSize, pixelSize);
+                }
+            }
+        }
+        ctx.restore();
     }
 
     renderDeathParticles(ctx, tileSize, camera) {

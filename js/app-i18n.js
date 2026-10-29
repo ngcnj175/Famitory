@@ -385,6 +385,8 @@ const AppI18N = {
         'U600': { JPN: 'ステージを縮小すると範囲外のデータが削除されます', ENG: 'Shrinking the stage will delete tiles and entities outside the new area' },
         'U601': { JPN: 'プレイヤーがステージに配置されていません', ENG: 'No player placed on the stage' },
         'U602': { JPN: 'このゲームはまだ遊べません', ENG: 'This game is not ready to play' },
+        'U603': { JPN: 'ダメージ',            ENG: 'Damage' },
+        'U604': { JPN: 'デッドのみ',          ENG: 'Death Only' },
     },
 
     t(id, vars = {}) {
