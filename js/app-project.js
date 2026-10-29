@@ -490,6 +490,11 @@ const AppProject = {
             App.refreshCurrentScreen();
             Storage.save('currentProject', App.projectData);
             this._markAutosaveClean();
+
+            // 共有URL(?g= / #hash)が残っているとリロードで共有ゲーム(player-only)に戻るためクリア
+            if (window.location.search || window.location.hash) {
+                history.replaceState(null, '', window.location.pathname);
+            }
             const msg = (AppI18N.I18N['U363']?.[AppI18N.currentLang] || '「${name}」を開きました').replace('${name}', name);
             AppDialogs.showAlert(msg);
         } else {

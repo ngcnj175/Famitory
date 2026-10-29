@@ -400,6 +400,12 @@ const App = {
         document.querySelectorAll('.toolbar-icon.locked').forEach(btn => {
             btn.classList.remove('locked');
         });
+
+        // 共有URL(?g= / #hash)が残っているとリロードで共有ゲーム(player-only)に戻るためクリア
+        if (window.location.search || window.location.hash) {
+            history.replaceState(null, '', window.location.pathname);
+        }
+
         this.showToast(AppI18N.I18N['U354']?.[AppI18N.currentLang] || '編集モードに切り替わりました');
         // 現在の画面をリフレッシュ
         this.refreshCurrentScreen();
