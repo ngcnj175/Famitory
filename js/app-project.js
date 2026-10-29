@@ -602,6 +602,11 @@ const AppProject = {
                 Storage.saveProject(name, App.projectData);
                 Storage.save('currentProject', App.projectData);
 
+                // 共有URL(?g= / #hash)が残っているとリロードで共有ゲームに戻ってしまうためクリア
+                if (window.location.search || window.location.hash) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
+
                 App.updateGameInfo();
                 App.refreshCurrentScreen();
 
