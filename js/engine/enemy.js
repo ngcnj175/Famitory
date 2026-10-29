@@ -43,12 +43,12 @@ class Enemy {
         this.deathTimer = 0;
         this.damageFlashTimer = 0; // ダメージ時の白点滅
 
-        // ダメージアニメ（damageスプライト登録時に死亡演出を差し替え）
-        this.damageAnimActive = false;
-        this.damageAnimFrame = 0;
-        this.damageAnimTimer = 0;
-        this.damageAnimFinished = false;
-        this.damageAnimPostTimer = 0;
+        // デッドアニメ（deathスプライト登録時に死亡演出を差し替え）
+        this.deathAnimActive = false;
+        this.deathAnimFrame = 0;
+        this.deathAnimTimer = 0;
+        this.deathAnimFinished = false;
+        this.deathAnimPostTimer = 0;
 
         // 空中モード
         this.isAerial = template?.config?.isAerial || false;
@@ -111,9 +111,9 @@ class Enemy {
         }
 
         if (this.isDying) {
-            // ダメージアニメによる死亡演出
-            if (this.damageAnimActive) {
-                this._updateDamageAnim();
+            // デッドアニメによる死亡演出
+            if (this.deathAnimActive) {
+                this._updateDeathAnim();
                 return this.deathTimer > 120;
             }
             // 死亡点滅フェーズ
@@ -1277,14 +1277,14 @@ class Enemy {
         this.vy = 0;
         this.vx = 0;
 
-        const hasDamageAnim = (this.template?.sprites?.damage?.frames?.length ?? 0) > 0;
-        if (hasDamageAnim) {
+        const hasDeathAnim = (this.template?.sprites?.death?.frames?.length ?? 0) > 0;
+        if (hasDeathAnim) {
             // 位置固定でワンショット再生 → 待機後に消滅
-            this.damageAnimActive = true;
-            this.damageAnimFrame = 0;
-            this.damageAnimTimer = 0;
-            this.damageAnimFinished = false;
-            this.damageAnimPostTimer = 0;
+            this.deathAnimActive = true;
+            this.deathAnimFrame = 0;
+            this.deathAnimTimer = 0;
+            this.deathAnimFinished = false;
+            this.deathAnimPostTimer = 0;
             this.damageFlashTimer = 0;
             this.deathFlashPhase = false;
         } else {
@@ -1293,27 +1293,27 @@ class Enemy {
         }
     }
 
-    _updateDamageAnim() {
-        const spr = this.template?.sprites?.damage;
+    _updateDeathAnim() {
+        const spr = this.template?.sprites?.death;
         const frames = spr?.frames || [];
         const speed = spr?.speed ?? 4;
         const interval = Math.max(1, Math.floor(60 / speed));
 
-        if (!this.damageAnimFinished) {
-            this.damageAnimTimer++;
-            if (this.damageAnimTimer >= interval) {
-                this.damageAnimTimer = 0;
-                if (this.damageAnimFrame < frames.length - 1) {
-                    this.damageAnimFrame++;
+        if (!this.deathAnimFinished) {
+            this.deathAnimTimer++;
+            if (this.deathAnimTimer >= interval) {
+                this.deathAnimTimer = 0;
+                if (this.deathAnimFrame < frames.length - 1) {
+                    this.deathAnimFrame++;
                 } else {
-                    this.damageAnimFinished = true;
+                    this.deathAnimFinished = true;
                 }
             }
             return;
         }
         // 最終フレーム静止後、少し待ってから消滅
-        this.damageAnimPostTimer++;
-        if (this.damageAnimPostTimer >= 20) {
+        this.deathAnimPostTimer++;
+        if (this.deathAnimPostTimer >= 20) {
             this.deathTimer = 121; // game-physics 側で除去対象になる
         }
     }
@@ -1385,10 +1385,10 @@ class Enemy {
         const hitboxBottom = this.y + this.height;
 
         let spriteSlot, frames, spriteIdx, sprite;
-        if (this.damageAnimActive) {
-            const spr = this.template?.sprites?.damage;
+        if (this.deathAnimActive) {
+            const spr = this.template?.sprites?.death;
             frames = spr?.frames || [];
-            spriteIdx = frames[this.damageAnimFrame] ?? frames[0];
+            spriteIdx = frames[this.deathAnimFrame] ?? frames[0];
             sprite = App.projectData.sprites[spriteIdx];
         } else {
             spriteSlot = this.getSpriteSlot();
@@ -1415,8 +1415,8 @@ class Enemy {
             ctx.save();
             ctx.translate(centerX, centerY);
 
-            if (this.isDying && !this.damageAnimActive) {
-                // 死亡時は上下反転（damageアニメ中は反転しない）
+            if (this.isDying && !this.deathAnimActive) {
+                // 死亡時は上下反転（deathアニメ中は反転しない）
                 ctx.scale(1, -1);
             } else if (this.behavior === 'clinging' && !this.clingLanding) {
                 // はりつき時は面に応じて回転
@@ -1432,8 +1432,8 @@ class Enemy {
                 for (let x = 0; x < dimension; x++) {
                     const colorIndex = sprite.data[y]?.[x];
                     if (colorIndex >= 0) {
-                        // ダメージ点滅中は白色（damageアニメ中は白点滅しない）
-                        if (!this.damageAnimActive && this.damageFlashTimer > 0 && this.damageFlashTimer % 2 === 0) {
+                        // ダメージ点滅中は白色（deathアニメ中は白点滅しない）
+                        if (!this.deathAnimActive && this.damageFlashTimer > 0 && this.damageFlashTimer % 2 === 0) {
                             ctx.fillStyle = '#FFFFFF';
                         } else {
                             ctx.fillStyle = palette[colorIndex];
