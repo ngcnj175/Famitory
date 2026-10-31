@@ -1074,7 +1074,7 @@ const GameEngine = {
             allDone = false;
 
             // 死んだ敵を参照リストから除外
-            spawner.spawnedEnemies = spawner.spawnedEnemies.filter(e => !e.isDying);
+            spawner.spawnedEnemies = spawner.spawnedEnemies.filter(e => !e.isDying && !e.removed);
 
             if (spawner.spawnedEnemies.length >= spawner.maxCount) continue;
 

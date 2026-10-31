@@ -177,14 +177,17 @@ class GamePhysics {
                     }
                 }
                 this.spawnDropItem(e);
+                e.removed = true;
                 return false;
             }
             if (e.isDying && e.deathTimer > 120) {
                 this.spawnDropItem(e);
+                e.removed = true;
                 return false;
             }
             if (e.y > App.projectData.stage.height + 5) {
                 if (e.isDying) this.spawnDropItem(e);
+                e.removed = true;
                 return false;
             }
             return true;
