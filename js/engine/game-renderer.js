@@ -128,8 +128,10 @@ class GameRenderer {
         if (this.owner.gimmickBlocks) {
             this.owner.gimmickBlocks.forEach(block => {
                 if (block.template && block.templateIdx !== undefined) {
+                    // 落下直前の震え演出（1px相当の横ランダムオフセット）
+                    const shakeX = block.state === 'shaking' ? (Math.random() - 0.5) * 0.125 : 0;
                     this.renderProjectileOrItem({
-                        x: block.x, y: block.y,
+                        x: block.x + shakeX, y: block.y,
                         facingRight: true,
                         templateIdx: block.templateIdx
                     });
