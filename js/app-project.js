@@ -112,7 +112,8 @@ const AppProject = {
                 author: '',
                 locked: false,
                 createdAt: Date.now(),
-                editKey: ''
+                editKey: '',
+                remixOK: true
             },
             palette: App.nesPalette.slice(0, 16),
             sprites: [this.createEmptySprite()],

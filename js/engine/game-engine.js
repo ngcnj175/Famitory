@@ -1671,6 +1671,10 @@ const GameEngine = {
                             AppArcadePanel.loadFromProject();
                         }
 
+                        // 公開フラグのデフォルト：ARCADE登録はOFF、リミックスOKはON
+                        delete App.projectData.meta.arcadeOff;
+                        App.projectData.meta.remixOK = true;
+
                         // UIロック解除と画面更新（リミックス後はまずPLAY画面を表示）
                         App.unlockCreatorMode();
                         App.switchScreen('play');
