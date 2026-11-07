@@ -1665,6 +1665,12 @@ const GameEngine = {
                         // エディットキーはリセット（公開時に新規発行）
                         App.projectData.meta.editKey = '';
 
+                        // ARCADE情報（コメント・サムネイル）はリミックス元のものをクリア
+                        App.projectData.meta.arcade = { comment: '', thumbnail: '' };
+                        if (typeof AppArcadePanel !== 'undefined') {
+                            AppArcadePanel.loadFromProject();
+                        }
+
                         // UIロック解除と画面更新（リミックス後はまずPLAY画面を表示）
                         App.unlockCreatorMode();
                         App.switchScreen('play');
