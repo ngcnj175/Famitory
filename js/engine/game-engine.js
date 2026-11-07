@@ -1665,13 +1665,8 @@ const GameEngine = {
                         // エディットキーはリセット（公開時に新規発行）
                         App.projectData.meta.editKey = '';
 
-                        // ARCADE情報（コメント・サムネイル）はリミックス元のものをクリア
+                        // リミックス元の公開情報をリセット（コメント・サムネ・ARCADE登録はOFF、リミックスOKはON）
                         App.projectData.meta.arcade = { comment: '', thumbnail: '' };
-                        if (typeof AppArcadePanel !== 'undefined') {
-                            AppArcadePanel.loadFromProject();
-                        }
-
-                        // 公開フラグのデフォルト：ARCADE登録はOFF、リミックスOKはON
                         delete App.projectData.meta.arcadeOff;
                         App.projectData.meta.remixOK = true;
 
