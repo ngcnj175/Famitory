@@ -151,6 +151,11 @@ const SpriteEditorPalette = {
             });
             this.initColorPalette();
             this.closePresetDialog();
+            // 追加した色が見えるよう末尾へスクロール
+            requestAnimationFrame(() => {
+                const sc = document.getElementById('color-scroll-container');
+                if (sc) sc.scrollLeft = sc.scrollWidth;
+            });
             if (reached) {
                 alert(App.I18N['U182']?.[App.currentLang] || '色はこれ以上追加できません（最大64色）');
             }
@@ -171,7 +176,8 @@ const SpriteEditorPalette = {
         App.showConfirm(parts[0], parts[1], () => {
             const preset = App.PALETTE_PRESETS[selected.dataset.value];
             if (preset) {
-                App.nesPalette = preset.colors.slice();
+                // 置換時も上限64色でクランプ（将来の大きなプリセット対策）
+                App.nesPalette = preset.colors.slice(0, 64);
                 this.initColorPalette();
                 this.closePresetDialog();
             }
