@@ -730,6 +730,11 @@ const SpriteEditor = {
         this.history = [];
         this.initSpriteGallery();
         this.render();
+        // 追加したスプライトが見えるよう末尾へスクロール
+        requestAnimationFrame(() => {
+            const sc = document.getElementById('sprite-scroll-container');
+            if (sc) sc.scrollLeft = sc.scrollWidth;
+        });
     },
 
     // スプライトのサイズを切り替え（16x16 ↔ 32x32）

@@ -44,9 +44,18 @@ class StageTemplateManager {
             this.owner.selectedTemplate = App.projectData.templates.length - 1;
         }
 
+        const isNewTemplate = this.owner.editingIndex < 0;
         this.owner.closeConfigPanel();
         this.owner.initTemplateList();
         this.owner.render(); // ステージを再描画
+
+        // 新規追加時は末尾へスクロール
+        if (isNewTemplate) {
+            requestAnimationFrame(() => {
+                const sc = document.getElementById('tile-scroll-container');
+                if (sc) sc.scrollLeft = sc.scrollWidth;
+            });
+        }
     }
 
     // ステージ上のスプライトIDを置換

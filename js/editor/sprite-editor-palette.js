@@ -90,6 +90,11 @@ const SpriteEditorPalette = {
                 App.nesPalette.push('#000000');
                 this.editor.selectedColor = App.nesPalette.length - 1;
                 this.initColorPalette();
+                // 追加した色が見えるよう末尾へスクロール
+                requestAnimationFrame(() => {
+                    const sc = document.getElementById('color-scroll-container');
+                    if (sc) sc.scrollLeft = sc.scrollWidth;
+                });
             }
         };
 
