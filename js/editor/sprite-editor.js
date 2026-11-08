@@ -403,27 +403,6 @@ const SpriteEditor = {
         }
     },
 
-    reorderSprites(fromIndex, toIndex) {
-        const sprites = App.projectData.sprites;
-        const [moved] = sprites.splice(fromIndex, 1);
-        sprites.splice(toIndex, 0, moved);
-
-        // ID振り直し
-        sprites.forEach((s, i) => s.id = i);
-
-        // 選択中のスプライトを追跡
-        if (this.currentSprite === fromIndex) {
-            this.currentSprite = toIndex;
-        } else if (fromIndex < this.currentSprite && toIndex >= this.currentSprite) {
-            this.currentSprite--;
-        } else if (fromIndex > this.currentSprite && toIndex <= this.currentSprite) {
-            this.currentSprite++;
-        }
-
-        this.initSpriteGallery();
-        this.render();
-    },
-
     // ========== 描画 ==========
     render() {
         if (!this.ctx) return;
@@ -719,6 +698,10 @@ const SpriteEditor = {
     },
 
     addNewSprite() {
+        if (App.projectData.sprites.length >= 256) {
+            alert(App.I18N['U184']?.[App.currentLang] || 'スプライトはこれ以上追加できません（最大256個）');
+            return;
+        }
         const id = App.projectData.sprites.length;
         App.projectData.sprites.push({
             id: id,
@@ -841,6 +824,10 @@ const SpriteEditor = {
 
     // スプライトを複製
     duplicateSprite(index) {
+        if (App.projectData.sprites.length >= 256) {
+            alert(App.I18N['U184']?.[App.currentLang] || 'スプライトはこれ以上追加できません（最大256個）');
+            return;
+        }
         const srcSprite = App.projectData.sprites[index];
         // ディープコピー
         const newSprite = JSON.parse(JSON.stringify(srcSprite));

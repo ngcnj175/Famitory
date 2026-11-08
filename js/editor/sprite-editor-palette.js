@@ -87,6 +87,10 @@ const SpriteEditorPalette = {
             clearTimeout(longPressTimer);
             if (!isLongPress) {
                 // 短押し: 色追加（追加した色を選択状態にする）
+                if (App.nesPalette.length >= 64) {
+                    alert(App.I18N['U182']?.[App.currentLang] || '色はこれ以上追加できません（最大64色）');
+                    return;
+                }
                 App.nesPalette.push('#000000');
                 this.editor.selectedColor = App.nesPalette.length - 1;
                 this.initColorPalette();
@@ -137,14 +141,19 @@ const SpriteEditorPalette = {
         }
         const preset = App.PALETTE_PRESETS[selected.dataset.value];
         if (preset) {
-            // 既存パレットに追加
+            // 既存パレットに追加（上限64色でストップ）
+            let reached = false;
             preset.colors.forEach(color => {
+                if (App.nesPalette.length >= 64) { reached = true; return; }
                 if (!App.nesPalette.includes(color)) {
                     App.nesPalette.push(color);
                 }
             });
             this.initColorPalette();
             this.closePresetDialog();
+            if (reached) {
+                alert(App.I18N['U182']?.[App.currentLang] || '色はこれ以上追加できません（最大64色）');
+            }
         }
     },
 
@@ -224,6 +233,10 @@ const SpriteEditorPalette = {
 
     // 色を複製
     duplicateColor(index) {
+        if (App.nesPalette.length >= 64) {
+            alert(App.I18N['U182']?.[App.currentLang] || '色はこれ以上追加できません（最大64色）');
+            return;
+        }
         const color = App.nesPalette[index];
 
         // スプライト内の参照を更新（挿入によるズレ補正）

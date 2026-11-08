@@ -40,6 +40,10 @@ class StageTemplateManager {
 
             App.projectData.templates[this.owner.editingIndex] = this.owner.editingTemplate;
         } else {
+            if ((App.projectData.templates?.length || 0) >= 128) {
+                alert(App.I18N['U189']?.[App.currentLang] || 'タイルはこれ以上追加できません（最大128個）');
+                return;
+            }
             App.projectData.templates.push(this.owner.editingTemplate);
             this.owner.selectedTemplate = App.projectData.templates.length - 1;
         }
@@ -239,6 +243,10 @@ class StageTemplateManager {
 
     // タイルテンプレートを複製
     duplicateTemplate(index) {
+        if ((App.projectData.templates?.length || 0) >= 128) {
+            alert(App.I18N['U189']?.[App.currentLang] || 'タイルはこれ以上追加できません（最大128個）');
+            return;
+        }
         const src = App.projectData.templates[index];
         const newTmpl = JSON.parse(JSON.stringify(src));
 
