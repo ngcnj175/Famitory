@@ -1465,10 +1465,6 @@ const StageEditor = {
         if (this.templateManager) this.templateManager.saveTemplate();
     },
 
-    replaceSpritesInStage(oldId, newId) {
-        if (this.templateManager) this.templateManager.replaceSpritesInStage(oldId, newId);
-    },
-
     initTemplateList() {
         if (this.templateManager) this.templateManager.initTemplateList();
     },
@@ -1479,10 +1475,6 @@ const StageEditor = {
 
     duplicateTemplate(index) {
         if (this.templateManager) this.templateManager.duplicateTemplate(index);
-    },
-
-    clearTileFromCanvas(templateIndex) {
-        if (this.templateManager) this.templateManager.clearTileFromCanvas(templateIndex);
     },
 
     updateMapTemplateReferences(action, index) {

@@ -38,15 +38,14 @@ class StageTemplateManager {
                 this.replaceSpritesInStage(oldSpriteId, newSpriteId);
             }
 
-            // 当たり判定の設定が変わった material は、配置済タイルを bg↔fg 間で移動する
-            const oldIsMaterial = oldTemplate?.type === 'material';
-            const newIsMaterial = this.owner.editingTemplate?.type === 'material';
-            const oldNoCollision = oldIsMaterial && oldTemplate?.config?.collision === false;
-            const newNoCollision = newIsMaterial && this.owner.editingTemplate?.config?.collision === false;
-            if (oldNoCollision !== newNoCollision) {
-                const fromLayer = oldNoCollision ? 'bg' : 'fg';
-                const toLayer   = oldNoCollision ? 'fg' : 'bg';
-                this.migrateTemplateLayer(this.owner.editingIndex, fromLayer, toLayer);
+            // 配置先レイヤーが変わった場合、配置済タイルを bg↔fg 間で移動する
+            // （判定ルールは StageEditor._getTargetLayer と同一）
+            const resolveLayer = (tmpl) =>
+                (tmpl?.type === 'material' && tmpl?.config?.collision === false) ? 'bg' : 'fg';
+            const oldLayer = resolveLayer(oldTemplate);
+            const newLayer = resolveLayer(this.owner.editingTemplate);
+            if (oldLayer !== newLayer) {
+                this.migrateTemplateLayer(this.owner.editingIndex, oldLayer, newLayer);
             }
 
             App.projectData.templates[this.owner.editingIndex] = this.owner.editingTemplate;
@@ -320,31 +319,6 @@ class StageTemplateManager {
 
         this.owner.initTemplateList();
         this.owner.render();
-    }
-
-    // キャンバスから指定インデックスのタイルをすべてクリア
-    clearTileFromCanvas(templateIndex) {
-        const stage = App.projectData.stage;
-        if (!stage || !stage.layers) return;
-
-        const layer = stage.layers.fg;
-        if (!layer) return;
-
-        // タイルの最初のスプライトインデックスを取得
-        const template = App.projectData.templates[templateIndex];
-        if (!template) return;
-
-        const spriteIdx = template.sprites?.idle?.frames?.[0] ?? template.sprites?.main?.frames?.[0];
-        if (spriteIdx === undefined) return;
-
-        // キャンバス上の該当タイルをすべて-1に置換
-        for (let y = 0; y < stage.height; y++) {
-            for (let x = 0; x < stage.width; x++) {
-                if (layer[y][x] === spriteIdx) {
-                    layer[y][x] = -1;
-                }
-            }
-        }
     }
 
     // テンプレート削除・挿入時のマップ参照更新
