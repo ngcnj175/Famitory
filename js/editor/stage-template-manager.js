@@ -38,6 +38,17 @@ class StageTemplateManager {
                 this.replaceSpritesInStage(oldSpriteId, newSpriteId);
             }
 
+            // 当たり判定の設定が変わった material は、配置済タイルを bg↔fg 間で移動する
+            const oldIsMaterial = oldTemplate?.type === 'material';
+            const newIsMaterial = this.owner.editingTemplate?.type === 'material';
+            const oldNoCollision = oldIsMaterial && oldTemplate?.config?.collision === false;
+            const newNoCollision = newIsMaterial && this.owner.editingTemplate?.config?.collision === false;
+            if (oldNoCollision !== newNoCollision) {
+                const fromLayer = oldNoCollision ? 'bg' : 'fg';
+                const toLayer   = oldNoCollision ? 'fg' : 'bg';
+                this.migrateTemplateLayer(this.owner.editingIndex, fromLayer, toLayer);
+            }
+
             App.projectData.templates[this.owner.editingIndex] = this.owner.editingTemplate;
         } else {
             if ((App.projectData.templates?.length || 0) >= 128) {
@@ -60,6 +71,47 @@ class StageTemplateManager {
                 if (sc) sc.scrollLeft = sc.scrollWidth;
             });
         }
+    }
+
+    // 指定テンプレートIDの配置済タイルを fromLayer から toLayer へ移動
+    // （footprint全体を移動し、移動先の重複タイルは clearFootprint で除去）
+    migrateTemplateLayer(templateIndex, fromLayer, toLayer) {
+        const stage = App.projectData.stage;
+        if (!stage?.layers) return;
+        const src = stage.layers[fromLayer];
+        const dst = stage.layers[toLayer];
+        if (!src || !dst) return;
+
+        const tileValue = templateIndex + 100;
+        const template = App.projectData.templates[templateIndex];
+        const spriteIdx = template?.sprites?.idle?.frames?.[0] ?? template?.sprites?.main?.frames?.[0];
+        const size = App.projectData?.sprites?.[spriteIdx]?.size === 2 ? 2 : 1;
+
+        const getFootprintSize = (id) => {
+            if (id < 100) return 1;
+            const t = App.projectData.templates?.[id - 100];
+            const s = t?.sprites?.idle?.frames?.[0] ?? t?.sprites?.main?.frames?.[0];
+            return App.projectData?.sprites?.[s]?.size === 2 ? 2 : 1;
+        };
+
+        // 原点セルを先に収集してから移動（移動中のレイヤー書き換えによる二重処理を回避）
+        const origins = [];
+        for (let y = 0; y < stage.height; y++) {
+            for (let x = 0; x < stage.width; x++) {
+                if (src[y]?.[x] === tileValue) origins.push({ x, y });
+            }
+        }
+
+        origins.forEach(({ x, y }) => {
+            // 移動先の重複タイルを除去
+            TileFootprint.forEachCell(x, y, size, stage.width, stage.height, (tx, ty) => {
+                TileFootprint.clearFootprint(dst, tx, ty, stage.width, stage.height, getFootprintSize);
+            });
+            // 移動元の footprint をクリア
+            TileFootprint.clearFootprint(src, x, y, stage.width, stage.height, getFootprintSize);
+            // 移動先に配置
+            TileFootprint.place(dst, x, y, size, tileValue, stage.width, stage.height);
+        });
     }
 
     // ステージ上のスプライトIDを置換
