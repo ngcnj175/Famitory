@@ -221,14 +221,14 @@ class StageTemplateManager {
 
                 if (this.owner.selectedTemplate === index) {
                     // 選択中のタイルを再タップ → 設定パネル表示
-                    this.owner.editingTemplate = { ...template, sprites: { ...template.sprites } };
+                    this.owner.editingTemplate = JSON.parse(JSON.stringify(template));
                     this.owner.editingIndex = index;
                     this.owner.openConfigPanel();
                 } else {
                     // 未選択タイル → 選択、パネル表示中なら内容も同期
                     this.owner.selectedTemplate = index;
                     if (this.owner.isConfigOpen) {
-                        this.owner.editingTemplate = { ...template, sprites: { ...template.sprites } };
+                        this.owner.editingTemplate = JSON.parse(JSON.stringify(template));
                         this.owner.editingIndex = index;
                         this.owner.openConfigPanel();
                     }
