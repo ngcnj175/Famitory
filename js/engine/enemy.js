@@ -1227,10 +1227,12 @@ class Enemy {
         const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
         const baseSpeed = 0.06 + (shotSpeedConfig - 1) * 0.035; // 1=0.06, 3=0.13, 5=0.2
 
+        // スプライトの中心をキャラ中心に合わせるため、スプライトサイズに応じた左上座標を計算する
+        const shotSpriteSize = App.projectData?.sprites?.[shotSprite]?.size === 2 ? 2 : 1;
         const cx = this.x + this.width / 2;
         const cy = this.y + this.height / 2;
-        let startX = cx - 0.5;
-        let startY = cy - 0.5;
+        let startX = cx - shotSpriteSize / 2;
+        let startY = cy - shotSpriteSize / 2;
 
         // 武器タイプによって発射位置をずらす
         // 水平発射系: ショットスプライトの中心がキャラの端に来るよう、キャラ幅に応じてシフト

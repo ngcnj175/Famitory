@@ -90,10 +90,19 @@ class GamePhysics {
     // ========== プロジェクタイル衝突クエリ ==========
 
     projectileHits(proj, target) {
-        return proj.x < target.x + target.width  &&
-               proj.x + proj.width  > target.x   &&
-               proj.y < target.y + target.height &&
-               proj.y + proj.height > target.y;
+        // spriteSize が明示された（＝ショット系）プロジェクタイルは
+        // スプライトフットプリント内の中心に当たり判定を配置する。
+        // item 等 spriteSize 未設定のオブジェクトは従来通り proj.x,y 左上基準で判定。
+        let hitLeft = proj.x;
+        let hitTop  = proj.y;
+        if (proj.spriteSize) {
+            hitLeft += (proj.spriteSize - proj.width)  / 2;
+            hitTop  += (proj.spriteSize - proj.height) / 2;
+        }
+        return hitLeft < target.x + target.width  &&
+               hitLeft + proj.width  > target.x   &&
+               hitTop  < target.y + target.height &&
+               hitTop  + proj.height > target.y;
     }
 
     // ========== エリアダメージ ==========

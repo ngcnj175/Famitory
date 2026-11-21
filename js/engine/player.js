@@ -451,14 +451,13 @@ class Player {
             // 速度設定: shotSpeed 1（0.1）～5（0.35）
             const shotSpeedConfig = this.template?.config?.shotSpeed ?? 3;
             const baseSpeed = 0.1 + (shotSpeedConfig - 1) * 0.0625; // 1=0.1, 3=0.225, 5=0.35
-            // プロジェクタイルの論理サイズは 0.5x0.5、描画されるスプライトサイズは 1.0x1.0（通常）であるため、
-            // 描画時にスプライトの中心がキャラクターの中心と一致するように補正する。
+            // スプライトの中心をキャラ中心に合わせるため、スプライトサイズに応じた左上座標を計算する
+            const shotSpriteSize = App.projectData?.sprites?.[shotSprite]?.size === 2 ? 2 : 1;
             const cx = this.x + this.width / 2;
             const cy = this.y + this.height / 2;
 
-            // 描画の中心に合わせるため、1x1サイズのスプライトの左上座標を(cx - 0.5, cy - 0.5)とする
-            let startX = cx - 0.5;
-            let startY = cy - 0.5;
+            let startX = cx - shotSpriteSize / 2;
+            let startY = cy - shotSpriteSize / 2;
 
             // 武器タイプによって発射位置をずらす
             // 水平発射系: ショットスプライトの中心がキャラの端に来るよう、キャラ幅に応じてシフト

@@ -35,6 +35,14 @@ class ProjectileManager {
             ownerEnemy = null
         } = config;
 
+        // ショットスプライトのサイズ（1 or 2）に応じて当たり判定を拡大
+        // 判定は game-physics.js の projectileHits でスプライトフットプリント内に中心配置される
+        const spriteSize = App.projectData?.sprites?.[shotSprite]?.size === 2 ? 2 : 1;
+        const hitW = 0.5 * spriteSize; // 甘め判定（スプライトの半分）
+        const hitH = 0.5 * spriteSize;
+        const meleeW = 1 * spriteSize;
+        const meleeH = 1 * spriteSize;
+
         if (shotType === 'spread') {
             // 拡散: 4方向発射（交互に＋と✕パターン）
             const counterKey = owner === 'player' ? 'spreadShotCounter' : 'enemySpreadCounter';
@@ -48,7 +56,8 @@ class ProjectileManager {
                     x: startX, y: startY,
                     vx: Math.cos(rad) * baseSpeed,
                     vy: Math.sin(rad) * baseSpeed,
-                    width: 0.5, height: 0.5,
+                    width: hitW, height: hitH,
+                    spriteSize: spriteSize,
                     spriteIdx: shotSprite,
                     templateIdx: templateIdx,
                     animationSlot: 'shot',
@@ -65,7 +74,8 @@ class ProjectileManager {
             engine.projectiles.push({
                 x: startX, y: startY,
                 vx: 0, vy: -baseSpeed,
-                width: 0.5, height: 0.5,
+                width: hitW, height: hitH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',
@@ -82,7 +92,8 @@ class ProjectileManager {
             engine.projectiles.push({
                 x: startX, y: startY,
                 vx: 0, vy: baseSpeed,
-                width: 0.5, height: 0.5,
+                width: hitW, height: hitH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',
@@ -97,10 +108,11 @@ class ProjectileManager {
         } else if (shotType === 'melee') {
             // 近接: 目の前に表示（ownerEnemyで追従）
             const projectile = {
-                x: ownerEntity.x + (facingRight ? ownerEntity.width : -1),
-                y: ownerEntity.y + ownerEntity.height / 2 - 0.5,
+                x: ownerEntity.x + (facingRight ? ownerEntity.width : -spriteSize),
+                y: ownerEntity.y + ownerEntity.height / 2 - spriteSize / 2,
                 vx: 0, vy: 0,
-                width: 1, height: 1,
+                width: meleeW, height: meleeH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',
@@ -126,7 +138,8 @@ class ProjectileManager {
                 x: startX, y: startY,
                 vx: Math.cos(rad) * baseSpeed,
                 vy: Math.sin(rad) * baseSpeed,
-                width: 0.5, height: 0.5,
+                width: hitW, height: hitH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',
@@ -142,7 +155,8 @@ class ProjectileManager {
             const projectile = {
                 x: startX, y: startY,
                 vx: 0, vy: 0,
-                width: 0.5, height: 0.5,
+                width: hitW, height: hitH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',
@@ -167,7 +181,8 @@ class ProjectileManager {
                 x: startX, y: startY,
                 vx: baseSpeed * (facingRight ? 1 : -1),
                 vy: shotType === 'arc' ? -0.15 : 0,
-                width: 0.5, height: 0.5,
+                width: hitW, height: hitH,
+                spriteSize: spriteSize,
                 spriteIdx: shotSprite,
                 templateIdx: templateIdx,
                 animationSlot: 'shot',

@@ -1377,13 +1377,6 @@ const GameEngine = {
         });
     },
 
-    projectileHits(proj, target) {
-        return proj.x < target.x + target.width &&
-            proj.x + proj.width > target.x &&
-            proj.y < target.y + target.height &&
-            proj.y + proj.height > target.y;
-    },
-
     updateGimmickBlocks() {
         const stage = this.stageData || App.projectData.stage;
         if (!stage) return;
