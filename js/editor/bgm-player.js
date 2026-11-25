@@ -65,6 +65,7 @@ class BgmPlayer {
         // ゲームエンジンのBGMプレイヤーもクリア
         if (typeof GameEngine !== 'undefined' && GameEngine.gameBgmPlayer) {
             try { GameEngine.gameBgmPlayer.audioCtx?.close(); } catch (e) { }
+            GameEngine.gameBgmPlayer.audioCtx = null;
             GameEngine.gameBgmPlayer.outputNode = null;
         }
     }
